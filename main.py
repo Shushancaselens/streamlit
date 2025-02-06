@@ -1,5 +1,4 @@
 import streamlit as st
-from datetime import datetime, timedelta
 import time
 
 # Set page config
@@ -9,50 +8,108 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS to match the original styling
+# Custom CSS to maintain React-like styling
 st.markdown("""
     <style>
+    /* Main container styles */
     .stApp {
-        background-color: #F9FAFB;
+        background-color: rgb(249, 250, 251);
     }
-    .status-card {
+    
+    /* Card styles */
+    div[data-testid="stVerticalBlock"] > div:has(div.element-container) {
         background-color: white;
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 1px solid #E5E7EB;
+        border: 1px solid rgb(229, 231, 235);
         margin-bottom: 1rem;
     }
+    
+    /* Button styles */
+    .stButton > button {
+        width: 100%;
+        text-align: left;
+        background-color: white;
+        border: 1px solid rgb(229, 231, 235);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stButton > button:hover {
+        border-color: rgb(147, 197, 253);
+        background-color: rgb(239, 246, 255);
+    }
+    
+    /* Metric containers */
+    [data-testid="stMetricValue"] {
+        font-size: 1.25rem !important;
+        color: rgb(17, 24, 39);
+    }
+    
+    [data-testid="stMetricDelta"] {
+        color: rgb(16, 185, 129);
+        font-size: 0.875rem;
+    }
+    
+    /* Card header styles */
+    h2, h3 {
+        color: rgb(17, 24, 39);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    /* Custom node container */
+    .node-container {
+        border: 2px solid rgb(147, 197, 253);
+        background-color: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        margin: 0.5rem;
+    }
+    
+    /* Finding card styles */
     .finding-card {
         background-color: white;
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 1px solid #E5E7EB;
+        border: 1px solid rgb(229, 231, 235);
         margin-bottom: 1rem;
     }
-    .agent-button {
-        background-color: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 0.5rem;
-        padding: 0.75rem;
-        margin-bottom: 0.5rem;
+    
+    /* Custom header with icon */
+    .header-with-icon {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Custom progress bar */
+    .progress-container {
         width: 100%;
-        text-align: left;
+        height: 0.5rem;
+        background-color: rgb(229, 231, 235);
+        border-radius: 9999px;
+        overflow: hidden;
     }
-    .agent-button:hover {
-        background-color: #F3F4F6;
+    
+    .progress-bar {
+        height: 100%;
+        background-color: rgb(37, 99, 235);
+        border-radius: 9999px;
     }
-    .selected {
-        background-color: #EBF5FF;
-        border-color: #93C5FD;
-    }
-    .network-node {
-        background-color: white;
-        border: 2px solid #93C5FD;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-        text-align: center;
-        margin: 0.5rem;
-        width: 120px;
+    
+    /* Agent badge styles */
+    .agent-badge {
+        display: inline-flex;
+        align-items: center;
+        background-color: rgb(243, 244, 246);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -129,7 +186,7 @@ with col1:
     # Logo
     st.markdown("""
         <div style="display: flex; align-items: center; margin-bottom: 2rem;">
-            <div style="width: 2rem; height: 2rem; background-color: #2563EB; border-radius: 0.25rem; 
+            <div style="width: 2rem; height: 2rem; background-color: rgb(37, 99, 235); border-radius: 0.25rem; 
                         display: flex; align-items: center; justify-content: center; margin-right: 0.5rem;">
                 <span style="color: white; font-weight: bold; font-size: 1.25rem;">C</span>
             </div>
@@ -137,99 +194,116 @@ with col1:
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("### 🧠 Active Agents")
+    # Agents section
+    st.markdown("""
+        <div class="header-with-icon">
+            <span style="font-size: 1.5rem;">🧠</span>
+            <h2 style="margin: 0;">Active Agents</h2>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Agent buttons
+    # Agent buttons using Streamlit components
     for agent_id, agent in agents.items():
-        button_class = "agent-button selected" if st.session_state.selected_agent == agent_id else "agent-button"
-        if st.markdown(f"""
-            <button class="{button_class}">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <span style="font-size: 1.25rem; margin-right: 0.5rem;">{agent['icon']}</span>
-                        <span style="font-weight: 500;">{agent['name']}</span>
-                        <div style="font-size: 0.75rem; color: #6B7280;">{agent['status']}</div>
-                    </div>
-                    <span style="background-color: #F3F4F6; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">
-                        {agent['findings']}
-                    </span>
-                </div>
-            </button>
-        """, unsafe_allow_html=True):
+        if st.button(
+            f"{agent['icon']} {agent['name']}\n{agent['status']}\n{agent['findings']} findings",
+            key=f"agent_{agent_id}",
+            help=f"View details for {agent['name']}"
+        ):
             st.session_state.selected_agent = agent_id
 
 # Main content
 with col2:
-    # Status card with metrics
-    st.markdown('<div class="status-card">', unsafe_allow_html=True)
+    # Status metrics
+    st.markdown('<div style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid rgb(229, 231, 235);">', unsafe_allow_html=True)
     
-    # Header metrics
-    metric_col1, metric_col2, metric_col3 = st.columns(3)
+    metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
     
-    with metric_col1:
-        st.metric("Documents Under Analysis", "100,532", "2,145/min")
+    with metrics_col1:
+        st.metric(
+            "Documents Processed",
+            "100,532",
+            "2,145/min",
+            help="Total documents processed and current processing rate"
+        )
     
-    with metric_col2:
-        st.metric("Critical Findings", "23", "-5")
+    with metrics_col2:
+        st.metric(
+            "Critical Findings",
+            "23",
+            "-5",
+            delta_color="inverse",
+            help="Number of critical issues detected"
+        )
     
-    with metric_col3:
-        st.metric("Analysis Progress", "45%", "2%")
+    with metrics_col3:
+        st.metric(
+            "Analysis Progress",
+            "45%",
+            "2%",
+            help="Overall progress of document analysis"
+        )
     
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Agent collaboration view
-    st.markdown('<div class="status-card">', unsafe_allow_html=True)
-    st.subheader("Agent Collaboration")
+    st.markdown("""
+        <div style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid rgb(229, 231, 235); margin-top: 1rem;">
+            <h3>Agent Collaboration</h3>
+    """, unsafe_allow_html=True)
     
-    # Simple grid layout for nodes
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown('<div class="network-node">Timeline<br>⏰</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="network-node">Document<br>📄</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="network-node">Legal<br>⚖️</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="network-node">Citation<br>🔍</div>', unsafe_allow_html=True)
+    # Simple grid for agent nodes
+    node_cols = st.columns(4)
+    for i, (node_id, node) in enumerate(list(agents.items())[:4]):
+        with node_cols[i]:
+            st.markdown(f"""
+                <div class="node-container">
+                    <div style="font-size: 1.5rem;">{node['icon']}</div>
+                    <div style="font-weight: 500;">{node['name']}</div>
+                </div>
+            """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Findings
-    st.subheader("Recent Findings")
+    st.markdown("<h3 style='margin-top: 1rem;'>Recent Findings</h3>", unsafe_allow_html=True)
+    
     for finding in findings:
         agent = agents[finding['agent']]
-        severity_color = "#FEE2E2" if finding['severity'] == 'high' else "#FEF3C7"
+        severity_color = "rgb(254, 226, 226)" if finding['severity'] == 'high' else "rgb(254, 243, 199)"
         
         st.markdown(f"""
-        <div class="finding-card">
-            <div style="display: flex; gap: 1rem;">
-                <div style="background-color: {severity_color}; padding: 0.5rem; border-radius: 0.5rem;">
-                    {agent['icon']}
-                </div>
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <h3 style="font-weight: 600; margin: 0;">{finding['title']}</h3>
-                        <span style="color: #6B7280; font-size: 0.875rem;">{finding['timestamp']}</span>
+            <div class="finding-card">
+                <div style="display: flex; gap: 1rem;">
+                    <div style="background-color: {severity_color}; padding: 0.5rem; border-radius: 0.5rem;">
+                        {agent['icon']}
                     </div>
-                    <p style="color: #4B5563; margin-bottom: 1rem;">{finding['description']}</p>
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                        {' '.join([f'<button style="background-color: #F3F4F6; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem;">{doc}</button>' for doc in finding['related_docs']])}
-                    </div>
-                    <div style="display: flex; gap: 0.75rem;">
-                        <button style="background-color: #EBF5FF; color: #1D4ED8; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;">
-                            Investigate Further
-                        </button>
-                        <button style="background-color: #F3F4F6; color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;">
-                            Mark as Reviewed
-                        </button>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <h4 style="font-weight: 600; margin: 0;">{finding['title']}</h4>
+                            <span style="color: rgb(107, 114, 128); font-size: 0.875rem;">
+                                {finding['timestamp']}
+                            </span>
+                        </div>
+                        <p style="color: rgb(75, 85, 99); margin-bottom: 1rem;">
+                            {finding['description']}
+                        </p>
+                        <div style="margin-bottom: 1rem;">
+                            {' '.join([f'<span class="agent-badge">{doc}</span>' for doc in finding['related_docs']])}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         """, unsafe_allow_html=True)
 
-# Add auto-refresh functionality
-if st.button('Start Auto-refresh'):
-    time.sleep(2)  # Simulate refresh delay
-    st.experimental_rerun()
+        # Action buttons using Streamlit
+        col1, col2, _ = st.columns([1, 1, 2])
+        with col1:
+            st.button("Investigate Further", key=f"investigate_{finding['id']}")
+        with col2:
+            st.button("Mark as Reviewed", key=f"review_{finding['id']}")
+
+# Auto-refresh section
+with st.sidebar:
+    if st.button("Start Auto-refresh"):
+        time.sleep(2)
+        st.experimental_rerun()

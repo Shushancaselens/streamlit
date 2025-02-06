@@ -1,368 +1,295 @@
 import streamlit as st
+import pandas as pd
+import networkx as nx
+import plotly.graph_objects as go
+from datetime import datetime, timedelta
+import time
 
 # Set page config
 st.set_page_config(
-    page_title="Document Review System",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    page_title="CaseLens",
+    page_icon="📚",
+    layout="wide"
 )
 
-# Custom CSS to exactly match React version
+# Custom CSS to match the original styling
 st.markdown("""
     <style>
-    /* Global Resets */
-    div[data-testid="stAppViewContainer"] {
-        background: #f8fafc;
-        padding: 0;
+    .stApp {
+        background-color: #F9FAFB;
     }
-    div[data-testid="stHeader"] {
-        display: none;
-    }
-    section[data-testid="stSidebar"] {
-        display: none;
-    }
-    
-    /* Main Layout */
-    .app-container {
-        display: flex;
-        height: 100vh;
-        background: #f8fafc;
-        overflow: hidden;
-    }
-    
-    /* Left Sidebar */
-    .left-sidebar {
-        width: 320px;
-        background: white;
-        border-right: 1px solid #e5e7eb;
+    .status-card {
+        background-color: white;
         padding: 1rem;
-        overflow-y: auto;
-        flex-shrink: 0;
-    }
-    
-    /* Logo */
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .logo-icon {
-        width: 2rem;
-        height: 2rem;
-        background: #2563eb;
-        border-radius: 0.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
-    
-    /* Agent Cards */
-    .agent-card {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        cursor: pointer;
-        transition: all 0.2s;
+        border: 1px solid #E5E7EB;
     }
-    .agent-card:hover {
-        background: #f8fafc;
-    }
-    .agent-card.selected {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-    }
-    
-    /* Agent Icons */
-    .agent-icon {
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-    }
-    .agent-icon.analysis { background: #dbeafe; }
-    .agent-icon.expert { background: #f3e8ff; }
-    .agent-icon.alert { background: #fee2e2; }
-    .agent-icon.synthesis { background: #dcfce7; }
-    
-    /* Main Content */
-    .main-content {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1.5rem;
-    }
-    .content-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    /* Status Cards */
-    .status-section {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    /* Network Graph */
-    .network-container {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .network-graph {
-        height: 16rem;
-        background: #f8fafc;
-        border-radius: 0.5rem;
-        position: relative;
-        overflow: hidden;
-    }
-    .network-node {
-        position: absolute;
-        background: white;
-        padding: 0.75rem;
-        border-radius: 0.375rem;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    /* Findings Cards */
     .finding-card {
-        background: white;
-        border: 1px solid #e5e7eb;
+        background-color: white;
+        padding: 1rem;
         border-radius: 0.5rem;
-        padding: 1.5rem;
+        border: 1px solid #E5E7EB;
         margin-bottom: 1rem;
     }
-    .tag {
-        background: #f1f5f9;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        color: #475569;
-        margin-right: 0.5rem;
-    }
-    .action-btn {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    .action-btn.primary {
-        background: #eff6ff;
-        color: #1d4ed8;
-    }
-    .action-btn.secondary {
-        background: #f1f5f9;
-        color: #475569;
-    }
-    
-    /* Right Sidebar - Exact match to React version */
-    .right-sidebar {
-        width: 320px;
-        background: white;
-        border-left: 1px solid #e5e7eb;
-        padding: 1rem;
-        flex-shrink: 0;
-    }
-    .context-btn {
+    .agent-button {
+        background-color: white;
+        border: 1px solid #E5E7EB;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
         width: 100%;
         text-align: left;
-        padding: 0.5rem;
-        background: #f8fafc;
-        border-radius: 0.375rem;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        color: #475569;
     }
-    .progress-item {
-        margin-bottom: 0.75rem;
+    .agent-button:hover {
+        background-color: #F3F4F6;
     }
-    .progress-bar {
-        height: 0.5rem;
-        background: #e5e7eb;
-        border-radius: 9999px;
-        overflow: hidden;
+    .selected {
+        background-color: #EBF5FF;
+        border-color: #93C5FD;
     }
-    .progress-fill {
-        height: 100%;
-        transition: width 0.3s;
-    }
-    .blue-fill { background: #2563eb; }
-    .red-fill { background: #dc2626; }
     </style>
-""", unsafe_allow_html=True)
-
-# App Layout
-st.markdown("""
-<div class="app-container">
-    <!-- Left Sidebar -->
-    <div class="left-sidebar">
-        <!-- Logo -->
-        <div class="logo">
-            <div class="logo-icon">C</div>
-            <span style="font-size: 1.25rem; font-weight: bold;">caselens</span>
-        </div>
-        
-        <!-- Agents Header -->
-        <h2 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">
-            <span style="display: inline-flex;">🧠</span> Active Agents
-        </h2>
-""", unsafe_allow_html=True)
-
-# Agents Data
-agents = {
-    'timeline': {'name': 'Event Timeline', 'icon': '⏱️', 'type': 'analysis', 'status': 'Found 3 critical gaps', 'findings': 12},
-    'document': {'name': 'Document Analysis', 'icon': '📄', 'type': 'analysis', 'status': 'Processing content', 'findings': 15},
-    'legal': {'name': 'Legal Compliance', 'icon': '⚖️', 'type': 'expert', 'status': 'Reviewing compliance', 'findings': 7},
-    'citation': {'name': 'Citation Check', 'icon': '🔍', 'type': 'analysis', 'status': 'Verifying accuracy', 'findings': 6},
-    'statement': {'name': 'Statement Review', 'icon': '💬', 'type': 'expert', 'status': 'Analyzing statements', 'findings': 9}
-}
-
-# Render Agents
-for id, agent in agents.items():
-    st.markdown(f"""
-        <div class="agent-card">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div class="agent-icon {agent['type']}">
-                    {agent['icon']}
-                </div>
-                <div style="flex: 1">
-                    <div style="font-weight: 500;">{agent['name']}</div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">{agent['status']}</div>
-                </div>
-                <div style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem;">
-                    {agent['findings']}
-                </div>
-            </div>
-        </div>
     """, unsafe_allow_html=True)
 
-# Main Content Start
-st.markdown("""
-    </div>
-    <div class="main-content">
-        <div class="content-container">
-            <!-- Status Section -->
-            <div class="status-section">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h2 style="font-size: 1.25rem; font-weight: 600;">Active Investigation</h2>
-                        <p style="color: #6b7280;">100,532 documents under analysis</p>
-                    </div>
-                    <div style="display: flex; gap: 2rem;">
-                        <div>
-                            <div style="font-weight: 500;">Processing Speed</div>
-                            <div style="color: #10b981;">2,145 docs/min</div>
-                        </div>
-                        <div>
-                            <div style="font-weight: 500;">Critical Findings</div>
-                            <div style="color: #dc2626;">23 found</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+# Initialize session state
+if 'selected_agent' not in st.session_state:
+    st.session_state.selected_agent = None
 
-            <!-- Network Graph -->
-            <div class="network-container">
-                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
-                <div class="network-graph">
-                    <!-- Network nodes and connections would be rendered here -->
-                </div>
-            </div>
+# Data structures
+agents = {
+    "timeline": {
+        "name": "Event Timeline",
+        "icon": "⏰",
+        "status": "Analyzing event sequences",
+        "type": "analysis",
+        "findings": 8
+    },
+    "document": {
+        "name": "Document Analysis",
+        "icon": "📄",
+        "status": "Processing document content",
+        "type": "analysis",
+        "findings": 15
+    },
+    "legal": {
+        "name": "Legal Compliance",
+        "icon": "⚖️",
+        "status": "Reviewing regulatory adherence",
+        "type": "expert",
+        "findings": 12
+    },
+    "citation": {
+        "name": "Citation Check",
+        "icon": "🔍",
+        "status": "Verifying reference accuracy",
+        "type": "analysis",
+        "findings": 6
+    },
+    "statement": {
+        "name": "Statement Review",
+        "icon": "💬",
+        "status": "Analyzing key statements",
+        "type": "expert",
+        "findings": 9
+    }
+}
 
-            <!-- Findings Section -->
-            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Latest Findings</h3>
-""", unsafe_allow_html=True)
-
-# Findings Data
 findings = [
     {
-        'title': 'Contract Term Inconsistency',
-        'description': 'Different IP ownership terms found in email (March 15) vs Contract v2.1',
-        'docs': ['email-5123', 'contract-v2.1'],
-        'time': '2 min ago'
+        "id": 1,
+        "agent": "legal",
+        "severity": "high",
+        "title": "Compliance Issue Detected",
+        "description": "Potential regulatory violation in section 3.2 of the agreement",
+        "related_docs": ["agreement-v2.1", "reg-guidelines"],
+        "timestamp": "2 min ago"
     },
     {
-        'title': 'Communication Gap',
-        'description': 'No communications found during critical negotiation period (April 2-15)',
-        'docs': ['timeline-gap-1'],
-        'time': '5 min ago'
+        "id": 2,
+        "agent": "document",
+        "severity": "medium",
+        "title": "Document Inconsistency",
+        "description": "Discrepancy found between revision history and document metadata",
+        "related_docs": ["doc-metadata-log"],
+        "timestamp": "5 min ago"
     }
 ]
 
-# Render Findings
-for finding in findings:
-    st.markdown(f"""
-        <div class="finding-card">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-                <h4 style="font-weight: 600;">{finding['title']}</h4>
-                <span style="color: #6b7280; font-size: 0.875rem;">{finding['time']}</span>
+# Layout
+col1, col2 = st.columns([1, 3])
+
+# Sidebar content
+with col1:
+    # Logo
+    st.markdown("""
+        <div style="display: flex; align-items: center; margin-bottom: 2rem;">
+            <div style="width: 2rem; height: 2rem; background-color: #2563EB; border-radius: 0.25rem; 
+                        display: flex; align-items: center; justify-content: center; margin-right: 0.5rem;">
+                <span style="color: white; font-weight: bold; font-size: 1.25rem;">C</span>
             </div>
-            <p style="color: #4b5563; margin-bottom: 1rem;">{finding['description']}</p>
-            <div style="margin-bottom: 1rem;">
-                {''.join([f'<span class="tag">{doc}</span>' for doc in finding['docs']])}
-            </div>
-            <div style="display: flex; gap: 0.75rem;">
-                <button class="action-btn primary">Investigate Further</button>
-                <button class="action-btn secondary">Mark as Reviewed</button>
-            </div>
+            <span style="font-size: 1.25rem; font-weight: bold;">caselens</span>
         </div>
     """, unsafe_allow_html=True)
-
-# Main Content End
-st.markdown("""
-        </div>
-    </div>
     
-    <!-- Right Sidebar -->
-    <div class="right-sidebar">
-        <h3 style="font-weight: 600; margin-bottom: 1rem;">Investigation Context</h3>
-        
-        <!-- Context Buttons -->
-        <div style="margin-bottom: 1.5rem;">
-            <button class="context-btn">Focus on IP Ownership Discussion</button>
-            <button class="context-btn">Review Contract Versions</button>
-            <button class="context-btn">Analyze Communication Gaps</button>
-        </div>
-        
-        <!-- Progress Section -->
-        <h4 style="font-weight: 500; margin-bottom: 0.75rem;">Analysis Progress</h4>
-        <div class="progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                <span>Documents Processed</span>
-                <span>45%</span>
+    st.markdown("### 🧠 Active Agents")
+    
+    # Agent buttons
+    for agent_id, agent in agents.items():
+        button_class = "agent-button selected" if st.session_state.selected_agent == agent_id else "agent-button"
+        if st.markdown(f"""
+            <button class="{button_class}">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 1.25rem; margin-right: 0.5rem;">{agent['icon']}</span>
+                        <span style="font-weight: 500;">{agent['name']}</span>
+                        <div style="font-size: 0.75rem; color: #6B7280;">{agent['status']}</div>
+                    </div>
+                    <span style="background-color: #F3F4F6; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">
+                        {agent['findings']}
+                    </span>
+                </div>
+            </button>
+        """, unsafe_allow_html=True):
+            st.session_state.selected_agent = agent_id
+
+# Main content
+with col2:
+    # Status card
+    st.markdown("""
+    <div class="status-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Active Investigation</h2>
+                <p style="color: #6B7280; margin: 0;">100,532 documents under analysis</p>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill blue-fill" style="width: 45%;"></div>
-            </div>
-        </div>
-        <div class="progress-item">
-            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
-                <span>Critical Issues Found</span>
-                <span>23</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill red-fill" style="width: 15%;"></div>
+            <div style="display: flex; gap: 1.5rem;">
+                <div>
+                    <div style="font-weight: 500;">Processing Speed</div>
+                    <div style="color: #059669;">2,145 docs/min</div>
+                </div>
+                <div>
+                    <div style="font-weight: 500;">Critical Findings</div>
+                    <div style="color: #DC2626;">23 found</div>
+                </div>
+                <div>
+                    <div style="font-weight: 500;">Analysis Progress</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 8rem; background-color: #E5E7EB; height: 0.5rem; border-radius: 9999px;">
+                            <div style="width: 45%; background-color: #2563EB; height: 100%; border-radius: 9999px;"></div>
+                        </div>
+                        <span>45%</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Hide Streamlit elements
-st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-""", unsafe_allow_html=True)
+    # Agent collaboration network
+    st.markdown("""
+    <div class="status-card" style="margin-top: 1.5rem;">
+        <h3 style="font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
+    """, unsafe_allow_html=True)
+
+    # Create network graph using Plotly
+    G = nx.Graph()
+    node_positions = {
+        "Timeline": (2, 5),
+        "Document": (4, 3),
+        "Legal": (6, 5),
+        "Citation": (8, 7)
+    }
+    
+    for node, pos in node_positions.items():
+        G.add_node(node, pos=pos)
+    
+    edges = [
+        ("Timeline", "Document"),
+        ("Document", "Legal"),
+        ("Legal", "Citation"),
+        ("Timeline", "Legal"),
+        ("Document", "Citation")
+    ]
+    G.add_edges_from(edges)
+    
+    pos = nx.get_node_attributes(G, 'pos')
+    
+    edge_trace = go.Scatter(
+        x=[], y=[],
+        line=dict(width=1, color='#93C5FD'),
+        hoverinfo='none',
+        mode='lines')
+
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_trace['x'] += tuple([x0, x1, None])
+        edge_trace['y'] += tuple([y0, y1, None])
+
+    node_trace = go.Scatter(
+        x=[], y=[],
+        text=[],
+        mode='markers+text',
+        textposition="bottom center",
+        hoverinfo='text',
+        marker=dict(
+            size=30,
+            color='white',
+            line=dict(color='#93C5FD', width=2)
+        ))
+
+    for node in G.nodes():
+        x, y = pos[node]
+        node_trace['x'] += tuple([x])
+        node_trace['y'] += tuple([y])
+        node_trace['text'] += tuple([node])
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+                   layout=go.Layout(
+                       showlegend=False,
+                       hovermode='closest',
+                       margin=dict(b=20,l=5,r=5,t=40),
+                       plot_bgcolor='#F9FAFB',
+                       paper_bgcolor='#F9FAFB',
+                       xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                       yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+                   ))
+    
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Findings
+    for finding in findings:
+        agent = agents[finding['agent']]
+        severity_color = "#FEE2E2" if finding['severity'] == 'high' else "#FEF3C7"
+        
+        st.markdown(f"""
+        <div class="finding-card">
+            <div style="display: flex; gap: 1rem;">
+                <div style="background-color: {severity_color}; padding: 0.5rem; border-radius: 0.5rem;">
+                    {agent['icon']}
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <h3 style="font-weight: 600; margin: 0;">{finding['title']}</h3>
+                        <span style="color: #6B7280; font-size: 0.875rem;">{finding['timestamp']}</span>
+                    </div>
+                    <p style="color: #4B5563; margin-bottom: 1rem;">{finding['description']}</p>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        {' '.join([f'<button style="background-color: #F3F4F6; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem;">{doc}</button>' for doc in finding['related_docs']])}
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button style="background-color: #EBF5FF; color: #1D4ED8; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;">
+                            Investigate Further
+                        </button>
+                        <button style="background-color: #F3F4F6; color: #374151; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;">
+                            Mark as Reviewed
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Add auto-refresh functionality
+if st.button('Start Auto-refresh'):
+    time.sleep(2)  # Simulate refresh delay
+    st.experimental_rerun()

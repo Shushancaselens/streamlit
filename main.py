@@ -388,7 +388,7 @@ with col1:
         </div>
         """
     ), unsafe_allow_html=True)
-1:55
+
 # Media Check
 with col2:
     st.markdown(render_card(

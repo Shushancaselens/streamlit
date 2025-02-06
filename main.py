@@ -1,5 +1,4 @@
 import streamlit as st
-import math
 
 # Set page config
 st.set_page_config(
@@ -8,33 +7,37 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS to match React version precisely
+# Custom CSS to exactly match React version
 st.markdown("""
     <style>
     /* Global Resets */
-    div[data-testid="stAppViewContainer"],
-    div[data-testid="stHeader"] {
+    div[data-testid="stAppViewContainer"] {
         background: #f8fafc;
+        padding: 0;
+    }
+    div[data-testid="stHeader"] {
+        display: none;
     }
     section[data-testid="stSidebar"] {
         display: none;
     }
     
-    /* Layout */
-    .main-container {
+    /* Main Layout */
+    .app-container {
         display: flex;
         height: 100vh;
-        max-width: 100%;
+        background: #f8fafc;
         overflow: hidden;
     }
     
     /* Left Sidebar */
-    .sidebar {
+    .left-sidebar {
         width: 320px;
         background: white;
         border-right: 1px solid #e5e7eb;
         padding: 1rem;
         overflow-y: auto;
+        flex-shrink: 0;
     }
     
     /* Logo */
@@ -42,35 +45,34 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.5rem 0 1.5rem 0;
+        margin-bottom: 1.5rem;
     }
     .logo-icon {
         width: 2rem;
         height: 2rem;
         background: #2563eb;
-        border-radius: 0.375rem;
+        border-radius: 0.25rem;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 600;
+        font-weight: bold;
     }
     
     /* Agent Cards */
-    .agent-button {
+    .agent-card {
         width: 100%;
         padding: 0.75rem;
-        background: white;
         border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
         margin-bottom: 0.5rem;
-        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+        transition: all 0.2s;
     }
-    .agent-button:hover {
+    .agent-card:hover {
         background: #f8fafc;
-        transform: translateX(2px);
     }
-    .agent-button.selected {
+    .agent-card.selected {
         background: #eff6ff;
         border-color: #bfdbfe;
     }
@@ -79,56 +81,60 @@ st.markdown("""
     .agent-icon {
         padding: 0.5rem;
         border-radius: 0.375rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
     }
-    .agent-icon.analysis { background: #dbeafe; color: #1d4ed8; }
-    .agent-icon.expert { background: #f3e8ff; color: #7e22ce; }
-    .agent-icon.alert { background: #fee2e2; color: #dc2626; }
-    .agent-icon.synthesis { background: #dcfce7; color: #15803d; }
+    .agent-icon.analysis { background: #dbeafe; }
+    .agent-icon.expert { background: #f3e8ff; }
+    .agent-icon.alert { background: #fee2e2; }
+    .agent-icon.synthesis { background: #dcfce7; }
     
     /* Main Content */
     .main-content {
         flex: 1;
-        padding: 1.5rem;
         overflow-y: auto;
+        padding: 1.5rem;
+    }
+    .content-container {
         max-width: 1200px;
         margin: 0 auto;
     }
     
-    /* Cards */
-    .card {
+    /* Status Cards */
+    .status-section {
         background: white;
         border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
         padding: 1.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
     
-    /* Network Visualization */
+    /* Network Graph */
     .network-container {
-        position: relative;
-        height: 300px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .network-graph {
+        height: 16rem;
         background: #f8fafc;
         border-radius: 0.5rem;
+        position: relative;
         overflow: hidden;
     }
     .network-node {
         position: absolute;
-        padding: 0.75rem;
         background: white;
-        border: 1px solid #e5e7eb;
+        padding: 0.75rem;
         border-radius: 0.375rem;
+        border: 1px solid #e5e7eb;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     
-    /* Findings */
+    /* Findings Cards */
     .finding-card {
         background: white;
         border: 1px solid #e5e7eb;
@@ -137,38 +143,50 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     .tag {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
         background: #f1f5f9;
+        padding: 0.25rem 0.75rem;
         border-radius: 9999px;
         font-size: 0.875rem;
-        margin-right: 0.5rem;
         color: #475569;
+        margin-right: 0.5rem;
     }
-    .button {
+    .action-btn {
         padding: 0.5rem 1rem;
         border-radius: 0.375rem;
         font-size: 0.875rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.15s;
     }
-    .button.primary {
+    .action-btn.primary {
         background: #eff6ff;
         color: #1d4ed8;
     }
-    .button.primary:hover {
-        background: #dbeafe;
-    }
-    .button.secondary {
+    .action-btn.secondary {
         background: #f1f5f9;
         color: #475569;
     }
-    .button.secondary:hover {
-        background: #e2e8f0;
-    }
     
-    /* Progress Indicators */
+    /* Right Sidebar - Exact match to React version */
+    .right-sidebar {
+        width: 320px;
+        background: white;
+        border-left: 1px solid #e5e7eb;
+        padding: 1rem;
+        flex-shrink: 0;
+    }
+    .context-btn {
+        width: 100%;
+        text-align: left;
+        padding: 0.5rem;
+        background: #f8fafc;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        color: #475569;
+    }
+    .progress-item {
+        margin-bottom: 0.75rem;
+    }
     .progress-bar {
         height: 0.5rem;
         background: #e5e7eb;
@@ -177,88 +195,43 @@ st.markdown("""
     }
     .progress-fill {
         height: 100%;
-        background: #2563eb;
-        transition: width 0.3s ease;
+        transition: width 0.3s;
     }
+    .blue-fill { background: #2563eb; }
+    .red-fill { background: #dc2626; }
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'selected_agent' not in st.session_state:
-    st.session_state.selected_agent = None
-
-# Define agents with more detailed metadata
-agents = {
-    'timeline': {
-        'name': 'Event Timeline',
-        'icon': '🕒',
-        'status': 'Found 3 critical gaps in communication',
-        'type': 'analysis',
-        'findings': 12,
-        'progress': 85
-    },
-    'document': {
-        'name': 'Document Analysis',
-        'icon': '📄',
-        'status': 'Processing document content',
-        'type': 'analysis',
-        'findings': 15,
-        'progress': 92
-    },
-    'legal': {
-        'name': 'Legal Compliance',
-        'icon': '⚖️',
-        'status': 'Reviewing regulatory adherence',
-        'type': 'expert',
-        'findings': 12,
-        'progress': 78
-    },
-    'citation': {
-        'name': 'Citation Check',
-        'icon': '🔍',
-        'status': 'Verifying reference accuracy',
-        'type': 'analysis',
-        'findings': 6,
-        'progress': 88
-    },
-    'statement': {
-        'name': 'Statement Review',
-        'icon': '💬',
-        'status': 'Analyzing key statements',
-        'type': 'expert',
-        'findings': 9,
-        'progress': 75
-    }
-}
-
-# Network nodes (for visualization)
-network_nodes = [
-    {'id': 'timeline', 'x': 20, 'y': 50},
-    {'id': 'document', 'x': 40, 'y': 30},
-    {'id': 'legal', 'x': 60, 'y': 50},
-    {'id': 'citation', 'x': 80, 'y': 70}
-]
-
-# Main container
+# App Layout
 st.markdown("""
-    <div class="main-container">
-        <div class="sidebar">
-            <!-- Logo -->
-            <div class="logo">
-                <div class="logo-icon">C</div>
-                <span style="font-size: 1.25rem; font-weight: 600;">caselens</span>
-            </div>
-            
-            <!-- Agent Heading -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 600;">Active Agents</h2>
-            </div>
+<div class="app-container">
+    <!-- Left Sidebar -->
+    <div class="left-sidebar">
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <span style="font-size: 1.25rem; font-weight: bold;">caselens</span>
+        </div>
+        
+        <!-- Agents Header -->
+        <h2 style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">
+            <span style="display: inline-flex;">🧠</span> Active Agents
+        </h2>
 """, unsafe_allow_html=True)
 
-# Render agents
-for agent_id, agent in agents.items():
+# Agents Data
+agents = {
+    'timeline': {'name': 'Event Timeline', 'icon': '⏱️', 'type': 'analysis', 'status': 'Found 3 critical gaps', 'findings': 12},
+    'document': {'name': 'Document Analysis', 'icon': '📄', 'type': 'analysis', 'status': 'Processing content', 'findings': 15},
+    'legal': {'name': 'Legal Compliance', 'icon': '⚖️', 'type': 'expert', 'status': 'Reviewing compliance', 'findings': 7},
+    'citation': {'name': 'Citation Check', 'icon': '🔍', 'type': 'analysis', 'status': 'Verifying accuracy', 'findings': 6},
+    'statement': {'name': 'Statement Review', 'icon': '💬', 'type': 'expert', 'status': 'Analyzing statements', 'findings': 9}
+}
+
+# Render Agents
+for id, agent in agents.items():
     st.markdown(f"""
-        <div class="agent-button {'selected' if st.session_state.selected_agent == agent_id else ''}">
+        <div class="agent-card">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <div class="agent-icon {agent['type']}">
                     {agent['icon']}
@@ -266,9 +239,6 @@ for agent_id, agent in agents.items():
                 <div style="flex: 1">
                     <div style="font-weight: 500;">{agent['name']}</div>
                     <div style="font-size: 0.75rem; color: #6b7280;">{agent['status']}</div>
-                    <div class="progress-bar" style="margin-top: 0.5rem;">
-                        <div class="progress-fill" style="width: {agent['progress']}%;"></div>
-                    </div>
                 </div>
                 <div style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem;">
                     {agent['findings']}
@@ -277,82 +247,65 @@ for agent_id, agent in agents.items():
         </div>
     """, unsafe_allow_html=True)
 
-# Close sidebar and start main content
+# Main Content Start
 st.markdown("""
-        </div>
-        <div class="main-content">
-""", unsafe_allow_html=True)
-
-# Status Section
-st.markdown("""
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem;">Active Investigation</h2>
-                <p style="color: #6b7280;">100,532 documents under analysis</p>
-            </div>
-            <div style="display: flex; gap: 2rem;">
-                <div>
-                    <div style="font-weight: 500;">Processing Speed</div>
-                    <div style="color: #10b981; font-size: 1.125rem;">2,145 docs/min</div>
-                </div>
-                <div>
-                    <div style="font-weight: 500;">Critical Findings</div>
-                    <div style="color: #ef4444; font-size: 1.125rem;">23 found</div>
-                </div>
-            </div>
-        </div>
     </div>
-""", unsafe_allow_html=True)
-
-# Network Visualization
-st.markdown("""
-    <div class="card">
-        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
-        <div class="network-container">
-""", unsafe_allow_html=True)
-
-# Render network nodes
-for node in network_nodes:
-    st.markdown(f"""
-        <div class="network-node" style="left: {node['x']}%; top: {node['y']}%;">
-            <div class="agent-icon {agents[node['id']]['type']}" style="width: 1.5rem; height: 1.5rem; padding: 0.25rem;">
-                {agents[node['id']]['icon']}
+    <div class="main-content">
+        <div class="content-container">
+            <!-- Status Section -->
+            <div class="status-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-size: 1.25rem; font-weight: 600;">Active Investigation</h2>
+                        <p style="color: #6b7280;">100,532 documents under analysis</p>
+                    </div>
+                    <div style="display: flex; gap: 2rem;">
+                        <div>
+                            <div style="font-weight: 500;">Processing Speed</div>
+                            <div style="color: #10b981;">2,145 docs/min</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 500;">Critical Findings</div>
+                            <div style="color: #dc2626;">23 found</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <span style="font-size: 0.875rem; font-weight: 500;">{agents[node['id']]['name']}</span>
-        </div>
-    """, unsafe_allow_html=True)
 
-st.markdown("""
-        </div>
-    </div>
+            <!-- Network Graph -->
+            <div class="network-container">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
+                <div class="network-graph">
+                    <!-- Network nodes and connections would be rendered here -->
+                </div>
+            </div>
+
+            <!-- Findings Section -->
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Latest Findings</h3>
 """, unsafe_allow_html=True)
 
-# Findings Section
+# Findings Data
 findings = [
     {
         'title': 'Contract Term Inconsistency',
         'description': 'Different IP ownership terms found in email (March 15) vs Contract v2.1',
         'docs': ['email-5123', 'contract-v2.1'],
-        'severity': 'high',
         'time': '2 min ago'
     },
     {
         'title': 'Communication Gap',
         'description': 'No communications found during critical negotiation period (April 2-15)',
         'docs': ['timeline-gap-1'],
-        'severity': 'medium',
         'time': '5 min ago'
     }
 ]
 
-st.markdown("<h3 style='font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem;'>Latest Findings</h3>", unsafe_allow_html=True)
-
+# Render Findings
 for finding in findings:
     st.markdown(f"""
         <div class="finding-card">
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-                <div style="font-weight: 600; font-size: 1.125rem;">{finding['title']}</div>
+                <h4 style="font-weight: 600;">{finding['title']}</h4>
                 <span style="color: #6b7280; font-size: 0.875rem;">{finding['time']}</span>
             </div>
             <p style="color: #4b5563; margin-bottom: 1rem;">{finding['description']}</p>
@@ -360,14 +313,56 @@ for finding in findings:
                 {''.join([f'<span class="tag">{doc}</span>' for doc in finding['docs']])}
             </div>
             <div style="display: flex; gap: 0.75rem;">
-                <button class="button primary">Investigate Further</button>
-                <button class="button secondary">Mark as Reviewed</button>
+                <button class="action-btn primary">Investigate Further</button>
+                <button class="action-btn secondary">Mark as Reviewed</button>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-# Close main content and container
+# Main Content End
 st.markdown("""
         </div>
     </div>
+    
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+        <h3 style="font-weight: 600; margin-bottom: 1rem;">Investigation Context</h3>
+        
+        <!-- Context Buttons -->
+        <div style="margin-bottom: 1.5rem;">
+            <button class="context-btn">Focus on IP Ownership Discussion</button>
+            <button class="context-btn">Review Contract Versions</button>
+            <button class="context-btn">Analyze Communication Gaps</button>
+        </div>
+        
+        <!-- Progress Section -->
+        <h4 style="font-weight: 500; margin-bottom: 0.75rem;">Analysis Progress</h4>
+        <div class="progress-item">
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
+                <span>Documents Processed</span>
+                <span>45%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill blue-fill" style="width: 45%;"></div>
+            </div>
+        </div>
+        <div class="progress-item">
+            <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
+                <span>Critical Issues Found</span>
+                <span>23</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill red-fill" style="width: 15%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Hide Streamlit elements
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
 """, unsafe_allow_html=True)

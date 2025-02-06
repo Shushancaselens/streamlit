@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-import networkx as nx
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import time
@@ -190,17 +188,14 @@ with col2:
         <h3 style="font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
     """, unsafe_allow_html=True)
 
-    # Create network graph using Plotly
-    G = nx.Graph()
-    node_positions = {
-        "Timeline": (2, 5),
-        "Document": (4, 3),
-        "Legal": (6, 5),
-        "Citation": (8, 7)
+    # Network visualization using Plotly (without networkx)
+    # Define node positions manually
+    nodes = {
+        "Timeline": {"x": 2, "y": 5},
+        "Document": {"x": 4, "y": 3},
+        "Legal": {"x": 6, "y": 5},
+        "Citation": {"x": 8, "y": 7}
     }
-    
-    for node, pos in node_positions.items():
-        G.add_node(node, pos=pos)
     
     edges = [
         ("Timeline", "Document"),
@@ -209,25 +204,30 @@ with col2:
         ("Timeline", "Legal"),
         ("Document", "Citation")
     ]
-    G.add_edges_from(edges)
-    
-    pos = nx.get_node_attributes(G, 'pos')
-    
+
+    # Create edge traces
+    edge_x = []
+    edge_y = []
+    for edge in edges:
+        x0, y0 = nodes[edge[0]]["x"], nodes[edge[0]]["y"]
+        x1, y1 = nodes[edge[1]]["x"], nodes[edge[1]]["y"]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
+
     edge_trace = go.Scatter(
-        x=[], y=[],
+        x=edge_x, y=edge_y,
         line=dict(width=1, color='#93C5FD'),
         hoverinfo='none',
         mode='lines')
 
-    for edge in G.edges():
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
-        edge_trace['x'] += tuple([x0, x1, None])
-        edge_trace['y'] += tuple([y0, y1, None])
+    # Create node trace
+    node_x = [pos["x"] for pos in nodes.values()]
+    node_y = [pos["y"] for pos in nodes.values()]
+    node_text = list(nodes.keys())
 
     node_trace = go.Scatter(
-        x=[], y=[],
-        text=[],
+        x=node_x, y=node_y,
+        text=node_text,
         mode='markers+text',
         textposition="bottom center",
         hoverinfo='text',
@@ -237,12 +237,7 @@ with col2:
             line=dict(color='#93C5FD', width=2)
         ))
 
-    for node in G.nodes():
-        x, y = pos[node]
-        node_trace['x'] += tuple([x])
-        node_trace['y'] += tuple([y])
-        node_trace['text'] += tuple([node])
-
+    # Create the figure
     fig = go.Figure(data=[edge_trace, node_trace],
                    layout=go.Layout(
                        showlegend=False,

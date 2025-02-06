@@ -1,7 +1,5 @@
 import streamlit as st
-import pandas as pd
 from datetime import datetime
-import plotly.graph_objects as go
 
 # Set page config
 st.set_page_config(page_title="Document Review System", layout="wide")
@@ -37,6 +35,17 @@ st.markdown("""
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+    .network-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+    }
+    .connection-status {
+        height: 8px;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -50,31 +59,36 @@ agents = {
         'name': 'Event Timeline',
         'status': 'Analyzing event sequences',
         'type': 'analysis',
-        'findings': 8
+        'findings': 8,
+        'connection_strength': 0.85
     },
     'document': {
         'name': 'Document Analysis',
         'status': 'Processing document content',
         'type': 'analysis',
-        'findings': 15
+        'findings': 15,
+        'connection_strength': 0.92
     },
     'legal': {
         'name': 'Legal Compliance',
         'status': 'Reviewing regulatory adherence',
         'type': 'expert',
-        'findings': 12
+        'findings': 12,
+        'connection_strength': 0.78
     },
     'citation': {
         'name': 'Citation Check',
         'status': 'Verifying reference accuracy',
         'type': 'analysis',
-        'findings': 6
+        'findings': 6,
+        'connection_strength': 0.88
     },
     'statement': {
         'name': 'Statement Review',
         'status': 'Analyzing key statements',
         'type': 'expert',
-        'findings': 9
+        'findings': 9,
+        'connection_strength': 0.75
     }
 }
 
@@ -154,68 +168,21 @@ with col2:
         </div>
         """, unsafe_allow_html=True)
 
-    # Agent collaboration network
+    # Agent collaboration status
     st.markdown("### Agent Collaboration")
     
-    # Define nodes and edges for the network
-    nodes = {
-        'Timeline': (1, 1),
-        'Document': (2, 2),
-        'Legal': (3, 1),
-        'Citation': (4, 2)
-    }
-    
-    edges = [
-        ('Timeline', 'Document'),
-        ('Document', 'Legal'),
-        ('Legal', 'Citation'),
-        ('Timeline', 'Legal')
-    ]
-
-    # Create traces for edges
-    edge_traces = []
-    for edge in edges:
-        x0, y0 = nodes[edge[0]]
-        x1, y1 = nodes[edge[1]]
-        edge_traces.append(
-            go.Scatter(
-                x=[x0, x1],
-                y=[y0, y1],
-                mode='lines',
-                line=dict(width=1, color='#94a3b8'),
-                hoverinfo='none'
-            )
-        )
-
-    # Create trace for nodes
-    node_trace = go.Scatter(
-        x=[pos[0] for pos in nodes.values()],
-        y=[pos[1] for pos in nodes.values()],
-        mode='markers+text',
-        text=list(nodes.keys()),
-        textposition='bottom center',
-        marker=dict(
-            size=30,
-            color='#3b82f6',
-            line=dict(color='white', width=2)
-        )
-    )
-
-    # Create the figure
-    fig = go.Figure(
-        data=[*edge_traces, node_trace],
-        layout=go.Layout(
-            showlegend=False,
-            hovermode='closest',
-            margin=dict(b=0, l=0, r=0, t=0),
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            plot_bgcolor='rgba(0,0,0,0)',
-            height=400
-        )
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+    # Display connection strengths as progress bars
+    cols = st.columns(2)
+    for idx, (agent_id, agent) in enumerate(agents.items()):
+        with cols[idx % 2]:
+            st.markdown(f"""
+            <div class="network-card">
+                <div style="font-weight: 500;">{agent['name']}</div>
+                <div style="color: #6b7280; font-size: 0.875rem;">Connection Strength</div>
+                <div class="connection-status" style="background: linear-gradient(to right, #3b82f6 {agent['connection_strength']*100}%, #e5e7eb {agent['connection_strength']*100}%)"></div>
+                <div style="text-align: right; font-size: 0.875rem; color: #6b7280;">{int(agent['connection_strength']*100)}%</div>
+            </div>
+            """, unsafe_allow_html=True)
 
     # Findings
     st.markdown("### Latest Findings")

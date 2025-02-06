@@ -1,90 +1,10 @@
 import streamlit as st
+import pandas as pd
 
 # Page config
 st.set_page_config(page_title="Jessup Memorial Penalty Checker", layout="wide")
 
-# Custom CSS
-st.markdown("""
-<style>
-    /* Global styles */
-    .stApp { background-color: rgb(249, 250, 251) !important; }
-    .main-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; }
-    
-    /* Card styles */
-    .card {
-        background-color: white;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        margin-bottom: 1rem;
-    }
-    .card-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .card-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: rgb(17, 24, 39);
-    }
-    .card-subtitle {
-        font-size: 0.75rem;
-        color: rgb(107, 114, 128);
-    }
-    
-    /* Status colors */
-    .status-success { color: rgb(34, 197, 94); }
-    .status-error { color: rgb(239, 68, 68); }
-    .status-warning { color: rgb(234, 179, 8); }
-    
-    /* Table styles */
-    .styled-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .styled-table th, .styled-table td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .styled-table tr:hover { background-color: rgb(249, 250, 251); }
-    
-    /* Progress bar */
-    .progress-container {
-        width: 100%;
-        height: 6px;
-        background-color: #e5e7eb;
-        border-radius: 9999px;
-        margin: 0.25rem 0;
-    }
-    .progress-bar {
-        height: 100%;
-        border-radius: 9999px;
-        transition: width 0.3s ease;
-    }
-    
-    /* Alert styles */
-    .alert {
-        padding: 1rem;
-        border-radius: 0.375rem;
-        margin-bottom: 0.5rem;
-    }
-    .alert-success { background-color: rgb(240, 253, 244); }
-    .alert-error { background-color: rgb(254, 242, 242); }
-    .alert-warning { background-color: rgb(255, 251, 235); }
-    
-    /* Hide Streamlit elements */
-    #MainMenu { visibility: hidden; }
-    footer { visibility: hidden; }
-    .stDeployButton { display: none; }
-</style>
-""", unsafe_allow_html=True)
-
-# Sample data
+# Data
 data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -126,223 +46,125 @@ penalties = [
     {"rule": "Rule 5.13", "description": "Improper Citation", "points": 3, "r": 0, "details": "1 point per violation, max 5"}
 ]
 
-def render_card(title, rule, content):
-    return f"""
-        <div class="card">
-            <div class="card-header">
-                <span class="card-title">{title}</span>
-                <span class="card-subtitle">{rule}</span>
-            </div>
-            {content}
-        </div>
-    """
-
-def render_progress_bar(count, limit):
-    percentage = (count / limit) * 100
-    color = "rgb(239, 68, 68)" if percentage > 100 else "rgb(234, 179, 8)" if percentage > 90 else "rgb(34, 197, 94)"
-    return f"""
-        <div class="progress-container">
-            <div class="progress-bar" style="width: {min(percentage, 100)}%; background-color: {color};"></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-            <span>{count} words</span>
-            <span style="color: {color};">{percentage:.1f}%</span>
-        </div>
-        <div class="card-subtitle">Limit: {limit}</div>
-    """
+# Custom CSS
+st.markdown("""
+<style>
+    section[data-testid="stSidebar"] > div {
+        background-color: white;
+        padding: 1rem;
+    }
+    .block-container {
+        padding-top: 1rem !important;
+    }
+    .css-1y4p8pa {
+        padding-top: 0rem;
+    }
+    [data-testid="stExpander"] {
+        border: 1px solid #ddd !important;
+        border-radius: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
+    st.markdown("### Penalty Points")
     st.markdown("""
-        <div class="card">
-            <div class="card-subtitle">Penalty Points</div>
-            <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-top: 0.5rem;">
-                <span style="font-size: 1.875rem; font-weight: 700; color: #ef4444;">10</span>
-                <span class="card-subtitle">points</span>
-            </div>
+        <div style="background-color: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
+            <span style="font-size: 2rem; font-weight: bold; color: #ef4444;">10</span>
+            <span style="color: #6b7280;"> points</span>
         </div>
     """, unsafe_allow_html=True)
 
 # Main content
-st.markdown('<h1 class="main-title">Jessup Memorial Penalty Checker</h1>', unsafe_allow_html=True)
+st.title("Jessup Memorial Penalty Checker")
 
 # Score Breakdown
-st.markdown(render_card(
-    "Penalty Score Summary",
-    "",
-    f"""
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>Rule</th>
-                <th>Description</th>
-                <th style="text-align: center;">A</th>
-                <th style="text-align: center;">R</th>
-            </tr>
-        </thead>
-        <tbody>
-            {''.join(f'''
-                <tr>
-                    <td>{p["rule"]}</td>
-                    <td>
-                        <div>{p["description"]}</div>
-                        <div class="card-subtitle">{p["details"]}</div>
-                    </td>
-                    <td style="text-align: center;">{p["points"]}</td>
-                    <td style="text-align: center;">{p["r"]}</td>
-                </tr>
-            ''' for p in penalties)}
-            <tr style="font-weight: 600; background-color: rgb(249, 250, 251);">
-                <td colspan="2" style="text-align: right;">TOTAL</td>
-                <td style="text-align: center;">10</td>
-                <td style="text-align: center;">2</td>
-            </tr>
-        </tbody>
-    </table>
-    """
-), unsafe_allow_html=True)
+st.markdown("### Penalty Score Summary")
+df = pd.DataFrame(penalties)
+st.table(df[["rule", "description", "points", "r"]])
+st.markdown("**Total Points: 10**")
 
-# Two-column layout
+# Create two columns for layout
 col1, col2 = st.columns(2)
 
 # Cover Page Check
 with col1:
-    st.markdown(render_card(
-        "Cover Page Information",
-        "Rule 5.6 - 2 points",
-        ''.join(f'''
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span>{key}</span>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="{'status-success' if value['present'] else 'status-error'}">
-                        {"✓" if value['present'] else "✗"}
-                    </span>
-                    <span>{value['found']}</span>
-                </div>
-            </div>
-        ''' for key, value in data["coverPage"].items())
-    ), unsafe_allow_html=True)
+    st.markdown("### Cover Page Information")
+    st.markdown("*Rule 5.6 - 2 points*")
+    for key, value in data["coverPage"].items():
+        status = "✅" if value["present"] else "❌"
+        st.markdown(f"{status} {key}: {value['found']}")
 
 # Memorial Parts
 with col2:
-    st.markdown(render_card(
-        "Memorial Parts",
-        "Rule 5.5 - 2 points per part",
-        f"""
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-            {''.join(f'''
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="{'status-success' if present else 'status-error'}">
-                        {"✓" if present else "✗"}
-                    </span>
-                    <span>{part}</span>
-                </div>
-            ''' for part, present in data["memorialParts"].items())}
-        </div>
-        """
-    ), unsafe_allow_html=True)
+    st.markdown("### Memorial Parts")
+    st.markdown("*Rule 5.5 - 2 points per part*")
+    cols = st.columns(2)
+    items = list(data["memorialParts"].items())
+    mid = len(items) // 2
+    
+    for i, (part, present) in enumerate(items):
+        col = cols[0] if i < mid else cols[1]
+        status = "✅" if present else "❌"
+        col.markdown(f"{status} {part}")
 
 # Word Count Analysis
-st.markdown(render_card(
-    "Word Count Analysis",
-    "Rule 5.12",
-    f"""
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        {''.join(f'''
-            <div>
-                <div style="font-weight: 500; margin-bottom: 0.25rem;">{section}</div>
-                {render_progress_bar(info["count"], info["limit"])}
-            </div>
-        ''' for section, info in data["wordCounts"].items())}
-    </div>
-    """
-), unsafe_allow_html=True)
+st.markdown("### Word Count Analysis")
+st.markdown("*Rule 5.12*")
+cols = st.columns(2)
+for idx, (section, info) in enumerate(data["wordCounts"].items()):
+    col = cols[idx % 2]
+    percentage = (info["count"] / info["limit"]) * 100
+    col.markdown(f"**{section}**")
+    col.progress(min(percentage / 100, 1.0))
+    
+    if percentage > 100:
+        color = "red"
+    elif percentage > 90:
+        color = "orange"
+    else:
+        color = "green"
+        
+    col.markdown(f'<span style="color: {color}">{info["count"]} words ({percentage:.1f}%)</span>',
+                unsafe_allow_html=True)
+    col.markdown(f"Limit: {info['limit']}")
 
-# Other checks
-col1, col2 = st.columns(2)
-
+# Anonymity Check
 with col1:
-    # Anonymity
-    st.markdown(render_card(
-        "Anonymity",
-        "Rule 5.14 - up to 10 points",
-        """
-        <div class="alert alert-success">
-            <span class="status-success">✓</span> No anonymity violations found
-            <div class="card-subtitle">No disclosure of school, team members, or country</div>
-        </div>
-        """
-    ), unsafe_allow_html=True)
+    st.markdown("### Anonymity")
+    st.markdown("*Rule 5.14 - up to 10 points*")
+    st.success("✅ No anonymity violations found\n\nNo disclosure of school, team members, or country")
 
+# Tracked Changes
 with col2:
-    # Tracked Changes
-    st.markdown(render_card(
-        "Tracked Changes",
-        "Rule 5.4 - up to 5 points",
-        """
-        <div class="status-success">
-            <div>✓ No tracked changes found</div>
-            <div>✓ No comments found</div>
-        </div>
-        """
-    ), unsafe_allow_html=True)
+    st.markdown("### Tracked Changes")
+    st.markdown("*Rule 5.4 - up to 5 points*")
+    st.success("✅ No tracked changes found\n\n✅ No comments found")
 
+# Citations
 with col1:
-    # Citations
-    st.markdown(render_card(
-        "Citations",
-        "Rule 5.13 - 1 point per violation, max 5",
-        """
-        <div class="alert alert-error">
-            <span class="status-error">✗</span> Found improper citations
-            <div class="card-subtitle">5 instances of improper citation format detected</div>
-        </div>
-        """
-    ), unsafe_allow_html=True)
+    st.markdown("### Citations")
+    st.markdown("*Rule 5.13 - 1 point per violation, max 5*")
+    st.warning("❌ Found improper citations\n\n5 instances of improper citation format detected")
 
+# Media Check
 with col2:
-    # Media
-    st.markdown(render_card(
-        "Media",
-        "Rule 5.5(c) - up to 5 points",
-        ''.join(f'''
-            <div class="alert alert-warning">
-                <div>Found in {item["section"]}</div>
-                <div class="card-subtitle">{item["text"]}</div>
-            </div>
-        ''' for item in data["media"])
-    ), unsafe_allow_html=True)
+    st.markdown("### Media")
+    st.markdown("*Rule 5.5(c) - up to 5 points*")
+    for item in data["media"]:
+        st.warning(f"Found in {item['section']}\n\n{item['text']}")
 
 # Abbreviations
-st.markdown(render_card(
-    "Non-Permitted Abbreviations",
-    "Rule 5.17 - 1 point each, max 3",
-    ''.join(f'''
-        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <span class="status-error">✗</span>
-                    <span style="font-weight: 500;">{abbr}</span>
-                    <span class="card-subtitle">
-                        ({info["count"]} occurrence{"s" if info["count"] != 1 else ""})
-                    </span>
-                </div>
-            </div>
-            <div class="card-subtitle" style="margin-top: 0.5rem;">
-                Found in: {", ".join(info["sections"])}
-            </div>
-        </div>
-    ''' for abbr, info in data["abbreviations"].items())
-), unsafe_allow_html=True)
+st.markdown("### Non-Permitted Abbreviations")
+st.markdown("*Rule 5.17 - 1 point each, max 3*")
+for abbr, info in data["abbreviations"].items():
+    with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] != 1 else ''})"):
+        st.markdown(f"Found in: {', '.join(info['sections'])}")
 
 # Plagiarism
 with col1:
-    st.markdown(render_card(
-        "Plagiarism",
-        "Rule 11.2 - 1-50 points",
-        """
-        <div class="alert alert-success">
-            <span class="status-success">✓</span> No plagiarism detected
-        </div>
-        """
-    ), unsafe_allow_html=True)
+    st.markdown("### Plagiarism")
+    st.markdown("*Rule 11.2 - 1-50 points*")
+    st.success("✅ No plagiarism detected")

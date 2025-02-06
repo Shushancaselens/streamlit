@@ -7,44 +7,129 @@ st.set_page_config(page_title="Document Review System", layout="wide")
 # Custom CSS
 st.markdown("""
     <style>
+    /* Reset and base styles */
+    div[data-testid="stAppViewContainer"] {
+        background: #f8fafc;
+    }
+    
+    /* Agent Cards */
     .agent-card {
         border-left: 4px solid transparent;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
         background: white;
-        border-radius: 4px;
-        transition: all 0.2s;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .agent-card:hover {
         border-left-color: #3b82f6;
         background: #f8fafc;
+        transform: translateX(4px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     .agent-card.selected {
         border-left-color: #3b82f6;
-        background: #f1f5f9;
+        background: #eff6ff;
+        box-shadow: 0 4px 6px rgba(59,130,246,0.1);
     }
+    
+    /* Status Indicators */
     .findings-number {
-        background: #f1f5f9;
-        padding: 2px 8px;
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 4px 12px;
         border-radius: 9999px;
         font-size: 0.875rem;
+        font-weight: 500;
     }
+    
+    /* Cards */
     .stat-card {
         background: white;
-        padding: 1rem;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease-in-out;
+        border: 1px solid #e5e7eb;
     }
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
     .network-card {
         background: white;
-        padding: 1rem;
-        border-radius: 4px;
-        margin: 0.5rem 0;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 0.75rem 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        transition: transform 0.2s ease-in-out;
     }
+    .network-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Progress Bars */
     .connection-status {
         height: 8px;
+        border-radius: 9999px;
+        margin: 0.75rem 0;
+        background: #f1f5f9;
+        overflow: hidden;
+    }
+    
+    /* Findings */
+    .finding-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease-in-out;
+    }
+    .finding-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.05);
+    }
+    
+    /* Tags */
+    .doc-tag {
+        background: #f1f5f9;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease-in-out;
+    }
+    .doc-tag:hover {
+        background: #e2e8f0;
+        transform: translateY(-1px);
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        color: #0f172a;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
         border-radius: 4px;
-        margin: 0.5rem 0;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -147,8 +232,9 @@ with col2:
     with cols[0]:
         st.markdown("""
         <div class="stat-card">
-            <div style="font-weight: 500;">Documents Under Analysis</div>
-            <div style="color: #6b7280;">100,532</div>
+            <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Documents Under Analysis</div>
+            <div style="font-size: 1.5rem; font-weight: 600; color: #0f172a;">100,532</div>
+            <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">Active documents</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -190,14 +276,14 @@ with col2:
     for finding in findings:
         with st.container():
             st.markdown(f"""
-            <div style="background: white; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <div style="font-weight: 500;">{finding['title']}</div>
-                    <div style="color: #6b7280; font-size: 0.875rem;">{finding['timestamp']}</div>
+            <div class="finding-card">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                    <div style="font-weight: 600; font-size: 1.1rem; color: #0f172a;">{finding['title']}</div>
+                    <div style="color: #64748b; font-size: 0.875rem; font-weight: 500;">{finding['timestamp']}</div>
                 </div>
-                <div style="color: #4b5563; margin-bottom: 1rem;">{finding['description']}</div>
-                <div style="display: flex; gap: 0.5rem;">
-                    {' '.join([f'<span style="background: #f1f5f9; padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem;">{doc}</span>' for doc in finding['related_docs']])}
+                <div style="color: #334155; margin-bottom: 1.25rem; line-height: 1.6;">{finding['description']}</div>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    {' '.join([f'<span class="doc-tag">{doc}</span>' for doc in finding['related_docs']])}
                 </div>
             </div>
             """, unsafe_allow_html=True)

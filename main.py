@@ -7,129 +7,170 @@ st.set_page_config(page_title="Document Review System", layout="wide")
 # Custom CSS
 st.markdown("""
     <style>
-    /* Reset and base styles */
+    /* Design System Variables */
+    :root {
+        --primary: #3b82f6;
+        --primary-light: #dbeafe;
+        --primary-dark: #1e40af;
+        --surface: #ffffff;
+        --background: #f8fafc;
+        --border: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #64748b;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-full: 9999px;
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+    }
+
+    /* Base Styles */
     div[data-testid="stAppViewContainer"] {
-        background: #f8fafc;
+        background: var(--background);
     }
     
-    /* Agent Cards */
+    /* Component: Card Base */
+    .card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease-in-out;
+    }
+    
+    /* Component: Agent Card */
     .agent-card {
         border-left: 4px solid transparent;
-        padding: 1.25rem;
-        margin-bottom: 0.75rem;
-        background: white;
-        border-radius: 8px;
+        padding: var(--space-5);
+        margin-bottom: var(--space-3);
+        background: var(--surface);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-sm);
         transition: all 0.2s ease-in-out;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .agent-card:hover {
-        border-left-color: #3b82f6;
-        background: #f8fafc;
+        border-left-color: var(--primary);
         transform: translateX(4px);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-md);
     }
     .agent-card.selected {
-        border-left-color: #3b82f6;
-        background: #eff6ff;
-        box-shadow: 0 4px 6px rgba(59,130,246,0.1);
+        border-left-color: var(--primary);
+        background: var(--primary-light);
     }
     
-    /* Status Indicators */
-    .findings-number {
-        background: #dbeafe;
-        color: #1e40af;
-        padding: 4px 12px;
-        border-radius: 9999px;
+    /* Component: Badge */
+    .badge {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-full);
         font-size: 0.875rem;
         font-weight: 500;
     }
     
-    /* Cards */
+    /* Component: Status Card */
     .stat-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        transition: transform 0.2s ease-in-out;
-        border: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
     }
     .stat-card:hover {
         transform: translateY(-2px);
     }
     
+    /* Component: Network Card */
     .network-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 0.75rem 0;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        border: 1px solid #e5e7eb;
-        transition: transform 0.2s ease-in-out;
-    }
-    .network-card:hover {
-        transform: translateY(-2px);
+        margin: var(--space-3) 0;
     }
     
-    /* Progress Bars */
+    /* Component: Progress Bar */
     .connection-status {
         height: 8px;
-        border-radius: 9999px;
-        margin: 0.75rem 0;
-        background: #f1f5f9;
+        border-radius: var(--radius-full);
+        margin: var(--space-3) 0;
+        background: var(--primary-light);
         overflow: hidden;
     }
     
-    /* Findings */
+    /* Component: Finding Card */
     .finding-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        border: 1px solid #e5e7eb;
-        transition: all 0.2s ease-in-out;
+        margin-bottom: var(--space-4);
     }
     .finding-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 12px rgba(0,0,0,0.05);
+        box-shadow: var(--shadow-md);
     }
     
-    /* Tags */
+    /* Component: Document Tag */
     .doc-tag {
-        background: #f1f5f9;
-        padding: 6px 14px;
-        border-radius: 9999px;
+        display: inline-block;
+        padding: var(--space-2) var(--space-4);
+        background: var(--background);
+        color: var(--text-secondary);
+        border-radius: var(--radius-full);
         font-size: 0.875rem;
-        color: #1e293b;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border);
         transition: all 0.2s ease-in-out;
     }
     .doc-tag:hover {
-        background: #e2e8f0;
-        transform: translateY(-1px);
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        border-color: var(--primary);
     }
     
     /* Typography */
-    h1, h2, h3, h4, h5, h6 {
-        color: #0f172a;
+    .heading-lg {
+        font-size: 1.5rem;
         font-weight: 600;
-        letter-spacing: -0.025em;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+    }
+    .heading-md {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-3);
+    }
+    .text-sm {
+        font-size: 0.875rem;
+        color: var(--text-tertiary);
+    }
+    .text-lg {
+        font-size: 1.125rem;
+        color: var(--text-primary);
     }
     
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+    /* Layout Utilities */
+    .flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    ::-webkit-scrollbar-track {
-        background: #f1f5f9;
+    .flex-col {
+        display: flex;
+        flex-direction: column;
     }
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
+    .gap-2 {
+        gap: var(--space-2);
     }
-    ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+    .gap-3 {
+        gap: var(--space-3);
+    }
+    
+    /* States and Interactions */
+    .hover-lift {
+        transition: transform 0.2s ease-in-out;
+    }
+    .hover-lift:hover {
+        transform: translateY(-2px);
     }
     </style>
 """, unsafe_allow_html=True)

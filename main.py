@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import networkx as nx
 import plotly.graph_objects as go
 
 # Set page config
@@ -158,42 +157,42 @@ with col2:
     # Agent collaboration network
     st.markdown("### Agent Collaboration")
     
-    # Create network visualization using Plotly
-    G = nx.Graph()
-    pos = {
-        'Timeline': (0, 0),
-        'Document': (1, 1),
-        'Legal': (2, 0),
-        'Citation': (3, 1)
+    # Define nodes and edges for the network
+    nodes = {
+        'Timeline': (1, 1),
+        'Document': (2, 2),
+        'Legal': (3, 1),
+        'Citation': (4, 2)
     }
     
-    for node in pos:
-        G.add_node(node)
-    
-    G.add_edges_from([
+    edges = [
         ('Timeline', 'Document'),
         ('Document', 'Legal'),
         ('Legal', 'Citation'),
         ('Timeline', 'Legal')
-    ])
+    ]
 
-    edge_trace = go.Scatter(
-        x=[], y=[],
-        line=dict(width=1, color='#94a3b8'),
-        hoverinfo='none',
-        mode='lines')
+    # Create traces for edges
+    edge_traces = []
+    for edge in edges:
+        x0, y0 = nodes[edge[0]]
+        x1, y1 = nodes[edge[1]]
+        edge_traces.append(
+            go.Scatter(
+                x=[x0, x1],
+                y=[y0, y1],
+                mode='lines',
+                line=dict(width=1, color='#94a3b8'),
+                hoverinfo='none'
+            )
+        )
 
-    for edge in G.edges():
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
-        edge_trace['x'] += tuple([x0, x1, None])
-        edge_trace['y'] += tuple([y0, y1, None])
-
+    # Create trace for nodes
     node_trace = go.Scatter(
-        x=[pos[node][0] for node in G.nodes()],
-        y=[pos[node][1] for node in G.nodes()],
+        x=[pos[0] for pos in nodes.values()],
+        y=[pos[1] for pos in nodes.values()],
         mode='markers+text',
-        text=list(G.nodes()),
+        text=list(nodes.keys()),
         textposition='bottom center',
         marker=dict(
             size=30,
@@ -202,14 +201,19 @@ with col2:
         )
     )
 
-    fig = go.Figure(data=[edge_trace, node_trace],
-                   layout=go.Layout(
-                       showlegend=False,
-                       hovermode='closest',
-                       margin=dict(b=0, l=0, r=0, t=0),
-                       xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                       yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-                   ))
+    # Create the figure
+    fig = go.Figure(
+        data=[*edge_traces, node_trace],
+        layout=go.Layout(
+            showlegend=False,
+            hovermode='closest',
+            margin=dict(b=0, l=0, r=0, t=0),
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            plot_bgcolor='rgba(0,0,0,0)',
+            height=400
+        )
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 

@@ -1,189 +1,217 @@
-# jessup_streamlit.py
 import streamlit as st
-from dataclasses import dataclass
-from typing import Dict, List, Optional
-from enum import Enum
 
-# Set page config
+# Page config and custom styling
 st.set_page_config(page_title="Jessup Memorial Penalty Checker", layout="wide")
 
-# Custom styling
-st.markdown("""
-<style>
-    .stAlert {margin-top: 0;}
-    .status-card {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #e5e7eb;
-        background-color: white;
-    }
-    .main-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Data structures
-class ViolationType(Enum):
-    NONE = "none"
-    WARNING = "warning"
-    ERROR = "error"
+# Custom CSS
+def load_css():
+    st.markdown("""
+        <style>
+            .stApp { background-color: rgb(249, 250, 251) !important; }
+            .card {
+                background-color: white;
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+                margin-bottom: 1rem;
+            }
+            .card-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px solid #e5e7eb;
+                padding-bottom: 0.5rem;
+            }
+            .status-success { color: #22c55e; }
+            .status-error { color: #ef4444; }
+            .status-warning { color: #eab308; }
+            .styled-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .styled-table th, .styled-table td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            .styled-table tr:hover { background-color: #f9fafb; }
+            .word-count-bar {
+                width: 100%;
+                height: 6px;
+                background-color: #e5e7eb;
+                border-radius: 9999px;
+                margin: 0.25rem 0;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
 # Sample data
 data = {
-    "memorialType": "Applicant",
-    "coverPage": {
+    "cover_page": {
         "Team Number": {"present": True, "found": "349A"},
-        "Court Name": {"present": True, "found": "International Court of Justice"},
+        "Court Name": {"present": True, "found": "ICJ"},
         "Year": {"present": True, "found": "2025"},
-        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+        "Case Name": {"present": True, "found": "Naegea Sea Case"},
     },
-    "memorialParts": {
-        "Cover Page": True,
-        "Table of Contents": True,
-        "Index of Authorities": True,
-        "Statement of Jurisdiction": True,
-        "Statement of Facts": True,
-        "Summary of Pleadings": True,
-        "Pleadings": True,
+    "memorial_parts": {
+        "Cover Page": True, "Table of Contents": True,
+        "Statement of Facts": True, "Pleadings": True,
         "Prayer for Relief": False
     },
-    "wordCounts": {
+    "word_counts": {
         "Statement of Facts": {"count": 1196, "limit": 1200},
-        "Summary of Pleadings": {"count": 642, "limit": 700},
-        "Pleadings": {"count": 9424, "limit": 9500},
-        "Prayer for Relief": {"count": 0, "limit": 200}
+        "Pleadings": {"count": 9424, "limit": 9500}
     },
     "abbreviations": {
         "ISECR": {"count": 2, "sections": ["Pleadings"]},
-        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
-        "ICC": {"count": 1, "sections": ["Pleadings"]},
-        "LOSC": {"count": 1, "sections": ["Pleadings"]},
-        "AFRC": {"count": 1, "sections": ["Pleadings"]}
-    },
-    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
+        "ICC": {"count": 1, "sections": ["Pleadings"]}
+    }
 }
 
 penalties = [
-    {
-        "rule": "Rule 5.5",
-        "description": "Missing Prayer for Relief",
-        "points": 4,
-        "r": 2,
-        "details": "2 points per part"
-    },
-    {
-        "rule": "Rule 5.17",
-        "description": "Non-Permitted Abbreviations (5 found)",
-        "points": 3,
-        "r": 0,
-        "details": "1 point each, max 3"
-    },
-    {
-        "rule": "Rule 5.13",
-        "description": "Improper Citation",
-        "points": 3,
-        "r": 0,
-        "details": "1 point per violation, max 5"
-    }
+    {"rule": "5.5", "description": "Missing Prayer for Relief", "points": 4},
+    {"rule": "5.17", "description": "Non-Permitted Abbreviations", "points": 3},
+    {"rule": "5.13", "description": "Improper Citations", "points": 3}
 ]
 
-# Sidebar
-with st.sidebar:
-    st.markdown("""
-        <div class="status-card">
-            <div style="color: #6B7280; font-size: 0.875rem; font-weight: 600;">Penalty Points</div>
-            <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-top: 0.25rem;">
-                <span style="font-size: 1.875rem; font-weight: 700; color: #EF4444;">10</span>
-                <span style="color: #6B7280; font-size: 0.875rem;">points</span>
+def render_card(title, rule, content):
+    st.markdown(f"""
+        <div class="card">
+            <div class="card-header">
+                <span>{title}</span>
+                <span style="font-size: 0.75rem; color: #6b7280;">({rule})</span>
             </div>
+            {content}
         </div>
     """, unsafe_allow_html=True)
 
-# Main content
-st.title("Jessup Memorial Penalty Checker")
-
-# Score Breakdown
-st.markdown("### Penalty Score Summary")
-score_df = []
-for p in penalties:
-    score_df.append([p["rule"], p["description"], p["points"], p["r"]])
-st.table(score_df)
-
-# Create two columns for the layout
-col1, col2 = st.columns(2)
-
-# Cover Page Check
-with col1:
-    st.markdown("### Cover Page Information")
-    st.markdown("Rule 5.6 - 2 points")
-    for key, value in data["coverPage"].items():
-        status = "✅" if value["present"] else "❌"
-        st.markdown(f"{status} {key}: {value['found']}")
-
-# Memorial Parts
-with col2:
-    st.markdown("### Memorial Parts")
-    st.markdown("Rule 5.5 - 2 points per part")
-    cols = st.columns(2)
-    items = list(data["memorialParts"].items())
-    mid = len(items) // 2
-    
-    for i, (part, present) in enumerate(items):
-        col = cols[0] if i < mid else cols[1]
-        status = "✅" if present else "❌"
-        col.markdown(f"{status} {part}")
-
-# Word Count Analysis
-st.markdown("### Word Count Analysis")
-st.markdown("Rule 5.12")
-cols = st.columns(2)
-for idx, (section, info) in enumerate(data["wordCounts"].items()):
-    col = cols[idx % 2]
-    percentage = (info["count"] / info["limit"]) * 100
-    col.markdown(f"**{section}**")
-    col.progress(min(percentage / 100, 1.0))
+def render_word_count(section, count, limit):
+    percentage = (count / limit) * 100
     color = "red" if percentage > 100 else "orange" if percentage > 90 else "green"
-    col.markdown(f'<span style="color: {color}">{info["count"]} words ({percentage:.1f}%)</span>', 
-                unsafe_allow_html=True)
+    return f"""
+        <div>
+            <div style="font-weight: 500;">{section}</div>
+            <div class="word-count-bar">
+                <div style="width: {min(percentage, 100)}%; height: 100%; background-color: {color}; 
+                     border-radius: 9999px;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                <span>{count} words</span>
+                <span style="color: {color};">{percentage:.1f}%</span>
+            </div>
+        </div>
+    """
 
-# Anonymity Check
-with col1:
-    st.markdown("### Anonymity")
-    st.markdown("Rule 5.14 - up to 10 points")
-    st.success("No anonymity violations found")
+def render_check_item(label, is_present, value=""):
+    icon = "✅" if is_present else "❌"
+    color_class = "status-success" if is_present else "status-error"
+    return f"""
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0;">
+            <span class="{color_class}">{icon}</span>
+            <span>{label}{f': {value}' if value else ''}</span>
+        </div>
+    """
 
-# Tracked Changes
-with col2:
-    st.markdown("### Tracked Changes")
-    st.markdown("Rule 5.4 - up to 5 points")
-    st.success("✅ No tracked changes found\n\n✅ No comments found")
+def main():
+    load_css()
 
-# Citations
-with col1:
-    st.markdown("### Citations")
-    st.markdown("Rule 5.13 - 1 point per violation, max 5")
-    st.warning("Found improper citations\n\n5 instances of improper citation format detected")
+    # Sidebar
+    with st.sidebar:
+        st.markdown("""
+            <div class="card">
+                <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600;">
+                    Penalty Points
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-top: 0.5rem;">
+                    <span style="font-size: 1.875rem; font-weight: 700; color: #ef4444;">10</span>
+                    <span style="color: #6b7280; font-size: 0.875rem;">points</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
-# Media Check
-with col2:
-    st.markdown("### Media")
-    st.markdown("Rule 5.5(c) - up to 5 points")
-    for item in data["media"]:
-        st.warning(f"Found in {item['section']}\n\n{item['text']}")
+    st.title("Jessup Memorial Penalty Checker")
 
-# Abbreviations
-st.markdown("### Non-Permitted Abbreviations")
-st.markdown("Rule 5.17 - 1 point each, max 3")
-for abbr, info in data["abbreviations"].items():
-    with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] != 1 else ''})"):
-        st.markdown(f"Found in: {', '.join(info['sections'])}")
+    # Score Summary
+    summary_content = """
+        <table class="styled-table">
+            <tr>
+                <th>Rule</th>
+                <th>Description</th>
+                <th style="text-align: center;">Points</th>
+            </tr>
+    """
+    for p in penalties:
+        summary_content += f"""
+            <tr>
+                <td>{p['rule']}</td>
+                <td>{p['description']}</td>
+                <td style="text-align: center;">{p['points']}</td>
+            </tr>
+        """
+    summary_content += """
+            <tr style="font-weight: 600; background-color: #f9fafb;">
+                <td colspan="2" style="text-align: right;">TOTAL</td>
+                <td style="text-align: center;">10</td>
+            </tr>
+        </table>
+    """
+    render_card("Penalty Score Summary", "", summary_content)
 
-# Plagiarism
-with col1:
-    st.markdown("### Plagiarism")
-    st.markdown("Rule 11.2 - 1-50 points")
-    st.success("No plagiarism detected")
+    # Main content in two columns
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Cover Page
+        cover_content = "".join(
+            render_check_item(key, value["present"], value["found"])
+            for key, value in data["cover_page"].items()
+        )
+        render_card("Cover Page Information", "Rule 5.6 - 2 points", cover_content)
+
+    with col2:
+        # Memorial Parts
+        parts_content = "".join(
+            render_check_item(part, present)
+            for part, present in data["memorial_parts"].items()
+        )
+        render_card("Memorial Parts", "Rule 5.5 - 2 points per part", parts_content)
+
+    # Word Count Analysis
+    word_count_content = """
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    """
+    for section, info in data["word_counts"].items():
+        word_count_content += render_word_count(section, info["count"], info["limit"])
+    word_count_content += "</div>"
+    render_card("Word Count Analysis", "Rule 5.12", word_count_content)
+
+    # Abbreviations
+    abbr_content = "".join(f"""
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="status-error">❌</span>
+                    <span style="font-weight: 500;">{abbr}</span>
+                    <span style="font-size: 0.75rem; color: #6b7280;">
+                        ({info['count']} occurrence{'s' if info['count'] != 1 else ''})
+                    </span>
+                </div>
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                Found in: {', '.join(info['sections'])}
+            </div>
+        </div>
+    """ for abbr, info in data["abbreviations"].items())
+    render_card("Abbreviations", "Rule 5.17 - 1 point each, max 3", abbr_content)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+

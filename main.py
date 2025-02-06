@@ -1,5 +1,4 @@
 import streamlit as st
-import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import time
 
@@ -21,6 +20,7 @@ st.markdown("""
         padding: 1rem;
         border-radius: 0.5rem;
         border: 1px solid #E5E7EB;
+        margin-bottom: 1rem;
     }
     .finding-card {
         background-color: white;
@@ -44,6 +44,15 @@ st.markdown("""
     .selected {
         background-color: #EBF5FF;
         border-color: #93C5FD;
+    }
+    .network-node {
+        background-color: white;
+        border: 2px solid #93C5FD;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        text-align: center;
+        margin: 0.5rem;
+        width: 120px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -151,107 +160,43 @@ with col1:
 
 # Main content
 with col2:
-    # Status card
-    st.markdown("""
-    <div class="status-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Active Investigation</h2>
-                <p style="color: #6B7280; margin: 0;">100,532 documents under analysis</p>
-            </div>
-            <div style="display: flex; gap: 1.5rem;">
-                <div>
-                    <div style="font-weight: 500;">Processing Speed</div>
-                    <div style="color: #059669;">2,145 docs/min</div>
-                </div>
-                <div>
-                    <div style="font-weight: 500;">Critical Findings</div>
-                    <div style="color: #DC2626;">23 found</div>
-                </div>
-                <div>
-                    <div style="font-weight: 500;">Analysis Progress</div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 8rem; background-color: #E5E7EB; height: 0.5rem; border-radius: 9999px;">
-                            <div style="width: 45%; background-color: #2563EB; height: 100%; border-radius: 9999px;"></div>
-                        </div>
-                        <span>45%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Agent collaboration network
-    st.markdown("""
-    <div class="status-card" style="margin-top: 1.5rem;">
-        <h3 style="font-weight: 600; margin-bottom: 1rem;">Agent Collaboration</h3>
-    """, unsafe_allow_html=True)
-
-    # Network visualization using Plotly (without networkx)
-    # Define node positions manually
-    nodes = {
-        "Timeline": {"x": 2, "y": 5},
-        "Document": {"x": 4, "y": 3},
-        "Legal": {"x": 6, "y": 5},
-        "Citation": {"x": 8, "y": 7}
-    }
+    # Status card with metrics
+    st.markdown('<div class="status-card">', unsafe_allow_html=True)
     
-    edges = [
-        ("Timeline", "Document"),
-        ("Document", "Legal"),
-        ("Legal", "Citation"),
-        ("Timeline", "Legal"),
-        ("Document", "Citation")
-    ]
-
-    # Create edge traces
-    edge_x = []
-    edge_y = []
-    for edge in edges:
-        x0, y0 = nodes[edge[0]]["x"], nodes[edge[0]]["y"]
-        x1, y1 = nodes[edge[1]]["x"], nodes[edge[1]]["y"]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
-
-    edge_trace = go.Scatter(
-        x=edge_x, y=edge_y,
-        line=dict(width=1, color='#93C5FD'),
-        hoverinfo='none',
-        mode='lines')
-
-    # Create node trace
-    node_x = [pos["x"] for pos in nodes.values()]
-    node_y = [pos["y"] for pos in nodes.values()]
-    node_text = list(nodes.keys())
-
-    node_trace = go.Scatter(
-        x=node_x, y=node_y,
-        text=node_text,
-        mode='markers+text',
-        textposition="bottom center",
-        hoverinfo='text',
-        marker=dict(
-            size=30,
-            color='white',
-            line=dict(color='#93C5FD', width=2)
-        ))
-
-    # Create the figure
-    fig = go.Figure(data=[edge_trace, node_trace],
-                   layout=go.Layout(
-                       showlegend=False,
-                       hovermode='closest',
-                       margin=dict(b=20,l=5,r=5,t=40),
-                       plot_bgcolor='#F9FAFB',
-                       paper_bgcolor='#F9FAFB',
-                       xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                       yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-                   ))
+    # Header metrics
+    metric_col1, metric_col2, metric_col3 = st.columns(3)
     
-    st.plotly_chart(fig, use_container_width=True)
+    with metric_col1:
+        st.metric("Documents Under Analysis", "100,532", "2,145/min")
+    
+    with metric_col2:
+        st.metric("Critical Findings", "23", "-5")
+    
+    with metric_col3:
+        st.metric("Analysis Progress", "45%", "2%")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Agent collaboration view
+    st.markdown('<div class="status-card">', unsafe_allow_html=True)
+    st.subheader("Agent Collaboration")
+    
+    # Simple grid layout for nodes
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown('<div class="network-node">Timeline<br>⏰</div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="network-node">Document<br>📄</div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown('<div class="network-node">Legal<br>⚖️</div>', unsafe_allow_html=True)
+    with col4:
+        st.markdown('<div class="network-node">Citation<br>🔍</div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Findings
+    st.subheader("Recent Findings")
     for finding in findings:
         agent = agents[finding['agent']]
         severity_color = "#FEE2E2" if finding['severity'] == 'high' else "#FEF3C7"

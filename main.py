@@ -1,7 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-import plotly.graph_objects as go
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
@@ -13,24 +12,13 @@ class PenaltyData:
     penalties: List[Dict]
     totalPenalties: int
 
-def create_word_count_chart(counts: Dict, title: str):
-    sections = list(counts.keys())
-    current = [counts[s]['count'] for s in sections]
-    limits = [counts[s]['limit'] for s in sections]
-    
-    fig = go.Figure(data=[
-        go.Bar(name='Current', x=sections, y=current),
-        go.Bar(name='Limit', x=sections, y=limits, opacity=0.5)
-    ])
-    
-    fig.update_layout(
-        title=title,
-        barmode='overlay',
-        height=300,
-        margin=dict(t=30, b=30)
-    )
-    
-    return fig
+def create_word_count_chart(counts: Dict):
+    df = pd.DataFrame({
+        'Section': counts.keys(),
+        'Current': [counts[s]['count'] for s in counts.keys()],
+        'Limit': [counts[s]['limit'] for s in counts.keys()]
+    })
+    return df
 
 def custom_metric(label, value, delta=None, color="normal"):
     color_map = {
@@ -132,15 +120,14 @@ def main():
     with tab1:
         col1, col2 = st.columns(2)
         with col1:
-            st.plotly_chart(
-                create_word_count_chart(applicant_data.wordCounts, "Applicant Word Counts"),
-                use_container_width=True
-            )
+            st.subheader("Applicant Word Counts")
+            df_app = create_word_count_chart(applicant_data.wordCounts)
+            st.bar_chart(df_app.set_index('Section')[['Current', 'Limit']])
+            
         with col2:
-            st.plotly_chart(
-                create_word_count_chart(respondent_data.wordCounts, "Respondent Word Counts"),
-                use_container_width=True
-            )
+            st.subheader("Respondent Word Counts")
+            df_resp = create_word_count_chart(respondent_data.wordCounts)
+            st.bar_chart(df_resp.set_index('Section')[['Current', 'Limit']])
     
     with tab2:
         col1, col2 = st.columns(2)

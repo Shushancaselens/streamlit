@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initial data setup (same as before)
+# Initial data setup
 initial_data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -45,102 +45,84 @@ initial_data = {
     "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
 }
 
-# Custom CSS with enhanced styling
+# Custom CSS for styling
 st.markdown("""
 <style>
-    /* Main container styles */
-    .main {
-        padding: 1rem;
-        background-color: #f8f9fa;
-    }
-    
-    /* Card styling */
-    .stCard {
+    .custom-card {
         background-color: white;
+        padding: 1rem;
         border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
     }
-    
-    /* Progress bar styling */
-    .progress-container {
-        margin: 1rem 0;
-    }
-    
-    .progress-bar {
-        height: 6px;
-        background-color: #e9ecef;
-        border-radius: 3px;
-        overflow: hidden;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        transition: width 0.3s ease;
-    }
-    
-    /* Sidebar navigation styling */
+    .status-success { color: #4CAF50; }
+    .status-error { color: #EF5350; }
+    .status-warning { color: #FFA726; }
     .nav-item {
-        padding: 0.75rem 1rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
         margin-bottom: 0.5rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    
-    .nav-item:hover {
         background-color: #f8f9fa;
     }
-    
-    /* Status indicators */
-    .status-icon {
-        display: inline-flex;
-        align-items: center;
-        margin-right: 0.5rem;
-    }
-    
-    /* Header styling */
     .section-header {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #1a1a1a;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
     }
+    .small-text { font-size: 0.875rem; }
+    .very-small-text { font-size: 0.75rem; }
 </style>
 """, unsafe_allow_html=True)
 
-def create_navigation_item(icon, label, rule, points):
-    """Create a styled navigation item"""
-    return f"""
-    <div class="nav-item">
-        <div class="d-flex align-items-center">
-            {icon} {label}
-        </div>
-        <div class="text-muted small">
-            {rule} - {points}
-        </div>
+def create_card(title, content, rule=None, points=None):
+    header = title
+    if rule and points:
+        header += f' <span class="very-small-text text-muted">({rule} - {points})</span>'
+    
+    st.markdown(f"""
+    <div class="custom-card">
+        <div class="section-header">{header}</div>
+        {content}
     </div>
-    """
+    """, unsafe_allow_html=True)
+
+def create_word_count_bar(count, limit):
+    percentage = (count / limit) * 100
+    color = "#4CAF50"  # green
+    if percentage > 90:
+        color = "#FFA726"  # orange
+    if percentage > 100:
+        color = "#EF5350"  # red
+    
+    st.markdown(f"""
+    <div class="small-text">
+        <div style="display: flex; justify-content: space-between;">
+            <span>{count} words</span>
+            <span style="color: {color}">{percentage:.1f}%</span>
+        </div>
+        <div style="background-color: #f0f0f0; height: 6px; border-radius: 3px; margin: 4px 0;">
+            <div style="width: {min(percentage, 100)}%; height: 100%; background-color: {color}; border-radius: 3px;"></div>
+        </div>
+        <div class="very-small-text text-muted">Limit: {limit}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 def main():
-    # Sidebar
+    # Sidebar Navigation
     with st.sidebar:
         st.title("Jessup Penalty Checker")
         st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
         
         # Penalty Points Display
         st.markdown("""
-        <div class="stCard">
-            <div class="text-muted">Penalty Points</div>
+        <div class="custom-card">
+            <div class="small-text text-muted">Penalty Points</div>
             <div style="font-size: 2rem; color: #dc3545; font-weight: bold;">10</div>
-            <div class="text-muted small">points</div>
+            <div class="very-small-text text-muted">points</div>
         </div>
         """, unsafe_allow_html=True)
         
         # Navigation Items
-        st.markdown("### Navigation")
-        nav_items = [
+        for section in [
             ("📄", "Cover Page", "Rule 5.6", "2 points"),
             ("✓", "Memorial Parts", "Rule 5.5", "2 points per part"),
             ("📏", "Length Check", "Rule 5.12", "varies"),
@@ -150,156 +132,177 @@ def main():
             ("🖼️", "Media", "Rule 5.5(c)", "up to 5 points"),
             ("📑", "Abbreviations", "Rule 5.17", "1 point each, max 3"),
             ("🔍", "Plagiarism", "Rule 11.2", "1-50 points")
-        ]
-        
-        for icon, label, rule, points in nav_items:
-            st.markdown(create_navigation_item(icon, label, rule, points), unsafe_allow_html=True)
+        ]:
+            st.markdown(f"""
+            <div class="nav-item">
+                <div>{section[0]} {section[1]}</div>
+                <div class="very-small-text text-muted">{section[2]} - {section[3]}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
     # Main Content
     st.title("Jessup Memorial Penalty Checker")
-    
-    # Penalty Score Summary
+
+    # Score Breakdown
     with st.expander("Penalty Score Summary", expanded=True):
+        penalties = [
+            ("Rule 5.5", "Missing Prayer for Relief", 4, 2, "2 points per part"),
+            ("Rule 5.17", "Non-Permitted Abbreviations (5 found)", 3, 0, "1 point each, max 3"),
+            ("Rule 5.13", "Improper Citation", 3, 0, "1 point per violation, max 5")
+        ]
+        
         st.markdown("""
-        <div class="stCard">
-            <table class="table">
+        <div class="custom-card">
+            <table style="width: 100%;">
                 <thead>
-                    <tr>
+                    <tr style="border-bottom: 1px solid #eee;">
                         <th>Rule</th>
                         <th>Description</th>
-                        <th class="text-center">Points</th>
-                        <th class="text-center">Reviewed</th>
+                        <th style="text-align: center;">A</th>
+                        <th style="text-align: center;">R</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Rule 5.5</td>
-                        <td>Missing Prayer for Relief</td>
-                        <td class="text-center">4</td>
-                        <td class="text-center">✓</td>
-                    </tr>
-                    <tr>
-                        <td>Rule 5.17</td>
-                        <td>Non-Permitted Abbreviations (5 found)</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center">-</td>
-                    </tr>
-                    <tr>
-                        <td>Rule 5.13</td>
-                        <td>Improper Citation</td>
-                        <td class="text-center">3</td>
-                        <td class="text-center">-</td>
-                    </tr>
-                </tbody>
+        """, unsafe_allow_html=True)
+        
+        for rule, desc, points, r, details in penalties:
+            st.markdown(f"""
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="color: #666;">{rule}</td>
+                    <td>
+                        <div>{desc}</div>
+                        <div class="very-small-text text-muted">{details}</div>
+                    </td>
+                    <td style="text-align: center;">{points}</td>
+                    <td style="text-align: center;">{r}</td>
+                </tr>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
+                <tr style="background-color: #f8f9fa; font-weight: bold;">
+                    <td colspan="2" style="text-align: right; padding-right: 1rem;">TOTAL</td>
+                    <td style="text-align: center;">10</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+            </tbody>
             </table>
         </div>
         """, unsafe_allow_html=True)
 
-    # Grid Layout for Content
+    # Content Grid
     col1, col2 = st.columns(2)
 
+    # Cover Page Check
     with col1:
-        # Cover Page Check
-        with st.container():
-            st.markdown("### Cover Page Information")
-            for key, value in initial_data["coverPage"].items():
-                st.markdown(f"""
-                <div class="stCard">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>{key}</span>
-                        <span>{'✅' if value['present'] else '❌'} {value['found']}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+        content = ""
+        for key, value in initial_data["coverPage"].items():
+            icon = "✅" if value["present"] else "❌"
+            content += f"""
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span>{key}</span>
+                <span>{icon} {value["found"]}</span>
+            </div>
+            """
+        create_card("Cover Page Information", content, "Rule 5.6", "2 points")
 
+    # Memorial Parts
     with col2:
-        # Memorial Parts
-        with st.container():
-            st.markdown("### Memorial Parts")
-            for part, present in initial_data["memorialParts"].items():
-                st.markdown(f"""
-                <div class="stCard">
-                    <span>{'✅' if present else '❌'} {part}</span>
-                </div>
-                """, unsafe_allow_html=True)
+        content = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">'
+        for part, present in initial_data["memorialParts"].items():
+            icon = "✅" if present else "❌"
+            content += f'<div>{icon} {part}</div>'
+        content += '</div>'
+        create_card("Memorial Parts", content, "Rule 5.5", "2 points per part")
 
     # Word Count Analysis
-    st.markdown("### Word Count Analysis")
-    word_count_cols = st.columns(2)
-    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
-        with word_count_cols[idx % 2]:
-            percentage = (data["count"] / data["limit"]) * 100
-            st.markdown(f"""
-            <div class="stCard">
-                <div class="section-header">{section}</div>
-                <div class="progress-container">
-                    <div class="d-flex justify-content-between">
-                        <span>{data['count']} words</span>
-                        <span style="color: {'#dc3545' if percentage > 100 else '#ffc107' if percentage > 90 else '#28a745'}">
-                            {percentage:.1f}%
-                        </span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: {min(percentage, 100)}%;
-                             background-color: {'#dc3545' if percentage > 100 else '#ffc107' if percentage > 90 else '#28a745'}">
-                        </div>
-                    </div>
-                    <div class="text-muted small">Limit: {data['limit']}</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-    # Additional Sections
-    col1, col2 = st.columns(2)
+    st.markdown("""
+    <div class="custom-card">
+        <div class="section-header">
+            ⚠️ Excessive Length
+            <span class="very-small-text text-muted">(Rule 5.12)</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    """, unsafe_allow_html=True)
     
+    for section, data in initial_data["wordCounts"].items():
+        st.markdown(f"""
+        <div>
+            <div class="small-text" style="margin-bottom: 0.25rem;">{section}</div>
+        """, unsafe_allow_html=True)
+        create_word_count_bar(data["count"], data["limit"])
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+    # Additional Sections Grid
+    col1, col2 = st.columns(2)
+
     with col1:
         # Anonymity Check
-        st.markdown("""
-        <div class="stCard">
-            <div class="section-header">Anonymity Check</div>
-            <div class="status-success">✅ No anonymity violations found</div>
-            <div class="text-muted small">No disclosure of school, team members, or country</div>
-        </div>
-        """, unsafe_allow_html=True)
+        create_card("Anonymity", """
+            <div class="status-success">
+                ✅ No anonymity violations found
+                <div class="very-small-text" style="margin-top: 0.25rem;">
+                    No disclosure of school, team members, or country
+                </div>
+            </div>
+        """, "Rule 5.14", "up to 10 points")
 
         # Citations
-        st.markdown("""
-        <div class="stCard">
-            <div class="section-header">Citations</div>
-            <div class="status-warning">⚠️ 5 instances of improper citation format detected</div>
-        </div>
-        """, unsafe_allow_html=True)
+        create_card("Citations", """
+            <div class="status-warning">
+                ⚠️ 5 instances of improper citation format detected
+            </div>
+        """, "Rule 5.13", "1 point per violation, max 5")
+
+        # Media Check
+        media_content = ""
+        for item in initial_data["media"]:
+            media_content += f"""
+            <div class="status-warning" style="margin-bottom: 0.5rem;">
+                <div class="small-text">Found in {item["section"]}</div>
+                <div class="very-small-text text-muted">{item["text"]}</div>
+            </div>
+            """
+        create_card("Media", media_content, "Rule 5.5(c)", "up to 5 points")
 
     with col2:
         # Tracked Changes
-        st.markdown("""
-        <div class="stCard">
-            <div class="section-header">Tracked Changes</div>
+        create_card("Tracked Changes", """
             <div class="status-success">
-                ✅ No tracked changes found<br>
-                ✅ No comments found
+                <div style="margin-bottom: 0.5rem;">✅ No tracked changes found</div>
+                <div>✅ No comments found</div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+        """, "Rule 5.4", "up to 5 points")
 
         # Plagiarism
-        st.markdown("""
-        <div class="stCard">
-            <div class="section-header">Plagiarism Check</div>
-            <div class="status-success">✅ No plagiarism detected</div>
-        </div>
-        """, unsafe_allow_html=True)
+        create_card("Plagiarism", """
+            <div class="status-success">
+                ✅ No plagiarism detected
+            </div>
+        """, "Rule 11.2", "1-50 points")
 
     # Abbreviations
-    st.markdown("### Non-Permitted Abbreviations")
+    st.markdown("""
+    <div class="custom-card">
+        <div class="section-header">
+            ⚠️ Non-Permitted Abbreviations
+            <span class="very-small-text text-muted">(Rule 5.17 - 1 point each, max 3)</span>
+        </div>
+    """, unsafe_allow_html=True)
+    
     for abbr, info in initial_data["abbreviations"].items():
-        with st.expander(f"{abbr} ({info['count']} occurrences)"):
+        with st.expander(f"{abbr} ({info['count']} occurrence{'s' if info['count'] > 1 else ''})"):
             st.markdown(f"""
-            <div class="stCard">
-                <div class="text-danger">❌ Non-permitted abbreviation</div>
-                <div class="text-muted small">Found in: {', '.join(info['sections'])}</div>
+            <div class="status-error">
+                ❌ Non-permitted abbreviation
+                <div class="very-small-text text-muted">
+                    Found in: {', '.join(info['sections'])}
+                </div>
             </div>
             """, unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

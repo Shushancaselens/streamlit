@@ -1,105 +1,134 @@
 import streamlit as st
 import pandas as pd
+from streamlit_card import card
+import plotly.graph_objects as go
 
-st.set_page_config(layout="wide")
+# Custom CSS
+st.markdown("""
+<style>
+    .css-18e3th9 { padding-top: 0; }
+    .css-1d391kg { padding-top: 1rem; }
+    .stProgress .st-bo { background-color: #4CAF50; }
+    .warning-gauge { background-color: #ff9800; }
+    .error-gauge { background-color: #f44336; }
+    .card { 
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+""", unsafe_allow_html=True)
 
-initial_data = {
-    "memorialType": "Applicant",
-    "coverPage": {
-        "Team Number": {"present": True, "found": "349A"},
-        "Court Name": {"present": True, "found": "International Court of Justice"},
-        "Year": {"present": True, "found": "2025"},
-        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
-    },
-    "memorialParts": {
-        "Cover Page": True,
-        "Table of Contents": True,
-        "Index of Authorities": True,
-        "Statement of Jurisdiction": True,
-        "Statement of Facts": True,
-        "Summary of Pleadings": True,
-        "Pleadings": True,
-        "Prayer for Relief": False
-    },
-    "wordCounts": {
-        "Statement of Facts": {"count": 1196, "limit": 1200},
-        "Summary of Pleadings": {"count": 642, "limit": 700},
-        "Pleadings": {"count": 9424, "limit": 9500},
-        "Prayer for Relief": {"count": 0, "limit": 200}
-    },
-    "abbreviations": {
-        "ISECR": {"count": 2, "sections": ["Pleadings"]},
-        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
-        "ICC": {"count": 1, "sections": ["Pleadings"]},
-        "LOSC": {"count": 1, "sections": ["Pleadings"]},
-        "AFRC": {"count": 1, "sections": ["Pleadings"]}
-    },
-    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
-}
+def create_gauge(value, title, max_value=100):
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': title},
+        gauge={
+            'axis': {'range': [0, max_value]},
+            'bar': {'color': "#4CAF50" if value < 90 else "#ff9800" if value < 100 else "#f44336"},
+            'threshold': {
+                'line': {'color': "red", 'width': 4},
+                'thickness': 0.75,
+                'value': max_value
+            }
+        }
+    ))
+    fig.update_layout(height=150, margin=dict(l=10, r=10, t=40, b=10))
+    return fig
 
+# Data initialization (your existing initial_data here)
+
+# App layout
+st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
+
+# Sidebar
 with st.sidebar:
-    st.image("https://via.placeholder.com/100x50.png?text=Logo", width=200)
-    st.markdown(f"**Memorandum for the {initial_data['memorialType']}**")
+    st.image("https://via.placeholder.com/150x80?text=Jessup", use_column_width=True)
+    st.markdown(f"### {initial_data['memorialType']} Memorial")
     
     with st.container():
-        st.markdown("### Penalty Points")
-        col1, col2 = st.columns([1,2])
-        with col1:
-            st.markdown("### 10")
-        with col2:
-            st.markdown("points")
+        st.markdown("""
+        <div class='metric-card'>
+            <h4>Total Penalty Points</h4>
+            <h2 style='color: #f44336;'>10 points</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
+# Main content
 st.title("Jessup Memorial Penalty Checker")
 
-st.markdown("### Penalty Score Summary")
-penalties = pd.DataFrame([
-    {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
-    {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0},
-    {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0}
-])
-st.dataframe(penalties, hide_index=True)
+# Summary Tab
+tab1, tab2 = st.tabs(["Overview", "Detailed Analysis"])
 
-col1, col2 = st.columns(2)
+with tab1:
+    # Penalty Summary
+    st.subheader("Quick Summary")
+    cols = st.columns(4)
+    with cols[0]:
+        st.metric("Total Violations", "7", "Critical")
+    with cols[1]:
+        st.metric("Word Count Status", "98%", "Safe")
+    with cols[2]:
+        st.metric("Missing Parts", "1", "Prayer for Relief")
+    with cols[3]:
+        st.metric("Abbreviation Issues", "5", "3 points")
 
-with col1:
-    st.markdown("### Cover Page Information (Rule 5.6 - 2 points)")
-    for key, value in initial_data["coverPage"].items():
-        status = "✅" if value["present"] else "❌"
-        st.markdown(f"{key}: {status} {value['found']}")
+    # Word Count Gauges
+    st.subheader("Word Count Analysis")
+    gauge_cols = st.columns(4)
+    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
+        with gauge_cols[idx]:
+            percentage = (data["count"] / data["limit"]) * 100
+            st.plotly_chart(create_gauge(percentage, section), use_container_width=True)
 
-with col2:
-    st.markdown("### Memorial Parts (Rule 5.5 - 2 points per part)")
-    cols = st.columns(2)
-    for i, (part, present) in enumerate(initial_data["memorialParts"].items()):
-        with cols[i % 2]:
-            status = "✅" if present else "❌"
-            st.markdown(f"{status} {part}")
+with tab2:
+    # Detailed Analysis
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        with st.expander("Cover Page Information", expanded=True):
+            for key, value in initial_data["coverPage"].items():
+                st.markdown(f"{'✅' if value['present'] else '❌'} **{key}**: {value['found']}")
+        
+        with st.expander("Memorial Parts", expanded=True):
+            for part, present in initial_data["memorialParts"].items():
+                st.markdown(f"{'✅' if present else '❌'} {part}")
+    
+    with col2:
+        with st.expander("Abbreviations", expanded=True):
+            for abbr, info in initial_data["abbreviations"].items():
+                st.markdown(f"""
+                <div class='card'>
+                    <h4>{abbr}</h4>
+                    <p>Count: {info['count']}<br>
+                    Sections: {', '.join(info['sections'])}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-st.markdown("### Word Count Analysis (Rule 5.12)")
-word_count_cols = st.columns(2)
-for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
-    with word_count_cols[i % 2]:
-        percentage = (data["count"] / data["limit"]) * 100
-        color = "red" if percentage > 100 else "orange" if percentage > 90 else "green"
-        st.markdown(f"**{section}**")
-        st.progress(min(percentage/100, 1.0))
-        st.markdown(f"{data['count']} words ({percentage:.1f}%) - Limit: {data['limit']}")
+    # Citations and Media
+    st.subheader("Compliance Checks")
+    check_cols = st.columns(3)
+    
+    with check_cols[0]:
+        st.error("⚠️ Citations: 5 improper formats detected")
+    with check_cols[1]:
+        st.warning("📎 Media: Found in Cover Page")
+    with check_cols[2]:
+        st.success("✅ Plagiarism: No issues detected")
 
-col3, col4 = st.columns(2)
-with col3:
-    st.markdown("### Citations (Rule 5.13 - 1 point per violation, max 5)")
-    st.warning("Found improper citations: 5 instances detected")
-
-with col4:
-    st.markdown("### Media (Rule 5.5(c) - up to 5 points)")
-    for item in initial_data["media"]:
-        st.warning(f"Found in {item['section']}: {item['text']}")
-
-st.markdown("### Non-Permitted Abbreviations (Rule 5.17 - 1 point each, max 3)")
-for abbr, info in initial_data["abbreviations"].items():
-    with st.expander(f"{abbr} ({info['count']} occurrences)"):
-        st.markdown(f"Found in: {', '.join(info['sections'])}")
-
-st.markdown("### Plagiarism (Rule 11.2 - 1-50 points)")
-st.success("No plagiarism detected")
+# Add interactivity
+if st.button("Generate Report"):
+    st.download_button(
+        "Download Full Report",
+        "Report data here",
+        file_name="jessup_penalty_report.pdf"
+    )

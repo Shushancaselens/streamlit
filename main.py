@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
-import plotly.graph_objects as go
 
 # Configure the page
 st.set_page_config(
@@ -26,17 +25,14 @@ st.markdown("""
         border: 1px solid #e5e7eb;
         margin-bottom: 1rem;
     }
-    .center-text {
-        text-align: center;
+    .stProgress > div > div > div > div {
+        background-color: #10B981;
     }
-    .success-text {
-        color: #10B981;
+    .warning .stProgress > div > div > div > div {
+        background-color: #F59E0B;
     }
-    .warning-text {
-        color: #F59E0B;
-    }
-    .error-text {
-        color: #EF4444;
+    .error .stProgress > div > div > div > div {
+        background-color: #EF4444;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -97,12 +93,48 @@ st.title("Jessup Memorial Penalty Checker")
 
 # Penalty Score Summary
 st.markdown("### Penalty Score Summary")
-penalties_df = pd.DataFrame([
-    {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
-    {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0},
-    {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0}
-])
-st.dataframe(penalties_df, hide_index=True)
+penalties = [
+    {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2, "Details": "2 points per part"},
+    {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0, "Details": "1 point each, max 3"},
+    {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0, "Details": "1 point per violation, max 5"}
+]
+
+# Create a custom table for penalties
+st.markdown("""
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+    <thead>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+            <th style="text-align: left; padding: 0.5rem;">Rule</th>
+            <th style="text-align: left; padding: 0.5rem;">Description</th>
+            <th style="text-align: center; padding: 0.5rem;">A</th>
+            <th style="text-align: center; padding: 0.5rem;">R</th>
+        </tr>
+    </thead>
+    <tbody>
+""", unsafe_allow_html=True)
+
+for penalty in penalties:
+    st.markdown(f"""
+    <tr style="border-bottom: 1px solid #e5e7eb;">
+        <td style="padding: 0.5rem;">{penalty['Rule']}</td>
+        <td style="padding: 0.5rem;">
+            {penalty['Description']}<br/>
+            <span style="font-size: 0.75rem; color: #6B7280;">{penalty['Details']}</span>
+        </td>
+        <td style="text-align: center; padding: 0.5rem;">{penalty['Points']}</td>
+        <td style="text-align: center; padding: 0.5rem;">{penalty['R']}</td>
+    </tr>
+    """, unsafe_allow_html=True)
+
+st.markdown("""
+    <tr style="font-weight: bold; background-color: #f9fafb;">
+        <td colspan="2" style="text-align: right; padding: 0.5rem;">TOTAL</td>
+        <td style="text-align: center; padding: 0.5rem;">10</td>
+        <td style="text-align: center; padding: 0.5rem;">2</td>
+    </tr>
+    </tbody>
+</table>
+""", unsafe_allow_html=True)
 
 # Create two columns for the layout
 col1, col2 = st.columns(2)
@@ -129,40 +161,34 @@ with col2:
 
 # Word Count Analysis
 st.markdown("### Word Count Analysis")
-cols = st.columns(2)
-
-def create_progress_bar(count, limit):
-    percentage = (count / limit) * 100
-    color = "#EF4444" if percentage > 100 else "#F59E0B" if percentage > 90 else "#10B981"
-    
-    fig = go.Figure(go.Indicator(
-        mode = "gauge+number",
-        value = percentage,
-        number = {"suffix": "%", "font": {"size": 24}},
-        gauge = {
-            "axis": {"range": [0, 100], "tickwidth": 1},
-            "bar": {"color": color},
-            "borderwidth": 2,
-            "bordercolor": "white",
-        },
-        domain = {'x': [0, 1], 'y': [0, 1]}
-    ))
-    
-    fig.update_layout(
-        height=150,
-        margin=dict(l=10, r=10, t=20, b=20),
-        paper_bgcolor="white",
-        plot_bgcolor="white"
-    )
-    
-    return fig
+word_count_cols = st.columns(2)
 
 for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
     col_idx = i % 2
-    with cols[col_idx]:
+    with word_count_cols[col_idx]:
         st.markdown(f"**{section}**")
-        st.markdown(f"Count: {data['count']} / {data['limit']}")
-        st.plotly_chart(create_progress_bar(data['count'], data['limit']), use_container_width=True)
+        percentage = (data["count"] / data["limit"]) * 100
+        
+        # Add the appropriate CSS class based on the percentage
+        progress_class = ""
+        if percentage > 100:
+            progress_class = "error"
+        elif percentage > 90:
+            progress_class = "warning"
+            
+        st.markdown(f'<div class="{progress_class}">', unsafe_allow_html=True)
+        st.progress(min(percentage / 100, 1.0))
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown(f"""
+        <div style="display: flex; justify-content: space-between; font-size: 0.875rem;">
+            <span>{data['count']} words</span>
+            <span style="color: {'#EF4444' if percentage > 100 else '#F59E0B' if percentage > 90 else '#10B981'}">
+                {percentage:.1f}%
+            </span>
+        </div>
+        <div style="font-size: 0.75rem; color: #6B7280;">Limit: {data['limit']}</div>
+        """, unsafe_allow_html=True)
 
 # Abbreviations
 st.markdown("### Non-Permitted Abbreviations")

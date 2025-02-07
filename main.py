@@ -1,13 +1,22 @@
 import streamlit as st
 import pandas as pd
-
-# Configure page
-st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
+from streamlit_card import card
+import plotly.graph_objects as go
 
 # Custom CSS
 st.markdown("""
 <style>
-    .main { padding-top: 0; }
+    .css-18e3th9 { padding-top: 0; }
+    .css-1d391kg { padding-top: 1rem; }
+    .stProgress .st-bo { background-color: #4CAF50; }
+    .warning-gauge { background-color: #ff9800; }
+    .error-gauge { background-color: #f44336; }
+    .card { 
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
     .metric-card {
         background: white;
         border-radius: 8px;
@@ -17,79 +26,106 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Data initialization (your existing initial_data dictionary here)
+def create_gauge(value, title, max_value=100):
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': title},
+        gauge={
+            'axis': {'range': [0, max_value]},
+            'bar': {'color': "#4CAF50" if value < 90 else "#ff9800" if value < 100 else "#f44336"},
+            'threshold': {
+                'line': {'color': "red", 'width': 4},
+                'thickness': 0.75,
+                'value': max_value
+            }
+        }
+    ))
+    fig.update_layout(height=150, margin=dict(l=10, r=10, t=40, b=10))
+    return fig
+
+# Data initialization (your existing initial_data here)
+
+# App layout
+st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
 
 # Sidebar
 with st.sidebar:
     st.image("https://via.placeholder.com/150x80?text=Jessup", use_column_width=True)
     st.markdown(f"### {initial_data['memorialType']} Memorial")
-    st.markdown("""
-    <div class='metric-card'>
-        <h4>Total Penalty Points</h4>
-        <h2 style='color: #f44336;'>10 points</h2>
-    </div>
-    """, unsafe_allow_html=True)
+    
+    with st.container():
+        st.markdown("""
+        <div class='metric-card'>
+            <h4>Total Penalty Points</h4>
+            <h2 style='color: #f44336;'>10 points</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
 # Main content
 st.title("Jessup Memorial Penalty Checker")
 
-# Overview and Details tabs
+# Summary Tab
 tab1, tab2 = st.tabs(["Overview", "Detailed Analysis"])
 
 with tab1:
-    # Summary metrics
+    # Penalty Summary
+    st.subheader("Quick Summary")
     cols = st.columns(4)
-    metrics = [
-        ("Total Violations", "7", "Critical"),
-        ("Word Count Status", "98%", "Safe"),
-        ("Missing Parts", "1", "Prayer for Relief"),
-        ("Abbreviation Issues", "5", "3 points")
-    ]
-    
-    for col, (label, value, delta) in zip(cols, metrics):
-        with col:
-            st.metric(label, value, delta)
+    with cols[0]:
+        st.metric("Total Violations", "7", "Critical")
+    with cols[1]:
+        st.metric("Word Count Status", "98%", "Safe")
+    with cols[2]:
+        st.metric("Missing Parts", "1", "Prayer for Relief")
+    with cols[3]:
+        st.metric("Abbreviation Issues", "5", "3 points")
 
-    # Word count analysis
+    # Word Count Gauges
     st.subheader("Word Count Analysis")
-    for section, data in initial_data["wordCounts"].items():
-        percentage = (data["count"] / data["limit"]) * 100
-        st.markdown(f"**{section}**")
-        st.progress(min(percentage/100, 1.0))
-        st.caption(f"{data['count']} words ({percentage:.1f}%) - Limit: {data['limit']}")
+    gauge_cols = st.columns(4)
+    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
+        with gauge_cols[idx]:
+            percentage = (data["count"] / data["limit"]) * 100
+            st.plotly_chart(create_gauge(percentage, section), use_container_width=True)
 
 with tab2:
+    # Detailed Analysis
     col1, col2 = st.columns(2)
     
     with col1:
-        # Cover Page Information
-        st.subheader("Cover Page Information")
-        for key, value in initial_data["coverPage"].items():
-            st.markdown(f"{'✅' if value['present'] else '❌'} **{key}**: {value['found']}")
+        with st.expander("Cover Page Information", expanded=True):
+            for key, value in initial_data["coverPage"].items():
+                st.markdown(f"{'✅' if value['present'] else '❌'} **{key}**: {value['found']}")
         
-        # Memorial Parts
-        st.subheader("Memorial Parts")
-        for part, present in initial_data["memorialParts"].items():
-            st.markdown(f"{'✅' if present else '❌'} {part}")
+        with st.expander("Memorial Parts", expanded=True):
+            for part, present in initial_data["memorialParts"].items():
+                st.markdown(f"{'✅' if present else '❌'} {part}")
     
     with col2:
-        # Abbreviations
-        st.subheader("Abbreviations")
-        for abbr, info in initial_data["abbreviations"].items():
-            with st.expander(f"{abbr} ({info['count']} occurrences)"):
-                st.write(f"Found in: {', '.join(info['sections'])}")
+        with st.expander("Abbreviations", expanded=True):
+            for abbr, info in initial_data["abbreviations"].items():
+                st.markdown(f"""
+                <div class='card'>
+                    <h4>{abbr}</h4>
+                    <p>Count: {info['count']}<br>
+                    Sections: {', '.join(info['sections'])}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-    # Compliance Checks
+    # Citations and Media
     st.subheader("Compliance Checks")
     check_cols = st.columns(3)
+    
     with check_cols[0]:
-        st.error("Citations: 5 improper formats detected")
+        st.error("⚠️ Citations: 5 improper formats detected")
     with check_cols[1]:
-        st.warning("Media: Found in Cover Page")
+        st.warning("📎 Media: Found in Cover Page")
     with check_cols[2]:
-        st.success("Plagiarism: No issues detected")
+        st.success("✅ Plagiarism: No issues detected")
 
-# Report generation
+# Add interactivity
 if st.button("Generate Report"):
     st.download_button(
         "Download Full Report",

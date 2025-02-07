@@ -1,10 +1,45 @@
+```python
 import streamlit as st
 import pandas as pd
 
-# Configure page
+# Data initialization 
+initial_data = {
+    "memorialType": "Applicant",
+    "coverPage": {
+        "Team Number": {"present": True, "found": "349A"},
+        "Court Name": {"present": True, "found": "International Court of Justice"},
+        "Year": {"present": True, "found": "2025"},
+        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+    },
+    "memorialParts": {
+        "Cover Page": True,
+        "Table of Contents": True,
+        "Index of Authorities": True,
+        "Statement of Jurisdiction": True,
+        "Statement of Facts": True,
+        "Summary of Pleadings": True,
+        "Pleadings": True,
+        "Prayer for Relief": False
+    },
+    "wordCounts": {
+        "Statement of Facts": {"count": 1196, "limit": 1200},
+        "Summary of Pleadings": {"count": 642, "limit": 700},
+        "Pleadings": {"count": 9424, "limit": 9500},
+        "Prayer for Relief": {"count": 0, "limit": 200}
+    },
+    "abbreviations": {
+        "ISECR": {"count": 2, "sections": ["Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICC": {"count": 1, "sections": ["Pleadings"]},
+        "LOSC": {"count": 1, "sections": ["Pleadings"]},
+        "AFRC": {"count": 1, "sections": ["Pleadings"]}
+    },
+    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
+}
+
 st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
 
-# Custom CSS
 st.markdown("""
 <style>
     .main { padding-top: 0; }
@@ -17,9 +52,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Data initialization (your existing initial_data dictionary here)
-
-# Sidebar
 with st.sidebar:
     st.image("https://via.placeholder.com/150x80?text=Jessup", use_column_width=True)
     st.markdown(f"### {initial_data['memorialType']} Memorial")
@@ -30,14 +62,11 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# Main content
 st.title("Jessup Memorial Penalty Checker")
 
-# Overview and Details tabs
 tab1, tab2 = st.tabs(["Overview", "Detailed Analysis"])
 
 with tab1:
-    # Summary metrics
     cols = st.columns(4)
     metrics = [
         ("Total Violations", "7", "Critical"),
@@ -50,7 +79,6 @@ with tab1:
         with col:
             st.metric(label, value, delta)
 
-    # Word count analysis
     st.subheader("Word Count Analysis")
     for section, data in initial_data["wordCounts"].items():
         percentage = (data["count"] / data["limit"]) * 100
@@ -62,24 +90,20 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        # Cover Page Information
         st.subheader("Cover Page Information")
         for key, value in initial_data["coverPage"].items():
             st.markdown(f"{'✅' if value['present'] else '❌'} **{key}**: {value['found']}")
         
-        # Memorial Parts
         st.subheader("Memorial Parts")
         for part, present in initial_data["memorialParts"].items():
             st.markdown(f"{'✅' if present else '❌'} {part}")
     
     with col2:
-        # Abbreviations
         st.subheader("Abbreviations")
         for abbr, info in initial_data["abbreviations"].items():
             with st.expander(f"{abbr} ({info['count']} occurrences)"):
                 st.write(f"Found in: {', '.join(info['sections'])}")
 
-    # Compliance Checks
     st.subheader("Compliance Checks")
     check_cols = st.columns(3)
     with check_cols[0]:
@@ -89,10 +113,10 @@ with tab2:
     with check_cols[2]:
         st.success("Plagiarism: No issues detected")
 
-# Report generation
 if st.button("Generate Report"):
     st.download_button(
         "Download Full Report",
         "Report data here",
         file_name="jessup_penalty_report.pdf"
     )
+```

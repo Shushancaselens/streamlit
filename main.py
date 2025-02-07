@@ -1,8 +1,11 @@
+```python
 import streamlit as st
 import pandas as pd
 
-# Data structures [same as before]
-applicant_data = {
+st.set_page_config(layout="wide")
+
+# Shared data structure
+initial_data = {
     "memorialType": "Applicant",
     "coverPage": {
         "Team Number": {"present": True, "found": "349A"},
@@ -11,98 +14,105 @@ applicant_data = {
         "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
         "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
     },
+    "memorialParts": {
+        "Cover Page": True,
+        "Table of Contents": True,
+        "Index of Authorities": True,
+        "Statement of Jurisdiction": True,
+        "Statement of Facts": True,
+        "Summary of Pleadings": True,
+        "Pleadings": True,
+        "Prayer for Relief": False
+    },
     "wordCounts": {
         "Statement of Facts": {"count": 1196, "limit": 1200},
         "Summary of Pleadings": {"count": 642, "limit": 700},
         "Pleadings": {"count": 9424, "limit": 9500},
-        "Prayer for Relief": {"count": 198, "limit": 200}
+        "Prayer for Relief": {"count": 0, "limit": 200}
     },
-    "penalties": [
-        {"rule": "Rule 5.17", "description": "Non-Permitted Abbreviations", "points": 3, "details": "1 point each"},
-        {"rule": "Rule 5.13", "description": "Improper Citation", "points": 2, "details": "2 instances"}
-    ],
-    "totalPenalties": 5
+    "abbreviations": {
+        "ISECR": {"count": 2, "sections": ["Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICC": {"count": 1, "sections": ["Pleadings"]},
+        "LOSC": {"count": 1, "sections": ["Pleadings"]},
+        "AFRC": {"count": 1, "sections": ["Pleadings"]}
+    },
+    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
 }
 
-respondent_data = {
-    "memorialType": "Respondent",
-    "coverPage": {
-        "Team Number": {"present": True, "found": "349B"},
-        "Court Name": {"present": True, "found": "International Court of Justice"},
-        "Year": {"present": True, "found": "2025"},
-        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-        "Memorial Type": {"present": True, "found": "Memorial for the Respondent"}
-    },
-    "wordCounts": {
-        "Statement of Facts": {"count": 1180, "limit": 1200},
-        "Summary of Pleadings": {"count": 695, "limit": 700},
-        "Pleadings": {"count": 9490, "limit": 9500},
-        "Prayer for Relief": {"count": 195, "limit": 200}
-    },
-    "penalties": [
-        {"rule": "Rule 5.17", "description": "Non-Permitted Abbreviations", "points": 2, "details": "2 instances"},
-        {"rule": "Rule 5.14", "description": "Anonymity Violation", "points": 5, "details": "School name mentioned"}
-    ],
-    "totalPenalties": 7
-}
+# Sidebar
+with st.sidebar:
+    st.image("https://via.placeholder.com/100x50.png?text=Logo", width=200)
+    st.markdown(f"**Memorandum for the {initial_data['memorialType']}**")
+    
+    with st.container():
+        st.markdown("### Penalty Points")
+        col1, col2 = st.columns([1,2])
+        with col1:
+            st.markdown("### 10")
+        with col2:
+            st.markdown("points")
 
-def create_word_count_chart(word_counts):
-    df = pd.DataFrame({
-        'Section': list(word_counts.keys()),
-        'Count': [word_counts[s]["count"] for s in word_counts.keys()],
-        'Limit': [word_counts[s]["limit"] for s in word_counts.keys()]
-    })
-    df['Percentage'] = (df['Count'] / df['Limit'] * 100).round(1)
-    return df
+# Main content
+st.title("Jessup Memorial Penalty Checker")
 
-def display_memorial_section(data):
-    st.subheader(f"{data['memorialType']} Memorial")
-    st.metric("Total Penalties", f"{data['totalPenalties']} points")
-    
-    with st.expander("Cover Page Information", expanded=True):
-        for key, value in data["coverPage"].items():
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                st.write(key)
-            with col2:
-                if value["present"]:
-                    st.success(value["found"])
-                else:
-                    st.error("Missing")
-    
-    with st.expander("Penalties", expanded=True):
-        for penalty in data["penalties"]:
-            st.warning(
-                f"{penalty['description']} ({penalty['rule']})\n\n"
-                f"**Points:** {penalty['points']}\n\n"
-                f"*{penalty['details']}*"
-            )
-    
-    with st.expander("Word Counts", expanded=True):
-        df = create_word_count_chart(data["wordCounts"])
-        for _, row in df.iterrows():
-            st.write(f"**{row['Section']}**")
-            progress = row['Percentage'] / 100
-            color = 'green' if progress <= 0.9 else 'orange' if progress <= 1 else 'red'
-            st.progress(min(progress, 1.0), text=f"{row['Count']}/{row['Limit']} ({row['Percentage']}%)")
+# Score Summary
+st.markdown("### Penalty Score Summary")
+penalties = pd.DataFrame([
+    {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
+    {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0},
+    {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0}
+])
+st.dataframe(penalties, hide_index=True)
 
-def main():
-    st.set_page_config(layout="wide", page_title="Jessup Memorial Penalty Checker")
-    
-    st.title("Jessup Memorial Penalty Checker")
-    
-    if applicant_data["totalPenalties"] > respondent_data["totalPenalties"]:
-        st.warning(f"Applicant memorial has higher penalties ({applicant_data['totalPenalties']} points vs {respondent_data['totalPenalties']} points)")
-    elif respondent_data["totalPenalties"] > applicant_data["totalPenalties"]:
-        st.warning(f"Respondent memorial has higher penalties ({respondent_data['totalPenalties']} points vs {applicant_data['totalPenalties']} points)")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        display_memorial_section(applicant_data)
-    
-    with col2:
-        display_memorial_section(respondent_data)
+# Grid layout
+col1, col2 = st.columns(2)
 
-if __name__ == "__main__":
-    main()
+# Cover Page Check
+with col1:
+    st.markdown("### Cover Page Information (Rule 5.6 - 2 points)")
+    for key, value in initial_data["coverPage"].items():
+        status = "✅" if value["present"] else "❌"
+        st.markdown(f"{key}: {status} {value['found']}")
+
+# Memorial Parts
+with col2:
+    st.markdown("### Memorial Parts (Rule 5.5 - 2 points per part)")
+    cols = st.columns(2)
+    for i, (part, present) in enumerate(initial_data["memorialParts"].items()):
+        with cols[i % 2]:
+            status = "✅" if present else "❌"
+            st.markdown(f"{status} {part}")
+
+# Word Count Analysis
+st.markdown("### Word Count Analysis (Rule 5.12)")
+word_count_cols = st.columns(2)
+for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
+    with word_count_cols[i % 2]:
+        percentage = (data["count"] / data["limit"]) * 100
+        color = "red" if percentage > 100 else "orange" if percentage > 90 else "green"
+        st.markdown(f"**{section}**")
+        st.progress(min(percentage/100, 1.0))
+        st.markdown(f"{data['count']} words ({percentage:.1f}%) - Limit: {data['limit']}")
+
+# Citations and Media
+col3, col4 = st.columns(2)
+with col3:
+    st.markdown("### Citations (Rule 5.13 - 1 point per violation, max 5)")
+    st.warning("Found improper citations: 5 instances detected")
+
+with col4:
+    st.markdown("### Media (Rule 5.5(c) - up to 5 points)")
+    for item in initial_data["media"]:
+        st.warning(f"Found in {item['section']}: {item['text']}")
+
+# Abbreviations
+st.markdown("### Non-Permitted Abbreviations (Rule 5.17 - 1 point each, max 3)")
+for abbr, info in initial_data["abbreviations"].items():
+    with st.expander(f"{abbr} ({info['count']} occurrences)"):
+        st.markdown(f"Found in: {', '.join(info['sections'])}")
+
+# Plagiarism
+st.markdown("### Plagiarism (Rule 11.2 - 1-50 points)")
+st.success("No plagiarism detected")
+```

@@ -1,6 +1,3 @@
-Let me provide just the code without any explanatory text:
-
-```python
 import streamlit as st
 import pandas as pd
 
@@ -63,4 +60,3 @@ with tab2:
 
 if st.button("Check Memorial"):
     st.success("Check completed!")
-```

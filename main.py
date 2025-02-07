@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime
 
 # Configure the page
 st.set_page_config(
@@ -12,50 +10,56 @@ st.set_page_config(
 # Custom CSS for improved styling
 st.markdown("""
     <style>
-    /* Main container */
-    .main {
-        background-color: #f8fafc;
+    /* Global styles */
+    .stApp {
+        background-color: #f9fafb;
     }
     
     /* Cards */
-    div[data-testid="stVerticalBlock"] > div {
+    .card {
         background-color: white;
-        padding: 1rem;
         border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        padding: 1.5rem;
         margin-bottom: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: white;
+        border-right: 1px solid #e5e7eb;
     }
     
     /* Headers */
-    h1, h2, h3 {
-        color: #1e293b;
+    .header {
+        font-size: 1.25rem;
         font-weight: 600;
+        color: #111827;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
-    /* Status badges */
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-    .status-success { 
-        background-color: #dcfce7;
-        color: #166534;
-    }
-    .status-error { 
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    .status-warning {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
+    /* Status indicators */
+    .success { color: #10B981; }
+    .error { color: #EF4444; }
+    .warning { color: #F59E0B; }
     
     /* Progress bars */
     .stProgress > div > div > div > div {
-        height: 0.5rem !important;
+        height: 0.375rem !important;
         border-radius: 9999px !important;
+    }
+    .progress-success .stProgress > div > div > div > div {
+        background-color: #10B981 !important;
+    }
+    .progress-warning .stProgress > div > div > div > div {
+        background-color: #F59E0B !important;
+    }
+    .progress-error .stProgress > div > div > div > div {
+        background-color: #EF4444 !important;
     }
     
     /* Tables */
@@ -63,218 +67,273 @@ st.markdown("""
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
-        margin: 1rem 0;
     }
     .styled-table th {
-        background-color: #f8fafc;
-        padding: 0.75rem;
         text-align: left;
-        font-weight: 600;
-        color: #475569;
-        border-bottom: 2px solid #e2e8f0;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        color: #6B7280;
+        font-weight: 500;
     }
     .styled-table td {
         padding: 0.75rem;
-        border-bottom: 1px solid #e2e8f0;
-        color: #1e293b;
+        border-bottom: 1px solid #e5e7eb;
     }
     .styled-table tr:hover {
-        background-color: #f8fafc;
+        background-color: #f9fafb;
     }
     
-    /* Sidebar improvements */
-    section[data-testid="stSidebar"] > div {
-        background-color: #1e293b;
-        padding: 2rem 1rem;
-    }
-    section[data-testid="stSidebar"] .stMarkdown {
-        color: #f8fafc;
-    }
-    
-    /* Metrics */
-    [data-testid="metric-container"] {
-        background-color: #f8fafc;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #e2e8f0;
-    }
-    
-    /* Buttons */
-    .stButton > button {
-        width: 100%;
+    /* Expandable sections */
+    .expandable {
+        border: 1px solid #e5e7eb;
         border-radius: 0.375rem;
-        padding: 0.5rem 1rem;
-        background-color: #2563eb;
-        color: white;
-        font-weight: 500;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
     }
-    .stButton > button:hover {
-        background-color: #1d4ed8;
-    }
-    
-    /* File uploader */
-    .stFileUploader {
-        padding: 1rem;
-        border: 2px dashed #e2e8f0;
-        border-radius: 0.5rem;
-        background-color: #f8fafc;
+    .expandable:hover {
+        background-color: #f9fafb;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'selected_tab' not in st.session_state:
-    st.session_state.selected_tab = 'overview'
-if 'total_penalties' not in st.session_state:
-    st.session_state.total_penalties = 10
+# Initial data (keeping exactly the same as React version)
+initial_data = {
+    "memorialType": "Applicant",
+    "coverPage": {
+        "Team Number": {"present": True, "found": "349A"},
+        "Court Name": {"present": True, "found": "International Court of Justice"},
+        "Year": {"present": True, "found": "2025"},
+        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+    },
+    "memorialParts": {
+        "Cover Page": True,
+        "Table of Contents": True,
+        "Index of Authorities": True,
+        "Statement of Jurisdiction": True,
+        "Statement of Facts": True,
+        "Summary of Pleadings": True,
+        "Pleadings": True,
+        "Prayer for Relief": False
+    },
+    "wordCounts": {
+        "Statement of Facts": {"count": 1196, "limit": 1200},
+        "Summary of Pleadings": {"count": 642, "limit": 700},
+        "Pleadings": {"count": 9424, "limit": 9500},
+        "Prayer for Relief": {"count": 0, "limit": 200}
+    },
+    "abbreviations": {
+        "ISECR": {"count": 2, "sections": ["Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICC": {"count": 1, "sections": ["Pleadings"]},
+        "LOSC": {"count": 1, "sections": ["Pleadings"]},
+        "AFRC": {"count": 1, "sections": ["Pleadings"]}
+    },
+    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
+}
+
+penalties = [
+    {"rule": "Rule 5.5", "description": "Missing Prayer for Relief", "points": 4, "r": 2, "details": "2 points per part"},
+    {"rule": "Rule 5.17", "description": "Non-Permitted Abbreviations (5 found)", "points": 3, "r": 0, "details": "1 point each, max 3"},
+    {"rule": "Rule 5.13", "description": "Improper Citation", "points": 3, "r": 0, "details": "1 point per violation, max 5"}
+]
 
 # Sidebar
 with st.sidebar:
+    # Logo
     st.markdown("""
-        <div style='text-align: center; margin-bottom: 2rem;'>
-            <h1 style='color: #f8fafc; font-size: 1.5rem; margin-bottom: 0.5rem;'>
-                Jessup Checker
-            </h1>
-            <p style='color: #cbd5e1; font-size: 0.875rem;'>
-                2025 Edition
-            </p>
+        <div style='background-color: #4D68F9; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;'>
+            <h1 style='color: white; font-size: 1.5rem;'>Jessup Checker</h1>
         </div>
     """, unsafe_allow_html=True)
     
-    # Memorial Type Selector
-    memorial_type = st.selectbox(
-        "Memorial Type",
-        ["Applicant", "Respondent"],
-        index=0,
-        key="memorial_type"
-    )
+    st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
     
-    # Total Penalties Metric
-    st.metric(
-        "Total Penalties",
-        f"{st.session_state.total_penalties} points",
-        delta="-2 from previous check",
-        delta_color="inverse"
-    )
+    # Penalty points summary
+    st.markdown("""
+        <div style='background-color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0;'>
+            <p style='color: #4B5563; font-size: 0.875rem; font-weight: 600;'>Penalty Points</p>
+            <div style='display: flex; align-items: baseline; gap: 0.25rem;'>
+                <span style='color: #DC2626; font-size: 1.5rem; font-weight: 700;'>10</span>
+                <span style='color: #6B7280; font-size: 0.875rem;'>points</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Navigation
-    st.markdown("### Navigation")
-    tabs = {
-        'overview': '📊 Overview',
-        'document': '📄 Document Check',
-        'word_count': '📏 Word Count',
-        'citations': '📚 Citations',
-        'format': '🎨 Formatting',
-        'plagiarism': '⚠️ Plagiarism'
-    }
+    # Navigation menu
+    menu_items = [
+        ("📄", "Cover Page", "Rule 5.6", "2 points"),
+        ("📋", "Memorial Parts", "Rule 5.5", "2 points per part"),
+        ("📏", "Length Check", "Rule 5.12", "varies"),
+        ("🔒", "Anonymity", "Rule 5.14", "up to 10 points"),
+        ("📝", "Tracked Changes", "Rule 5.4", "up to 5 points"),
+        ("📚", "Citations", "Rule 5.13", "up to 5 points"),
+        ("🖼️", "Media", "Rule 5.5(c)", "up to 5 points"),
+        ("📑", "Abbreviations", "Rule 5.17", "1 point each, max 3"),
+        ("⚠️", "Plagiarism", "Rule 11.2", "1-50 points")
+    ]
     
-    for key, label in tabs.items():
-        if st.button(label, key=f"btn_{key}"):
-            st.session_state.selected_tab = key
+    for icon, label, rule, points in menu_items:
+        st.button(
+            f"{icon} {label}\n{rule} - {points}",
+            key=f"nav_{label.lower().replace(' ', '_')}"
+        )
 
 # Main content
 st.title("Jessup Memorial Penalty Checker")
 
-# Overview Tab
-if st.session_state.selected_tab == 'overview':
-    # Summary metrics in a row
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Document Score", "92%", "+5%")
-    with col2:
-        st.metric("Word Count", "9,424/9,500", "76 words remaining")
-    with col3:
-        st.metric("Citation Errors", "3", "-2")
-    
-    # Penalty Breakdown
-    st.markdown("### Penalty Breakdown")
-    penalties_df = pd.DataFrame([
-        {"Rule": "5.5", "Description": "Missing Prayer for Relief", "Points": 4, "Status": "⚠️ Review Needed"},
-        {"Rule": "5.17", "Description": "Non-Permitted Abbreviations", "Points": 3, "Status": "❌ Failed"},
-        {"Rule": "5.13", "Description": "Improper Citations", "Points": 3, "Status": "✅ Passed"}
+# Penalty Score Summary
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #EF4444;'>⚠️</span> Penalty Score Summary
+    </div>
+""", unsafe_allow_html=True)
+
+# Create penalty summary table
+penalty_data = []
+total_points = 0
+total_r = 0
+
+for penalty in penalties:
+    penalty_data.append([
+        penalty["rule"],
+        f"{penalty['description']}\n{penalty['details']}",
+        penalty["points"],
+        penalty["r"]
     ])
-    st.dataframe(
-        penalties_df,
-        column_config={
-            "Rule": st.column_config.TextColumn("Rule", help="Jessup Rule Reference"),
-            "Description": "Description",
-            "Points": st.column_config.NumberColumn("Points", format="%d pts"),
-            "Status": st.column_config.TextColumn("Status", width="medium")
-        },
-        hide_index=True,
-        use_container_width=True
-    )
+    total_points += penalty["points"]
+    total_r += penalty["r"]
 
-    # Word Count Analysis
-    st.markdown("### Word Count Analysis")
-    word_counts = {
-        "Statement of Facts": {"current": 1196, "limit": 1200},
-        "Summary of Pleadings": {"current": 642, "limit": 700},
-        "Pleadings": {"current": 9424, "limit": 9500},
-        "Prayer for Relief": {"current": 0, "limit": 200}
-    }
+# Use columns to create table-like layout
+col1, col2, col3, col4 = st.columns([2, 4, 1, 1])
+col1.markdown("**Rule**")
+col2.markdown("**Description**")
+col3.markdown("**A**")
+col4.markdown("**R**")
+
+for row in penalty_data:
+    col1.text(row[0])
+    col2.markdown(row[1])
+    col3.markdown(f"**{row[2]}**")
+    col4.markdown(f"**{row[3]}**")
+
+# Total row
+st.markdown("---")
+col1, col2, col3, col4 = st.columns([2, 4, 1, 1])
+col2.markdown("**TOTAL**")
+col3.markdown(f"**{total_points}**")
+col4.markdown(f"**{total_r}**")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Create two columns for the layout
+col1, col2 = st.columns(2)
+
+# Cover Page Information
+with col1:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class='header'>
+            Cover Page Information
+            <span class='text-gray-500 text-sm'>(Rule 5.6 - 2 points)</span>
+        </div>
+    """, unsafe_allow_html=True)
     
-    for section, counts in word_counts.items():
-        percentage = (counts["current"] / counts["limit"]) * 100
-        col1, col2 = st.columns([3, 1])
-        
-        with col1:
-            st.markdown(f"**{section}**")
-            st.progress(min(percentage / 100, 1.0))
-        
-        with col2:
-            st.markdown(f"""
-                <div style='text-align: right;'>
-                    <span style='color: {"#dc2626" if percentage > 100 else "#2563eb"}; font-weight: 500;'>
-                        {counts["current"]} / {counts["limit"]}
-                    </span>
-                </div>
-            """, unsafe_allow_html=True)
-
-# Document Check Tab
-elif st.session_state.selected_tab == 'document':
-    st.markdown("### Document Analysis")
-    uploaded_file = st.file_uploader("Upload your memorial", type=['docx', 'pdf'])
+    for key, value in initial_data["coverPage"].items():
+        icon = "✅" if value["present"] else "❌"
+        st.markdown(f"{icon} {key}: {value['found']}")
     
-    if uploaded_file:
-        st.success("Document uploaded successfully!")
-        
-        # Document Info
-        st.markdown("#### Document Information")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("- **File Name**: example_memorial.docx")
-            st.markdown("- **File Size**: 2.3 MB")
-            st.markdown("- **Last Modified**: " + datetime.now().strftime("%Y-%m-%d %H:%M"))
-        with col2:
-            st.markdown("- **Document Type**: DOCX")
-            st.markdown("- **Pages**: 42")
-            st.markdown("- **Total Words**: 12,463")
-        
-        # Status Checks
-        checks = {
-            "Cover Page": True,
-            "Table of Contents": True,
-            "Index of Authorities": True,
-            "Statement of Jurisdiction": True,
-            "Statement of Facts": True,
-            "Prayer for Relief": False
-        }
-        
-        st.markdown("#### Document Structure")
-        cols = st.columns(3)
-        for i, (item, status) in enumerate(checks.items()):
-            with cols[i % 3]:
-                st.markdown(f"""
-                    <div style='padding: 0.5rem; background-color: {"#dcfce7" if status else "#fee2e2"}; 
-                         border-radius: 0.375rem; margin-bottom: 0.5rem;'>
-                        <span style='color: {"#166534" if status else "#991b1b"}'>
-                            {"✓" if status else "×"} {item}
-                        </span>
-                    </div>
-                """, unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# Add more tabs as needed
-else:
-    st.info(f"Selected tab: {st.session_state.selected_tab}")
-    st.markdown("Content for this section is under development.")
+# Memorial Parts
+with col2:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class='header'>
+            Memorial Parts
+            <span class='text-gray-500 text-sm'>(Rule 5.5 - 2 points per part)</span>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    cols = st.columns(2)
+    items = list(initial_data["memorialParts"].items())
+    mid = len(items) // 2
+    
+    for i, (part, present) in enumerate(items):
+        col_idx = 0 if i < mid else 1
+        with cols[col_idx]:
+            icon = "✅" if present else "❌"
+            st.markdown(f"{icon} {part}")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# Word Count Analysis
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #F59E0B;'>⚠️</span> Excessive Length
+        <span class='text-gray-500 text-sm'>(Rule 5.12)</span>
+    </div>
+""", unsafe_allow_html=True)
+
+word_count_cols = st.columns(2)
+for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
+    col_idx = i % 2
+    with word_count_cols[col_idx]:
+        percentage = (data["count"] / data["limit"]) * 100
+        st.markdown(f"**{section}**")
+        
+        # Choose progress bar color based on percentage
+        progress_class = "progress-success"
+        if percentage > 100:
+            progress_class = "progress-error"
+        elif percentage > 90:
+            progress_class = "progress-warning"
+        
+        st.markdown(f"<div class='{progress_class}'>", unsafe_allow_html=True)
+        st.progress(min(percentage / 100, 1.0))
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([3, 2])
+        col1.text(f"{data['count']} words")
+        col2.markdown(
+            f"<span style='color: {'#EF4444' if percentage > 100 else '#F59E0B' if percentage > 90 else '#10B981'}'>{percentage:.1f}%</span>",
+            unsafe_allow_html=True
+        )
+        st.markdown(f"<span style='color: #6B7280; font-size: 0.75rem;'>Limit: {data['limit']}</span>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Abbreviations
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #EF4444;'>⚠️</span> Non-Permitted Abbreviations
+        <span class='text-gray-500 text-sm'>(Rule 5.17 - 1 point each, max 3)</span>
+    </div>
+""", unsafe_allow_html=True)
+
+for abbr, info in initial_data["abbreviations"].items():
+    with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] > 1 else ''})"):
+        st.markdown(f"Found in: {', '.join(info['sections'])}")
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Additional sections (Anonymity, Citations, etc.)
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #10B981;'>✅</span> Anonymity
+        <span class='text-gray-500 text-sm'>(Rule 5.14 - up to 10 points)</span>
+    </div>
+""", unsafe_allow_html=True)
+st.success("No anonymity violations found")
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #EF4444;'>⚠️</span> Citations
+        <span class='text-gray-500 text-sm'>(Rule 5.13 - 1

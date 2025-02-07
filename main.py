@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# Data structures (same as React version)
+# Data structures
 applicant_data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -47,87 +47,75 @@ respondent_data = {
     "totalPenalties": 7
 }
 
-def create_progress_bar(count, limit):
-    percentage = (count / limit) * 100
-    color = 'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'
-    return go.Figure(data=[go.Bar(
-        x=[percentage],
-        text=[f"{percentage:.1f}%"],
+def create_word_count_chart(word_counts):
+    sections = list(word_counts.keys())
+    counts = [word_counts[s]["count"] for s in sections]
+    limits = [word_counts[s]["limit"] for s in sections]
+    percentages = [count/limit*100 for count, limit in zip(counts, limits)]
+    
+    colors = ['green' if p <= 90 else 'orange' if p <= 100 else 'red' for p in percentages]
+    
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=sections,
+        y=percentages,
+        marker_color=colors,
+        text=[f"{c}/{l}<br>{p:.1f}%" for c, l, p in zip(counts, limits, percentages)],
         textposition='auto',
-        marker_color=color,
-        width=[0.3]
-    )]).update_layout(
+    ))
+    
+    fig.update_layout(
+        yaxis_title="Percentage of Limit",
         showlegend=False,
-        margin=dict(l=0, r=0, t=0, b=0),
-        height=30,
-        xaxis=dict(range=[0, 100], showticklabels=False),
-        yaxis=dict(showticklabels=False)
+        height=300,
+        margin=dict(t=20, b=20, l=20, r=20)
     )
-
-# Page configuration
-st.set_page_config(layout="wide", page_title="Jessup Memorial Penalty Checker")
-
-# Header
-st.title("Jessup Memorial Penalty Checker")
-st.markdown("---")
-
-# Main content
-col1, col2 = st.columns(2)
-
-# Applicant Section
-with col1:
-    st.subheader(f"{applicant_data['memorialType']} Memorial")
-    st.error(f"Total Penalties: {applicant_data['totalPenalties']} points")
     
-    # Penalties
-    st.write("### Penalties")
-    for penalty in applicant_data['penalties']:
-        with st.expander(f"{penalty['description']} ({penalty['points']} points)"):
-            st.write(f"Rule: {penalty['rule']}")
-            st.write(f"Details: {penalty['details']}")
-    
-    # Word Counts
-    st.write("### Word Counts")
-    for section, data in applicant_data['wordCounts'].items():
-        st.write(f"**{section}**")
-        st.write(f"{data['count']} / {data['limit']} words")
-        st.plotly_chart(create_progress_bar(data['count'], data['limit']), use_container_width=True)
+    return fig
 
-# Respondent Section
-with col2:
-    st.subheader(f"{respondent_data['memorialType']} Memorial")
-    st.error(f"Total Penalties: {respondent_data['totalPenalties']} points")
+def display_memorial_section(data):
+    st.subheader(f"{data['memorialType']} Memorial")
+    st.metric("Total Penalties", f"{data['totalPenalties']} points")
     
-    # Penalties
-    st.write("### Penalties")
-    for penalty in respondent_data['penalties']:
-        with st.expander(f"{penalty['description']} ({penalty['points']} points)"):
-            st.write(f"Rule: {penalty['rule']}")
-            st.write(f"Details: {penalty['details']}")
+    with st.expander("Cover Page Information", expanded=True):
+        for key, value in data["coverPage"].items():
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                st.write(key)
+            with col2:
+                if value["present"]:
+                    st.success(value["found"])
+                else:
+                    st.error("Missing")
     
-    # Word Counts
-    st.write("### Word Counts")
-    for section, data in respondent_data['wordCounts'].items():
-        st.write(f"**{section}**")
-        st.write(f"{data['count']} / {data['limit']} words")
-        st.plotly_chart(create_progress_bar(data['count'], data['limit']), use_container_width=True)
+    with st.expander("Penalties", expanded=True):
+        for penalty in data["penalties"]:
+            st.warning(
+                f"{penalty['description']} ({penalty['rule']})\n\n"
+                f"**Points:** {penalty['points']}\n\n"
+                f"*{penalty['details']}*"
+            )
+    
+    with st.expander("Word Counts", expanded=True):
+        st.plotly_chart(create_word_count_chart(data["wordCounts"]), use_container_width=True)
 
-# Comparison Alert
-if respondent_data['totalPenalties'] > applicant_data['totalPenalties']:
-    st.warning(f"⚠️ Respondent memorial has higher penalties ({respondent_data['totalPenalties']} points vs {applicant_data['totalPenalties']} points)")
-elif applicant_data['totalPenalties'] > respondent_data['totalPenalties']:
-    st.warning(f"⚠️ Applicant memorial has higher penalties ({applicant_data['totalPenalties']} points vs {respondent_data['totalPenalties']} points)")
+def main():
+    st.set_page_config(layout="wide", page_title="Jessup Memorial Penalty Checker")
+    
+    st.title("Jessup Memorial Penalty Checker")
+    
+    if applicant_data["totalPenalties"] > respondent_data["totalPenalties"]:
+        st.warning(f"Applicant memorial has higher penalties ({applicant_data['totalPenalties']} points vs {respondent_data['totalPenalties']} points)")
+    elif respondent_data["totalPenalties"] > applicant_data["totalPenalties"]:
+        st.warning(f"Respondent memorial has higher penalties ({respondent_data['totalPenalties']} points vs {applicant_data['totalPenalties']} points)")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        display_memorial_section(applicant_data)
+    
+    with col2:
+        display_memorial_section(respondent_data)
 
-# Add CSS for better styling
-st.markdown("""
-    <style>
-    .stExpander {
-        border: 1px solid #e6e6e6;
-        border-radius: 4px;
-        margin-bottom: 10px;
-    }
-    .stProgress > div > div > div {
-        height: 8px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+if __name__ == "__main__":
+    main()

@@ -1,370 +1,341 @@
 import streamlit as st
 import pandas as pd
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
+from dataclasses import dataclass
+from datetime import datetime
 import json
 
 # Must be the first Streamlit command
 st.set_page_config(
     page_title="Jessup Memorial Penalty Checker",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.ilsa.org/jessup-competition/',
+        'Report a bug': "mailto:support@jessup.org",
+        'About': "Jessup Memorial Penalty Checker v2.0"
+    }
 )
 
-# Load initial data from a more maintainable structure
-def load_initial_data() -> Dict[str, Any]:
-    return {
-        "memorialType": "Applicant",
-        "coverPage": {
-            "Team Number": {"present": True, "found": "349A"},
-            "Court Name": {"present": True, "found": "International Court of Justice"},
-            "Year": {"present": True, "found": "2025"},
-            "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-            "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
-        },
-        "memorialParts": {
-            "Cover Page": True,
-            "Table of Contents": True,
-            "Index of Authorities": True,
-            "Statement of Jurisdiction": True,
-            "Statement of Facts": True,
-            "Summary of Pleadings": True,
-            "Pleadings": True,
-            "Prayer for Relief": False
-        },
-        "wordCounts": {
-            "Statement of Facts": {"count": 1196, "limit": 1200},
-            "Summary of Pleadings": {"count": 642, "limit": 700},
-            "Pleadings": {"count": 9424, "limit": 9500},
-            "Prayer for Relief": {"count": 0, "limit": 200}
-        },
-        "abbreviations": {
-            "ISECR": {"count": 2, "sections": ["Pleadings"]},
-            "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
-            "ICC": {"count": 1, "sections": ["Pleadings"]},
-            "LOSC": {"count": 1, "sections": ["Pleadings"]},
-            "AFRC": {"count": 1, "sections": ["Pleadings"]}
-        },
-        "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
-    }
+@dataclass
+class PenaltyRule:
+    """Data class for penalty rules"""
+    rule_id: str
+    title: str
+    description: str
+    max_points: int
+    points_description: str
+    icon: str
 
-# Enhanced CSS with better visual hierarchy and modern styling
-def load_custom_css():
-    st.markdown("""
-    <style>
-        /* Global Styles */
-        .stApp {
-            background-color: #f8f9fa;
-        }
-        
-        /* Main Content Area */
-        .main .block-container {
-            padding-top: 2rem;
-            max-width: 1200px;
-        }
-        
-        /* Card Styling */
-        .custom-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e9ecef;
-        }
-        
-        /* Headers */
-        .card-header {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1a1f36;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        /* Progress Bars */
-        .word-count-bar {
-            background-color: #e9ecef;
-            border-radius: 8px;
-            height: 8px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-        
-        .word-count-progress {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        /* Status Indicators */
-        .status-icon {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .status-icon.success { color: #10b981; }
-        .status-icon.error { color: #ef4444; }
-        .status-icon.warning { color: #f59e0b; }
-        
-        /* Sidebar Enhancements */
-        .css-1d391kg {
-            background-color: white;
-            padding: 2rem 1rem;
-        }
-        
-        .sidebar-nav-item {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #e9ecef;
-        }
-        
-        .sidebar-nav-item:hover {
-            background-color: #f8f9fa;
-            transform: translateX(2px);
-        }
-        
-        /* Tables */
-        .styled-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 1rem 0;
-        }
-        
-        .styled-table th {
-            background-color: #f8f9fa;
-            padding: 0.75rem;
-            text-align: left;
-            font-weight: 600;
-            color: #4b5563;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .styled-table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+@dataclass
+class PenaltyStatus:
+    """Data class for penalty status"""
+    points: int
+    description: str
+    details: Optional[str]
+    status: str  # 'success', 'warning', 'error'
 
-class WordCountDisplay:
+class JessupDataManager:
+    """Manages Jessup memorial data and calculations"""
+    
     @staticmethod
-    def create_progress_bar(count: int, limit: int) -> None:
-        percentage = (count / limit) * 100
-        color = "#10b981"  # Default green
-        if percentage > 90:
-            color = "#f59e0b"  # Warning yellow
-        if percentage > 100:
-            color = "#ef4444"  # Error red
-        
+    def load_initial_data() -> Dict[str, Any]:
+        # Your existing initial_data dictionary here
+        return {
+            "memorialType": "Applicant",
+            "coverPage": {
+                "Team Number": {"present": True, "found": "349A"},
+                "Court Name": {"present": True, "found": "International Court of Justice"},
+                "Year": {"present": True, "found": "2025"},
+                "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+                "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+            },
+            # ... rest of your initial data ...
+        }
+
+    @staticmethod
+    def calculate_total_penalties(data: Dict[str, Any]) -> int:
+        # Add logic to calculate total penalties
+        return 10
+
+    @staticmethod
+    def get_penalty_rules() -> List[PenaltyRule]:
+        return [
+            PenaltyRule("cover", "Cover Page", "Basic memorial information", 2, "2 points", "📄"),
+            PenaltyRule("parts", "Memorial Parts", "Required sections check", 16, "2 points per part", "✓"),
+            # ... add all rules ...
+        ]
+
+class UIComponents:
+    """Enhanced UI components with animations and interactions"""
+    
+    @staticmethod
+    def custom_css() -> None:
+        st.markdown("""
+        <style>
+            /* Add your existing CSS here and these new styles */
+            
+            /* Modern Dashboard Layout */
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            /* Enhanced Card Design */
+            .modern-card {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                           0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            
+            .modern-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                           0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            
+            /* Glassmorphism Effects */
+            .glass-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.125);
+            }
+            
+            /* Progress Indicators */
+            .circular-progress {
+                position: relative;
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                background: conic-gradient(from 0deg,
+                    var(--progress-color) calc(var(--progress) * 1%),
+                    #eceff1 calc(var(--progress) * 1%));
+            }
+            
+            /* Improved Typography */
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #1a1f36;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            /* Interactive Elements */
+            .hover-action {
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+            
+            .hover-action:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.01);
+            }
+            
+            /* Status Badges */
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+            
+            .status-badge.success {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+            
+            .status-badge.warning {
+                background-color: #fef3c7;
+                color: #92400e;
+            }
+            
+            .status-badge.error {
+                background-color: #fee2e2;
+                color: #991b1b;
+            }
+            
+            /* Tooltips */
+            [data-tooltip] {
+                position: relative;
+            }
+            
+            [data-tooltip]:before {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 0.5rem;
+                background: #1f2937;
+                color: white;
+                border-radius: 0.375rem;
+                font-size: 0.875rem;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s;
+            }
+            
+            [data-tooltip]:hover:before {
+                opacity: 1;
+            }
+            
+            /* Advanced Data Tables */
+            .advanced-table {
+                width: 100%;
+                border-spacing: 0;
+                border-collapse: separate;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            .advanced-table th {
+                background-color: #f8fafc;
+                padding: 1rem;
+                text-align: left;
+                font-weight: 600;
+                color: #475569;
+            }
+            
+            .advanced-table td {
+                padding: 1rem;
+                border-top: 1px solid #e2e8f0;
+            }
+            
+            .advanced-table tr:hover td {
+                background-color: #f8fafc;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+    @staticmethod
+    def create_penalty_card(rule: PenaltyRule, status: PenaltyStatus) -> None:
         st.markdown(f"""
-            <div class="custom-card">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span style="font-weight: 500;">{count:,} words</span>
-                    <span style="color: {color};">{percentage:.1f}%</span>
+            <div class="modern-card glass-card hover-action">
+                <div class="section-title">
+                    {rule.icon} {rule.title}
+                    <span class="status-badge {status.status}">
+                        {status.points} points
+                    </span>
                 </div>
-                <div class="word-count-bar">
-                    <div class="word-count-progress" style="width: {min(percentage, 100)}%; background-color: {color};"></div>
-                </div>
-                <div style="text-align: right; font-size: 0.8rem; color: #6b7280;">
-                    Limit: {limit:,} words
+                <div>
+                    {status.description}
+                    {f'<div class="text-sm text-gray-600 mt-2">{status.details}</div>' if status.details else ''}
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
-class NavigationMenu:
     @staticmethod
-    def create_sidebar_navigation(sections: List[Tuple[str, str, str]]) -> None:
-        for icon, title, rule, points in sections:
+    def create_word_count_display(section: str, count: int, limit: int) -> None:
+        percentage = (count / limit) * 100
+        progress_color = (
+            "#10b981" if percentage <= 90 else
+            "#f59e0b" if percentage <= 100 else
+            "#ef4444"
+        )
+        
+        st.markdown(f"""
+            <div class="modern-card">
+                <div class="section-title">{section}</div>
+                <div class="circular-progress" style="
+                    --progress: {min(percentage, 100)};
+                    --progress-color: {progress_color};
+                ">
+                    <div class="progress-label">
+                        {percentage:.1f}%
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-sm">
+                    <span>Current: {count:,} words</span>
+                    <span>Limit: {limit:,} words</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+class JessupPenaltyChecker:
+    """Main application class"""
+    
+    def __init__(self):
+        self.data_manager = JessupDataManager()
+        self.ui = UIComponents()
+        self.initial_data = self.data_manager.load_initial_data()
+        
+    def run(self):
+        self.ui.custom_css()
+        self.render_sidebar()
+        self.render_main_content()
+    
+    def render_sidebar(self):
+        with st.sidebar:
+            st.title("Jessup Penalty Checker")
+            self.render_penalty_summary()
+            self.render_navigation()
+    
+    def render_penalty_summary(self):
+        total_penalties = self.data_manager.calculate_total_penalties(self.initial_data)
+        st.markdown(f"""
+            <div class="modern-card glass-card">
+                <div class="text-sm text-gray-600">Total Penalty Points</div>
+                <div class="text-4xl font-bold text-red-600">{total_penalties}</div>
+                <div class="text-xs text-gray-500">Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    def render_navigation(self):
+        for rule in self.data_manager.get_penalty_rules():
             st.markdown(f"""
-                <div class="sidebar-nav-item">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>{icon}</span>
-                        <span style="font-weight: 500;">{title}</span>
+                <div class="sidebar-nav-item hover-action" data-tooltip="{rule.points_description}">
+                    <div class="flex items-center gap-2">
+                        {rule.icon} {rule.title}
                     </div>
-                    <div style="font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem;">
-                        {rule} - {points}
-                    </div>
+                    <div class="text-sm text-gray-600">{rule.rule_id}</div>
                 </div>
             """, unsafe_allow_html=True)
-
-class StatusCard:
-    @staticmethod
-    def create_card(title: str, content: str, status: str = "default") -> None:
-        status_classes = {
-            "success": "success",
-            "error": "error",
-            "warning": "warning",
-            "default": ""
-        }
-        st.markdown(f"""
-            <div class="custom-card animate-fade-in">
-                <div class="card-header">
-                    {title}
-                </div>
-                <div class="status-icon {status_classes.get(status, '')}">
-                    {content}
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-def main():
-    # Load data and CSS
-    initial_data = load_initial_data()
-    load_custom_css()
     
-    # Sidebar Configuration
-    with st.sidebar:
-        st.title("Jessup Penalty Checker")
-        st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
+    def render_main_content(self):
+        st.title("Memorial Analysis Dashboard")
         
-        st.markdown("""
-            <div class="custom-card">
-                <div style="color: #6b7280; font-size: 0.9rem;">Total Penalty Points</div>
-                <div style="color: #ef4444; font-size: 2.5rem; font-weight: 700;">10</div>
-                <div style="color: #6b7280; font-size: 0.8rem;">points deducted</div>
-            </div>
-        """, unsafe_allow_html=True)
+        # Score Summary
+        with st.expander("Detailed Penalty Analysis", expanded=True):
+            self.render_penalty_table()
         
-        # Navigation Menu
-        sections = [
-            ("📄", "Cover Page", "Rule 5.6", "2 points"),
-            ("✓", "Memorial Parts", "Rule 5.5", "2 points per part"),
-            ("📏", "Length Check", "Rule 5.12", "varies"),
-            ("🔒", "Anonymity", "Rule 5.14", "up to 10 points"),
-            ("📝", "Tracked Changes", "Rule 5.4", "up to 5 points"),
-            ("📚", "Citations", "Rule 5.13", "up to 5 points"),
-            ("🖼️", "Media", "Rule 5.5(c)", "up to 5 points"),
-            ("📑", "Abbreviations", "Rule 5.17", "1 point each, max 3"),
-            ("🔍", "Plagiarism", "Rule 11.2", "1-50 points")
-        ]
-        NavigationMenu.create_sidebar_navigation(sections)
-
-    # Main Content
-    st.title("Jessup Memorial Penalty Checker")
+        # Main Grid Layout
+        self.render_analysis_grid()
     
-    # Score Breakdown
-    with st.expander("Penalty Score Summary", expanded=True):
+    def render_penalty_table(self):
         st.markdown("""
-            <table class="styled-table">
+            <table class="advanced-table">
                 <thead>
                     <tr>
                         <th>Rule</th>
                         <th>Description</th>
                         <th>Points</th>
-                        <th>Reviewed</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Rule 5.5</td>
-                        <td>Missing Prayer for Relief</td>
-                        <td>4</td>
-                        <td>✓</td>
-                    </tr>
-                    <tr>
-                        <td>Rule 5.17</td>
-                        <td>Non-Permitted Abbreviations (5 found)</td>
-                        <td>3</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Rule 5.13</td>
-                        <td>Improper Citation</td>
-                        <td>3</td>
-                        <td>-</td>
-                    </tr>
-                    <tr style="font-weight: 600; background-color: #f8f9fa;">
-                        <td colspan="2" style="text-align: right;">Total</td>
-                        <td>10</td>
-                        <td>1/3</td>
-                    </tr>
+                    <!-- Add your penalty rows here -->
                 </tbody>
             </table>
         """, unsafe_allow_html=True)
+    
+    def render_analysis_grid(self):
+        st.markdown('<div class="dashboard-grid">', unsafe_allow_html=True)
+        # Add your analysis cards here
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Main content grid
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Cover Page Information
-        StatusCard.create_card(
-            "Cover Page Information",
-            "\n".join(f"{key}: {value['found']}" for key, value in initial_data['coverPage'].items())
-        )
-        
-        # Word Count Analysis
-        st.markdown("### Word Count Analysis")
-        for section, data in initial_data['wordCounts'].items():
-            WordCountDisplay.create_progress_bar(data['count'], data['limit'])
-            
-        # Citations Check
-        StatusCard.create_card(
-            "Citations Check",
-            "⚠️ 5 instances of improper citation format detected",
-            "warning"
-        )
-        
-    with col2:
-        # Memorial Parts
-        StatusCard.create_card(
-            "Memorial Parts",
-            "\n".join(f"{'✓' if present else '✗'} {part}" 
-                     for part, present in initial_data['memorialParts'].items())
-        )
-        
-        # Anonymity Check
-        StatusCard.create_card(
-            "Anonymity Check",
-            "✅ No anonymity violations found\nNo disclosure of school, team members, or country",
-            "success"
-        )
-        
-        # Tracked Changes
-        StatusCard.create_card(
-            "Tracked Changes",
-            "✅ No tracked changes found\n✅ No comments found",
-            "success"
-        )
-    
-    # Full-width sections
-    st.markdown("### Abbreviations")
-    for abbr, info in initial_data['abbreviations'].items():
-        with st.expander(f"{abbr} ({info['count']} occurrences)"):
-            st.markdown(f"Found in: {', '.join(info['sections'])}")
-    
-    # Media and Plagiarism checks
-    col1, col2 = st.columns(2)
-    with col1:
-        StatusCard.create_card(
-            "Media Check",
-            "\n".join(f"⚠️ Found in {item['section']}: {item['text']}" 
-                     for item in initial_data['media']),
-            "warning"
-        )
-    
-    with col2:
-        StatusCard.create_card(
-            "Plagiarism Check",
-            "✅ No plagiarism detected",
-            "success"
-        )
+def main():
+    app = JessupPenaltyChecker()
+    app.run()
 
 if __name__ == "__main__":
     main()

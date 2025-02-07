@@ -1,103 +1,19 @@
 import streamlit as st
-import pandas as pd
 from typing import Dict, List, Any
-import plotly.graph_objects as go
 
-# Custom Components
-def custom_card(title: str, content: Any, rule_text: str = None):
-    """Custom card component with consistent styling"""
-    st.markdown("""
-        <div style='
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            background-color: white;
-            margin-bottom: 16px;
-        '>
-            <h3 style='
-                font-size: 16px;
-                margin-bottom: 8px;
-                display: flex;
-                align-items: center;
-            '>
-                {title}
-                {rule_text_html}
-            </h3>
-            <div style='padding-top: 8px;'>
-                {content}
-            </div>
-        </div>
-    """.format(
-        title=title,
-        rule_text_html=f"<span style='font-size: 12px; color: #6b7280; margin-left: 8px;'>{rule_text}</span>" if rule_text else "",
-        content=content
-    ), unsafe_allow_html=True)
-
-def word_count_bar(count: int, limit: int) -> go.Figure:
-    """Create a custom word count progress bar using plotly"""
+def word_count_progress(count: int, limit: int):
+    """Create a word count progress indicator using native Streamlit components"""
     percentage = (count / limit) * 100
-    color = '#EF4444' if percentage > 100 else '#F59E0B' if percentage > 90 else '#10B981'
+    color = 'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'
     
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=percentage,
-        domain={'x': [0, 1], 'y': [0, 1]},
-        gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 1},
-            'bar': {'color': color},
-            'bgcolor': "white",
-            'borderwidth': 2,
-            'bordercolor': "gray",
-        },
-        number={'suffix': "%", 'font': {'size': 20}},
-        title={'text': f"{count} / {limit} words", 'font': {'size': 14}}
-    ))
-    
-    fig.update_layout(
-        height=100,
-        margin=dict(l=0, r=0, t=0, b=0),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
-    )
-    
-    return fig
-
-def create_sidebar():
-    """Create the fixed sidebar"""
-    with st.sidebar:
-        st.image("https://placeholder.com/150x50", caption="Jessup Logo")
-        st.markdown("### Memorandum for the Applicant")
-        
-        st.markdown("""
-        <div style='
-            background-color: #f9fafb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 16px;
-        '>
-            <p style='
-                font-size: 14px;
-                font-weight: 600;
-                color: #4b5563;
-                margin-bottom: 8px;
-            '>Penalty Points</p>
-            <div style='display: flex; align-items: baseline;'>
-                <span style='
-                    font-size: 24px;
-                    font-weight: 700;
-                    color: #dc2626;
-                '>10</span>
-                <span style='
-                    font-size: 14px;
-                    color: #6b7280;
-                    margin-left: 4px;
-                '>points</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.progress(min(percentage/100, 1.0))
+    with col2:
+        st.metric("", f"{count}/{limit}", f"{percentage:.1f}%", delta_color=color)
 
 def main():
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
     
     # Add custom CSS
     st.markdown("""
@@ -105,17 +21,33 @@ def main():
             .stApp {
                 background-color: #f9fafb;
             }
-            .main > div {
-                padding: 1rem;
-            }
-            [data-testid="stSidebar"] {
+            .css-1d391kg {  /* Sidebar styles */
                 background-color: white;
                 border-right: 1px solid #e5e7eb;
+            }
+            .custom-card {
+                background-color: white;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+            }
+            .stProgress .st-bo {
+                background-color: #e5e7eb;
+            }
+            .stProgress .st-bp {
+                background: linear-gradient(90deg, #10B981, #10B981);
+            }
+            .warning .st-bp {
+                background: linear-gradient(90deg, #F59E0B, #F59E0B);
+            }
+            .error .st-bp {
+                background: linear-gradient(90deg, #EF4444, #EF4444);
             }
         </style>
     """, unsafe_allow_html=True)
     
-    # Sample data (same as React version)
+    # Sample data
     data = {
         "memorialType": "Applicant",
         "coverPage": {
@@ -150,97 +82,99 @@ def main():
         }
     }
     
-    # Create sidebar
-    create_sidebar()
+    # Sidebar
+    with st.sidebar:
+        st.title("Jessup 2025")
+        st.subheader(f"Memorial for the {data['memorialType']}")
+        
+        st.markdown("""
+            <div style='
+                background-color: #f3f4f6;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-top: 1rem;
+            '>
+                <p style='
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: #4b5563;
+                    margin-bottom: 0.5rem;
+                '>Total Penalty Points</p>
+                <div style='display: flex; align-items: baseline;'>
+                    <span style='
+                        font-size: 1.875rem;
+                        font-weight: 700;
+                        color: #dc2626;
+                    '>10</span>
+                    <span style='
+                        font-size: 0.875rem;
+                        color: #6b7280;
+                        margin-left: 0.25rem;
+                    '>points</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
     
     # Main content
     st.title("Jessup Memorial Penalty Checker")
     
     # Penalty Summary
-    penalties_df = pd.DataFrame([
-        {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
-        {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0},
-        {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0}
-    ])
+    st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+    st.subheader("Penalty Score Summary")
+    penalties = [
+        ["Rule 5.5", "Missing Prayer for Relief", "4", "2", "2 points per part"],
+        ["Rule 5.17", "Non-Permitted Abbreviations (5 found)", "3", "0", "1 point each, max 3"],
+        ["Rule 5.13", "Improper Citation", "3", "0", "1 point per violation, max 5"]
+    ]
+    st.table(penalties)
+    st.markdown("</div>", unsafe_allow_html=True)
     
-    custom_card(
-        "Penalty Score Summary",
-        st.dataframe(
-            penalties_df,
-            use_container_width=True,
-            hide_index=True
-        )
-    )
-    
-    # Create two columns for the layout
+    # Two-column layout for Cover Page and Memorial Parts
     col1, col2 = st.columns(2)
     
     with col1:
-        # Cover Page Information
-        cover_page_content = "".join([
-            f"""
-            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;'>
-                <span>{key}</span>
-                <div style='display: flex; align-items: center; gap: 8px;'>
-                    <span>{'✅' if value['present'] else '❌'}</span>
-                    <span>{value['found']}</span>
-                </div>
-            </div>
-            """ for key, value in data["coverPage"].items()
-        ])
-        custom_card("Cover Page Information", cover_page_content, "(Rule 5.6 - 2 points)")
+        st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+        st.subheader("Cover Page Information")
+        st.caption("Rule 5.6 - 2 points")
+        for key, value in data["coverPage"].items():
+            status = "✅" if value["present"] else "❌"
+            st.markdown(f"{status} {key}: {value['found']}")
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        # Memorial Parts
-        parts_content = "".join([
-            f"""
-            <div style='display: flex; align-items: center; gap: 8px; margin-bottom: 8px;'>
-                <span>{'✅' if present else '❌'}</span>
-                <span>{part}</span>
-            </div>
-            """ for part, present in data["memorialParts"].items()
-        ])
-        custom_card("Memorial Parts", parts_content, "(Rule 5.5 - 2 points per part)")
+        st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+        st.subheader("Memorial Parts")
+        st.caption("Rule 5.5 - 2 points per part")
+        for part, present in data["memorialParts"].items():
+            status = "✅" if present else "❌"
+            st.markdown(f"{status} {part}")
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Word Count Analysis
-    st.markdown("### Word Count Analysis")
-    word_count_cols = st.columns(2)
-    for idx, (section, info) in enumerate(data["wordCounts"].items()):
-        with word_count_cols[idx % 2]:
-            st.plotly_chart(
-                word_count_bar(info["count"], info["limit"]),
-                use_container_width=True
-            )
+    st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+    st.subheader("Word Count Analysis")
+    st.caption("Rule 5.12")
+    
+    for section, info in data["wordCounts"].items():
+        st.markdown(f"#### {section}")
+        percentage = (info["count"] / info["limit"]) * 100
+        class_name = "error" if percentage > 100 else "warning" if percentage > 90 else ""
+        
+        st.markdown(f"<div class='{class_name}'>", unsafe_allow_html=True)
+        word_count_progress(info["count"], info["limit"])
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("---")
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Abbreviations
-    abbreviations_content = "".join([
-        f"""
-        <div style='
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-        '>
-            <div style='display: flex; justify-content: space-between; align-items: center;'>
-                <div style='display: flex; align-items: center; gap: 8px;'>
-                    <span>❌</span>
-                    <span style='font-weight: 500;'>{abbr}</span>
-                    <span style='font-size: 12px; color: #6b7280;'>
-                        ({info['count']} occurrence{'s' if info['count'] != 1 else ''})
-                    </span>
-                </div>
-            </div>
-            <div style='margin-top: 8px; padding-left: 24px; font-size: 12px; color: #6b7280;'>
-                Found in: {', '.join(info['sections'])}
-            </div>
-        </div>
-        """ for abbr, info in data["abbreviations"].items()
-    ])
-    custom_card(
-        "Non-Permitted Abbreviations",
-        abbreviations_content,
-        "(Rule 5.17 - 1 point each, max 3)"
-    )
+    st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+    st.subheader("Non-Permitted Abbreviations")
+    st.caption("Rule 5.17 - 1 point each, max 3")
+    
+    for abbr, info in data["abbreviations"].items():
+        with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] != 1 else ''})"):
+            st.markdown(f"Found in: {', '.join(info['sections'])}")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

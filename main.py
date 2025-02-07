@@ -315,7 +315,4 @@ for title, status, message, rule, points in checks:
             {title}
             <span style='font-size: 0.75rem; color: #6B7280;'>({rule} - {points})</span>
         </div>
-    """, unsafe_allow_html=True)
-    
-    if status == "success":
-        st.success(message)
+    """, unsafe_allow_html=True

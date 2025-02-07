@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 
+# Must be the first Streamlit command
+st.set_page_config(
+    page_title="Jessup Memorial Penalty Checker",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # Initial data setup
 initial_data = {
     "memorialType": "Applicant",
@@ -100,6 +107,35 @@ st.markdown("""
     .css-1d391kg {
         background-color: white;
     }
+
+    /* Card-like containers */
+    .stMarkdown {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+
+    /* Status icons */
+    .icon-success {
+        color: #4CAF50;
+        font-size: 1.2rem;
+    }
+
+    .icon-error {
+        color: #EF5350;
+        font-size: 1.2rem;
+    }
+
+    /* Progress container */
+    .progress-container {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -112,25 +148,42 @@ def create_progress_bar(count, limit):
     if percentage > 100:
         color = "danger"
     
-    return st.progress(min(percentage / 100, 1.0), text=f"{count} / {limit} words ({percentage:.1f}%)")
+    # Create a container for the progress bar
+    st.markdown(f"""
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span>{count} words</span>
+                <span style="color: {'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'}">
+                    {percentage:.1f}%
+                </span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    progress = st.progress(min(percentage / 100, 1.0))
+    st.markdown(f"<div style='text-align: right; font-size: 0.8rem; color: #666;'>Limit: {limit}</div>", 
+               unsafe_allow_html=True)
+
+def create_card(title, content):
+    """Create a card-like container"""
+    st.markdown(f"""
+        <div class="stCard">
+            <h3>{title}</h3>
+            <div>{content}</div>
+        </div>
+    """, unsafe_allow_html=True)
 
 def main():
-    # Set page config
-    st.set_page_config(
-        page_title="Jessup Memorial Penalty Checker",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
     # Sidebar
     with st.sidebar:
         st.title("Jessup Penalty Checker")
         st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
         
-        st.markdown("### Penalty Points")
         st.markdown("""
         <div style='background-color: #f8f9fa; padding: 1rem; border-radius: 0.5rem;'>
-            <h3 style='color: #dc3545; font-size: 2rem; margin: 0;'>10 points</h3>
+            <div style='color: #666; font-size: 0.9rem;'>Penalty Points</div>
+            <div style='color: #dc3545; font-size: 2rem; font-weight: bold;'>10</div>
+            <div style='color: #666; font-size: 0.8rem;'>points</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -139,39 +192,47 @@ def main():
 
     # Score Breakdown
     with st.expander("Penalty Score Summary", expanded=True):
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            st.markdown("### Rule Violations")
-        with col2:
-            st.markdown("### Points")
-        with col3:
-            st.markdown("### Reviewed")
-            
-        st.markdown("---")
-        
-        # Display penalties
-        st.markdown("Missing Prayer for Relief (Rule 5.5) - 4 points")
-        st.markdown("Non-Permitted Abbreviations (Rule 5.17) - 3 points")
-        st.markdown("Improper Citations (Rule 5.13) - 3 points")
-        
-        st.markdown("**Total: 10 points**")
+        penalties_df = pd.DataFrame({
+            'Rule': ['Rule 5.5', 'Rule 5.17', 'Rule 5.13'],
+            'Description': [
+                'Missing Prayer for Relief',
+                'Non-Permitted Abbreviations (5 found)',
+                'Improper Citation'
+            ],
+            'Points': [4, 3, 3],
+            'Reviewed': ['Yes', 'No', 'No']
+        })
+        st.table(penalties_df)
+        st.markdown("**Total Penalty Points: 10**")
 
     # Create two columns for the layout
     col1, col2 = st.columns(2)
 
     # Cover Page Check
     with col1:
-        st.markdown("### Cover Page Information")
+        st.markdown("""
+            <div class="stCard">
+                <h3>Cover Page Information</h3>
+        """, unsafe_allow_html=True)
+        
         for key, value in initial_data["coverPage"].items():
-            status = "✅" if value["present"] else "❌"
-            st.markdown(f"{status} {key}: {value['found']}")
+            icon = "✅" if value["present"] else "❌"
+            st.markdown(f"{icon} **{key}:** {value['found']}")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # Memorial Parts
     with col2:
-        st.markdown("### Memorial Parts")
+        st.markdown("""
+            <div class="stCard">
+                <h3>Memorial Parts</h3>
+        """, unsafe_allow_html=True)
+        
         for part, present in initial_data["memorialParts"].items():
-            status = "✅" if present else "❌"
-            st.markdown(f"{status} {part}")
+            icon = "✅" if present else "❌"
+            st.markdown(f"{icon} {part}")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # Word Count Analysis
     st.markdown("### Word Count Analysis")
@@ -187,18 +248,27 @@ def main():
         with st.expander(f"{abbr} ({info['count']} occurrences)"):
             st.markdown(f"Found in: {', '.join(info['sections'])}")
 
-    # Citations
-    st.markdown("### Citations")
-    st.warning("5 instances of improper citation format detected")
-
-    # Media Check
-    st.markdown("### Media Check")
-    for item in initial_data["media"]:
-        st.warning(f"Found media in {item['section']}: {item['text']}")
-
-    # Plagiarism Check
-    st.markdown("### Plagiarism Check")
-    st.success("No plagiarism detected")
+    # Citations, Media, and Plagiarism sections in cards
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        create_card("Citations Check", """
+            <div class="status-error">
+                ⚠️ 5 instances of improper citation format detected
+            </div>
+        """)
+        
+        create_card("Media Check", "\n".join(
+            f"⚠️ Found in {item['section']}: {item['text']}"
+            for item in initial_data["media"]
+        ))
+    
+    with col2:
+        create_card("Plagiarism Check", """
+            <div class="status-success">
+                ✅ No plagiarism detected
+            </div>
+        """)
 
 if __name__ == "__main__":
     main()

@@ -43,194 +43,175 @@ initial_data = {
     "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
 }
 
-# Enhanced CSS for a more polished look
-st.markdown("""
-<style>
-    /* Global styles */
-    [data-testid="stSidebar"] {
-        background-color: #f8fafc;
-    }
-    
-    .main {
-        background-color: #f1f5f9;
-    }
-    
-    /* Cards */
-    .glass-card {
-        background-color: rgba(255, 255, 255, 0.95);
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-    }
-    
-    /* Status indicators */
-    .success-badge {
-        background-color: #dcfce7;
-        color: #166534;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-    }
-    
-    .error-badge {
-        background-color: #fee2e2;
-        color: #991b1b;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-    }
-    
-    .warning-badge {
-        background-color: #fef3c7;
-        color: #92400e;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-    }
-    
-    /* Section headers */
-    .section-header {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    /* Navigation items */
-    .nav-item {
-        background-color: white;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        margin: 0.5rem 0;
-        transition: all 0.2s;
-        border: 1px solid #e2e8f0;
-    }
-    
-    .nav-item:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Tables */
-    .modern-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-    
-    .modern-table th {
-        background-color: #f8fafc;
-        padding: 1rem;
-        text-align: left;
-        font-weight: 600;
-        color: #475569;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .modern-table td {
-        padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .modern-table tr:last-child td {
-        border-bottom: none;
-    }
-    
-    /* Progress bars */
-    .progress-container {
-        background-color: #f8fafc;
-        border-radius: 0.75rem;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .progress-bar {
-        height: 0.5rem;
-        border-radius: 9999px;
-        background-color: #e2e8f0;
-        overflow: hidden;
-        margin: 0.5rem 0;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        border-radius: 9999px;
-        transition: width 0.3s ease;
-    }
-    
-    /* Sidebar styles */
-    .sidebar-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 1rem;
-    }
-    
-    .penalty-counter {
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        padding: 1.5rem;
-        border-radius: 1rem;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-</style>
-""", unsafe_allow_html=True)
+def local_css():
+    st.markdown("""
+        <style>
+        .stApp {
+            background-color: #f8fafc;
+        }
+        
+        .glass-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .success { 
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .error { 
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-item {
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 8px 0;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .table-modern {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
+        }
+        
+        .table-modern th {
+            background-color: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+        }
+        
+        .table-modern td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .progress-wrapper {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 999px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+        
+        .penalty-counter {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .section-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 24px 0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+def create_badge(text, status, icon=""):
+    return f'<span class="status-badge {status}">{icon} {text}</span>'
 
 def create_progress_bar(count, limit):
     percentage = (count / limit) * 100
-    color = "#10b981"  # success
-    if percentage > 90: color = "#f59e0b"  # warning
-    if percentage > 100: color = "#ef4444"  # error
+    status = "success"
+    if percentage > 90: status = "warning"
+    if percentage > 100: status = "error"
     
-    st.markdown(f'''
-        <div class="progress-container">
+    colors = {
+        "success": "#10b981",
+        "warning": "#f59e0b",
+        "error": "#ef4444"
+    }
+    
+    return f"""
+        <div class="progress-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-weight: 500;">{count} words</div>
-                <div style="color: {color}; font-weight: 500;">{percentage:.1f}%</div>
+                <span style="font-weight: 500;">{count} words</span>
+                <span style="color: {colors[status]}; font-weight: 500;">{percentage:.1f}%</span>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: {min(percentage, 100)}%; background-color: {color};"></div>
+                <div class="progress-fill" style="width: {min(percentage, 100)}%; background-color: {colors[status]};"></div>
             </div>
-            <div style="text-align: right; font-size: 0.875rem; color: #64748b;">
+            <div style="text-align: right; font-size: 14px; color: #64748b;">
                 Limit: {limit} words
             </div>
         </div>
-    ''', unsafe_allow_html=True)
-
-def create_badge(text, status="success", icon=""):
-    return f'<span class="{status}-badge">{icon} {text}</span>'
+    """
 
 def main():
+    local_css()
+    
     # Sidebar
     with st.sidebar:
-        st.markdown('<div class="sidebar-title">Jessup Penalty Checker</div>', unsafe_allow_html=True)
+        st.markdown('<h1 style="margin-bottom: 20px;">Jessup Penalty Checker</h1>', unsafe_allow_html=True)
         st.markdown(f'''
-            <div style="font-size: 1.1rem; color: #475569;">
+            <div style="font-size: 18px; color: #475569;">
                 Memorandum for the {initial_data["memorialType"]}
             </div>
             <div class="penalty-counter">
-                <div style="font-size: 0.875rem; color: #991b1b;">Total Penalty Points</div>
-                <div style="font-size: 2rem; font-weight: 700; color: #7f1d1d;">10</div>
+                <div style="font-size: 14px; color: #991b1b;">Total Penalty Points</div>
+                <div style="font-size: 32px; font-weight: 700; color: #7f1d1d;">10</div>
             </div>
         ''', unsafe_allow_html=True)
         
-        # Navigation
-        st.markdown('<div class="section-header">Sections</div>', unsafe_allow_html=True)
         sections = [
             ("📄", "Cover Page", "Rule 5.6", "2 points"),
             ("✓", "Memorial Parts", "Rule 5.5", "2 points per part"),
@@ -246,99 +227,137 @@ def main():
         for icon, section, rule, points in sections:
             st.markdown(f'''
                 <div class="nav-item">
-                    <div style="display: flex; gap: 0.75rem; align-items: center;">
-                        <div style="font-size: 1.25rem;">{icon}</div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div style="font-size: 20px;">{icon}</div>
                         <div>
                             <div style="font-weight: 500; color: #1e293b;">{section}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{rule} - {points}</div>
+                            <div style="font-size: 14px; color: #64748b;">{rule} - {points}</div>
                         </div>
                     </div>
                 </div>
             ''', unsafe_allow_html=True)
 
     # Main content
-    st.markdown('<h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 2rem;">Jessup Memorial Penalty Checker</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 32px;">Jessup Memorial Penalty Checker</h1>', unsafe_allow_html=True)
 
-    # Penalty Summary
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-header">⚠️ Penalty Score Summary</div>', unsafe_allow_html=True)
+    # Summary Card
     st.markdown('''
-        <table class="modern-table">
-            <thead>
-                <tr>
-                    <th>Rule</th>
-                    <th>Description</th>
-                    <th style="text-align: center;">A</th>
-                    <th style="text-align: center;">R</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Rule 5.5</td>
-                    <td>
-                        Missing Prayer for Relief
-                        <div style="font-size: 0.875rem; color: #64748b;">2 points per part</div>
-                    </td>
-                    <td style="text-align: center;">4</td>
-                    <td style="text-align: center;">2</td>
-                </tr>
-                <tr>
-                    <td>Rule 5.17</td>
-                    <td>
-                        Non-Permitted Abbreviations (5 found)
-                        <div style="font-size: 0.875rem; color: #64748b;">1 point each, max 3</div>
-                    </td>
-                    <td style="text-align: center;">3</td>
-                    <td style="text-align: center;">0</td>
-                </tr>
-                <tr>
-                    <td>Rule 5.13</td>
-                    <td>
-                        Improper Citation
-                        <div style="font-size: 0.875rem; color: #64748b;">1 point per violation, max 5</div>
-                    </td>
-                    <td style="text-align: center;">3</td>
-                    <td style="text-align: center;">0</td>
-                </tr>
-                <tr style="background-color: #f8fafc;">
-                    <td colspan="2" style="text-align: right; font-weight: 600;">TOTAL</td>
-                    <td style="text-align: center; font-weight: 600;">10</td>
-                    <td style="text-align: center; font-weight: 600;">2</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="glass-card">
+            <div class="section-title">⚠️ Penalty Score Summary</div>
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                        <th style="text-align: center;">A</th>
+                        <th style="text-align: center;">R</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rule 5.5</td>
+                        <td>Missing Prayer for Relief<br>
+                            <span style="font-size: 14px; color: #64748b;">2 points per part</span>
+                        </td>
+                        <td style="text-align: center;">4</td>
+                        <td style="text-align: center;">2</td>
+                    </tr>
+                    <tr>
+                        <td>Rule 5.17</td>
+                        <td>Non-Permitted Abbreviations (5 found)<br>
+                            <span style="font-size: 14px; color: #64748b;">1 point each, max 3</span>
+                        </td>
+                        <td style="text-align: center;">3</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr>
+                        <td>Rule 5.13</td>
+                        <td>Improper Citation<br>
+                            <span style="font-size: 14px; color: #64748b;">1 point per violation, max 5</span>
+                        </td>
+                        <td style="text-align: center;">3</td>
+                        <td style="text-align: center;">0</td>
+                    </tr>
+                    <tr style="background-color: #f8fafc;">
+                        <td colspan="2" style="text-align: right; font-weight: 600;">TOTAL</td>
+                        <td style="text-align: center; font-weight: 600;">10</td>
+                        <td style="text-align: center; font-weight: 600;">2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     ''', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Document Sections
     col1, col2 = st.columns(2)
 
     with col1:
-        # Cover Page Check
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">📄 Cover Page Information</div>', unsafe_allow_html=True)
+        st.markdown('''
+            <div class="glass-card">
+                <div class="section-title">📄 Cover Page Information</div>
+        ''', unsafe_allow_html=True)
+        
         for key, value in initial_data["coverPage"].items():
             status = "success" if value["present"] else "error"
             icon = "✅" if value["present"] else "❌"
             st.markdown(f'''
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; 
+                            padding: 12px 0; border-bottom: 1px solid #e2e8f0;">
                     <span style="color: #1e293b;">{key}</span>
                     {create_badge(value["found"], status, icon)}
                 </div>
             ''', unsafe_allow_html=True)
+        
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        # Memorial Parts
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">✓ Memorial Parts</div>', unsafe_allow_html=True)
-        st.markdown('<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">', unsafe_allow_html=True)
+        st.markdown('''
+            <div class="glass-card">
+                <div class="section-title">✓ Memorial Parts</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        ''', unsafe_allow_html=True)
+        
         for part, present in initial_data["memorialParts"].items():
             status = "success" if present else "error"
             icon = "✅" if present else "❌"
             st.markdown(create_badge(part, status, icon), unsafe_allow_html=True)
+        
         st.markdown('</div></div>', unsafe_allow_html=True)
 
     # Word Count Analysis
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-header">
+    st.markdown('''
+        <div class="glass-card">
+            <div class="section-title">📏 Word Count Analysis</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    ''', unsafe_allow_html=True)
+
+    for section, data in initial_data["wordCounts"].items():
+        st.markdown(f'''
+            <div>
+                <div style="font-weight: 500; margin-bottom: 8px; color: #1e293b;">{section}</div>
+                {create_progress_bar(data["count"], data["limit"])}
+            </div>
+        ''', unsafe_allow_html=True)
+
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+    # Additional Sections
+    col3, col4 = st.columns(2)
+
+    with col3:
+        # Tracked Changes
+        st.markdown('''
+            <div class="glass-card">
+                <div class="section-title">📝 Tracked Changes</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+        ''', unsafe_allow_html=True)
+        
+        st.markdown(create_badge("No tracked changes found", "success", "✅"), unsafe_allow_html=True)
+        st.markdown(create_badge("No comments found", "success", "✅"), unsafe_allow_html=True)
+        
+        st.markdown('</div></div>', unsafe_allow_html=True)
+
+        # Citations
+        st.markdown('''
+            <div class="glass-card">
+                <div class="

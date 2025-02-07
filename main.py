@@ -1,309 +1,186 @@
 import streamlit as st
-import time
+import pandas as pd
+from PIL import Image
+import plotly.graph_objects as go
 
-# Set page config
+# Configure the page
 st.set_page_config(
-    page_title="CaseLens",
-    page_icon="📚",
-    layout="wide"
+    page_title="Jessup Memorial Penalty Checker",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS to maintain React-like styling
+# Custom CSS to match the original design
 st.markdown("""
     <style>
-    /* Main container styles */
     .stApp {
-        background-color: rgb(249, 250, 251);
+        background-color: #f9fafb;
     }
-    
-    /* Card styles */
-    div[data-testid="stVerticalBlock"] > div:has(div.element-container) {
+    .css-1d391kg {
+        background-color: white;
+    }
+    .stat-card {
         background-color: white;
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 1px solid rgb(229, 231, 235);
+        border: 1px solid #e5e7eb;
         margin-bottom: 1rem;
     }
-    
-    /* Button styles */
-    .stButton > button {
-        width: 100%;
-        text-align: left;
-        background-color: white;
-        border: 1px solid rgb(229, 231, 235);
-        border-radius: 0.5rem;
-        padding: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stButton > button:hover {
-        border-color: rgb(147, 197, 253);
-        background-color: rgb(239, 246, 255);
-    }
-    
-    /* Metric containers */
-    [data-testid="stMetricValue"] {
-        font-size: 1.25rem !important;
-        color: rgb(17, 24, 39);
-    }
-    
-    [data-testid="stMetricDelta"] {
-        color: rgb(16, 185, 129);
-        font-size: 0.875rem;
-    }
-    
-    /* Card header styles */
-    h2, h3 {
-        color: rgb(17, 24, 39);
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-    
-    /* Custom node container */
-    .node-container {
-        border: 2px solid rgb(147, 197, 253);
-        background-color: white;
-        padding: 0.75rem;
-        border-radius: 0.5rem;
+    .center-text {
         text-align: center;
-        margin: 0.5rem;
     }
-    
-    /* Finding card styles */
-    .finding-card {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid rgb(229, 231, 235);
-        margin-bottom: 1rem;
+    .success-text {
+        color: #10B981;
     }
-    
-    /* Custom header with icon */
-    .header-with-icon {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+    .warning-text {
+        color: #F59E0B;
     }
-    
-    /* Custom progress bar */
-    .progress-container {
-        width: 100%;
-        height: 0.5rem;
-        background-color: rgb(229, 231, 235);
-        border-radius: 9999px;
-        overflow: hidden;
-    }
-    
-    .progress-bar {
-        height: 100%;
-        background-color: rgb(37, 99, 235);
-        border-radius: 9999px;
-    }
-    
-    /* Agent badge styles */
-    .agent-badge {
-        display: inline-flex;
-        align-items: center;
-        background-color: rgb(243, 244, 246);
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        margin-right: 0.5rem;
+    .error-text {
+        color: #EF4444;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'selected_agent' not in st.session_state:
-    st.session_state.selected_agent = None
-
-# Data structures
-agents = {
-    "timeline": {
-        "name": "Event Timeline",
-        "icon": "⏰",
-        "status": "Analyzing event sequences",
-        "type": "analysis",
-        "findings": 8
+# Initial data
+initial_data = {
+    "memorialType": "Applicant",
+    "coverPage": {
+        "Team Number": {"present": True, "found": "349A"},
+        "Court Name": {"present": True, "found": "International Court of Justice"},
+        "Year": {"present": True, "found": "2025"},
+        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
     },
-    "document": {
-        "name": "Document Analysis",
-        "icon": "📄",
-        "status": "Processing document content",
-        "type": "analysis",
-        "findings": 15
+    "memorialParts": {
+        "Cover Page": True,
+        "Table of Contents": True,
+        "Index of Authorities": True,
+        "Statement of Jurisdiction": True,
+        "Statement of Facts": True,
+        "Summary of Pleadings": True,
+        "Pleadings": True,
+        "Prayer for Relief": False
     },
-    "legal": {
-        "name": "Legal Compliance",
-        "icon": "⚖️",
-        "status": "Reviewing regulatory adherence",
-        "type": "expert",
-        "findings": 12
+    "wordCounts": {
+        "Statement of Facts": {"count": 1196, "limit": 1200},
+        "Summary of Pleadings": {"count": 642, "limit": 700},
+        "Pleadings": {"count": 9424, "limit": 9500},
+        "Prayer for Relief": {"count": 0, "limit": 200}
     },
-    "citation": {
-        "name": "Citation Check",
-        "icon": "🔍",
-        "status": "Verifying reference accuracy",
-        "type": "analysis",
-        "findings": 6
-    },
-    "statement": {
-        "name": "Statement Review",
-        "icon": "💬",
-        "status": "Analyzing key statements",
-        "type": "expert",
-        "findings": 9
+    "abbreviations": {
+        "ISECR": {"count": 2, "sections": ["Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICC": {"count": 1, "sections": ["Pleadings"]},
+        "LOSC": {"count": 1, "sections": ["Pleadings"]},
+        "AFRC": {"count": 1, "sections": ["Pleadings"]}
     }
 }
 
-findings = [
-    {
-        "id": 1,
-        "agent": "legal",
-        "severity": "high",
-        "title": "Compliance Issue Detected",
-        "description": "Potential regulatory violation in section 3.2 of the agreement",
-        "related_docs": ["agreement-v2.1", "reg-guidelines"],
-        "timestamp": "2 min ago"
-    },
-    {
-        "id": 2,
-        "agent": "document",
-        "severity": "medium",
-        "title": "Document Inconsistency",
-        "description": "Discrepancy found between revision history and document metadata",
-        "related_docs": ["doc-metadata-log"],
-        "timestamp": "5 min ago"
-    }
-]
-
-# Layout
-col1, col2 = st.columns([1, 3])
-
-# Sidebar content
-with col1:
-    # Logo
-    st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 2rem;">
-            <div style="width: 2rem; height: 2rem; background-color: rgb(37, 99, 235); border-radius: 0.25rem; 
-                        display: flex; align-items: center; justify-content: center; margin-right: 0.5rem;">
-                <span style="color: white; font-weight: bold; font-size: 1.25rem;">C</span>
-            </div>
-            <span style="font-size: 1.25rem; font-weight: bold;">caselens</span>
-        </div>
-    """, unsafe_allow_html=True)
+# Sidebar
+with st.sidebar:
+    st.title("Jessup Penalty Checker")
+    st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
     
-    # Agents section
+    # Penalty points summary
     st.markdown("""
-        <div class="header-with-icon">
-            <span style="font-size: 1.5rem;">🧠</span>
-            <h2 style="margin: 0;">Active Agents</h2>
+    <div style='background-color: #f3f4f6; padding: 1rem; border-radius: 0.5rem;'>
+        <p style='color: #4B5563; font-size: 0.875rem; font-weight: 600;'>Penalty Points</p>
+        <div style='display: flex; align-items: baseline; gap: 0.25rem;'>
+            <span style='color: #DC2626; font-size: 1.5rem; font-weight: 700;'>10</span>
+            <span style='color: #6B7280; font-size: 0.875rem;'>points</span>
         </div>
+    </div>
     """, unsafe_allow_html=True)
-    
-    # Agent buttons using Streamlit components
-    for agent_id, agent in agents.items():
-        if st.button(
-            f"{agent['icon']} {agent['name']}\n{agent['status']}\n{agent['findings']} findings",
-            key=f"agent_{agent_id}",
-            help=f"View details for {agent['name']}"
-        ):
-            st.session_state.selected_agent = agent_id
 
 # Main content
+st.title("Jessup Memorial Penalty Checker")
+
+# Penalty Score Summary
+st.markdown("### Penalty Score Summary")
+penalties_df = pd.DataFrame([
+    {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
+    {"Rule": "Rule 5.17", "Description": "Non-Permitted Abbreviations (5 found)", "Points": 3, "R": 0},
+    {"Rule": "Rule 5.13", "Description": "Improper Citation", "Points": 3, "R": 0}
+])
+st.dataframe(penalties_df, hide_index=True)
+
+# Create two columns for the layout
+col1, col2 = st.columns(2)
+
+# Cover Page Information
+with col1:
+    st.markdown("### Cover Page Information")
+    for key, value in initial_data["coverPage"].items():
+        status = "✅" if value["present"] else "❌"
+        st.markdown(f"{status} {key}: {value['found']}")
+
+# Memorial Parts
 with col2:
-    # Status metrics
-    st.markdown('<div style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid rgb(229, 231, 235);">', unsafe_allow_html=True)
+    st.markdown("### Memorial Parts")
+    cols = st.columns(2)
+    items = list(initial_data["memorialParts"].items())
+    mid = len(items) // 2
     
-    metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
-    
-    with metrics_col1:
-        st.metric(
-            "Documents Processed",
-            "100,532",
-            "2,145/min",
-            help="Total documents processed and current processing rate"
-        )
-    
-    with metrics_col2:
-        st.metric(
-            "Critical Findings",
-            "23",
-            "-5",
-            delta_color="inverse",
-            help="Number of critical issues detected"
-        )
-    
-    with metrics_col3:
-        st.metric(
-            "Analysis Progress",
-            "45%",
-            "2%",
-            help="Overall progress of document analysis"
-        )
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    for i, (part, present) in enumerate(items):
+        col_idx = 0 if i < mid else 1
+        with cols[col_idx]:
+            status = "✅" if present else "❌"
+            st.markdown(f"{status} {part}")
 
-    # Agent collaboration view
-    st.markdown("""
-        <div style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid rgb(229, 231, 235); margin-top: 1rem;">
-            <h3>Agent Collaboration</h3>
-    """, unsafe_allow_html=True)
-    
-    # Simple grid for agent nodes
-    node_cols = st.columns(4)
-    for i, (node_id, node) in enumerate(list(agents.items())[:4]):
-        with node_cols[i]:
-            st.markdown(f"""
-                <div class="node-container">
-                    <div style="font-size: 1.5rem;">{node['icon']}</div>
-                    <div style="font-weight: 500;">{node['name']}</div>
-                </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+# Word Count Analysis
+st.markdown("### Word Count Analysis")
+cols = st.columns(2)
 
-    # Findings
-    st.markdown("<h3 style='margin-top: 1rem;'>Recent Findings</h3>", unsafe_allow_html=True)
+def create_progress_bar(count, limit):
+    percentage = (count / limit) * 100
+    color = "#EF4444" if percentage > 100 else "#F59E0B" if percentage > 90 else "#10B981"
     
-    for finding in findings:
-        agent = agents[finding['agent']]
-        severity_color = "rgb(254, 226, 226)" if finding['severity'] == 'high' else "rgb(254, 243, 199)"
-        
-        st.markdown(f"""
-            <div class="finding-card">
-                <div style="display: flex; gap: 1rem;">
-                    <div style="background-color: {severity_color}; padding: 0.5rem; border-radius: 0.5rem;">
-                        {agent['icon']}
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <h4 style="font-weight: 600; margin: 0;">{finding['title']}</h4>
-                            <span style="color: rgb(107, 114, 128); font-size: 0.875rem;">
-                                {finding['timestamp']}
-                            </span>
-                        </div>
-                        <p style="color: rgb(75, 85, 99); margin-bottom: 1rem;">
-                            {finding['description']}
-                        </p>
-                        <div style="margin-bottom: 1rem;">
-                            {' '.join([f'<span class="agent-badge">{doc}</span>' for doc in finding['related_docs']])}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    fig = go.Figure(go.Indicator(
+        mode = "gauge+number",
+        value = percentage,
+        number = {"suffix": "%", "font": {"size": 24}},
+        gauge = {
+            "axis": {"range": [0, 100], "tickwidth": 1},
+            "bar": {"color": color},
+            "borderwidth": 2,
+            "bordercolor": "white",
+        },
+        domain = {'x': [0, 1], 'y': [0, 1]}
+    ))
+    
+    fig.update_layout(
+        height=150,
+        margin=dict(l=10, r=10, t=20, b=20),
+        paper_bgcolor="white",
+        plot_bgcolor="white"
+    )
+    
+    return fig
 
-        # Action buttons using Streamlit
-        col1, col2, _ = st.columns([1, 1, 2])
-        with col1:
-            st.button("Investigate Further", key=f"investigate_{finding['id']}")
-        with col2:
-            st.button("Mark as Reviewed", key=f"review_{finding['id']}")
+for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
+    col_idx = i % 2
+    with cols[col_idx]:
+        st.markdown(f"**{section}**")
+        st.markdown(f"Count: {data['count']} / {data['limit']}")
+        st.plotly_chart(create_progress_bar(data['count'], data['limit']), use_container_width=True)
 
-# Auto-refresh section
-with st.sidebar:
-    if st.button("Start Auto-refresh"):
-        time.sleep(2)
-        st.experimental_rerun()
+# Abbreviations
+st.markdown("### Non-Permitted Abbreviations")
+for abbr, info in initial_data["abbreviations"].items():
+    with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] > 1 else ''})"):
+        st.markdown(f"Found in: {', '.join(info['sections'])}")
+
+# Function to handle file upload
+def process_memorial_file():
+    st.markdown("### Upload Memorial")
+    uploaded_file = st.file_uploader("Choose a file...", type=['docx', 'pdf'])
+    if uploaded_file is not None:
+        st.success("File uploaded successfully! Processing...")
+        # Add file processing logic here
+
+# Add file upload section at the bottom
+process_memorial_file()
+
+# Footer
+st.markdown("---")
+st.markdown("Jessup Memorial Penalty Checker © 2025")

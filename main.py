@@ -37,7 +37,7 @@ initial_data = {
     },
     "abbreviations": {
         "ISECR": {"count": 2, "sections": ["Pleadings"]},
-        "ICCPED": {"count": 1, sections: ["Summary of Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
         "ICC": {"count": 1, "sections": ["Pleadings"]},
         "LOSC": {"count": 1, "sections": ["Pleadings"]},
         "AFRC": {"count": 1, "sections": ["Pleadings"]}

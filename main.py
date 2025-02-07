@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+import json
+from typing import Dict, List, Union, Optional
 
 # Must be the first Streamlit command
 st.set_page_config(
@@ -9,315 +11,401 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initial data setup
-initial_data = {
-    "memorialType": "Applicant",
-    "coverPage": {
-        "Team Number": {"present": True, "found": "349A"},
-        "Court Name": {"present": True, "found": "International Court of Justice"},
-        "Year": {"present": True, "found": "2025"},
-        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
-    },
-    "memorialParts": {
-        "Cover Page": True,
-        "Table of Contents": True,
-        "Index of Authorities": True,
-        "Statement of Jurisdiction": True,
-        "Statement of Facts": True,
-        "Summary of Pleadings": True,
-        "Pleadings": True,
-        "Prayer for Relief": False
-    },
-    "wordCounts": {
-        "Statement of Facts": {"count": 1196, "limit": 1200},
-        "Summary of Pleadings": {"count": 642, "limit": 700},
-        "Pleadings": {"count": 9424, "limit": 9500},
-        "Prayer for Relief": {"count": 0, "limit": 200}
-    },
-    "abbreviations": {
-        "ISECR": {"count": 2, "sections": ["Pleadings"]},
-        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
-        "ICC": {"count": 1, "sections": ["Pleadings"]},
-        "LOSC": {"count": 1, "sections": ["Pleadings"]},
-        "AFRC": {"count": 1, "sections": ["Pleadings"]}
-    },
-    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
-}
+# --- Data Models ---
+class PenaltyData:
+    def __init__(self, file_path: Optional[str] = None):
+        self.data = {
+            "memorialType": "Applicant",
+            "coverPage": {
+                "Team Number": {"present": True, "found": "349A"},
+                "Court Name": {"present": True, "found": "International Court of Justice"},
+                "Year": {"present": True, "found": "2025"},
+                "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+                "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+            },
+            "memorialParts": {
+                "Cover Page": True,
+                "Table of Contents": True,
+                "Index of Authorities": True,
+                "Statement of Jurisdiction": True,
+                "Statement of Facts": True,
+                "Summary of Pleadings": True,
+                "Pleadings": True,
+                "Prayer for Relief": False
+            },
+            "wordCounts": {
+                "Statement of Facts": {"count": 1196, "limit": 1200},
+                "Summary of Pleadings": {"count": 642, "limit": 700},
+                "Pleadings": {"count": 9424, "limit": 9500},
+                "Prayer for Relief": {"count": 0, "limit": 200}
+            },
+            "abbreviations": {
+                "ISECR": {"count": 2, "sections": ["Pleadings"]},
+                "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+                "ICC": {"count": 1, "sections": ["Pleadings"]},
+                "LOSC": {"count": 1, "sections": ["Pleadings"]},
+                "AFRC": {"count": 1, "sections": ["Pleadings"]}
+            },
+            "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
+        }
+        if file_path:
+            self.load_from_file(file_path)
 
-# Custom CSS for styling
-st.markdown("""
-<style>
-    /* Main container */
-    .main {
-        padding: 1rem;
-    }
-    
-    /* Card styling */
-    .stCard {
-        background-color: white;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    /* Progress bar colors */
-    .stProgress > div > div > div {
-        background-color: #4CAF50;
-    }
-    
-    .stProgress.warning > div > div > div {
-        background-color: #FFA726;
-    }
-    
-    .stProgress.danger > div > div > div {
-        background-color: #EF5350;
-    }
-    
-    /* Status indicators */
-    .status-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 8px;
-    }
-    
-    .status-success {
-        background-color: #4CAF50;
-    }
-    
-    .status-error {
-        background-color: #EF5350;
-    }
-    
-    .status-warning {
-        background-color: #FFA726;
-    }
-    
-    /* Custom header */
-    .custom-header {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-    
-    /* Sidebar styling */
-    .css-1d391kg {
-        background-color: white;
-    }
+    def load_from_file(self, file_path: str):
+        with open(file_path, 'r') as f:
+            self.data = json.load(f)
 
-    /* Card-like containers */
-    .stMarkdown {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-    }
+    def calculate_total_penalties(self) -> int:
+        total = 0
+        # Add penalty calculations based on rules
+        if not self.data["memorialParts"]["Prayer for Relief"]:
+            total += 4
+        total += min(len(self.data["abbreviations"]), 3)
+        # Add other penalty calculations
+        return total
 
-    /* Status icons */
-    .icon-success {
-        color: #4CAF50;
-        font-size: 1.2rem;
-    }
+# --- UI Components ---
+def load_custom_css():
+    st.markdown("""
+        <style>
+        /* Main container */
+        .main {
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        
+        /* Enhanced card styling */
+        .stCard {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Progress bars */
+        .progress-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .progress-bar {
+            height: 0.5rem;
+            border-radius: 0.25rem;
+            background: #e9ecef;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+        }
+        
+        /* Status indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-success {
+            background-color: #d1fae5;
+            color: #047857;
+        }
+        
+        .status-error {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .status-warning {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        /* Sidebar enhancements */
+        .css-1d391kg {
+            background-color: white;
+            padding: 2rem 1rem;
+        }
+        
+        /* Section titles */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        /* Enhanced tables */
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+        }
+        
+        .styled-table th {
+            background-color: #f8f9fa;
+            padding: 0.75rem;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .styled-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        /* Buttons and interactive elements */
+        .custom-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            color: white;
+            background-color: #3b82f6;
+            transition: background-color 0.2s;
+        }
+        
+        .custom-button:hover {
+            background-color: #2563eb;
+        }
+        
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            background-color: #374151;
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    .icon-error {
-        color: #EF5350;
-        font-size: 1.2rem;
-    }
-
-    /* Progress container */
-    .progress-container {
-        margin: 1rem 0;
-        padding: 1rem;
-        background-color: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-</style>
-""", unsafe_allow_html=True)
-
-def create_progress_bar(count, limit):
-    """Create a styled progress bar based on word count"""
-    percentage = (count / limit) * 100
-    color = "normal"
-    if percentage > 90:
-        color = "warning"
-    if percentage > 100:
-        color = "danger"
-    
-    # Create a container for the progress bar
-    st.markdown(f"""
-        <div class="progress-container">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span>{count} words</span>
-                <span style="color: {'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'}">
-                    {percentage:.1f}%
-                </span>
+def create_sidebar(data: PenaltyData):
+    with st.sidebar:
+        st.title("Jessup Penalty Checker")
+        
+        # Memorial Type with enhanced styling
+        st.markdown(f"""
+            <div style='
+                background-color: #f8f9fa;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                border-left: 4px solid #3b82f6;
+                margin-bottom: 1.5rem;
+            '>
+                <div style='color: #666; font-size: 0.875rem;'>Memorial Type</div>
+                <div style='font-size: 1.25rem; font-weight: 600; color: #1f2937;'>
+                    {data.data['memorialType']}
+                </div>
             </div>
+        """, unsafe_allow_html=True)
+        
+        # Penalty Points Summary
+        total_penalties = data.calculate_total_penalties()
+        st.markdown(f"""
+            <div style='
+                background-color: #fee2e2;
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+                text-align: center;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            '>
+                <div style='color: #991b1b; font-size: 0.875rem; font-weight: 500;'>
+                    Total Penalty Points
+                </div>
+                <div style='
+                    color: #dc2626;
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    line-height: 1;
+                    margin: 0.5rem 0;
+                '>
+                    {total_penalties}
+                </div>
+                <div style='color: #991b1b; font-size: 0.75rem;'>points deducted</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Navigation Menu
+        st.markdown("### Navigation")
+        menu_items = [
+            ("📄", "Cover Page", "Rule 5.6"),
+            ("📋", "Memorial Parts", "Rule 5.5"),
+            ("📏", "Word Counts", "Rule 5.12"),
+            ("🔒", "Anonymity", "Rule 5.14"),
+            ("📝", "Citations", "Rule 5.13"),
+            ("🖼️", "Media", "Rule 5.5(c)"),
+            ("📑", "Abbreviations", "Rule 5.17")
+        ]
+        
+        for icon, title, rule in menu_items:
+            st.markdown(f"""
+                <div style='
+                    padding: 0.75rem;
+                    background-color: white;
+                    border-radius: 0.5rem;
+                    margin-bottom: 0.5rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
+                '>
+                    <div style='display: flex; align-items: center;'>
+                        <span style='font-size: 1.25rem; margin-right: 0.5rem;'>{icon}</span>
+                        <div>
+                            <div style='font-weight: 500; color: #1f2937;'>{title}</div>
+                            <div style='font-size: 0.75rem; color: #6b7280;'>{rule}</div>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+def create_header():
+    st.markdown("""
+        <div style='
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        '>
+            <h1 style='
+                margin: 0;
+                color: #111827;
+                font-size: 2rem;
+                font-weight: 700;
+            '>Jessup Memorial Penalty Checker</h1>
+            <p style='
+                margin: 0.5rem 0 0 0;
+                color: #6b7280;
+                font-size: 1rem;
+            '>Automated compliance checking for Jessup Memorial submissions</p>
         </div>
     """, unsafe_allow_html=True)
-    
-    progress = st.progress(min(percentage / 100, 1.0))
-    st.markdown(f"<div style='text-align: right; font-size: 0.8rem; color: #666;'>Limit: {limit}</div>", 
-               unsafe_allow_html=True)
 
-def create_card(title, content):
-    """Create a card-like container"""
-    st.markdown(f"""
+def create_penalty_summary(data: PenaltyData):
+    penalties = [
+        ("Rule 5.5", "Missing Prayer for Relief", 4, "2 points per part"),
+        ("Rule 5.17", "Non-Permitted Abbreviations", 3, "1 point each, max 3"),
+        ("Rule 5.13", "Improper Citations", 3, "1 point per violation, max 5")
+    ]
+    
+    st.markdown("""
         <div class="stCard">
-            <h3>{title}</h3>
-            <div>{content}</div>
+            <h2 class="section-title">Penalty Summary</h2>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Rule</th>
+                        <th>Description</th>
+                        <th>Points</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+    """, unsafe_allow_html=True)
+    
+    for rule, desc, points, details in penalties:
+        st.markdown(f"""
+            <tr>
+                <td>{rule}</td>
+                <td>{desc}</td>
+                <td>{points}</td>
+                <td>{details}</td>
+            </tr>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("""
+                </tbody>
+            </table>
         </div>
     """, unsafe_allow_html=True)
 
 def main():
-    # Sidebar
-    with st.sidebar:
-        st.title("Jessup Penalty Checker")
-        st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
-        
-        # Penalty Points Summary
-        st.markdown("""
-        <div style='background-color: #f8f9fa; padding: 1rem; border-radius: 0.5rem;'>
-            <div style='color: #666; font-size: 0.9rem;'>Penalty Points</div>
-            <div style='color: #dc3545; font-size: 2rem; font-weight: bold;'>10</div>
-            <div style='color: #666; font-size: 0.8rem;'>points</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Navigation Items
-        st.markdown("### Sections")
-        sections = [
-            ("📄 Cover Page", "Rule 5.6", "2 points"),
-            ("✓ Memorial Parts", "Rule 5.5", "2 points per part"),
-            ("📏 Length Check", "Rule 5.12", "varies"),
-            ("🔒 Anonymity", "Rule 5.14", "up to 10 points"),
-            ("📝 Tracked Changes", "Rule 5.4", "up to 5 points"),
-            ("📚 Citations", "Rule 5.13", "up to 5 points"),
-            ("🖼️ Media", "Rule 5.5(c)", "up to 5 points"),
-            ("📑 Abbreviations", "Rule 5.17", "1 point each, max 3"),
-            ("🔍 Plagiarism", "Rule 11.2", "1-50 points")
-        ]
-        
-        for section, rule, points in sections:
-            st.markdown(f"""
-            <div style='padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 0.5rem; cursor: pointer;
-                        background-color: #f8f9fa; transition: background-color 0.2s;'>
-                <div style='font-weight: 500;'>{section}</div>
-                <div style='font-size: 0.8rem; color: #666;'>{rule} - {points}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
+    # Load custom CSS
+    load_custom_css()
+    
+    # Initialize data
+    data = PenaltyData()
+    
+    # Create sidebar
+    create_sidebar(data)
+    
     # Main content
-    st.title("Jessup Memorial Penalty Checker")
-
-    # Score Breakdown
-    with st.expander("Penalty Score Summary", expanded=True):
-        penalties_df = pd.DataFrame({
-            'Rule': ['Rule 5.5', 'Rule 5.17', 'Rule 5.13'],
-            'Description': [
-                'Missing Prayer for Relief',
-                'Non-Permitted Abbreviations (5 found)',
-                'Improper Citation'
-            ],
-            'Points': [4, 3, 3],
-            'Reviewed': ['Yes', 'No', 'No']
-        })
-        st.table(penalties_df)
-        st.markdown("**Total Penalty Points: 10**")
-
-    # Create two columns for the layout
-    col1, col2 = st.columns(2)
-
-    # Cover Page Check
-    with col1:
+    create_header()
+    
+    # Create penalty summary
+    create_penalty_summary(data)
+    
+    # Create main content sections in tabs
+    tabs = st.tabs(["Overview", "Word Counts", "Citations", "Media", "Abbreviations"])
+    
+    with tabs[0]:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+                <div class="stCard">
+                    <h3>Cover Page Information</h3>
+                    <!-- Cover page content -->
+                </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.markdown("""
+                <div class="stCard">
+                    <h3>Memorial Parts</h3>
+                    <!-- Memorial parts content -->
+                </div>
+            """, unsafe_allow_html=True)
+    
+    with tabs[1]:
         st.markdown("""
             <div class="stCard">
-                <h3>Cover Page Information</h3>
+                <h3>Word Count Analysis</h3>
+                <!-- Word count content -->
+            </div>
         """, unsafe_allow_html=True)
-        
-        for key, value in initial_data["coverPage"].items():
-            icon = "✅" if value["present"] else "❌"
-            st.markdown(f"{icon} **{key}:** {value['found']}")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Memorial Parts
-    with col2:
-        st.markdown("""
-            <div class="stCard">
-                <h3>Memorial Parts</h3>
-        """, unsafe_allow_html=True)
-        
-        for part, present in initial_data["memorialParts"].items():
-            icon = "✅" if present else "❌"
-            st.markdown(f"{icon} {part}")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Word Count Analysis
-    st.markdown("### Word Count Analysis")
-    word_count_cols = st.columns(2)
-    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
-        with word_count_cols[idx % 2]:
-            st.markdown(f"**{section}**")
-            create_progress_bar(data["count"], data["limit"])
-
-    # Abbreviations
-    st.markdown("### Non-Permitted Abbreviations")
-    for abbr, info in initial_data["abbreviations"].items():
-        with st.expander(f"{abbr} ({info['count']} occurrences)"):
-            st.markdown(f"Found in: {', '.join(info['sections'])}")
-
-    # Additional Checks in Grid Layout
-    col1, col2 = st.columns(2)
     
-    with col1:
-        # Anonymity Check
-        create_card("Anonymity Check", """
-            <div class="status-success">
-                ✅ No anonymity violations found
-                <div style='font-size: 0.8rem; color: #666; margin-top: 0.5rem;'>
-                    No disclosure of school, team members, or country
-                </div>
-            </div>
-        """)
-        
-        # Citations Check
-        create_card("Citations Check", """
-            <div class="status-error">
-                ⚠️ 5 instances of improper citation format detected
-            </div>
-        """)
-        
-        # Media Check
-        create_card("Media Check", "\n".join(
-            f"⚠️ Found in {item['section']}: {item['text']}"
-            for item in initial_data["media"]
-        ))
-    
-    with col2:
-        # Tracked Changes Check
-        create_card("Tracked Changes", """
-            <div class="status-success">
-                <div style='margin-bottom: 0.5rem;'>
-                    ✅ No tracked changes found
-                </div>
-                <div>
-                    ✅ No comments found
-                </div>
-            </div>
-        """)
-        
-        # Plagiarism Check
-        create_card("Plagiarism Check", """
-            <div class="status-success">
-                ✅ No plagiarism detected
-            </div>
-        """)
+    # Add other sections...
 
 if __name__ == "__main__":
     main()

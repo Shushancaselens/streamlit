@@ -215,19 +215,60 @@ def main():
     st.title("Jessup Memorial Penalty Checker")
 
     # Score Breakdown
-    with st.expander("Penalty Score Summary", expanded=True):
-        penalties_df = pd.DataFrame({
-            'Rule': ['Rule 5.5', 'Rule 5.17', 'Rule 5.13'],
-            'Description': [
-                'Missing Prayer for Relief',
-                'Non-Permitted Abbreviations (5 found)',
-                'Improper Citation'
-            ],
-            'Points': [4, 3, 3],
-            'Reviewed': ['Yes', 'No', 'No']
-        })
-        st.table(penalties_df)
-        st.markdown("**Total Penalty Points: 10**")
+    st.markdown("""
+        <div class="stCard">
+            <h3>
+                ⚠️ Penalty Score Summary
+            </h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <th style="text-align: left; padding: 8px;">Rule</th>
+                        <th style="text-align: left; padding: 8px;">Description</th>
+                        <th style="text-align: center; padding: 8px;">A</th>
+                        <th style="text-align: center; padding: 8px;">R</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 8px;">Rule 5.5</td>
+                        <td style="padding: 8px;">
+                            Missing Prayer for Relief
+                            <br/>
+                            <span style="font-size: 0.8em; color: #666;">2 points per part</span>
+                        </td>
+                        <td style="text-align: center; padding: 8px;">4</td>
+                        <td style="text-align: center; padding: 8px;">2</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 8px;">Rule 5.17</td>
+                        <td style="padding: 8px;">
+                            Non-Permitted Abbreviations (5 found)
+                            <br/>
+                            <span style="font-size: 0.8em; color: #666;">1 point each, max 3</span>
+                        </td>
+                        <td style="text-align: center; padding: 8px;">3</td>
+                        <td style="text-align: center; padding: 8px;">0</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 8px;">Rule 5.13</td>
+                        <td style="padding: 8px;">
+                            Improper Citation
+                            <br/>
+                            <span style="font-size: 0.8em; color: #666;">1 point per violation, max 5</span>
+                        </td>
+                        <td style="text-align: center; padding: 8px;">3</td>
+                        <td style="text-align: center; padding: 8px;">0</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa; font-weight: bold;">
+                        <td colspan="2" style="text-align: right; padding: 8px;">TOTAL</td>
+                        <td style="text-align: center; padding: 8px;">10</td>
+                        <td style="text-align: center; padding: 8px;">2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    """, unsafe_allow_html=True)
 
     # Create two columns for the layout
     col1, col2 = st.columns(2)
@@ -266,11 +307,24 @@ def main():
             st.markdown(f"**{section}**")
             create_progress_bar(data["count"], data["limit"])
 
-    # Abbreviations
-    st.markdown("### Non-Permitted Abbreviations")
+    # Abbreviations section
+    st.markdown("""
+        <div class="stCard">
+            <h3>
+                ⚠️ Non-Permitted Abbreviations
+                <span style="font-size: 0.8em; color: #666;">(Rule 5.17 - 1 point each, max 3)</span>
+            </h3>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Create collapsible sections for each abbreviation
     for abbr, info in initial_data["abbreviations"].items():
-        with st.expander(f"{abbr} ({info['count']} occurrences)"):
-            st.markdown(f"Found in: {', '.join(info['sections'])}")
+        with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] > 1 else ''})"):
+            st.markdown(f"""
+                <div style="padding-left: 1.5rem;">
+                    <p style="font-size: 0.9em; color: #666;">Found in: {', '.join(info['sections'])}</p>
+                </div>
+            """, unsafe_allow_html=True)
 
     # Additional Checks in Grid Layout
     col1, col2 = st.columns(2)

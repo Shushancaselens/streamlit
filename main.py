@@ -1,72 +1,58 @@
 import streamlit as st
 from datetime import datetime
-import json
 
-# Page configuration with improved metadata
+# Initialize session state
+if 'active_tab' not in st.session_state:
+    st.session_state.active_tab = "Overview"
+if 'last_check_time' not in st.session_state:
+    st.session_state.last_check_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# Configure the page with improved metadata
 st.set_page_config(
     page_title="Jessup Memorial Penalty Checker",
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'Get Help': 'https://www.ilsa.org/contact-us/',
-        'Report a bug': 'https://github.com/your-repo/issues',
-        'About': 'Jessup Memorial Penalty Checker - Version 2.0'
+        'About': "Jessup Memorial Penalty Checker - Version 2.0"
     }
 )
 
-# Improved styling with modern components and dark mode support
+# Enhanced CSS with modern design elements
 st.markdown("""
     <style>
-    /* Modern UI Theme */
-    :root {
-        --primary-color: #4F46E5;
-        --secondary-color: #818CF8;
-        --success-color: #10B981;
-        --warning-color: #F59E0B;
-        --error-color: #EF4444;
-        --background-color: #F9FAFB;
-        --card-background: #FFFFFF;
-        --text-color: #111827;
-        --text-secondary: #6B7280;
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --background-color: #1F2937;
-            --card-background: #374151;
-            --text-color: #F9FAFB;
-            --text-secondary: #D1D5DB;
-        }
-    }
-    
+    /* Base theme improvements */
     .stApp {
-        background-color: var(--background-color);
+        background-color: #f8fafc;
     }
     
+    /* Modern card design */
     .card {
-        background-color: var(--card-background);
-        border-radius: 1rem;
-        border: 1px solid rgba(229, 231, 235, 0.2);
+        background-color: white;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
         padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease-in-out;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
     
     .card:hover {
         transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
+    /* Enhanced header styling */
     .header {
         font-size: 1.25rem;
         font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 1rem;
+        color: #1e293b;
+        margin-bottom: 1.25rem;
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.75rem;
     }
     
     /* Improved progress bars */
@@ -79,283 +65,282 @@ st.markdown("""
     .progress-success .stProgress > div > div > div > div {
         background: linear-gradient(90deg, #059669 0%, #10B981 100%) !important;
     }
-    
     .progress-warning .stProgress > div > div > div > div {
         background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%) !important;
     }
-    
     .progress-error .stProgress > div > div > div > div {
         background: linear-gradient(90deg, #DC2626 0%, #EF4444 100%) !important;
     }
     
-    /* Improved sidebar */
-    [data-testid="stSidebar"] {
-        background-color: var(--card-background);
-        border-right: 1px solid rgba(229, 231, 235, 0.2);
+    /* Layout improvements */
+    .block-container {
+        padding: 2rem !important;
     }
     
+    /* Enhanced sidebar */
+    [data-testid="stSidebar"] {
+        background-color: white;
+        border-right: 1px solid #e2e8f0;
+    }
+    
+    /* Interactive menu items */
     .menu-item {
         padding: 0.75rem;
         border-radius: 0.5rem;
         margin: 0.5rem 0;
         cursor: pointer;
-        transition: all 0.2s ease-in-out;
+        transition: all 0.2s;
         border: 1px solid transparent;
     }
-    
     .menu-item:hover {
-        background-color: rgba(79, 70, 229, 0.1);
-        border-color: var(--primary-color);
+        background-color: #f1f5f9;
+        border-color: #e2e8f0;
+    }
+    .menu-item.active {
+        background-color: #e2e8f0;
+        border-color: #cbd5e1;
     }
     
-    /* Custom button styles */
-    .stButton>button {
-        background-color: var(--primary-color);
-        color: white;
-        border-radius: 0.5rem;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        border: none;
-        transition: all 0.2s ease-in-out;
-    }
-    
-    .stButton>button:hover {
-        background-color: var(--secondary-color);
-        transform: translateY(-1px);
-    }
-    
-    /* Improved table styles */
-    .styled-table {
-        width: 100%;
+    /* Improved tables */
+    table {
         border-collapse: separate;
         border-spacing: 0;
-        margin: 1rem 0;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
     }
     
-    .styled-table th,
-    .styled-table td {
+    th, td {
         padding: 0.75rem;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
     }
     
-    .styled-table th {
-        background-color: rgba(79, 70, 229, 0.1);
+    th {
+        background: #f8fafc;
         font-weight: 600;
     }
     
-    /* Tooltip styles */
-    .tooltip {
-        position: relative;
-        display: inline-block;
+    /* Badge styling */
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    .badge-success {
+        background-color: #dcfce7;
+        color: #059669;
+    }
+    .badge-warning {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+    .badge-error {
+        background-color: #fee2e2;
+        color: #dc2626;
     }
     
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        background-color: var(--card-background);
-        color: var(--text-color);
-        text-align: center;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        position: absolute;
-        z-index: 1;
-        bottom: 125%;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
+    /* Custom expander styling */
+    .streamlit-expanderHeader {
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+        background-color: white;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Add session state for storing analysis results
-if 'analysis_history' not in st.session_state:
-    st.session_state.analysis_history = []
+# Initial data (preserved from original)
+initial_data = {
+    "memorialType": "Applicant",
+    "coverPage": {
+        "Team Number": {"present": True, "found": "349A"},
+        "Court Name": {"present": True, "found": "International Court of Justice"},
+        "Year": {"present": True, "found": "2025"},
+        "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
+        "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
+    },
+    "memorialParts": {
+        "Cover Page": True,
+        "Table of Contents": True,
+        "Index of Authorities": True,
+        "Statement of Jurisdiction": True,
+        "Statement of Facts": True,
+        "Summary of Pleadings": True,
+        "Pleadings": True,
+        "Prayer for Relief": False
+    },
+    "wordCounts": {
+        "Statement of Facts": {"count": 1196, "limit": 1200},
+        "Summary of Pleadings": {"count": 642, "limit": 700},
+        "Pleadings": {"count": 9424, "limit": 9500},
+        "Prayer for Relief": {"count": 0, "limit": 200}
+    },
+    "abbreviations": {
+        "ISECR": {"count": 2, "sections": ["Pleadings"]},
+        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICC": {"count": 1, "sections": ["Pleadings"]},
+        "LOSC": {"count": 1, "sections": ["Pleadings"]},
+        "AFRC": {"count": 1, "sections": ["Pleadings"]}
+    },
+    "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
+}
 
-# Improved sidebar with navigation and controls
+# Enhanced sidebar with better organization
 with st.sidebar:
-    # Modern logo and branding
+    # Modernized logo and title
     st.markdown("""
-        <div style='background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%); 
+        <div style='background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%); 
                     padding: 1.5rem; 
-                    border-radius: 1rem; 
-                    margin-bottom: 2rem;
-                    text-align: center;'>
-            <h1 style='color: white; font-size: 1.75rem; margin-bottom: 0.5rem;'>⚖️ Jessup Checker</h1>
-            <p style='color: rgba(255,255,255,0.9); font-size: 0.875rem;'>Pro Edition</p>
+                    border-radius: 0.75rem; 
+                    margin-bottom: 1.5rem;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);'>
+            <div style='color: white; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;'>
+                ⚖️ Jessup Checker
+            </div>
+            <div style='color: #e0e7ff; font-size: 0.875rem;'>
+                Last checked: {st.session_state.last_check_time}
+            </div>
+        </div>
+    """.format(st.session_state.last_check_time), unsafe_allow_html=True)
+    
+    st.markdown(f"""
+        <div style='background-color: white; 
+                    padding: 1rem; 
+                    border-radius: 0.75rem; 
+                    border: 1px solid #e2e8f0;
+                    margin-bottom: 1.5rem;'>
+            <div style='font-size: 1.25rem; font-weight: 600; color: #1e293b;'>
+                Memorandum for the {initial_data['memorialType']}
+            </div>
+            <div style='color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;'>
+                Team #{initial_data['coverPage']['Team Number']['found']}
+            </div>
         </div>
     """, unsafe_allow_html=True)
     
-    # Add file uploader for memorial
-    uploaded_file = st.file_uploader("Upload Memorial", type=['pdf', 'docx'])
+    # Enhanced penalty points summary
+    total_penalties = sum(p["points"] for p in penalties)
+    penalty_color = (
+        "#22c55e" if total_penalties == 0
+        else "#f59e0b" if total_penalties <= 5
+        else "#ef4444"
+    )
     
-    if uploaded_file:
-        st.success("File uploaded successfully!")
-        
-        # Add analysis options
-        st.markdown("### Analysis Options")
-        auto_analysis = st.toggle("Auto-analyze on upload", value=True)
-        include_plagiarism = st.toggle("Include plagiarism check", value=True)
-        advanced_citations = st.toggle("Advanced citation analysis", value=False)
-        
-        if st.button("Start Analysis", type="primary"):
-            with st.spinner("Analyzing memorial..."):
-                # Simulate analysis delay
-                import time
-                time.sleep(2)
-                st.session_state.analysis_history.append({
-                    'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'filename': uploaded_file.name,
-                    'score': 10
-                })
+    st.markdown(f"""
+        <div style='background-color: white; 
+                    padding: 1.25rem; 
+                    border-radius: 0.75rem; 
+                    border: 1px solid #e2e8f0;
+                    margin-bottom: 1.5rem;'>
+            <div style='color: #64748b; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;'>
+                Total Penalty Points
+            </div>
+            <div style='display: flex; align-items: baseline; gap: 0.5rem;'>
+                <span style='color: {penalty_color}; font-size: 2rem; font-weight: 700;'>{total_penalties}</span>
+                <span style='color: #64748b; font-size: 0.875rem;'>points</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Add analysis history
-    if st.session_state.analysis_history:
-        st.markdown("### Recent Analyses")
-        for analysis in st.session_state.analysis_history:
-            st.markdown(f"""
-                <div class='card' style='padding: 0.75rem; margin: 0.5rem 0;'>
-                    <div style='font-size: 0.875rem; color: var(--text-color);'>{analysis['filename']}</div>
-                    <div style='font-size: 0.75rem; color: var(--text-secondary);'>{analysis['timestamp']}</div>
-                    <div style='color: var(--error-color); font-weight: 600;'>{analysis['score']} penalty points</div>
-                </div>
-            """, unsafe_allow_html=True)
-
-# Main content area with tabs
-tab1, tab2, tab3 = st.tabs(["Analysis Results", "Word Count Details", "Export Report"])
-
-with tab1:
-    st.markdown("## Memorial Analysis Results")
+    # Interactive navigation menu
+    menu_items = [
+        ("📊", "Overview", "Dashboard summary"),
+        ("📄", "Cover Page", "Rule 5.6 - 2 points"),
+        ("📋", "Memorial Parts", "Rule 5.5 - 2 points per part"),
+        ("📏", "Length Check", "Rule 5.12 - varies"),
+        ("🔒", "Anonymity", "Rule 5.14 - up to 10 points"),
+        ("📝", "Tracked Changes", "Rule 5.4 - up to 5 points"),
+        ("📚", "Citations", "Rule 5.13 - up to 5 points"),
+        ("🖼️", "Media", "Rule 5.5(c) - up to 5 points"),
+        ("📑", "Abbreviations", "Rule 5.17 - 1 point each, max 3"),
+        ("⚠️", "Plagiarism", "Rule 11.2 - 1-50 points")
+    ]
     
-    # Summary metrics
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric(label="Total Penalties", value="10 points", delta="2 points recoverable")
-    with col2:
-        st.metric(label="Word Count Status", value="Within Limits", delta="98% of max")
-    with col3:
-        st.metric(label="Critical Issues", value="2", delta="-1 from last check", delta_color="inverse")
-    with col4:
-        st.metric(label="Overall Status", value="Needs Review", delta="3 warnings")
-    
-    # Detailed analysis cards
-    st.markdown("### Detailed Analysis")
-    
-    # Create expandable sections for each analysis category
-    with st.expander("📄 Cover Page Analysis", expanded=True):
-        st.markdown("""
-            <div class='card'>
-                <div class='header'>Cover Page Requirements</div>
-                <table class='styled-table'>
-                    <tr>
-                        <th>Requirement</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                    </tr>
-                    <tr>
-                        <td>Team Number</td>
-                        <td>✅ Present</td>
-                        <td>349A</td>
-                    </tr>
-                    <tr>
-                        <td>Court Name</td>
-                        <td>✅ Present</td>
-                        <td>International Court of Justice</td>
-                    </tr>
-                </table>
+    for icon, label, description in menu_items:
+        is_active = st.session_state.active_tab == label
+        st.markdown(f"""
+            <div class='menu-item{"" if not is_active else " active"}' 
+                 onclick='HandleMenuClick("{label}")'>
+                {icon} {label}
+                <div style='font-size: 0.75rem; color: #64748b;'>{description}</div>
             </div>
         """, unsafe_allow_html=True)
 
-with tab2:
-    st.markdown("## Word Count Analysis")
-    
-    # Add interactive word count charts
-    import plotly.graph_objects as go
-    
-    # Create sample word count data
-    sections = ['Statement of Facts', 'Summary of Pleadings', 'Pleadings', 'Prayer for Relief']
-    current = [1196, 642, 9424, 0]
-    limits = [1200, 700, 9500, 200]
-    
-    # Create progress bars with plotly
-    fig = go.Figure()
-    
-    for i, (section, count, limit) in enumerate(zip(sections, current, limits)):
-        percentage = (count / limit) * 100
-        color = '#10B981' if percentage <= 90 else '#F59E0B' if percentage <= 100 else '#EF4444'
-        
-        fig.add_trace(go.Bar(
-            name=section,
-            y=[section],
-            x=[percentage],
-            orientation='h',
-            marker=dict(color=color),
-            customdata=[[count, limit]],
-            hovertemplate="Words: %{customdata[0]}<br>Limit: %{customdata[1]}<br>Usage: %{x:.1f}%<extra></extra>"
-        ))
-    
-    fig.update_layout(
-        title="Word Count Usage by Section",
-        barmode='stack',
-        height=300,
-        margin=dict(l=200),
-        xaxis=dict(title="Percentage of Limit"),
-        showlegend=False
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
-
-with tab3:
-    st.markdown("## Export Options")
-    
-    # Add export options
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### Report Format")
-        report_format = st.selectbox(
-            "Choose format",
-            ["PDF Report", "Excel Spreadsheet", "Word Document"]
-        )
-        
-        include_details = st.multiselect(
-            "Include in report",
-            ["Word Count Analysis", "Citation Check Results", "Penalty Summary", "Recommendations"],
-            default=["Word Count Analysis", "Penalty Summary"]
-        )
-    
-    with col2:
-        st.markdown("### Delivery Options")
-        email = st.text_input("Email report to (optional)")
-        
-        if st.button("Generate Report", type="primary"):
-            with st.spinner("Generating report..."):
-                # Simulate report generation
-                import time
-                time.sleep(2)
-                st.success("Report generated successfully!")
-                st.download_button(
-                    label="Download Report",
-                    data=b"Sample report content",
-                    file_name=f"jessup_analysis_{datetime.now().strftime('%Y%m%d')}.pdf",
-                    mime="application/pdf"
-                )
-
-# Add a floating action button for quick actions
+# Main content area with improved organization
 st.markdown("""
-    <div style='position: fixed; right: 2rem; bottom: 2rem;'>
-        <button style='background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%); 
-                      color: white; 
-                      border: none; 
-                      padding: 1rem; 
-                      border-radius: 50%; 
-                      cursor: pointer;
-                      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
-            <span style='font-size: 1.5rem;'>+</span>
-        </button>
+    <h1 style='font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 2rem;'>
+        Jessup Memorial Penalty Checker
+    </h1>
+""", unsafe_allow_html=True)
+
+# Enhanced penalty score summary card
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='header'>
+        <span style='color: #ef4444;'>⚠️</span> Penalty Score Summary
     </div>
 """, unsafe_allow_html=True)
+
+penalties_df = pd.DataFrame(penalties)
+st.dataframe(
+    penalties_df,
+    column_config={
+        "rule": "Rule",
+        "description": "Description",
+        "points": st.column_config.NumberColumn(
+            "Points",
+            help="Penalty points assigned",
+            format="%d"
+        ),
+        "r": st.column_config.NumberColumn(
+            "Reduced",
+            help="Points after reduction",
+            format="%d"
+        )
+    },
+    hide_index=True,
+    use_container_width=True
+)
+
+total_points = penalties_df["points"].sum()
+total_r = penalties_df["r"].sum()
+
+st.markdown(f"""
+    <div style='display: flex; justify-content: flex-end; gap: 2rem; margin-top: 1rem;'>
+        <div>
+            <span style='color: #64748b; font-weight: 500;'>Total Points:</span>
+            <span style='color: #ef4444; font-weight: 600; margin-left: 0.5rem;'>{total_points}</span>
+        </div>
+        <div>
+            <span style='color: #64748b; font-weight: 500;'>After Reduction:</span>
+            <span style='color: #059669; font-weight: 600; margin-left: 0.5rem;'>{total_r}</span>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Two-column layout with improved spacing
+col1, col2 = st.columns(2)
+
+# Enhanced cover page information
+with col1:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class='header'>
+            📄 Cover Page Information
+            <span style='font-size: 0.75rem; color: #64748b;'>(Rule 5.6 - 2 points)</span>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    for key, value in initial_data["coverPage"].items():
+        icon = "✅" if value["present"] else "❌"
+        st.markdown(f"""
+            <div style='display: flex; justify-content: space-between; align-items: center; 
+                      padding: 0.75rem; border-bottom: 1px solid #e2e8f0;'>
+                <div>
+                    <span style='margin-right: 0.5rem;'>{icon}</span>
+                    <span style='color: #1e293b; font-weight: 500;'>{key}</span>
+                </div>
+                <div style='color: #64748b;'>{value["found"]

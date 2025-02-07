@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initial data setup
+# Initial data setup [same as before]
 initial_data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -37,7 +37,7 @@ initial_data = {
     },
     "abbreviations": {
         "ISECR": {"count": 2, "sections": ["Pleadings"]},
-        "ICCPED": {"count": 1, "sections": ["Summary of Pleadings"]},
+        "ICCPED": {"count": 1, sections: ["Summary of Pleadings"]},
         "ICC": {"count": 1, "sections": ["Pleadings"]},
         "LOSC": {"count": 1, "sections": ["Pleadings"]},
         "AFRC": {"count": 1, "sections": ["Pleadings"]}
@@ -45,333 +45,323 @@ initial_data = {
     "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
 }
 
-# Custom CSS for styling
+# Enhanced CSS for better UI
 st.markdown("""
 <style>
-    /* Main container */
-    .main {
-        padding: 1rem;
+    /* Global styles */
+    .stApp {
+        background-color: #f8f9fa;
     }
     
-    /* Card styling */
-    .stCard {
+    /* Main container styles */
+    .main-container {
         background-color: white;
-        border-radius: 0.5rem;
-        padding: 1rem;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin: 1rem 0;
+    }
+    
+    /* Section headers */
+    .section-header {
+        color: #1a1f36;
+        font-size: 1.25rem;
+        font-weight: 600;
         margin-bottom: 1rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    /* Progress bar colors */
-    .stProgress > div > div > div {
-        background-color: #4CAF50;
-    }
-    
-    .stProgress.warning > div > div > div {
-        background-color: #FFA726;
-    }
-    
-    .stProgress.danger > div > div > div {
-        background-color: #EF5350;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f0f0;
     }
     
     /* Status indicators */
-    .status-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 8px;
-    }
-    
     .status-success {
-        background-color: #4CAF50;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .status-error {
-        background-color: #EF5350;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .status-warning {
-        background-color: #FFA726;
+        color: #f59e0b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
-    /* Custom header */
-    .custom-header {
-        font-size: 1.5rem;
-        font-weight: bold;
+    /* Cards */
+    .card {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         margin-bottom: 1rem;
+        border: 1px solid #f0f0f0;
     }
     
-    /* Sidebar styling */
-    .css-1d391kg {
-        background-color: white;
-    }
-
-    /* Card-like containers */
-    .stMarkdown {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-    }
-
-    /* Status icons */
-    .icon-success {
-        color: #4CAF50;
-        font-size: 1.2rem;
-    }
-
-    .icon-error {
-        color: #EF5350;
-        font-size: 1.2rem;
-    }
-
-    /* Progress container */
+    /* Progress bars */
     .progress-container {
-        margin: 1rem 0;
+        background-color: #f9fafb;
         padding: 1rem;
-        background-color: white;
         border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin: 0.5rem 0;
+    }
+    
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Tables */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 1rem 0;
+    }
+    
+    .custom-table th {
+        background-color: #f9fafb;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .custom-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    /* Sidebar enhancements */
+    .sidebar-section {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    /* Navigation items */
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .nav-item:hover {
+        background-color: #f9fafb;
+    }
+    
+    /* Custom button styles */
+    .custom-button {
+        background-color: #3b82f6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .custom-button:hover {
+        background-color: #2563eb;
     }
 </style>
 """, unsafe_allow_html=True)
 
-def create_progress_bar(count, limit):
-    """Create a styled progress bar based on word count"""
-    percentage = (count / limit) * 100
-    color = "normal"
-    if percentage > 90:
-        color = "warning"
-    if percentage > 100:
-        color = "danger"
-    
-    # Create a container for the progress bar
-    st.markdown(f"""
-        <div class="progress-container">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span>{count} words</span>
-                <span style="color: {'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'}">
-                    {percentage:.1f}%
-                </span>
-            </div>
+def create_section_header(title, icon="", subtitle=""):
+    """Create a consistent section header"""
+    return st.markdown(f"""
+        <div class="section-header">
+            {icon} {title}
+            {f'<span style="font-size: 0.8rem; color: #6b7280; margin-left: 0.5rem;">({subtitle})</span>' if subtitle else ''}
         </div>
     """, unsafe_allow_html=True)
-    
-    progress = st.progress(min(percentage / 100, 1.0))
-    st.markdown(f"<div style='text-align: right; font-size: 0.8rem; color: #666;'>Limit: {limit}</div>", 
-               unsafe_allow_html=True)
 
-def create_card(title, content):
-    """Create a card-like container"""
+def create_status_indicator(status, text):
+    """Create a consistent status indicator"""
+    icons = {
+        "success": "✅",
+        "error": "❌",
+        "warning": "⚠️"
+    }
+    return f'<div class="status-{status}">{icons[status]} {text}</div>'
+
+def create_progress_bar(count, limit):
+    """Create an enhanced progress bar"""
+    percentage = (count / limit) * 100
+    status = "success"
+    if percentage > 90:
+        status = "warning"
+    if percentage > 100:
+        status = "error"
+    
     st.markdown(f"""
-        <div class="stCard">
-            <h3>{title}</h3>
-            <div>{content}</div>
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>{count} words</span>
+                <span class="status-{status}">{percentage:.1f}%</span>
+            </div>
+            <div style="width: 100%; background-color: #e5e7eb; height: 0.5rem; border-radius: 0.25rem;">
+                <div style="width: {min(percentage, 100)}%; height: 100%; border-radius: 0.25rem; 
+                     background-color: {{'success': '#10b981', 'warning': '#f59e0b', 'error': '#ef4444'}[status]};">
+                </div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem; color: #6b7280; margin-top: 0.25rem;">
+                Limit: {limit}
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
 def main():
     # Sidebar
     with st.sidebar:
-        st.title("Jessup Penalty Checker")
-        st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
-        
-        # Penalty Points Summary
         st.markdown("""
-        <div style='background-color: #f8f9fa; padding: 1rem; border-radius: 0.5rem;'>
-            <div style='color: #666; font-size: 0.9rem;'>Penalty Points</div>
-            <div style='color: #dc3545; font-size: 2rem; font-weight: bold;'>10</div>
-            <div style='color: #666; font-size: 0.8rem;'>points</div>
-        </div>
+            <div class="sidebar-section">
+                <h1 style="margin-bottom: 1rem;">Jessup Penalty Checker</h1>
+                <div style="font-size: 1.1rem; color: #4b5563;">
+                    Memorandum for the {initial_data['memorialType']}
+                </div>
+                <div style="background-color: #fee2e2; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+                    <div style="font-size: 0.9rem; color: #991b1b;">Penalty Points</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">10</div>
+                </div>
+            </div>
         """, unsafe_allow_html=True)
-
-        # Navigation Items
-        st.markdown("### Sections")
+        
+        # Navigation
+        create_section_header("Sections")
         sections = [
-            ("📄 Cover Page", "Rule 5.6", "2 points"),
-            ("✓ Memorial Parts", "Rule 5.5", "2 points per part"),
-            ("📏 Length Check", "Rule 5.12", "varies"),
-            ("🔒 Anonymity", "Rule 5.14", "up to 10 points"),
-            ("📝 Tracked Changes", "Rule 5.4", "up to 5 points"),
-            ("📚 Citations", "Rule 5.13", "up to 5 points"),
-            ("🖼️ Media", "Rule 5.5(c)", "up to 5 points"),
-            ("📑 Abbreviations", "Rule 5.17", "1 point each, max 3"),
-            ("🔍 Plagiarism", "Rule 11.2", "1-50 points")
+            ("📄", "Cover Page", "Rule 5.6", "2 points"),
+            ("✓", "Memorial Parts", "Rule 5.5", "2 points per part"),
+            ("📏", "Length Check", "Rule 5.12", "varies"),
+            ("🔒", "Anonymity", "Rule 5.14", "up to 10 points"),
+            ("📝", "Tracked Changes", "Rule 5.4", "up to 5 points"),
+            ("📚", "Citations", "Rule 5.13", "up to 5 points"),
+            ("🖼️", "Media", "Rule 5.5(c)", "up to 5 points"),
+            ("📑", "Abbreviations", "Rule 5.17", "1 point each, max 3"),
+            ("🔍", "Plagiarism", "Rule 11.2", "1-50 points")
         ]
         
-        for section, rule, points in sections:
+        for icon, section, rule, points in sections:
             st.markdown(f"""
-            <div style='padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 0.5rem; cursor: pointer;
-                        background-color: #f8f9fa; transition: background-color 0.2s;'>
-                <div style='font-weight: 500;'>{section}</div>
-                <div style='font-size: 0.8rem; color: #666;'>{rule} - {points}</div>
-            </div>
+                <div class="nav-item">
+                    <div style="margin-right: 0.75rem;">{icon}</div>
+                    <div>
+                        <div style="font-weight: 500;">{section}</div>
+                        <div style="font-size: 0.8rem; color: #6b7280;">{rule} - {points}</div>
+                    </div>
+                </div>
             """, unsafe_allow_html=True)
 
-    # Main content
-    st.title("Jessup Memorial Penalty Checker")
-
-    # Score Breakdown
+    # Main content area
+    st.markdown('<div class="main-container">', unsafe_allow_html=True)
+    
+    # Header
     st.markdown("""
-        <div class="stCard">
-            <h3>
-                ⚠️ Penalty Score Summary
-            </h3>
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <th style="text-align: left; padding: 8px;">Rule</th>
-                        <th style="text-align: left; padding: 8px;">Description</th>
-                        <th style="text-align: center; padding: 8px;">A</th>
-                        <th style="text-align: center; padding: 8px;">R</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 8px;">Rule 5.5</td>
-                        <td style="padding: 8px;">
-                            Missing Prayer for Relief
-                            <br/>
-                            <span style="font-size: 0.8em; color: #666;">2 points per part</span>
-                        </td>
-                        <td style="text-align: center; padding: 8px;">4</td>
-                        <td style="text-align: center; padding: 8px;">2</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 8px;">Rule 5.17</td>
-                        <td style="padding: 8px;">
-                            Non-Permitted Abbreviations (5 found)
-                            <br/>
-                            <span style="font-size: 0.8em; color: #666;">1 point each, max 3</span>
-                        </td>
-                        <td style="text-align: center; padding: 8px;">3</td>
-                        <td style="text-align: center; padding: 8px;">0</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 8px;">Rule 5.13</td>
-                        <td style="padding: 8px;">
-                            Improper Citation
-                            <br/>
-                            <span style="font-size: 0.8em; color: #666;">1 point per violation, max 5</span>
-                        </td>
-                        <td style="text-align: center; padding: 8px;">3</td>
-                        <td style="text-align: center; padding: 8px;">0</td>
-                    </tr>
-                    <tr style="background-color: #f8f9fa; font-weight: bold;">
-                        <td colspan="2" style="text-align: right; padding: 8px;">TOTAL</td>
-                        <td style="text-align: center; padding: 8px;">10</td>
-                        <td style="text-align: center; padding: 8px;">2</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <h1 style="font-size: 2rem; margin-bottom: 2rem;">
+            Jessup Memorial Penalty Checker
+        </h1>
     """, unsafe_allow_html=True)
-
-    # Create two columns for the layout
+    
+    # Penalty Score Summary
+    create_section_header("Penalty Score Summary", "⚠️")
+    st.markdown("""
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Rule</th>
+                    <th>Description</th>
+                    <th style="text-align: center;">A</th>
+                    <th style="text-align: center;">R</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Rule 5.5</td>
+                    <td>
+                        Missing Prayer for Relief
+                        <div style="font-size: 0.8rem; color: #6b7280;">2 points per part</div>
+                    </td>
+                    <td style="text-align: center;">4</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+                <tr>
+                    <td>Rule 5.17</td>
+                    <td>
+                        Non-Permitted Abbreviations (5 found)
+                        <div style="font-size: 0.8rem; color: #6b7280;">1 point each, max 3</div>
+                    </td>
+                    <td style="text-align: center;">3</td>
+                    <td style="text-align: center;">0</td>
+                </tr>
+                <tr>
+                    <td>Rule 5.13</td>
+                    <td>
+                        Improper Citation
+                        <div style="font-size: 0.8rem; color: #6b7280;">1 point per violation, max 5</div>
+                    </td>
+                    <td style="text-align: center;">3</td>
+                    <td style="text-align: center;">0</td>
+                </tr>
+                <tr style="background-color: #f9fafb; font-weight: 600;">
+                    <td colspan="2" style="text-align: right;">TOTAL</td>
+                    <td style="text-align: center;">10</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+            </tbody>
+        </table>
+    """, unsafe_allow_html=True)
+    
+    # Document Sections
     col1, col2 = st.columns(2)
-
-    # Cover Page Check
+    
     with col1:
-        st.markdown("""
-            <div class="stCard">
-                <h3>Cover Page Information</h3>
-        """, unsafe_allow_html=True)
-        
+        # Cover Page Section
+        create_section_header("Cover Page Information", "📄", "Rule 5.6")
         for key, value in initial_data["coverPage"].items():
-            icon = "✅" if value["present"] else "❌"
-            st.markdown(f"{icon} **{key}:** {value['found']}")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Memorial Parts
+            st.markdown(f"""
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{key}</span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            {create_status_indicator('success' if value['present'] else 'error', value['found'])}
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+    
     with col2:
+        # Memorial Parts Section
+        create_section_header("Memorial Parts", "✓", "Rule 5.5")
         st.markdown("""
-            <div class="stCard">
-                <h3>Memorial Parts</h3>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         """, unsafe_allow_html=True)
         
         for part, present in initial_data["memorialParts"].items():
-            icon = "✅" if present else "❌"
-            st.markdown(f"{icon} {part}")
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Word Count Analysis
-    st.markdown("### Word Count Analysis")
-    word_count_cols = st.columns(2)
-    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
-        with word_count_cols[idx % 2]:
-            st.markdown(f"**{section}**")
-            create_progress_bar(data["count"], data["limit"])
-
-    # Abbreviations section
-    st.markdown("""
-        <div class="stCard">
-            <h3>
-                ⚠️ Non-Permitted Abbreviations
-                <span style="font-size: 0.8em; color: #666;">(Rule 5.17 - 1 point each, max 3)</span>
-            </h3>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Create collapsible sections for each abbreviation
-    for abbr, info in initial_data["abbreviations"].items():
-        with st.expander(f"❌ {abbr} ({info['count']} occurrence{'s' if info['count'] > 1 else ''})"):
             st.markdown(f"""
-                <div style="padding-left: 1.5rem;">
-                    <p style="font-size: 0.9em; color: #666;">Found in: {', '.join(info['sections'])}</p>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    {create_status_indicator('success' if present else 'error', part)}
                 </div>
             """, unsafe_allow_html=True)
-
-    # Additional Checks in Grid Layout
-    col1, col2 = st.columns(2)
+        
+        st.markdown("</div></div>", unsafe_allow_html=True)
     
-    with col1:
-        # Anonymity Check
-        create_card("Anonymity Check", """
-            <div class="status-success">
-                ✅ No anonymity violations found
-                <div style='font-size: 0.8rem; color: #666; margin-top: 0.5rem;'>
-                    No disclosure of school, team members, or country
-                </div>
-            </div>
-        """)
-        
-        # Citations Check
-        create_card("Citations Check", """
-            <div class="status-error">
-                ⚠️ 5 instances of improper citation format detected
-            </div>
-        """)
-        
-        # Media Check
-        create_card("Media Check", "\n".join(
-            f"⚠️ Found in {item['section']}: {item['text']}"
-            for item in initial_data["media"]
-        ))
-    
-    with col2:
-        # Tracked Changes Check
-        create_card("Tracked Changes", """
-            <div class="status-success">
-                <div style='margin-bottom: 0.5rem;'>
-                    ✅ No tracked changes found
-                </div>
-                <div>
-                    ✅ No comments found
-                </div>
-            </div>
-        """)
-        
-        # Plagiarism Check
-        create_card("Plagiarism Check", """
-            <div class="status-success">
-                ✅ No plagiarism detected
-            </div>
-        """)
-
-if __name__ == "__main__":
-    main()
+    # Word Count Analysis
+    create_section_header("Word Count Analysis", "📏", "Rule 5.12")
+    word_count_cols = st.columns(2)
+    for idx, (section, data) in enumerate(initial_data["wordCounts"].items()):
+        with word_count_cols[

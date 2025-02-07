@@ -1,27 +1,32 @@
 import streamlit as st
-from typing import Dict, List, Any
 
 def word_count_progress(count: int, limit: int):
-    """Create a word count progress indicator using native Streamlit components"""
+    """Create a word count progress indicator using basic Streamlit components"""
     percentage = (count / limit) * 100
-    color = 'red' if percentage > 100 else 'orange' if percentage > 90 else 'green'
+    color = 'red' if percentage > 100 else 'yellow' if percentage > 90 else 'green'
     
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        st.progress(min(percentage/100, 1.0))
-    with col2:
-        st.metric("", f"{count}/{limit}", f"{percentage:.1f}%", delta_color=color)
+    st.markdown(f"""
+        <div style='display: flex; justify-content: space-between; margin-bottom: 5px;'>
+            <span style='font-size: 0.9em;'>{count} words</span>
+            <span style='font-size: 0.9em; color: {"#dc2626" if percentage > 100 else "#f59e0b" if percentage > 90 else "#10b981"};'>
+                {percentage:.1f}%
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.progress(min(percentage/100, 1.0))
+    st.markdown(f"<div style='font-size: 0.8em; color: #666;'>Limit: {limit}</div>", unsafe_allow_html=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="Jessup Penalty Checker")
     
-    # Add custom CSS
+    # Custom CSS
     st.markdown("""
         <style>
             .stApp {
                 background-color: #f9fafb;
             }
-            .css-1d391kg {  /* Sidebar styles */
+            div[data-testid="stSidebar"] {
                 background-color: white;
                 border-right: 1px solid #e5e7eb;
             }
@@ -32,17 +37,14 @@ def main():
                 border: 1px solid #e5e7eb;
                 margin-bottom: 1rem;
             }
-            .stProgress .st-bo {
-                background-color: #e5e7eb;
+            .stProgress > div > div {
+                background-color: #10b981;
             }
-            .stProgress .st-bp {
-                background: linear-gradient(90deg, #10B981, #10B981);
+            .warning .stProgress > div > div {
+                background-color: #f59e0b;
             }
-            .warning .st-bp {
-                background: linear-gradient(90deg, #F59E0B, #F59E0B);
-            }
-            .error .st-bp {
-                background: linear-gradient(90deg, #EF4444, #EF4444);
+            .error .stProgress > div > div {
+                background-color: #dc2626;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -119,17 +121,19 @@ def main():
     st.title("Jessup Memorial Penalty Checker")
     
     # Penalty Summary
-    st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
-    st.subheader("Penalty Score Summary")
-    penalties = [
-        ["Rule 5.5", "Missing Prayer for Relief", "4", "2", "2 points per part"],
-        ["Rule 5.17", "Non-Permitted Abbreviations (5 found)", "3", "0", "1 point each, max 3"],
-        ["Rule 5.13", "Improper Citation", "3", "0", "1 point per violation, max 5"]
-    ]
-    st.table(penalties)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container():
+        st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
+        st.subheader("Penalty Score Summary")
+        penalties = [
+            ["Rule", "Description", "Points", "R", "Details"],
+            ["Rule 5.5", "Missing Prayer for Relief", "4", "2", "2 points per part"],
+            ["Rule 5.17", "Non-Permitted Abbreviations (5 found)", "3", "0", "1 point each, max 3"],
+            ["Rule 5.13", "Improper Citation", "3", "0", "1 point per violation, max 5"]
+        ]
+        st.table(penalties)
+        st.markdown("</div>", unsafe_allow_html=True)
     
-    # Two-column layout for Cover Page and Memorial Parts
+    # Two-column layout
     col1, col2 = st.columns(2)
     
     with col1:
@@ -137,17 +141,25 @@ def main():
         st.subheader("Cover Page Information")
         st.caption("Rule 5.6 - 2 points")
         for key, value in data["coverPage"].items():
-            status = "✅" if value["present"] else "❌"
-            st.markdown(f"{status} {key}: {value['found']}")
+            st.markdown(f"""
+                <div style='display: flex; justify-content: space-between; align-items: center; margin: 5px 0;'>
+                    <span>{key}</span>
+                    <div style='display: flex; align-items: center; gap: 8px;'>
+                        <span>{value['present'] and '✅' or '❌'}</span>
+                        <span>{value['found']}</span>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         st.markdown("<div class='custom-card'>", unsafe_allow_html=True)
         st.subheader("Memorial Parts")
         st.caption("Rule 5.5 - 2 points per part")
-        for part, present in data["memorialParts"].items():
-            status = "✅" if present else "❌"
-            st.markdown(f"{status} {part}")
+        cols = st.columns(2)
+        for i, (part, present) in enumerate(data["memorialParts"].items()):
+            with cols[i % 2]:
+                st.markdown(f"{present and '✅' or '❌'} {part}")
         st.markdown("</div>", unsafe_allow_html=True)
     
     # Word Count Analysis
@@ -155,15 +167,15 @@ def main():
     st.subheader("Word Count Analysis")
     st.caption("Rule 5.12")
     
-    for section, info in data["wordCounts"].items():
-        st.markdown(f"#### {section}")
-        percentage = (info["count"] / info["limit"]) * 100
-        class_name = "error" if percentage > 100 else "warning" if percentage > 90 else ""
-        
-        st.markdown(f"<div class='{class_name}'>", unsafe_allow_html=True)
-        word_count_progress(info["count"], info["limit"])
-        st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("---")
+    word_count_cols = st.columns(2)
+    for i, (section, info) in enumerate(data["wordCounts"].items()):
+        with word_count_cols[i % 2]:
+            st.markdown(f"##### {section}")
+            percentage = (info["count"] / info["limit"]) * 100
+            class_name = "error" if percentage > 100 else "warning" if percentage > 90 else ""
+            st.markdown(f"<div class='{class_name}'>", unsafe_allow_html=True)
+            word_count_progress(info["count"], info["limit"])
+            st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
     # Abbreviations

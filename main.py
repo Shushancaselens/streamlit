@@ -404,3 +404,124 @@ def main():
                         <th>Rule</th>
                         <th>Description</th>
                         <th>Points</th>
+                        <th>Reviewed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rule 5.5</td>
+                        <td>Missing Prayer for Relief</td>
+                        <td>4</td>
+                        <td>✓</td>
+                    </tr>
+                    <tr>
+                        <td>Rule 5.17</td>
+                        <td>Non-Permitted Abbreviations (5 found)</td>
+                        <td>3</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Rule 5.13</td>
+                        <td>Improper Citation</td>
+                        <td>3</td>
+                        <td>-</td>
+                    </tr>
+                    <tr style="font-weight: 600; background-color: #f8fafc;">
+                        <td colspan="2" style="text-align: right;">Total</td>
+                        <td>10</td>
+                        <td>1/3</td>
+                    </tr>
+                </tbody>
+            </table>
+        """, unsafe_allow_html=True)
+
+    # Create two columns for the main content
+    col1, col2 = st.columns(2)
+
+    # Left Column
+    with col1:
+        # Cover Page Check
+        st.markdown("### Cover Page Information")
+        for key, value in initial_data["coverPage"].items():
+            icon = "✅" if value["present"] else "❌"
+            ModernStatusCard.create_card(
+                key,
+                f"{icon} {value['found']}",
+                "success" if value["present"] else "error"
+            )
+
+        # Word Count Analysis
+        st.markdown("### Word Count Analysis")
+        for section, data in initial_data["wordCounts"].items():
+            ModernWordCountDisplay.create_progress_bar(data["count"], data["limit"])
+
+    # Right Column
+    with col2:
+        # Memorial Parts
+        st.markdown("### Memorial Parts")
+        parts_content = "".join([
+            f"{'✅' if present else '❌'} {part}<br>"
+            for part, present in initial_data["memorialParts"].items()
+        ])
+        ModernStatusCard.create_card("Required Sections", parts_content)
+
+        # Anonymity Check
+        ModernStatusCard.create_card(
+            "Anonymity Check",
+            "✅ No anonymity violations found<br>No disclosure of school, team members, or country",
+            "success",
+            "🔒"
+        )
+
+        # Tracked Changes
+        ModernStatusCard.create_card(
+            "Tracked Changes",
+            "✅ No tracked changes found<br>✅ No comments found",
+            "success",
+            "📝"
+        )
+
+    # Full Width Sections
+    st.markdown("### Non-Permitted Abbreviations")
+    for abbr, info in initial_data["abbreviations"].items():
+        with st.expander(f"{abbr} ({info['count']} occurrences)", expanded=False):
+            st.markdown(f"""
+                <div class="custom-card">
+                    <div class="status-indicator status-error">
+                        Found in: {', '.join(info['sections'])}
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    # Final Row - Two Columns
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Citations
+        ModernStatusCard.create_card(
+            "Citations Check",
+            "⚠️ 5 instances of improper citation format detected",
+            "warning",
+            "📚"
+        )
+
+        # Media Check
+        media_content = "".join([
+            f"⚠️ Found in {item['section']}: {item['text']}<br>"
+            for item in initial_data["media"]
+        ])
+        ModernStatusCard.create_card(
+            "Media Check",
+            media_content,
+            "warning",
+            "🖼️"
+        )
+
+    with col2:
+        # Plagiarism
+        ModernStatusCard.create_card(
+            "Plagiarism Check",
+            "✅ No plagiarism detected",
+            "success",
+            "🔍"
+        )

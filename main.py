@@ -179,6 +179,7 @@ def main():
         st.title("Jessup Penalty Checker")
         st.markdown(f"### Memorandum for the {initial_data['memorialType']}")
         
+        # Penalty Points Summary
         st.markdown("""
         <div style='background-color: #f8f9fa; padding: 1rem; border-radius: 0.5rem;'>
             <div style='color: #666; font-size: 0.9rem;'>Penalty Points</div>
@@ -186,6 +187,29 @@ def main():
             <div style='color: #666; font-size: 0.8rem;'>points</div>
         </div>
         """, unsafe_allow_html=True)
+
+        # Navigation Items
+        st.markdown("### Sections")
+        sections = [
+            ("📄 Cover Page", "Rule 5.6", "2 points"),
+            ("✓ Memorial Parts", "Rule 5.5", "2 points per part"),
+            ("📏 Length Check", "Rule 5.12", "varies"),
+            ("🔒 Anonymity", "Rule 5.14", "up to 10 points"),
+            ("📝 Tracked Changes", "Rule 5.4", "up to 5 points"),
+            ("📚 Citations", "Rule 5.13", "up to 5 points"),
+            ("🖼️ Media", "Rule 5.5(c)", "up to 5 points"),
+            ("📑 Abbreviations", "Rule 5.17", "1 point each, max 3"),
+            ("🔍 Plagiarism", "Rule 11.2", "1-50 points")
+        ]
+        
+        for section, rule, points in sections:
+            st.markdown(f"""
+            <div style='padding: 0.5rem; border-radius: 0.25rem; margin-bottom: 0.5rem; cursor: pointer;
+                        background-color: #f8f9fa; transition: background-color 0.2s;'>
+                <div style='font-weight: 500;'>{section}</div>
+                <div style='font-size: 0.8rem; color: #666;'>{rule} - {points}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
     # Main content
     st.title("Jessup Memorial Penalty Checker")
@@ -248,22 +272,47 @@ def main():
         with st.expander(f"{abbr} ({info['count']} occurrences)"):
             st.markdown(f"Found in: {', '.join(info['sections'])}")
 
-    # Citations, Media, and Plagiarism sections in cards
+    # Additional Checks in Grid Layout
     col1, col2 = st.columns(2)
     
     with col1:
+        # Anonymity Check
+        create_card("Anonymity Check", """
+            <div class="status-success">
+                ✅ No anonymity violations found
+                <div style='font-size: 0.8rem; color: #666; margin-top: 0.5rem;'>
+                    No disclosure of school, team members, or country
+                </div>
+            </div>
+        """)
+        
+        # Citations Check
         create_card("Citations Check", """
             <div class="status-error">
                 ⚠️ 5 instances of improper citation format detected
             </div>
         """)
         
+        # Media Check
         create_card("Media Check", "\n".join(
             f"⚠️ Found in {item['section']}: {item['text']}"
             for item in initial_data["media"]
         ))
     
     with col2:
+        # Tracked Changes Check
+        create_card("Tracked Changes", """
+            <div class="status-success">
+                <div style='margin-bottom: 0.5rem;'>
+                    ✅ No tracked changes found
+                </div>
+                <div>
+                    ✅ No comments found
+                </div>
+            </div>
+        """)
+        
+        # Plagiarism Check
         create_card("Plagiarism Check", """
             <div class="status-success">
                 ✅ No plagiarism detected

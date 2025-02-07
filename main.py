@@ -1,10 +1,8 @@
-```python
 import streamlit as st
 import pandas as pd
 
 st.set_page_config(layout="wide")
 
-# Shared data structure
 initial_data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -40,7 +38,6 @@ initial_data = {
     "media": [{"section": "Cover Page", "index": 6, "text": "----media/image1.png----"}]
 }
 
-# Sidebar
 with st.sidebar:
     st.image("https://via.placeholder.com/100x50.png?text=Logo", width=200)
     st.markdown(f"**Memorandum for the {initial_data['memorialType']}**")
@@ -53,10 +50,8 @@ with st.sidebar:
         with col2:
             st.markdown("points")
 
-# Main content
 st.title("Jessup Memorial Penalty Checker")
 
-# Score Summary
 st.markdown("### Penalty Score Summary")
 penalties = pd.DataFrame([
     {"Rule": "Rule 5.5", "Description": "Missing Prayer for Relief", "Points": 4, "R": 2},
@@ -65,17 +60,14 @@ penalties = pd.DataFrame([
 ])
 st.dataframe(penalties, hide_index=True)
 
-# Grid layout
 col1, col2 = st.columns(2)
 
-# Cover Page Check
 with col1:
     st.markdown("### Cover Page Information (Rule 5.6 - 2 points)")
     for key, value in initial_data["coverPage"].items():
         status = "✅" if value["present"] else "❌"
         st.markdown(f"{key}: {status} {value['found']}")
 
-# Memorial Parts
 with col2:
     st.markdown("### Memorial Parts (Rule 5.5 - 2 points per part)")
     cols = st.columns(2)
@@ -84,7 +76,6 @@ with col2:
             status = "✅" if present else "❌"
             st.markdown(f"{status} {part}")
 
-# Word Count Analysis
 st.markdown("### Word Count Analysis (Rule 5.12)")
 word_count_cols = st.columns(2)
 for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
@@ -95,7 +86,6 @@ for i, (section, data) in enumerate(initial_data["wordCounts"].items()):
         st.progress(min(percentage/100, 1.0))
         st.markdown(f"{data['count']} words ({percentage:.1f}%) - Limit: {data['limit']}")
 
-# Citations and Media
 col3, col4 = st.columns(2)
 with col3:
     st.markdown("### Citations (Rule 5.13 - 1 point per violation, max 5)")
@@ -106,13 +96,10 @@ with col4:
     for item in initial_data["media"]:
         st.warning(f"Found in {item['section']}: {item['text']}")
 
-# Abbreviations
 st.markdown("### Non-Permitted Abbreviations (Rule 5.17 - 1 point each, max 3)")
 for abbr, info in initial_data["abbreviations"].items():
     with st.expander(f"{abbr} ({info['count']} occurrences)"):
         st.markdown(f"Found in: {', '.join(info['sections'])}")
 
-# Plagiarism
 st.markdown("### Plagiarism (Rule 11.2 - 1-50 points)")
 st.success("No plagiarism detected")
-```

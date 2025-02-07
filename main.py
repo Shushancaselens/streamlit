@@ -2,340 +2,451 @@ import streamlit as st
 import pandas as pd
 from typing import Dict, Any, List, Tuple, Optional
 from dataclasses import dataclass
-from datetime import datetime
 import json
 
 # Must be the first Streamlit command
 st.set_page_config(
     page_title="Jessup Memorial Penalty Checker",
     layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.ilsa.org/jessup-competition/',
-        'Report a bug': "mailto:support@jessup.org",
-        'About': "Jessup Memorial Penalty Checker v2.0"
-    }
+    initial_sidebar_state="expanded"
 )
 
 @dataclass
 class PenaltyRule:
-    """Data class for penalty rules"""
-    rule_id: str
-    title: str
+    rule: str
     description: str
-    max_points: int
-    points_description: str
-    icon: str
+    points: int
+    reviewed: bool
+    details: str
 
 @dataclass
-class PenaltyStatus:
-    """Data class for penalty status"""
-    points: int
-    description: str
-    details: Optional[str]
-    status: str  # 'success', 'warning', 'error'
+class WordCount:
+    count: int
+    limit: int
+    section: str
 
-class JessupDataManager:
-    """Manages Jessup memorial data and calculations"""
-    
-    @staticmethod
-    def load_initial_data() -> Dict[str, Any]:
-        # Your existing initial_data dictionary here
-        return {
-            "memorialType": "Applicant",
-            "coverPage": {
-                "Team Number": {"present": True, "found": "349A"},
-                "Court Name": {"present": True, "found": "International Court of Justice"},
-                "Year": {"present": True, "found": "2025"},
-                "Case Name": {"present": True, "found": "The Case Concerning The Naegea Sea"},
-                "Memorial Type": {"present": True, "found": "Memorial for the Applicant"}
-            },
-            # ... rest of your initial data ...
+class ThemeColors:
+    PRIMARY = "#4D68F9"  # Matches the React logo color
+    SUCCESS = "#10B981"
+    WARNING = "#F59E0B"
+    ERROR = "#EF4444"
+    GRAY = {
+        50: "#F9FAFB",
+        100: "#F3F4F6",
+        200: "#E5E7EB",
+        300: "#D1D5DB",
+        400: "#9CA3AF",
+        500: "#6B7280",
+        600: "#4B5563",
+        700: "#374151",
+        800: "#1F2937",
+        900: "#111827"
+    }
+
+def load_custom_css():
+    st.markdown("""
+    <style>
+        /* Reset and Base Styles */
+        .stApp {
+            background-color: #f8f9fa;
+        }
+        
+        /* Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Layout */
+        .main .block-container {
+            padding-top: 2rem;
+            max-width: 1200px;
+        }
+        
+        /* Card Components */
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            border: 1px solid rgb(229, 231, 235);
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+        }
+        
+        /* Headers */
+        .section-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Progress Bars */
+        .progress-container {
+            margin: 0.75rem 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #E5E7EB;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
+        
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        
+        .status-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
+        
+        /* Sidebar Enhancements */
+        .css-1d391kg {
+            background-color: white;
+            border-right: 1px solid #E5E7EB;
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #E5E7EB;
+            background-color: white;
+        }
+        
+        .sidebar-item:hover {
+            background-color: #F9FAFB;
+            transform: translateX(2px);
+        }
+        
+        /* Table Styles */
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+        }
+        
+        .styled-table th {
+            background-color: #F9FAFB;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #4B5563;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .styled-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #E5E7EB;
+            color: #374151;
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #9CA3AF;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6B7280;
         }
 
-    @staticmethod
-    def calculate_total_penalties(data: Dict[str, Any]) -> int:
-        # Add logic to calculate total penalties
-        return 10
+        /* Alert Components */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
 
-    @staticmethod
-    def get_penalty_rules() -> List[PenaltyRule]:
-        return [
-            PenaltyRule("cover", "Cover Page", "Basic memorial information", 2, "2 points", "📄"),
-            PenaltyRule("parts", "Memorial Parts", "Required sections check", 16, "2 points per part", "✓"),
-            # ... add all rules ...
-        ]
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
 
-class UIComponents:
-    """Enhanced UI components with animations and interactions"""
-    
-    @staticmethod
-    def custom_css() -> None:
-        st.markdown("""
-        <style>
-            /* Add your existing CSS here and these new styles */
-            
-            /* Modern Dashboard Layout */
-            .dashboard-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1.5rem;
-                padding: 1.5rem;
-            }
-            
-            /* Enhanced Card Design */
-            .modern-card {
-                background: white;
-                border-radius: 12px;
-                padding: 1.5rem;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                           0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                transition: transform 0.2s, box-shadow 0.2s;
-            }
-            
-            .modern-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                           0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            }
-            
-            /* Glassmorphism Effects */
-            .glass-card {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.125);
-            }
-            
-            /* Progress Indicators */
-            .circular-progress {
-                position: relative;
-                width: 120px;
-                height: 120px;
-                border-radius: 50%;
-                background: conic-gradient(from 0deg,
-                    var(--progress-color) calc(var(--progress) * 1%),
-                    #eceff1 calc(var(--progress) * 1%));
-            }
-            
-            /* Improved Typography */
-            .section-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #1a1f36;
-                margin-bottom: 1rem;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-            
-            /* Interactive Elements */
-            .hover-action {
-                transition: all 0.2s;
-                cursor: pointer;
-            }
-            
-            .hover-action:hover {
-                background-color: #f8f9fa;
-                transform: scale(1.01);
-            }
-            
-            /* Status Badges */
-            .status-badge {
-                display: inline-flex;
-                align-items: center;
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
-                font-size: 0.875rem;
-                font-weight: 500;
-            }
-            
-            .status-badge.success {
-                background-color: #d1fae5;
-                color: #065f46;
-            }
-            
-            .status-badge.warning {
-                background-color: #fef3c7;
-                color: #92400e;
-            }
-            
-            .status-badge.error {
-                background-color: #fee2e2;
-                color: #991b1b;
-            }
-            
-            /* Tooltips */
-            [data-tooltip] {
-                position: relative;
-            }
-            
-            [data-tooltip]:before {
-                content: attr(data-tooltip);
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 0.5rem;
-                background: #1f2937;
-                color: white;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.2s;
-            }
-            
-            [data-tooltip]:hover:before {
-                opacity: 1;
-            }
-            
-            /* Advanced Data Tables */
-            .advanced-table {
-                width: 100%;
-                border-spacing: 0;
-                border-collapse: separate;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            
-            .advanced-table th {
-                background-color: #f8fafc;
-                padding: 1rem;
-                text-align: left;
-                font-weight: 600;
-                color: #475569;
-            }
-            
-            .advanced-table td {
-                padding: 1rem;
-                border-top: 1px solid #e2e8f0;
-            }
-            
-            .advanced-table tr:hover td {
-                background-color: #f8fafc;
-            }
-        </style>
-        """, unsafe_allow_html=True)
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
 
+        .alert-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Logo */
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Word Count Labels */
+        .word-count-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .word-count-value {
+            font-weight: 500;
+        }
+
+        /* Expandable Sections */
+        .expandable-section {
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .expandable-header {
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F9FAFB;
+        }
+
+        .expandable-content {
+            padding: 1rem;
+            border-top: 1px solid #E5E7EB;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+class WordCountBar:
     @staticmethod
-    def create_penalty_card(rule: PenaltyRule, status: PenaltyStatus) -> None:
+    def render(word_count: WordCount) -> None:
+        percentage = (word_count.count / word_count.limit) * 100
+        color = ThemeColors.SUCCESS
+        if percentage > 90:
+            color = ThemeColors.WARNING
+        if percentage > 100:
+            color = ThemeColors.ERROR
+            
         st.markdown(f"""
-            <div class="modern-card glass-card hover-action">
-                <div class="section-title">
-                    {rule.icon} {rule.title}
-                    <span class="status-badge {status.status}">
-                        {status.points} points
+            <div class="card progress-container">
+                <div class="word-count-label">
+                    <span>{word_count.section}</span>
+                    <span class="word-count-value" style="color: {color}">
+                        {percentage:.1f}%
                     </span>
                 </div>
-                <div>
-                    {status.description}
-                    {f'<div class="text-sm text-gray-600 mt-2">{status.details}</div>' if status.details else ''}
+                <div class="progress-bar">
+                    <div class="progress-fill" 
+                         style="width: {min(percentage, 100)}%; background-color: {color};">
+                    </div>
+                </div>
+                <div style="text-align: right; font-size: 0.75rem; color: #6B7280; margin-top: 0.25rem;">
+                    {word_count.count:,} / {word_count.limit:,} words
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
+class Alert:
     @staticmethod
-    def create_word_count_display(section: str, count: int, limit: int) -> None:
-        percentage = (count / limit) * 100
-        progress_color = (
-            "#10b981" if percentage <= 90 else
-            "#f59e0b" if percentage <= 100 else
-            "#ef4444"
-        )
-        
+    def render(title: str, description: Optional[str] = None, alert_type: str = "success") -> None:
+        icon = "✓" if alert_type == "success" else "⚠️" if alert_type == "warning" else "✗"
         st.markdown(f"""
-            <div class="modern-card">
-                <div class="section-title">{section}</div>
-                <div class="circular-progress" style="
-                    --progress: {min(percentage, 100)};
-                    --progress-color: {progress_color};
-                ">
-                    <div class="progress-label">
-                        {percentage:.1f}%
-                    </div>
-                </div>
-                <div class="mt-4 flex justify-between text-sm">
-                    <span>Current: {count:,} words</span>
-                    <span>Limit: {limit:,} words</span>
+            <div class="alert alert-{alert_type}">
+                <div class="alert-icon">{icon}</div>
+                <div>
+                    <div class="alert-title">{title}</div>
+                    {f'<div class="alert-description">{description}</div>' if description else ''}
                 </div>
             </div>
         """, unsafe_allow_html=True)
 
-class JessupPenaltyChecker:
-    """Main application class"""
-    
-    def __init__(self):
-        self.data_manager = JessupDataManager()
-        self.ui = UIComponents()
-        self.initial_data = self.data_manager.load_initial_data()
-        
-    def run(self):
-        self.ui.custom_css()
-        self.render_sidebar()
-        self.render_main_content()
-    
-    def render_sidebar(self):
-        with st.sidebar:
-            st.title("Jessup Penalty Checker")
-            self.render_penalty_summary()
-            self.render_navigation()
-    
-    def render_penalty_summary(self):
-        total_penalties = self.data_manager.calculate_total_penalties(self.initial_data)
-        st.markdown(f"""
-            <div class="modern-card glass-card">
-                <div class="text-sm text-gray-600">Total Penalty Points</div>
-                <div class="text-4xl font-bold text-red-600">{total_penalties}</div>
-                <div class="text-xs text-gray-500">Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}</div>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    def render_navigation(self):
-        for rule in self.data_manager.get_penalty_rules():
+class SidebarNavigation:
+    @staticmethod
+    def render(items: List[Dict[str, str]]) -> None:
+        for item in items:
             st.markdown(f"""
-                <div class="sidebar-nav-item hover-action" data-tooltip="{rule.points_description}">
-                    <div class="flex items-center gap-2">
-                        {rule.icon} {rule.title}
+                <div class="sidebar-item">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>{item['icon']}</span>
+                        <span style="font-weight: 500;">{item['label']}</span>
                     </div>
-                    <div class="text-sm text-gray-600">{rule.rule_id}</div>
+                    <div style="font-size: 0.75rem; color: #6B7280; margin-top: 0.25rem;">
+                        {item['rule']} - {item['points']}
+                    </div>
                 </div>
             """, unsafe_allow_html=True)
-    
-    def render_main_content(self):
-        st.title("Memorial Analysis Dashboard")
-        
-        # Score Summary
-        with st.expander("Detailed Penalty Analysis", expanded=True):
-            self.render_penalty_table()
-        
-        # Main Grid Layout
-        self.render_analysis_grid()
-    
-    def render_penalty_table(self):
-        st.markdown("""
-            <table class="advanced-table">
-                <thead>
-                    <tr>
-                        <th>Rule</th>
-                        <th>Description</th>
-                        <th>Points</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Add your penalty rows here -->
-                </tbody>
-            </table>
-        """, unsafe_allow_html=True)
-    
-    def render_analysis_grid(self):
-        st.markdown('<div class="dashboard-grid">', unsafe_allow_html=True)
-        # Add your analysis cards here
-        st.markdown('</div>', unsafe_allow_html=True)
+
+def create_penalty_card(title: str, rule: str, points: str, content: str) -> None:
+    st.markdown(f"""
+        <div class="card">
+            <div class="section-header">
+                {title}
+                <span style="font-size: 0.75rem; color: #6B7280;">({rule} - {points})</span>
+            </div>
+            <div>{content}</div>
+        </div>
+    """, unsafe_allow_html=True)
 
 def main():
-    app = JessupPenaltyChecker()
-    app.run()
+    # Load initial data
+    data = {
+        # ... (Your existing data structure here)
+    }
+    
+    # Load custom CSS
+    load_custom_css()
+    
+    # Sidebar
+    with st.sidebar:
+        st.markdown("""
+            <div class="logo-container">
+                <svg viewBox="0 0 1007 261" style="height: 48px;">
+                    <!-- Your existing SVG path data here -->
+                </svg>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div class="card" style="text-align: center;">
+                <div style="color: #6B7280; font-size: 0.875rem;">Total Penalty Points</div>
+                <div style="color: #EF4444; font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0;">10</div>
+                <div style="color: #6B7280; font-size: 0.75rem;">points deducted</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Navigation items
+        nav_items = [
+            {"icon": "📄", "label": "Cover Page", "rule": "Rule 5.6", "points": "2 points"},
+            # ... (Your existing navigation items)
+        ]
+        SidebarNavigation.render(nav_items)
+
+    # Main content
+    st.title("Jessup Memorial Penalty Checker")
+    
+    # Penalty Score Summary
+    with st.expander("Penalty Score Summary", expanded=True):
+        penalties = [
+            PenaltyRule("Rule 5.5", "Missing Prayer for Relief", 4, True, "2 points per part"),
+            # ... (Your existing penalties)
+        ]
+        
+        st.markdown("""
+            <table class="styled-table">
+                <!-- Your existing table structure -->
+            </table>
+        """, unsafe_allow_html=True)
+
+    # Main content grid
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Cover Page Information
+        create_penalty_card(
+            "Cover Page Information",
+            "Rule 5.6",
+            "2 points",
+            # Your existing cover page content
+        )
+        
+        # Word Count Analysis
+        st.markdown("### Word Count Analysis")
+        word_counts = [
+            WordCount(1196, 1200, "Statement of Facts"),
+            # ... (Your existing word counts)
+        ]
+        for wc in word_counts:
+            WordCountBar.render(wc)
+    
+    with col2:
+        # Memorial Parts
+        create_penalty_card(
+            "Memorial Parts",
+            "Rule 5.5",
+            "2 points per part",
+            # Your existing memorial parts content
+        )
+        
+        # Alerts
+        Alert.render(
+            "No anonymity violations found",
+            "No disclosure of school, team members, or country",
+            "success"
+        )
+        
+        Alert.render(
+            "Found improper citations",
+            "5 instances of improper citation format detected",
+            "warning"
+        )
+
+    # Additional sections...
+    # (Continue with your existing sections, using the new components and styling)
 
 if __name__ == "__main__":
     main()

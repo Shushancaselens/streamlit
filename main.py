@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
 
-# Data structures
+# Data structures [same as before]
 applicant_data = {
     "memorialType": "Applicant",
     "coverPage": {
@@ -48,30 +47,13 @@ respondent_data = {
 }
 
 def create_word_count_chart(word_counts):
-    sections = list(word_counts.keys())
-    counts = [word_counts[s]["count"] for s in sections]
-    limits = [word_counts[s]["limit"] for s in sections]
-    percentages = [count/limit*100 for count, limit in zip(counts, limits)]
-    
-    colors = ['green' if p <= 90 else 'orange' if p <= 100 else 'red' for p in percentages]
-    
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=sections,
-        y=percentages,
-        marker_color=colors,
-        text=[f"{c}/{l}<br>{p:.1f}%" for c, l, p in zip(counts, limits, percentages)],
-        textposition='auto',
-    ))
-    
-    fig.update_layout(
-        yaxis_title="Percentage of Limit",
-        showlegend=False,
-        height=300,
-        margin=dict(t=20, b=20, l=20, r=20)
-    )
-    
-    return fig
+    df = pd.DataFrame({
+        'Section': list(word_counts.keys()),
+        'Count': [word_counts[s]["count"] for s in word_counts.keys()],
+        'Limit': [word_counts[s]["limit"] for s in word_counts.keys()]
+    })
+    df['Percentage'] = (df['Count'] / df['Limit'] * 100).round(1)
+    return df
 
 def display_memorial_section(data):
     st.subheader(f"{data['memorialType']} Memorial")
@@ -97,7 +79,12 @@ def display_memorial_section(data):
             )
     
     with st.expander("Word Counts", expanded=True):
-        st.plotly_chart(create_word_count_chart(data["wordCounts"]), use_container_width=True)
+        df = create_word_count_chart(data["wordCounts"])
+        for _, row in df.iterrows():
+            st.write(f"**{row['Section']}**")
+            progress = row['Percentage'] / 100
+            color = 'green' if progress <= 0.9 else 'orange' if progress <= 1 else 'red'
+            st.progress(min(progress, 1.0), text=f"{row['Count']}/{row['Limit']} ({row['Percentage']}%)")
 
 def main():
     st.set_page_config(layout="wide", page_title="Jessup Memorial Penalty Checker")

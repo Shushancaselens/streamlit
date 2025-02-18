@@ -250,7 +250,7 @@ def create_position_section(position_data, position_type):
         st.markdown(f"- {detail}")
     
     # Evidence
-    st.markdown("""<h5 style="font-size: 16px; margin-top: 20px; margin-bottom: 12px;">Evidence</h5>""", unsafe_allow_html=True)
+    st.markdown("""<h5 style="font-size: 16px; margin-bottom: 12px;">Evidence</h5>""", unsafe_allow_html=True)
     for evidence in position_data['evidence']:
         st.markdown(f"""
             <div style="
@@ -266,21 +266,23 @@ def create_position_section(position_data, position_type):
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             "
             onmouseover="this.style.borderColor='#4D68F9'; this.style.backgroundColor='#F8FAFF'"
-            onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'">
+            onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'"
+            >
                 <div style="
                     background-color: #EEF2FF;
                     color: #4D68F9;
                     padding: 4px 8px;
                     border-radius: 4px;
-                    font-size: 12px;
+                    font-size: 13px;
                     font-weight: 500;
                     min-width: 45px;
                     text-align: center;
                 ">{evidence['id']}</div>
                 <div style="
-                    color: #374151;
+                    color: #1F2937;
                     font-size: 14px;
                     flex-grow: 1;
+                    line-height: 1.4;
                 ">{evidence['desc']}</div>
                 <button 
                     onclick="navigator.clipboard.writeText('{evidence['desc']}')"

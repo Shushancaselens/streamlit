@@ -251,18 +251,35 @@ def create_position_section(position_data, position_type):
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Supporting Points
-    st.markdown("##### Supporting Points")
+    st.markdown("""
+        <div style="margin: 1.5rem 0;">
+            <h5 style="margin-bottom: 1rem;">Supporting Points</h5>
+            <ul style="
+                list-style-type: none;
+                padding-left: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            ">
+    """, unsafe_allow_html=True)
+    
     for detail in position_data['details']:
         st.markdown(f"""
-            <div style="
-                margin-bottom: 16px;
+            <li style="
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 0;
                 line-height: 1.5;
                 padding-right: 20px;
-                min-height: 24px;
             ">
-                • {detail}
-            </div>
-        """, unsafe_allow_html=True)    
+                <span style="margin-right: 10px;">•</span>
+                <span style="flex: 1;">{detail}</span>
+            </li>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("</ul></div>", unsafe_allow_html=True)
+    
     # Evidence
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
@@ -433,24 +450,16 @@ def main():
                         overflow-wrap: break-word;
                         hyphens: auto;
                     }
-                    .element-container {
-                        margin-bottom: 1rem;
-                    }
-                    .row-widget.stRadio > div {
-                        flex-direction: row;
-                    }
                 </style>
             """, unsafe_allow_html=True)
-            
-            container = st.container()
-            with container:
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    create_position_section(arg['appellant'], "Appellant")
-                with col2:
-                    create_position_section(arg['respondent'], "Respondent")
+            # Content when expanded
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                create_position_section(arg['appellant'], "Appellant")
+            with col2:
+                create_position_section(arg['respondent'], "Respondent")
         
-        st.markdown("<div class='divider' style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

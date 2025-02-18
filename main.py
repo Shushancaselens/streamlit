@@ -1,9 +1,4 @@
-# Case Law
-    st.markdown("""
-        <div style="margin: 40px 0 20px 0;">
-            <h5 style="margin-bottom: 16px;">Case Law</h5>
-        </div>
-    """, unsafe_allow_html=True)import streamlit as st
+import streamlit as st
 import pandas as pd
 import json
 from streamlit.components.v1 import html

@@ -280,6 +280,22 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
+    # Sidebar
+    with st.sidebar:
+        st.title("Filters")
+        category_filter = st.multiselect(
+            "Filter by Category",
+            options=list(set(arg["category"] for arg in argument_data)),
+            default=[]
+        )
+        show_all = st.checkbox("Show All Details", value=False)
+        
+        st.markdown("---")
+        st.markdown("### Quick Stats")
+        st.write(f"Total Cases: {len(argument_data)}")
+        st.write(f"Total Evidence Items: {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
+        st.write(f"Total Case Law Citations: {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")
+
     st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
@@ -306,7 +322,7 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on search
+    # Filter arguments based on search and category
     filtered_arguments = argument_data
     if search:
         search = search.lower()
@@ -319,9 +335,16 @@ def main():
                 any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
         ]
     
+    # Apply category filter
+    if category_filter:
+        filtered_arguments = [
+            arg for arg in filtered_arguments
+            if arg['category'] in category_filter
+        ]
+    
     # Display arguments
     for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} {arg['category']}", expanded=arg['id'] == '1'):
+        with st.expander(f"{arg['issue']} {arg['category']}", expanded=show_all or arg['id'] == '1'):
             # Content when expanded
             col1, col2 = st.columns(2)
             with col1:

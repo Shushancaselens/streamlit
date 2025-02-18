@@ -361,4 +361,8 @@ def main():
             arg for arg in filtered_arguments
             if (search in arg['issue'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
+                any(search in detail.lower() for detail in arg['respondent']['details']) or
+                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
+                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
+        ] detail in arg['appellant']['details']) or
                 any(search in detail.lower() for

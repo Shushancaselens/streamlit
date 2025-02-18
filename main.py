@@ -16,8 +16,7 @@ st.markdown("""
         margin: 16px 0;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         transition: all 0.2s ease;
-    }
-    /* Combined title and argument styling */
+/* Combined title and argument styling */
     .evidence-box {
         background-color: #f8fafc;
         padding: 16px;

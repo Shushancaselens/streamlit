@@ -281,41 +281,9 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
-    # Sidebar
+    # Sidebar with only page name
     with st.sidebar:
-        st.header("Dashboard Settings")
-        st.markdown("---")
-        # Category filter
-        categories = list(set(arg["category"] for arg in argument_data))
-        selected_categories = st.multiselect(
-            "Filter by Category",
-            categories,
-            default=categories
-        )
-        
-        # Issue count
-        st.markdown("---")
-        st.markdown(f"**Total Issues:** {len(argument_data)}")
-        
-        # Download all data button
-        st.markdown("---")
-        if st.button("Download All Data", use_container_width=True):
-            full_data = []
-            for arg in argument_data:
-                full_data.append({
-                    "Issue": arg["issue"],
-                    "Category": arg["category"],
-                    "Appellant Argument": arg["appellant"]["mainArgument"],
-                    "Respondent Argument": arg["respondent"]["mainArgument"]
-                })
-            df = pd.DataFrame(full_data)
-            st.download_button(
-                "Click to Download",
-                df.to_csv(index=False),
-                "full_legal_data.csv",
-                "text/csv",
-                use_container_width=True
-            )
+        st.title("Legal Dashboard")
     
     st.title("Legal Arguments Dashboard")
     
@@ -343,8 +311,8 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on search and categories
-    filtered_arguments = [arg for arg in argument_data if arg["category"] in selected_categories]
+    # Filter arguments based on search
+    filtered_arguments = argument_data
     if search:
         search = search.lower()
         filtered_arguments = [

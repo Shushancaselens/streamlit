@@ -325,9 +325,26 @@ def main():
         <textarea id="copy-text" style="position: absolute; left: -9999px;">{copy_text}</textarea>
         <button
             onclick="copyToClipboard()"
-            style="width: 100%; padding: 8px; background-color: #4F46E5; color: white; border: none; border-radius: 4px; cursor: pointer;"
+            style="
+                width: 100%; 
+                padding: 8px; 
+                background-color: transparent; 
+                color: #4F46E5; 
+                border: 2px solid #4F46E5; 
+                border-radius: 4px; 
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            "
+            onmouseover="this.style.backgroundColor='#4F46E5'; this.style.color='white';"
+            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#4F46E5';"
         >
-            📋 Copy
+            <span style="font-size: 16px;">📋</span> 
+            <span style="font-size: 14px;">Copy</span>
         </button>
         <script>
         function copyToClipboard() {{
@@ -335,8 +352,15 @@ def main():
             textArea.select();
             document.execCommand('copy');
             const button = document.querySelector('button');
-            button.innerHTML = '✓ Copied!';
-            setTimeout(() => button.innerHTML = '📋 Copy', 2000);
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<span style="font-size: 16px;">✓</span> <span style="font-size: 14px;">Copied!</span>';
+            button.style.backgroundColor = '#4F46E5';
+            button.style.color = 'white';
+            setTimeout(() => {{
+                button.innerHTML = originalContent;
+                button.style.backgroundColor = 'transparent';
+                button.style.color = '#4F46E5';
+            }}, 2000);
         }}
         </script>
         """

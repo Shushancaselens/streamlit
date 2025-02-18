@@ -341,9 +341,8 @@ def main():
                 justify-content: center;
                 gap: 8px;
                 transition: background-color 0.2s;
-                margin: 0;
-                position: relative;
-                top: -1px;
+                margin-top: 4px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             "
             onmouseover="this.style.backgroundColor='#4558D0'"
             onmouseout="this.style.backgroundColor='#4D68F9'"
@@ -363,7 +362,7 @@ def main():
         }}
         </script>
         """
-        html(copy_component, height=38)
+        html(copy_component, height=46)
     
     # Filter arguments based on search
     filtered_arguments = argument_data

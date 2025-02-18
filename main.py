@@ -33,6 +33,94 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Case summaries dictionary
+def get_case_summary(case_id):
+    case_summaries = {
+        "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
+        "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
+        "CAS 2018/A/456": "Case established precedent for requiring completion of federation's internal processes before CAS jurisdiction.",
+        "CAS 2018/A/ABC": "Court found chain-of-custody errors significant enough to invalidate test results. Set standards for sample handling.",
+        "CAS 2017/A/789": "Minor procedural defects held insufficient to invalidate otherwise valid test results.",
+        "Smith v. Corp Inc. 2021": "Court found lack of documented warnings and positive performance reviews inconsistent with termination for cause.",
+        "Jones v. Enterprise Ltd 2020": "Established standards for progressive discipline in employment termination cases.",
+        "Brown v. MegaCorp 2022": "Upheld immediate termination where serious misconduct was clearly documented.",
+        "Wilson v. Tech Solutions 2021": "Court emphasized importance of contemporaneous documentation of verbal warnings.",
+        "TechCo v. Innovate Inc. 2022": "Found patent infringement based on post-publication copying and substantial similarity.",
+        "Patent Holdings v. StartUp 2021": "Emphasized importance of timeline evidence in patent infringement cases.",
+        "Innovation Corp v. PatentCo 2023": "Independent development defense succeeded with clear pre-dating evidence.",
+        "Tech Solutions v. IP Holdings 2022": "Court invalidated overly broad patent claims in software industry.",
+        "EcoCorp v. EPA 2022": "Facility compliance upheld based on comprehensive monitoring data and third-party audits.",
+        "Green Industries v. State 2021": "Established standards for environmental compliance documentation.",
+        "EPA v. Industrial Corp 2023": "Violations found due to inadequate monitoring and delayed incident reporting.",
+        "State v. Manufacturing Co. 2022": "Court emphasized importance of timely violation reporting and equipment maintenance."
+    }
+    return case_summaries.get(case_id, "Summary not available.")
+
+# Argument data
+argument_data = [
+    {
+        "id": "1",
+        "issue": "CAS Jurisdiction",
+        "category": "jurisdiction",
+        "appellant": {
+            "mainArgument": "CAS Has Authority to Hear This Case",
+            "details": [
+                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
+                "Athlete has completed all required internal appeal procedures first",
+                "Athlete signed agreement allowing CAS to handle disputes"
+            ],
+            "evidence": [
+                {"id": "C1", "desc": "Federation Rules, Art. 60"},
+                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
+                {"id": "C3", "desc": "Appeal submission documents"}
+            ],
+            "caselaw": ["CAS 2019/A/XYZ"]
+        },
+        "respondent": {
+            "mainArgument": "CAS Cannot Hear This Case Yet",
+            "details": [
+                "Athlete skipped required steps in federation's appeal process",
+                "Athlete missed important appeal deadlines within federation",
+                "Must follow proper appeal steps before going to CAS"
+            ],
+            "evidence": [
+                {"id": "R1", "desc": "Federation internal appeals process documentation"},
+                {"id": "R2", "desc": "Timeline of appeals process"},
+                {"id": "R3", "desc": "Federation handbook on procedures"}
+            ],
+            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
+        }
+    }
+]
+
+def create_table_data():
+    """Convert argument data into a format suitable for a table"""
+    rows = []
+    for arg in argument_data:
+        # Format details with bullet points
+        appellant_details = "\n".join([f"• {detail}" for detail in arg['appellant']['details']])
+        appellant_evidence = "\n".join([f"{e['id']}: {e['desc']}" for e in arg['appellant']['evidence']])
+        appellant_cases = "\n".join([f"{case}\n{get_case_summary(case)}" for case in arg['appellant']['caselaw']])
+        
+        respondent_details = "\n".join([f"• {detail}" for detail in arg['respondent']['details']])
+        respondent_evidence = "\n".join([f"{e['id']}: {e['desc']}" for e in arg['respondent']['evidence']])
+        respondent_cases = "\n".join([f"{case}\n{get_case_summary(case)}" for case in arg['respondent']['caselaw']])
+        
+        row = {
+            "issue": f"{arg['issue']} ({arg['category']})",
+            "appellant_position": arg['appellant']['mainArgument'],
+            "appellant_details": appellant_details,
+            "appellant_evidence": appellant_evidence,
+            "appellant_cases": appellant_cases,
+            "respondent_position": arg['respondent']['mainArgument'],
+            "respondent_details": respondent_details,
+            "respondent_evidence": respondent_evidence,
+            "respondent_cases": respondent_cases
+        }
+        rows.append(row)
+    
+    return pd.DataFrame(rows)
+
 def main():
     # Add sidebar with logo and info
     with st.sidebar:
@@ -56,7 +144,6 @@ def main():
             """
         )
 
-    # Rest of your code remains exactly the same
     st.title("Legal Arguments Dashboard - Table View")
     
     # Add view toggle
@@ -115,9 +202,6 @@ def main():
                 "respondent_cases": st.column_config.TextColumn("Respondent Case Law", width="large")
             }
         )
-
-# Keep all other functions (get_case_summary, create_table_data, etc.) exactly the same
-# ... (rest of the code remains unchanged)
 
 if __name__ == "__main__":
     main()

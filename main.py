@@ -252,15 +252,15 @@ def create_position_section(position_data, position_type):
     
     # Supporting Points
     st.markdown("""
-        <div style="margin: 1rem 0;">
-            <h5 style="margin-bottom: 0.5rem;">Supporting Points</h5>
+        <div style="margin: 1.5rem 0;">
+            <h5 style="margin-bottom: 6px;">Supporting Points</h5>
             <ul style="
                 list-style-type: none;
                 padding-left: 0;
                 margin: 0;
                 display: flex;
                 flex-direction: column;
-                gap: 8px;
+                gap: 12px;
             ">
     """, unsafe_allow_html=True)
     
@@ -270,7 +270,7 @@ def create_position_section(position_data, position_type):
                 display: flex;
                 align-items: flex-start;
                 margin-bottom: 0;
-                line-height: 1.4;
+                line-height: 1.5;
                 padding-right: 20px;
             ">
                 <span style="margin-right: 10px;">•</span>

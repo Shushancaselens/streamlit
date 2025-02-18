@@ -371,4 +371,40 @@ def main():
                 })
             df = pd.DataFrame(summary_data)
             st.download_button(
-                "Download Summary
+                label="Download Summary",
+                data=df.to_csv(index=False),
+                file_name="legal_arguments_summary.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+    
+    st.markdown("<div class='section-spacing'></div>", unsafe_allow_html=True)
+    
+    # Filter arguments based on search
+    filtered_arguments = argument_data
+    if search:
+        search = search.lower()
+        filtered_arguments = [
+            arg for arg in argument_data
+            if (search in arg['issue'].lower() or
+                any(search in detail.lower() for detail in arg['appellant']['details']) or
+                any(search in detail.lower() for detail in arg['respondent']['details']) or
+                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
+                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
+        ]
+    
+    # Display arguments
+    for arg in filtered_arguments:
+        with st.expander(f"{arg['issue']} {arg['category']}", expanded=arg['id'] == '1'):
+            st.markdown("<div class='component-spacing'></div>", unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                create_position_section(arg['appellant'], "Appellant")
+            with col2:
+                create_position_section(arg['respondent'], "Respondent")
+            st.markdown("<div class='component-spacing'></div>", unsafe_allow_html=True)
+        
+        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()

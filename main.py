@@ -283,7 +283,6 @@ def main():
     # Sidebar
     with st.sidebar:
         st.title("Dashboard Overview")
-        st.markdown("### Quick Stats")
         st.write(f"Total Cases: {len(argument_data)}")
         st.write(f"Total Evidence Items: {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
         st.write(f"Total Case Law Citations: {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")

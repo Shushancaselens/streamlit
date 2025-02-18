@@ -7,96 +7,35 @@ st.set_page_config(layout="wide")
 # Custom CSS for styling
 st.markdown("""
 <style>
-    .stApp {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .position-card {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        border: 1px solid #e5e7eb;
-        margin-bottom: 0.5rem;
-    }
-    .evidence-tag {
-        background-color: #e0e7ff;
+    /* ... (previous styles remain the same) ... */
+    .evidence-link {
         color: #4338ca;
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
     }
-    .category-tag {
-        background-color: #f3f4f6;
-        color: #4b5563;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-left: 0.5rem;
+    .evidence-link:hover {
+        color: #3730a3;
+        text-decoration: underline;
     }
-    .divider {
-        border-top: 1px solid #e5e7eb;
-        margin: 1rem 0;
-    }
-    .main-argument {
-        background-color: #f9fafb;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    .preview-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        margin-top: 0.5rem;
-    }
-    .preview-section {
-        padding: 1rem;
-        background-color: #f9fafb;
-        border-radius: 0.75rem;
-    }
-    .preview-label {
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-    }
-    .preview-label.appellant {
-        color: rgb(79, 70, 229);
-    }
-    .preview-label.respondent {
-        color: rgb(225, 29, 72);
-    }
-    .preview-text {
-        color: #6b7280;
-        font-size: 0.875rem;
-    }
-    
-    /* Customize Streamlit's expander */
-    .streamlit-expanderHeader {
-        background-color: white !important;
-        border-radius: 1rem !important;
-        border: 1px solid #e5e7eb !important;
-        padding: 1rem !important;
-    }
-    .streamlit-expanderContent {
-        border: none !important;
-        background-color: transparent !important;
-    }
-    /* Hide the default arrow */
-    .streamlit-expanderHeader svg {
-        display: none;
-    }
-    /* Style the select box */
-    .stSelectbox > div > div {
+    .evidence-card {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
         background-color: white;
-        border-radius: 0.75rem;
         border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+    }
+    .evidence-card:hover {
+        border-color: #818cf8;
+        background-color: #f5f7ff;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Sample data
+# Complete argument data
 argument_data = [
     {
         "id": "1",
@@ -163,6 +102,105 @@ argument_data = [
             ],
             "caselaw": ["CAS 2017/A/789"]
         }
+    },
+    {
+        "id": "3",
+        "issue": "Contract Termination Validity",
+        "category": "employment",
+        "appellant": {
+            "mainArgument": "Termination was wrongful and without cause",
+            "details": [
+                "No prior warnings were issued before termination",
+                "Performance reviews were consistently positive",
+                "Termination violated company policy on progressive discipline"
+            ],
+            "evidence": [
+                {"id": "C7", "desc": "Employee performance reviews 2020-2023"},
+                {"id": "C8", "desc": "Company handbook on disciplinary procedures"},
+                {"id": "C9", "desc": "Email correspondence regarding termination"}
+            ],
+            "caselaw": ["Smith v. Corp Inc. 2021", "Jones v. Enterprise Ltd 2020"]
+        },
+        "respondent": {
+            "mainArgument": "Termination was justified due to misconduct",
+            "details": [
+                "Multiple instances of policy violations documented",
+                "Verbal warnings were given on several occasions",
+                "Final incident warranted immediate termination"
+            ],
+            "evidence": [
+                {"id": "R7", "desc": "Internal incident reports"},
+                {"id": "R8", "desc": "Witness statements from supervisors"},
+                {"id": "R9", "desc": "Security footage from incident date"}
+            ],
+            "caselaw": ["Brown v. MegaCorp 2022", "Wilson v. Tech Solutions 2021"]
+        }
+    },
+    {
+        "id": "4",
+        "issue": "Patent Infringement",
+        "category": "intellectual property",
+        "appellant": {
+            "mainArgument": "Defendant's product violates our patent claims",
+            "details": [
+                "Product uses identical method described in patent claims",
+                "Infringement began after patent publication",
+                "Similarities cannot be explained by independent development"
+            ],
+            "evidence": [
+                {"id": "C10", "desc": "Patent documentation and claims analysis"},
+                {"id": "C11", "desc": "Technical comparison report"},
+                {"id": "C12", "desc": "Expert analysis of defendant's product"}
+            ],
+            "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
+        },
+        "respondent": {
+            "mainArgument": "Our technology was independently developed",
+            "details": [
+                "Development began before patent filing date",
+                "Technology uses different underlying mechanism",
+                "Patent claims are overly broad and invalid"
+            ],
+            "evidence": [
+                {"id": "R10", "desc": "Development timeline documentation"},
+                {"id": "R11", "desc": "Prior art examples"},
+                {"id": "R12", "desc": "Technical differentiation analysis"}
+            ],
+            "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
+        }
+    },
+    {
+        "id": "5",
+        "issue": "Environmental Compliance",
+        "category": "regulatory",
+        "appellant": {
+            "mainArgument": "Facility meets all environmental standards",
+            "details": [
+                "All required permits were obtained and maintained",
+                "Emissions consistently below regulatory limits",
+                "Regular maintenance and monitoring conducted"
+            ],
+            "evidence": [
+                {"id": "C13", "desc": "Environmental impact assessments"},
+                {"id": "C14", "desc": "Continuous monitoring data 2021-2023"},
+                {"id": "C15", "desc": "Third-party compliance audit reports"}
+            ],
+            "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
+        },
+        "respondent": {
+            "mainArgument": "Significant violations of environmental regulations",
+            "details": [
+                "Multiple instances of excess emissions recorded",
+                "Required monitoring equipment malfunctioned",
+                "Failure to report incidents within required timeframe"
+            ],
+            "evidence": [
+                {"id": "R13", "desc": "Violation notices and citations"},
+                {"id": "R14", "desc": "Inspector field reports"},
+                {"id": "R15", "desc": "Community complaint records"}
+            ],
+            "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
+        }
     }
 ]
 
@@ -188,9 +226,11 @@ def create_position_section(position_data, position_type):
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div class="position-card">
+            <div class="evidence-card">
                 <span class="evidence-tag">{evidence['id']}</span>
-                <span style="margin-left: 0.5rem">{evidence['desc']}</span>
+                <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
+                    {evidence['desc']}
+                </a>
             </div>
         """, unsafe_allow_html=True)
     
@@ -259,21 +299,6 @@ def main():
                 create_position_section(arg['respondent'], "Respondent")
         
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
-
-        # Preview when collapsed (outside expander)
-        if not st.session_state[f"{arg['issue']} {arg['category']}"]:  # Check if expander is collapsed
-            st.markdown(f"""
-                <div class="preview-grid">
-                    <div class="preview-section">
-                        <div class="preview-label appellant">Appellant Position</div>
-                        <div class="preview-text">{arg['appellant']['mainArgument']}</div>
-                    </div>
-                    <div class="preview-section">
-                        <div class="preview-label respondent">Respondent Position</div>
-                        <div class="preview-text">{arg['respondent']['mainArgument']}</div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

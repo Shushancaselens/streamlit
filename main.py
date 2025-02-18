@@ -15,30 +15,50 @@ st.markdown("""
         max-width: 1200px;
         margin: 0 auto;
     }
-    .issue-card {
-        background-color: white;
-        border-radius: 1rem;
-        border: 1px solid #e5e7eb;
-        margin-bottom: 1rem;
-        transition: all 0.2s ease-in-out;
+    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+        gap: 0rem !important;
     }
-    .issue-card:hover {
+    button[data-testid="baseButton-header"] {
+        width: 100%;
+        border: none !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+    }
+    button[data-testid="baseButton-header"]:hover {
+        border: none !important;
+        background-color: transparent !important;
+    }
+    button[data-testid="baseButton-header"]:focus {
+        box-shadow: none !important;
+    }
+    .header-container {
+        background-color: white;
+        padding: 1.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .header-container:hover {
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
-    .issue-header {
-        padding: 1.5rem;
-        cursor: pointer;
+    .header-content {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
     }
-    .issue-title {
+    .title-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .title-row {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        margin-bottom: 0.5rem;
     }
-    .issue-name {
+    .issue-title {
         font-size: 1.25rem;
         font-weight: 600;
         color: #111827;
@@ -51,21 +71,21 @@ st.markdown("""
         font-size: 0.875rem;
         font-weight: 500;
     }
-    .dropdown-icon {
+    .chevron {
         color: #9ca3af;
         font-size: 1.5rem;
         padding: 0.5rem;
         border-radius: 0.5rem;
-        transition: all 0.2s ease-in-out;
+        transition: transform 0.2s ease;
     }
-    .dropdown-icon:hover {
-        background-color: #f3f4f6;
+    .chevron.expanded {
+        transform: rotate(180deg);
     }
-    .position-preview {
+    .preview-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
-        padding: 0 1.5rem 1.5rem;
+        margin-top: 0.75rem;
     }
     .preview-section {
         display: flex;
@@ -88,8 +108,34 @@ st.markdown("""
         line-height: 1.5;
     }
     .content-section {
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-top: none;
+        border-radius: 0 0 1rem 1rem;
+        margin-top: -1rem;
         padding: 1.5rem;
-        border-top: 1px solid #e5e7eb;
+        animation: slideDown 0.2s ease-out;
+    }
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .evidence-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
     }
     .evidence-tag {
         background-color: #e0e7ff;
@@ -107,67 +153,9 @@ st.markdown("""
         color: #111827;
         font-weight: 500;
     }
-    .section-title {
-        color: #4b5563;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin: 1.5rem 0 1rem;
-    }
-    .evidence-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s ease-in-out;
-    }
-    .evidence-item:hover {
-        border-color: rgb(79, 70, 229);
-        background-color: #f5f7ff;
-    }
-    .case-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    .copy-button {
-        color: #9ca3af;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 0.25rem;
-        transition: all 0.2s ease-in-out;
-    }
-    .copy-button:hover {
-        color: rgb(79, 70, 229);
-        background-color: #f5f7ff;
-    }
-    /* Hide Streamlit's default button styling */
-    .stButton>button {
-        width: 100%;
-        background: none;
-        border: none;
-        padding: 0;
-        text-align: left;
-    }
-    .stButton>button:hover {
-        border: none;
-        background: none;
-    }
-    .stButton>button:focus {
-        box-shadow: none;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# Function to toggle section expansion
 def toggle_section(section_id):
     """Toggle the expanded/collapsed state of a section"""
     if section_id in st.session_state.expanded_sections:
@@ -175,156 +163,93 @@ def toggle_section(section_id):
     else:
         st.session_state.expanded_sections.add(section_id)
 
-# Sample data
-argument_data = [
-    {
-        "id": "1",
-        "issue": "CAS Jurisdiction",
-        "category": "jurisdiction",
-        "appellant": {
-            "mainArgument": "CAS Has Authority to Hear This Case",
-            "details": [
-                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
-                "Athlete has completed all required internal appeal procedures first",
-                "Athlete signed agreement allowing CAS to handle disputes"
-            ],
-            "evidence": [
-                {"id": "C1", "desc": "Federation Rules, Art. 60"},
-                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
-                {"id": "C3", "desc": "Appeal submission documents"}
-            ],
-            "caselaw": ["CAS 2019/A/XYZ"]
-        },
-        "respondent": {
-            "mainArgument": "CAS Cannot Hear This Case Yet",
-            "details": [
-                "Athlete skipped required steps in federation's appeal process",
-                "Athlete missed important appeal deadlines within federation",
-                "Must follow proper appeal steps before going to CAS"
-            ],
-            "evidence": [
-                {"id": "R1", "desc": "Federation internal appeals process documentation"},
-                {"id": "R2", "desc": "Timeline of appeals process"},
-                {"id": "R3", "desc": "Federation handbook on procedures"}
-            ],
-            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
-        }
-    },
-    {
-        "id": "2",
-        "issue": "Presence of Substance X",
-        "category": "substance",
-        "appellant": {
-            "mainArgument": "Chain-of-custody errors invalidate test results",
-            "details": [
-                "Sample had a 10-hour delay in transfer",
-                "Sealing procedure was not properly documented",
-                "Independent expert confirms potential degradation"
-            ],
-            "evidence": [
-                {"id": "C4", "desc": "Lab reports #1 and #2"},
-                {"id": "C5", "desc": "Expert Dr. A's statement"},
-                {"id": "C6", "desc": "Chain of custody documentation"}
-            ],
-            "caselaw": ["CAS 2018/A/ABC"]
-        },
-        "respondent": {
-            "mainArgument": "Minor procedural defects do not invalidate results",
-            "details": [
-                "WADA-accredited lab's procedures ensure reliability",
-                "10-hour delay within acceptable limits",
-                "No evidence of sample degradation"
-            ],
-            "evidence": [
-                {"id": "R4", "desc": "Lab accreditation documents"},
-                {"id": "R5", "desc": "Expert Dr. B's analysis"},
-                {"id": "R6", "desc": "Testing protocols"}
-            ],
-            "caselaw": ["CAS 2017/A/789"]
-        }
-    }
-]
+# Sample argument_data remains the same...
 
-def create_position_section(position_data, position_type):
-    """Create a section for appellant or respondent position"""
-    st.markdown(f"""
-        <div class="section-title">{position_type}'s Position</div>
-        <div class="main-argument">{position_data['mainArgument']}</div>
-        
-        <div class="section-title">Supporting Points</div>
-    """, unsafe_allow_html=True)
-    
-    for detail in position_data['details']:
-        st.markdown(f"- {detail}")
-    
-    st.markdown("""<div class="section-title">Evidence</div>""", unsafe_allow_html=True)
-    for evidence in position_data['evidence']:
-        st.markdown(f"""
-            <div class="evidence-item">
-                <span class="evidence-tag">{evidence['id']}</span>
-                <span>{evidence['desc']}</span>
+def create_header(arg, is_expanded):
+    """Create a header section with dropdown"""
+    header_html = f"""
+    <div class="header-container">
+        <div class="header-content">
+            <div class="title-section">
+                <div class="title-row">
+                    <span class="issue-title">{arg['issue']}</span>
+                    <span class="category-tag">{arg['category']}</span>
+                </div>
+                {'' if is_expanded else f'''
+                <div class="preview-grid">
+                    <div class="preview-section">
+                        <span class="preview-label appellant">Appellant Position</span>
+                        <span class="preview-text">{arg['appellant']['mainArgument']}</span>
+                    </div>
+                    <div class="preview-section">
+                        <span class="preview-label respondent">Respondent Position</span>
+                        <span class="preview-text">{arg['respondent']['mainArgument']}</span>
+                    </div>
+                </div>
+                '''}
             </div>
-        """, unsafe_allow_html=True)
+            <div class="chevron{'expanded' if is_expanded else ''}">
+                {'▼' if is_expanded else '▶'}
+            </div>
+        </div>
+    </div>
+    """
+    if st.button(header_html, key=f"header_{arg['id']}", use_container_width=True):
+        toggle_section(arg['id'])
+
+def create_content(arg):
+    """Create the expanded content section"""
+    st.markdown("""<div class="content-section">""", unsafe_allow_html=True)
     
-    st.markdown("""<div class="section-title">Case Law</div>""", unsafe_allow_html=True)
-    for case in position_data['caselaw']:
-        col1, col2 = st.columns([0.9, 0.1])
-        with col1:
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("### Appellant's Position")
+        st.markdown(f"""<div class="main-argument">{arg['appellant']['mainArgument']}</div>""", 
+                   unsafe_allow_html=True)
+        
+        st.markdown("#### Supporting Points")
+        for point in arg['appellant']['details']:
+            st.markdown(f"- {point}")
+        
+        st.markdown("#### Evidence")
+        for evidence in arg['appellant']['evidence']:
             st.markdown(f"""
-                <div class="case-item">
-                    <span>{case}</span>
-                    <span class="copy-button">📋</span>
+                <div class="evidence-item">
+                    <span class="evidence-tag">{evidence['id']}</span>
+                    <span>{evidence['desc']}</span>
+                </div>
+            """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("### Respondent's Position")
+        st.markdown(f"""<div class="main-argument">{arg['respondent']['mainArgument']}</div>""", 
+                   unsafe_allow_html=True)
+        
+        st.markdown("#### Supporting Points")
+        for point in arg['respondent']['details']:
+            st.markdown(f"- {point}")
+        
+        st.markdown("#### Evidence")
+        for evidence in arg['respondent']['evidence']:
+            st.markdown(f"""
+                <div class="evidence-item">
+                    <span class="evidence-tag">{evidence['id']}</span>
+                    <span>{evidence['desc']}</span>
                 </div>
             """, unsafe_allow_html=True)
 
 def create_issue_card(arg):
-    """Create a collapsible issue card"""
+    """Create a complete issue card with header and content"""
     is_expanded = arg['id'] in st.session_state.expanded_sections
     
-    # Header with title and dropdown
-    st.markdown(f"""
-        <div class="issue-card">
-            <div class="issue-header">
-                <div>
-                    <div class="issue-title">
-                        <span class="issue-name">{arg['issue']}</span>
-                        <span class="category-tag">{arg['category']}</span>
-                    </div>
-    """, unsafe_allow_html=True)
-    
-    # Toggle button
-    if st.button(f"{'▼' if is_expanded else '▶'}", key=f"toggle_{arg['id']}"):
-        toggle_section(arg['id'])
-    
-    # Preview or expanded content
-    if not is_expanded:
-        st.markdown(f"""
-            <div class="position-preview">
-                <div class="preview-section">
-                    <span class="preview-label appellant">Appellant Position</span>
-                    <span class="preview-text">{arg['appellant']['mainArgument']}</span>
-                </div>
-                <div class="preview-section">
-                    <span class="preview-label respondent">Respondent Position</span>
-                    <span class="preview-text">{arg['respondent']['mainArgument']}</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""<div class="content-section">""", unsafe_allow_html=True)
-        col1, col2 = st.columns(2)
-        with col1:
-            create_position_section(arg['appellant'], "Appellant")
-        with col2:
-            create_position_section(arg['respondent'], "Respondent")
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+    create_header(arg, is_expanded)
+    if is_expanded:
+        create_content(arg)
 
 def main():
     st.title("Legal Arguments Dashboard")
     
-    # Search bar and export button in the same row
+    # Search bar and export button
     col1, col2 = st.columns([0.8, 0.2])
     with col1:
         search = st.text_input("", 

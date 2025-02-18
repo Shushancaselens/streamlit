@@ -46,7 +46,7 @@ st.markdown("""
         border-color: #4D68F9 !important;
     }
 </style>
-""", unsafe_allow_html=True), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # Case summaries dictionary
 def get_case_summary(case_id):

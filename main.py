@@ -281,39 +281,42 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
-    # Add sidebar
+    # Sidebar
     with st.sidebar:
-        st.title("Filters")
+        st.header("Dashboard Settings")
+        st.markdown("---")
         # Category filter
         categories = list(set(arg["category"] for arg in argument_data))
         selected_categories = st.multiselect(
-            "Select Categories",
+            "Filter by Category",
             categories,
             default=categories
         )
         
-        # Date range for case law
-        st.subheader("Case Law Date Range")
-        # Extract years from case law
-        all_years = []
-        for arg in argument_data:
-            for case in arg["appellant"]["caselaw"] + arg["respondent"]["caselaw"]:
-                if case.split()[-1].isdigit():
-                    all_years.append(int(case.split()[-1]))
-        min_year = min(all_years)
-        max_year = max(all_years)
-        year_range = st.slider(
-            "Select Years",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year)
-        )
+        # Issue count
+        st.markdown("---")
+        st.markdown(f"**Total Issues:** {len(argument_data)}")
         
-        # View options
-        st.subheader("View Options")
-        expand_all = st.checkbox("Expand All Sections", value=False)
-        
-    # Main content
+        # Download all data button
+        st.markdown("---")
+        if st.button("Download All Data", use_container_width=True):
+            full_data = []
+            for arg in argument_data:
+                full_data.append({
+                    "Issue": arg["issue"],
+                    "Category": arg["category"],
+                    "Appellant Argument": arg["appellant"]["mainArgument"],
+                    "Respondent Argument": arg["respondent"]["mainArgument"]
+                })
+            df = pd.DataFrame(full_data)
+            st.download_button(
+                "Click to Download",
+                df.to_csv(index=False),
+                "full_legal_data.csv",
+                "text/csv",
+                use_container_width=True
+            )
+    
     st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
@@ -340,22 +343,30 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on search and sidebar filters
-    filtered_arguments = [
-        arg for arg in argument_data
-        if arg["category"] in selected_categories
-        and any(
-            int(case.split()[-1]) >= year_range[0] 
-            and int(case.split()[-1]) <= year_range[1]
-            for case in arg["appellant"]["caselaw"] + arg["respondent"]["caselaw"]
-            if case.split()[-1].isdigit()
-        )
-    ]
-    
+    # Filter arguments based on search and categories
+    filtered_arguments = [arg for arg in argument_data if arg["category"] in selected_categories]
     if search:
         search = search.lower()
         filtered_arguments = [
-            arg for arg in filtered_arguments
+            arg for arg in argument_data
             if (search in arg['issue'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any
+                any(search in detail.lower() for detail in arg['respondent']['details']) or
+                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
+                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
+        ]
+    
+    # Display arguments
+    for arg in filtered_arguments:
+        with st.expander(f"{arg['issue']} {arg['category']}", expanded=arg['id'] == '1'):
+            # Content when expanded
+            col1, col2 = st.columns(2)
+            with col1:
+                create_position_section(arg['appellant'], "Appellant")
+            with col2:
+                create_position_section(arg['respondent'], "Respondent")
+        
+        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()

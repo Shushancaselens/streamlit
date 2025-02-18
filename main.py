@@ -1,5 +1,5 @@
 def main():
-    # Add sidebar
+    # Add sidebar with just info
     with st.sidebar:
         st.title("Dashboard Info")
         st.markdown("---")
@@ -16,7 +16,7 @@ def main():
             Use the search bar above to find specific cases or arguments.
             """
         )
-    
+        
     st.title("Legal Arguments Dashboard - Table View")
     
     # Add view toggle
@@ -75,3 +75,6 @@ def main():
                 "respondent_cases": st.column_config.TextColumn("Respondent Case Law", width="large")
             }
         )
+
+if __name__ == "__main__":
+    main()

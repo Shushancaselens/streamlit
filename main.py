@@ -10,46 +10,7 @@ st.markdown("""
     .stTable {
         font-size: 14px;
     }
-    .evidence-tag {
-        background-color: #E5E7EB;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 12px;
-        color: #4B5563;
-    }
-    .main-argument {
-        font-weight: 500;
-        color: #1F2937;
-    }
-    .details-cell {
-        color: #4B5563;
-    }
-    .evidence-cell {
-        color: #4338CA;
-    }
-    .case-cell {
-        color: #1F2937;
-    }
-    div[data-testid="stButton"] button {
-        background-color: #4D68F9;
-        border-color: #4D68F9;
-    }
-    div[data-testid="stButton"] button:hover {
-        background-color: #3D54E8;
-        border-color: #4D68F9;
-    }
-    /* Radio button styling */
-    div[data-testid="stRadio"] label span[aria-label="Radio"] {
-        color: #4D68F9;
-    }
-    div[data-testid="stRadio"] label span[aria-label="Radio"]:hover {
-        color: #3D54E8;
-    }
-    div[data-testid="stRadio"] label[data-checked="true"] span[aria-label="Radio"] {
-        background-color: #4D68F9;
-    }
-</style>
-""", unsafe_allow_html=True)
+    .evidence-t, unsafe_allow_html=True)
 
 # Case summaries dictionary
 def get_case_summary(case_id):

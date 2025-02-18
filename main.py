@@ -7,7 +7,28 @@ st.set_page_config(layout="wide")
 # Custom CSS for styling
 st.markdown("""
 <style>
-    /* ... (previous styles remain the same) ... */
+    /* Main container padding */
+    .main {
+        padding: 2rem 3rem;
+    }
+    
+    /* Add spacing between sections */
+    .block-container {
+        padding-top: 2rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+    
+    /* Spacing for expander components */
+    .streamlit-expanderHeader {
+        margin-top: 1.5rem;
+    }
+    
+    /* Additional padding for content inside expanders */
+    .streamlit-expanderContent {
+        padding: 2rem 1.5rem;
+    }
+    
     .evidence-link {
         color: #4338ca;
         text-decoration: none;
@@ -229,6 +250,7 @@ argument_data = [
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""
+    st.markdown("<div style='padding: 1.5rem;'>", unsafe_allow_html=True)
     color = "indigo" if position_type == "Appellant" else "rose"
     
     st.subheader(f"{position_type}'s Position")
@@ -258,7 +280,7 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
     
     # Case Law
-    st.markdown("##### Case Law")
+    st.markdown("</div>\n##### Case Law", unsafe_allow_html=True)
     for case in position_data['caselaw']:
         summary = get_case_summary(case)
         st.markdown(f"""
@@ -281,7 +303,11 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
-    st.title("Legal Arguments Dashboard")
+    st.markdown("""
+    <div style="padding: 1.5rem 0;">
+        <h1>Legal Arguments Dashboard</h1>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Search bar and export button in the same row
     col1, col2 = st.columns([0.8, 0.2])

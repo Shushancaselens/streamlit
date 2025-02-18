@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import io
 
 # Set page config for wide layout
 st.set_page_config(layout="wide")
@@ -308,8 +307,7 @@ def main():
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        if st.button("📋 Export Summary", type="primary", use_container_width=True):
-            # Create the summary data
+        if st.button("📋 Copy", type="primary", use_container_width=True):
             summary_data = []
             for arg in argument_data:
                 summary_data.append({
@@ -318,34 +316,11 @@ def main():
                     "Respondent Position": arg["respondent"]["mainArgument"]
                 })
             df = pd.DataFrame(summary_data)
-            
-            # File format selection
-            file_format = st.selectbox(
-                "Select file format",
-                ["CSV", "Excel", "JSON"],
-                key="file_format"
-            )
-            
-            if file_format == "CSV":
-                file_data = df.to_csv(index=False)
-                file_name = "legal_arguments_summary.csv"
-                mime_type = "text/csv"
-            elif file_format == "Excel":
-                buffer = io.BytesIO()
-                df.to_excel(buffer, index=False)
-                file_data = buffer.getvalue()
-                file_name = "legal_arguments_summary.xlsx"
-                mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            else:  # JSON
-                file_data = df.to_json(orient='records')
-                file_name = "legal_arguments_summary.json"
-                mime_type = "application/json"
-            
             st.download_button(
-                "Download Summary",
-                file_data,
-                file_name,
-                mime_type,
+                "Copy to Clipboard",
+                df.to_csv(index=False),
+                "legal_arguments_summary.csv",
+                "text/csv",
                 use_container_width=True
             )
     

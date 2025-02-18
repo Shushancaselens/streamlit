@@ -293,9 +293,9 @@ def main():
           </g>
         </svg>
         """, unsafe_allow_html=True)
-        st.title("Dashboard Overview")
+        st.title("Summary Agent")
 
-    st.title("Legal Arguments Dashboard")
+    st.title("Summary Agent")
     
     # Search bar and export button in the same row
     col1, col2 = st.columns([0.8, 0.2])

@@ -347,4 +347,4 @@ def main():
     # Sidebar
     with st.sidebar:
         st.markdown("""
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175 175">

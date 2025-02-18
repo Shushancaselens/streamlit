@@ -327,21 +327,27 @@ def main():
             onclick="copyToClipboard()"
             style="
                 width: 100%;
-                height: 38px;
+                height: 40px;
+                padding: 0 16px;
                 background-color: #4D68F9;
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 6px;
                 cursor: pointer;
                 font-size: 14px;
                 font-weight: 500;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 4px;
+                gap: 8px;
+                transition: background-color 0.2s;
+                margin-top: 3px;
             "
+            onmouseover="this.style.backgroundColor='#4558D0'"
+            onmouseout="this.style.backgroundColor='#4D68F9'"
         >
-            📋 Copy
+            <span style="font-size: 16px;">📋</span>
+            <span>Copy</span>
         </button>
         <script>
         function copyToClipboard() {{
@@ -349,12 +355,13 @@ def main():
             textArea.select();
             document.execCommand('copy');
             const button = document.querySelector('button');
-            button.innerHTML = '✓ Copied!';
-            setTimeout(() => button.innerHTML = '📋 Copy', 2000);
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<span style="font-size: 16px;">✓</span><span>Copied!</span>';
+            setTimeout(() => button.innerHTML = originalContent, 2000);
         }}
         </script>
         """
-        html(copy_component, height=38)
+        html(copy_component, height=45)
     
     # Filter arguments based on search
     filtered_arguments = argument_data

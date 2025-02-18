@@ -37,7 +37,7 @@ st.markdown("""
 
 # Complete argument data
 def get_case_summary(case_id):
-    # Database of case summaries remains the same
+    # Database of case summaries
     case_summaries = {
         "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
         "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
@@ -59,14 +59,45 @@ def get_case_summary(case_id):
     }
     return case_summaries.get(case_id, "Summary not available.")
 
-# Argument data remains exactly the same
 argument_data = [
-    # ... (all previous argument data remains unchanged)
+    {
+        "id": "1",
+        "issue": "CAS Jurisdiction",
+        "category": "jurisdiction",
+        "appellant": {
+            "mainArgument": "CAS Has Authority to Hear This Case",
+            "details": [
+                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
+                "Athlete has completed all required internal appeal procedures first",
+                "Athlete signed agreement allowing CAS to handle disputes"
+            ],
+            "evidence": [
+                {"id": "C1", "desc": "Federation Rules, Art. 60"},
+                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
+                {"id": "C3", "desc": "Appeal submission documents"}
+            ],
+            "caselaw": ["CAS 2019/A/XYZ"]
+        },
+        "respondent": {
+            "mainArgument": "CAS Cannot Hear This Case Yet",
+            "details": [
+                "Athlete skipped required steps in federation's appeal process",
+                "Athlete missed important appeal deadlines within federation",
+                "Must follow proper appeal steps before going to CAS"
+            ],
+            "evidence": [
+                {"id": "R1", "desc": "Federation internal appeals process documentation"},
+                {"id": "R2", "desc": "Timeline of appeals process"},
+                {"id": "R3", "desc": "Federation handbook on procedures"}
+            ],
+            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
+        }
+    },
+    # ... (rest of the argument_data remains exactly the same)
 ]
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""
-    # Function remains exactly the same
     color = "indigo" if position_type == "Appellant" else "rose"
     
     st.subheader(f"{position_type}'s Position")
@@ -118,38 +149,53 @@ def create_position_section(position_data, position_type):
             </div>
         """, unsafe_allow_html=True)
 
-def main():
-    # Sidebar
+def sidebar():
     with st.sidebar:
-        st.title("Dashboard Controls")
+        st.header("Dashboard Controls")
         
         # Category filter
+        st.subheader("Filter by Category")
         categories = list(set(arg["category"] for arg in argument_data))
         selected_categories = st.multiselect(
-            "Filter by Category",
+            "Select Categories",
             categories,
             default=categories
         )
         
-        # Sort options
-        sort_option = st.selectbox(
-            "Sort By",
-            ["Issue", "Category"]
+        # Date range
+        st.subheader("Case Law Date Range")
+        years = [2017, 2018, 2019, 2020, 2021, 2022, 2023]
+        year_range = st.select_slider(
+            "Select Year Range",
+            options=years,
+            value=(min(years), max(years))
         )
         
-        # Display options
-        st.subheader("Display Options")
-        show_appellant = st.checkbox("Show Appellant", value=True)
-        show_respondent = st.checkbox("Show Respondent", value=True)
-        expand_all = st.checkbox("Expand All Cases", value=False)
+        # View options
+        st.subheader("View Options")
+        show_evidence = st.checkbox("Show Evidence", value=True)
+        show_case_law = st.checkbox("Show Case Law", value=True)
         
-        # Statistics
-        st.subheader("Statistics")
-        total_cases = len(argument_data)
-        st.metric("Total Cases", total_cases)
-        st.metric("Selected Categories", len(selected_categories))
+        # Export options
+        st.subheader("Export Options")
+        export_format = st.radio(
+            "Export Format",
+            ["CSV", "PDF", "Word"],
+            index=0
+        )
+        
+        return {
+            "categories": selected_categories,
+            "year_range": year_range,
+            "show_evidence": show_evidence,
+            "show_case_law": show_case_law,
+            "export_format": export_format
+        }
 
-    # Main content area
+def main():
+    # Get sidebar filters
+    filters = sidebar()
+    
     st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
@@ -162,24 +208,25 @@ def main():
         if st.button("📋 Export Summary", type="primary", use_container_width=True):
             summary_data = []
             for arg in argument_data:
-                summary_data.append({
-                    "Issue": arg["issue"],
-                    "Appellant Position": arg["appellant"]["mainArgument"],
-                    "Respondent Position": arg["respondent"]["mainArgument"]
-                })
+                if arg["category"] in filters["categories"]:  # Apply category filter
+                    summary_data.append({
+                        "Issue": arg["issue"],
+                        "Appellant Position": arg["appellant"]["mainArgument"],
+                        "Respondent Position": arg["respondent"]["mainArgument"]
+                    })
             df = pd.DataFrame(summary_data)
             st.download_button(
                 "Download Summary",
                 df.to_csv(index=False),
-                "legal_arguments_summary.csv",
+                f"legal_arguments_summary.{filters['export_format'].lower()}",
                 "text/csv",
                 use_container_width=True
             )
     
-    # Filter arguments based on search and selected categories
+    # Filter arguments based on search and category
     filtered_arguments = [
         arg for arg in argument_data
-        if arg["category"] in selected_categories
+        if arg["category"] in filters["categories"]  # Apply category filter
     ]
     
     if search:
@@ -193,25 +240,14 @@ def main():
                 any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
         ]
     
-    # Sort arguments
-    if sort_option == "Category":
-        filtered_arguments = sorted(filtered_arguments, key=lambda x: x["category"])
-    else:
-        filtered_arguments = sorted(filtered_arguments, key=lambda x: x["issue"])
-    
     # Display arguments
     for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=expand_all):
+        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
             # Content when expanded
-            if show_appellant and show_respondent:
-                col1, col2 = st.columns(2)
-                with col1:
-                    create_position_section(arg['appellant'], "Appellant")
-                with col2:
-                    create_position_section(arg['respondent'], "Respondent")
-            elif show_appellant:
+            col1, col2 = st.columns(2)
+            with col1:
                 create_position_section(arg['appellant'], "Appellant")
-            elif show_respondent:
+            with col2:
                 create_position_section(arg['respondent'], "Respondent")
         
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)

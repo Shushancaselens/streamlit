@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import json
+from streamlit.components.v1 import html
 
 # Set page config for wide layout
 st.set_page_config(layout="wide")
@@ -300,25 +302,16 @@ def main():
 
     st.title("Summary of Arguments")
     
-    # Add JavaScript for copy functionality
-    st.markdown("""
-        <script>
-        function copyContent() {
-            const content = document.querySelector('.stMarkdown').innerText;
-            navigator.clipboard.writeText(content)
-                .then(() => {
-                    const button = document.querySelector('.copy-button');
-                    button.innerHTML = '✓ Copied!';
-                    setTimeout(() => {
-                        button.innerHTML = '📋 Copy';
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
-        }
-        </script>
-    """, unsafe_allow_html=True)
+    # Create a string with all the content to be copied
+    copy_content = []
+    for arg in argument_data:
+        copy_content.append(f"### {arg['issue']} ({arg['category']})")
+        copy_content.append("\nAppellant's Position:")
+        copy_content.append(f"• {arg['appellant']['mainArgument']}")
+        copy_content.append("\nRespondent's Position:")
+        copy_content.append(f"• {arg['respondent']['mainArgument']}\n")
+    
+    copy_text = "\n".join(copy_content)
 
     # Search bar and copy button in the same row
     col1, col2 = st.columns([0.8, 0.2])
@@ -327,23 +320,27 @@ def main():
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        st.markdown("""
-            <button 
-                onclick="copyContent()" 
-                class="copy-button"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    background-color: #4F46E5;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: background-color 0.3s;
-                ">
-                📋 Copy
-            </button>
-        """, unsafe_allow_html=True)
+        # Create a hidden component that will handle the copy functionality
+        copy_component = f"""
+        <textarea id="copy-text" style="position: absolute; left: -9999px;">{copy_text}</textarea>
+        <button
+            onclick="copyToClipboard()"
+            style="width: 100%; padding: 8px; background-color: #4F46E5; color: white; border: none; border-radius: 4px; cursor: pointer;"
+        >
+            📋 Copy
+        </button>
+        <script>
+        function copyToClipboard() {{
+            const textArea = document.getElementById('copy-text');
+            textArea.select();
+            document.execCommand('copy');
+            const button = document.querySelector('button');
+            button.innerHTML = '✓ Copied!';
+            setTimeout(() => button.innerHTML = '📋 Copy', 2000);
+        }}
+        </script>
+        """
+        html(copy_component, height=40)
     
     # Filter arguments based on search
     filtered_arguments = argument_data

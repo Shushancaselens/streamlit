@@ -250,14 +250,54 @@ def create_position_section(position_data, position_type):
         st.markdown(f"- {detail}")
     
     # Evidence
-    st.markdown("##### Evidence")
+    st.markdown("""<h5 style="font-size: 16px; margin-top: 20px; margin-bottom: 12px;">Evidence</h5>""", unsafe_allow_html=True)
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div class="evidence-card">
-                <span class="evidence-tag">{evidence['id']}</span>
-                <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
-                    {evidence['desc']}
-                </a>
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background-color: white;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                transition: all 0.2s;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            "
+            onmouseover="this.style.borderColor='#4D68F9'; this.style.backgroundColor='#F8FAFF'"
+            onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'">
+                <div style="
+                    background-color: #EEF2FF;
+                    color: #4D68F9;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    min-width: 45px;
+                    text-align: center;
+                ">{evidence['id']}</div>
+                <div style="
+                    color: #374151;
+                    font-size: 14px;
+                    flex-grow: 1;
+                ">{evidence['desc']}</div>
+                <button 
+                    onclick="navigator.clipboard.writeText('{evidence['desc']}')"
+                    style="
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        color: #6B7280;
+                        padding: 4px;
+                        border-radius: 4px;
+                        transition: all 0.2s;
+                    "
+                    onmouseover="this.style.backgroundColor='#F3F4F6'"
+                    onmouseout="this.style.backgroundColor='transparent'"
+                >
+                    📋
+                </button>
             </div>
         """, unsafe_allow_html=True)
     

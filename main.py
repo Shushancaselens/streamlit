@@ -167,6 +167,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Function to toggle section expansion
+def toggle_section(section_id):
+    """Toggle the expanded/collapsed state of a section"""
+    if section_id in st.session_state.expanded_sections:
+        st.session_state.expanded_sections.remove(section_id)
+    else:
+        st.session_state.expanded_sections.add(section_id)
+
 # Sample data
 argument_data = [
     {

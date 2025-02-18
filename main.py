@@ -234,7 +234,7 @@ def create_position_section(position_data, position_type):
     
     # Main Argument
     st.markdown(f"""
-        <div class="main-argument">
+        <div class="main-argument" style="margin-bottom: 2rem;">
             <strong>{position_data['mainArgument']}</strong>
         </div>
     """, unsafe_allow_html=True)
@@ -264,10 +264,10 @@ def create_position_section(position_data, position_type):
             <div class="position-card">
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
                     <div style="flex-grow: 1;">
-                        <div style="font-weight: 700; color: #4B5563; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
                             {case}
                         </div>
-                        <div style="font-size: 1rem; color: #6B7280; font-weight: 500;">
+                        <div style="font-size: 0.875rem; color: #6B7280;">
                             {summary}
                         </div>
                     </div>

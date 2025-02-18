@@ -238,7 +238,13 @@ def create_position_section(position_data, position_type):
     
     # Main Argument
     st.markdown(f"""
-        <div class="main-argument" style="margin: 20px 0; font-size: 1.2rem;">
+        <div class="main-argument" style="
+            margin: 20px 0; 
+            font-size: 1.2rem;
+            max-width: 95%;
+            line-height: 1.5;
+            padding-right: 15px;
+        ">
             <strong>{position_data['mainArgument']}</strong>
         </div>
     """, unsafe_allow_html=True)
@@ -250,11 +256,7 @@ def create_position_section(position_data, position_type):
         st.markdown(f"- {detail}")
     
     # Evidence
-    st.markdown("""
-        <div style="margin: 28px 0 16px 0;">
-            <h5 style="font-size: 16px; color: #111827; margin-bottom: 16px;">Evidence</h5>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
         st.markdown(f"""
             <div class="evidence-card" style="
@@ -264,7 +266,7 @@ def create_position_section(position_data, position_type):
                 background-color: white;
                 border: 1px solid #e5e7eb;
                 border-radius: 8px;
-                margin-bottom: 12px;
+                margin-bottom: 8px;
                 transition: all 0.2s;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             ">
@@ -276,8 +278,6 @@ def create_position_section(position_data, position_type):
                     font-size: 13px;
                     font-weight: 500;
                     margin-right: 12px;
-                    min-width: 45px;
-                    text-align: center;
                 ">{evidence['id']}</span>
                 <a href="/evidence/{evidence['id']}" 
                    style="
@@ -286,7 +286,6 @@ def create_position_section(position_data, position_type):
                     font-size: 14px;
                     flex-grow: 1;
                     transition: color 0.2s;
-                    line-height: 1.4;
                    "
                    onmouseover="this.style.color='#4D68F9'"
                    onmouseout="this.style.color='#4B5563'"
@@ -414,9 +413,22 @@ def main():
     
     # Display arguments
     for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} {arg['category']}", expanded=arg['id'] == '1'):
+        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
+            st.markdown("""
+                <style>
+                    .stMarkdown {
+                        max-width: 100%;
+                    }
+                    .main-argument {
+                        padding-right: 20px;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                        hyphens: auto;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
             # Content when expanded
-            col1, col2 = st.columns(2)
+            col1, col2 = st.columns([1, 1])
             with col1:
                 create_position_section(arg['appellant'], "Appellant")
             with col2:

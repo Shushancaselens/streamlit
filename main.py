@@ -299,30 +299,32 @@ for tab, category in zip(tabs, categories):
                     st.markdown("**Case Law:**")
                     display_case_law(arg["respondent"]["caselaw"], "#FF6B6B")
 
+# Prepare summary data
+summary_data = []
+for arg in filtered_data:
+    summary_data.append({
+        "Issue": arg["issue"],
+        "Category": arg["category"].replace('_', ' ').title(),
+        "Tags": ", ".join(arg.get('tags', [])),
+        "Appellant Position": arg["appellant"]["mainArgument"],
+        "Respondent Position": arg["respondent"]["mainArgument"],
+        "Evidence Count": len(arg["appellant"]["evidence"]) + len(arg["respondent"]["evidence"])
+    })
+
 # Summary table
 if st.button("📊 Generate Summary Table"):
-    summary_data = []
-    for arg in filtered_data:
-        summary_data.append({
-            "Issue": arg["issue"],
-            "Category": arg["category"].replace('_', ' ').title(),
-            "Tags": ", ".join(arg.get('tags', [])),
-            "Appellant Position": arg["appellant"]["mainArgument"],
-            "Respondent Position": arg["respondent"]["mainArgument"],
-            "Evidence Count": len(arg["appellant"]["evidence"]) + len(arg["respondent"]["evidence"])
-        })
-    
     df = pd.DataFrame(summary_data)
     st.dataframe(df, use_container_width=True)
 
 # Export functionality
-if st.download_button(
-    label="📥 Export Data",
-    data=pd.DataFrame(summary_data).to_csv(index=False),
-    file_name=f"legal_arguments_summary_{datetime.now().strftime('%Y%m%d')}.csv",
-    mime="text/csv"
-):
-    st.success("Data exported successfully!")
+if summary_data:  # Only show export button if there's data
+    if st.download_button(
+        label="📥 Export Data",
+        data=pd.DataFrame(summary_data).to_csv(index=False),
+        file_name=f"legal_arguments_summary_{datetime.now().strftime('%Y%m%d')}.csv",
+        mime="text/csv"
+    ):
+        st.success("Data exported successfully!")
 
 # Statistics
 st.sidebar.markdown("### 📊 Case Statistics")

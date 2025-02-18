@@ -293,9 +293,9 @@ def main():
           </g>
         </svg>
         """, unsafe_allow_html=True)
-        st.title("Summary Agent")
+        st.title("Summary Overview")
 
-    st.title("Summary Agent")
+    st.title("Summary of Arguments")
     
     # Search bar and export button in the same row
     col1, col2 = st.columns([0.8, 0.2])

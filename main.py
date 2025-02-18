@@ -36,76 +36,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Complete argument data
-def get_case_law_evidence():
-    # Database of case law evidence with summaries
-    return {
-        "CAS 2019/A/XYZ": {
-            "summary": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
-            "key_evidence": [
-                "Federation rules explicitly permitting CAS appeals",
-                "Signed arbitration agreement",
-                "Complete internal appeals documentation"
-            ],
-            "key_holdings": [
-                "Clear arbitration agreements are enforceable",
-                "Federation rules can establish CAS jurisdiction",
-                "Proper documentation of consent is crucial"
-            ]
-        },
-        "CAS 2019/A/123": {
-            "summary": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
-            "key_evidence": [
-                "Internal appeal procedures documentation",
-                "Timeline of appeal process",
-                "Federation correspondence"
-            ],
-            "key_holdings": [
-                "Internal remedies must be exhausted",
-                "Procedural requirements are mandatory",
-                "Timing of appeals is critical"
-            ]
-        },
-        "CAS 2018/A/456": {
-            "summary": "Case established precedent for requiring completion of federation's internal processes before CAS jurisdiction.",
-            "key_evidence": [
-                "Federation's appeal process documentation",
-                "Athlete's appeal history",
-                "Expert testimony on procedures"
-            ],
-            "key_holdings": [
-                "Federation processes must be completed",
-                "Exceptions require extraordinary circumstances",
-                "Burden of proof on appellant"
-            ]
-        },
-        "CAS 2018/A/ABC": {
-            "summary": "Court found chain-of-custody errors significant enough to invalidate test results. Set standards for sample handling.",
-            "key_evidence": [
-                "Chain of custody documentation",
-                "Laboratory handling procedures",
-                "Expert testimony on sample degradation"
-            ],
-            "key_holdings": [
-                "Proper chain of custody is essential",
-                "Documentation gaps can invalidate results",
-                "Expert testimony heavily weighted"
-            ]
-        },
-        "CAS 2017/A/789": {
-            "summary": "Minor procedural defects held insufficient to invalidate otherwise valid test results.",
-            "key_evidence": [
-                "Laboratory accreditation documents",
-                "Test result documentation",
-                "Expert analysis of procedures"
-            ],
-            "key_holdings": [
-                "Minor defects don't invalidate results",
-                "Overall reliability is key factor",
-                "Substantial compliance sufficient"
-            ]
-        }
-    }
-
 def get_case_summary(case_id):
     # Database of case summaries
     case_summaries = {
@@ -315,166 +245,42 @@ def create_position_section(position_data, position_type):
     for detail in position_data['details']:
         st.markdown(f"- {detail}")
     
-    # Evidence with Case Law Summary
+    # Evidence
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
-        # Get related case law summaries
-        related_cases = []
-        case_law_evidence = get_case_law_evidence()
-        for case in position_data['caselaw']:
-            if case in case_law_evidence:
-                case_evidence = case_law_evidence[case]
-                # Check if this evidence is mentioned in the case's key evidence
-                if any(evidence['desc'].lower() in key_ev.lower() for key_ev in case_evidence['key_evidence']):
-                    related_cases.append({
-                        'citation': case,
-                        'summary': case_evidence['summary'],
-                        'relevant_holding': next((holding for holding in case_evidence['key_holdings'] 
-                                               if evidence['desc'].lower() in holding.lower()), 
-                                              case_evidence['key_holdings'][0])
-                    })
-        
         st.markdown(f"""
             <div class="evidence-card">
-                <div style="display: flex; flex-direction: column; width: 100%;">
-                    <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.5rem;">
-                        <span class="evidence-tag">{evidence['id']}</span>
-                        <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
-                            {evidence['desc']}
-                        </a>
-                    </div>
-                    {f'''
-                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
-                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                            Related Case Law:
-                        </div>
-                        {"".join(f"""
-                            <div style="margin-bottom: 0.5rem; padding-left: 0.5rem; border-left: 2px solid #e5e7eb;">
-                                <div style="font-weight: 500; color: #6B7280; font-size: 0.875rem;">
-                                    {case['citation']}
-                                </div>
-                                <div style="color: #6B7280; font-size: 0.875rem; margin-top: 0.25rem;">
-                                    {case['summary']}
-                                </div>
-                                <div style="color: #4B5563; font-size: 0.875rem; margin-top: 0.25rem;">
-                                    <strong>Relevant Holding:</strong> {case['relevant_holding']}
-                                </div>
-                            </div>
-                        """ for case in related_cases)}
-                    </div>
-                    ''' if related_cases else ''}
-                </div>
+                <span class="evidence-tag">{evidence['id']}</span>
+                <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
+                    {evidence['desc']}
+                </a>
             </div>
         """, unsafe_allow_html=True)
     
     # Case Law
     st.markdown("##### Case Law")
-    case_law_evidence = get_case_law_evidence()
-    
     for case in position_data['caselaw']:
-        if case in case_law_evidence:
-            evidence = case_law_evidence[case]
-            st.markdown(f"""
-                <div class="position-card">
-                    <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                        <div style="flex-grow: 1;">
-                            <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                                {case}
-                            </div>
-                            <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.5rem;">
-                                {evidence['summary']}
-                            </div>
-                            <div style="margin-top: 1rem;">
-                                <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                                    Key Evidence:
-                                </div>
-                                <ul style="list-style-type: disc; margin-left: 1.5rem; font-size: 0.875rem; color: #6B7280;">
-                                    {"".join(f'<li>{item}</li>' for item in evidence['key_evidence'])}
-                                </ul>
-                            </div>
-                            <div style="margin-top: 1rem;">
-                                <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                                    Key Holdings:
-                                </div>
-                                <ul style="list-style-type: disc; margin-left: 1.5rem; font-size: 0.875rem; color: #6B7280;">
-                                    {"".join(f'<li>{item}</li>' for item in evidence['key_holdings'])}
-                                </ul>
-                            </div>
+        summary = get_case_summary(case)
+        st.markdown(f"""
+            <div class="position-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
+                            {case}
                         </div>
-                        <button onclick="navigator.clipboard.writeText('{case}')" 
-                                style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                            📋
-                        </button>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            summary = get_case_summary(case)
-            st.markdown(f"""
-                <div class="position-card">
-                    <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                        <div style="flex-grow: 1;">
-                            <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                                {case}
-                            </div>
-                            <div style="font-size: 0.875rem; color: #6B7280;">
-                                {summary}
-                            </div>
+                        <div style="font-size: 0.875rem; color: #6B7280;">
+                            {summary}
                         </div>
-                        <button onclick="navigator.clipboard.writeText('{case}')" 
-                                style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                            📋
-                        </button>
                     </div>
+                    <button onclick="navigator.clipboard.writeText('{case}')" 
+                            style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
+                        📋
+                    </button>
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
 
 def main():
-    # Sidebar
-    with st.sidebar:
-        st.title("Filters")
-        
-        # Category filter
-        categories = list(set(arg["category"] for arg in argument_data))
-        selected_categories = st.multiselect(
-            "Select Categories",
-            categories,
-            default=categories
-        )
-        
-        # Party filter
-        party_filter = st.radio(
-            "View Arguments By",
-            ["All", "Appellant Only", "Respondent Only"]
-        )
-        
-        # Date range
-        st.markdown("### Case Law Date Range")
-        min_year = 2017
-        max_year = 2023
-        year_range = st.slider(
-            "Select Years",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year)
-        )
-        
-        # Statistics
-        st.markdown("### Quick Stats")
-        st.markdown(f"**Total Cases:** {len(argument_data)}")
-        st.markdown(f"**Total Evidence Items:** {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
-        st.markdown(f"**Total Case Laws Cited:** {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")
-        
-        # Export options
-        st.markdown("### Export Options")
-        export_format = st.selectbox(
-            "Export Format",
-            ["CSV", "Excel", "PDF"]
-        )
-        if st.button("Export Data", type="primary"):
-            st.write(f"Exporting in {export_format} format...")
-
-    # Main content
     st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
@@ -501,54 +307,12 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on sidebar selections and search
+    # Filter arguments based on search
     filtered_arguments = argument_data
-    
-    # Category filter
-    filtered_arguments = [
-        arg for arg in filtered_arguments
-        if arg['category'] in selected_categories
-    ]
-    
-    # Party filter
-    if party_filter == "Appellant Only":
-        for arg in filtered_arguments:
-            arg['respondent']['details'] = []
-            arg['respondent']['evidence'] = []
-            arg['respondent']['caselaw'] = []
-    elif party_filter == "Respondent Only":
-        for arg in filtered_arguments:
-            arg['appellant']['details'] = []
-            arg['appellant']['evidence'] = []
-            arg['appellant']['caselaw'] = []
-    
-    # Case law year filter
-    def get_case_year(case):
-        try:
-            return int(case.split()[-1])
-        except:
-            return 0
-    
-    filtered_arguments = [
-        {**arg,
-         'appellant': {
-             **arg['appellant'],
-             'caselaw': [case for case in arg['appellant']['caselaw']
-                        if year_range[0] <= get_case_year(case) <= year_range[1]]
-         },
-         'respondent': {
-             **arg['respondent'],
-             'caselaw': [case for case in arg['respondent']['caselaw']
-                        if year_range[0] <= get_case_year(case) <= year_range[1]]
-         }}
-        for arg in filtered_arguments
-    ]
-    
-    # Search filter
     if search:
         search = search.lower()
         filtered_arguments = [
-            arg for arg in filtered_arguments
+            arg for arg in argument_data
             if (search in arg['issue'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
                 any(search in detail.lower() for detail in arg['respondent']['details']) or

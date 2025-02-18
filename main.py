@@ -326,25 +326,27 @@ def main():
         <button
             onclick="copyToClipboard()"
             style="
-                width: 100%; 
-                padding: 8px; 
-                background-color: transparent; 
-                color: #4F46E5; 
-                border: 2px solid #4F46E5; 
-                border-radius: 4px; 
+                width: 100%;
+                height: 40px;
+                padding: 8px 16px;
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 6px;
                 cursor: pointer;
+                font-size: 15px;
                 font-weight: 500;
-                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 6px;
+                gap: 8px;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             "
-            onmouseover="this.style.backgroundColor='#4F46E5'; this.style.color='white';"
-            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#4F46E5';"
+            onmouseover="this.style.backgroundColor='#1d4ed8'"
+            onmouseout="this.style.backgroundColor='#2563eb'"
         >
-            <span style="font-size: 16px;">📋</span> 
-            <span style="font-size: 14px;">Copy</span>
+            📋 Copy Summary
         </button>
         <script>
         function copyToClipboard() {{
@@ -352,19 +354,17 @@ def main():
             textArea.select();
             document.execCommand('copy');
             const button = document.querySelector('button');
-            const originalContent = button.innerHTML;
-            button.innerHTML = '<span style="font-size: 16px;">✓</span> <span style="font-size: 14px;">Copied!</span>';
-            button.style.backgroundColor = '#4F46E5';
-            button.style.color = 'white';
+            const originalText = button.innerHTML;
+            button.innerHTML = '✓ Copied!';
+            button.style.backgroundColor = '#059669';
             setTimeout(() => {{
-                button.innerHTML = originalContent;
-                button.style.backgroundColor = 'transparent';
-                button.style.color = '#4F46E5';
+                button.innerHTML = originalText;
+                button.style.backgroundColor = '#2563eb';
             }}, 2000);
         }}
         </script>
         """
-        html(copy_component, height=40)
+        html(copy_component, height=45)
     
     # Filter arguments based on search
     filtered_arguments = argument_data

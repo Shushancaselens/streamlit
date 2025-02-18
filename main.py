@@ -7,7 +7,10 @@ st.set_page_config(layout="wide")
 # Custom CSS for styling
 st.markdown("""
 <style>
-    /* ... (previous styles remain the same) ... */
+    .block-container {
+        padding: 2rem 5rem;
+    }
+    /* Main styles */
     .evidence-link {
         color: #4338ca;
         text-decoration: none;

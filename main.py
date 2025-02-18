@@ -300,21 +300,22 @@ def main():
 
     st.title("Summary of Arguments")
     
-    # Add copy script to head
+    # Add JavaScript for copy functionality
     st.markdown("""
         <script>
-        function copyToClipboard() {
-            const summary = [];
-            const args = arguments_data;
-            for (const arg of args) {
-                summary.push(
-                    `Issue: ${arg.issue}\n` +
-                    `Appellant: ${arg.appellant.mainArgument}\n` +
-                    `Respondent: ${arg.respondent.mainArgument}\n` +
-                    '---'
-                );
-            }
-            navigator.clipboard.writeText(summary.join('\n\n'));
+        function copyContent() {
+            const content = document.querySelector('.stMarkdown').innerText;
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    const button = document.querySelector('.copy-button');
+                    button.innerHTML = '✓ Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '📋 Copy';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
         }
         </script>
     """, unsafe_allow_html=True)
@@ -328,7 +329,8 @@ def main():
     with col2:
         st.markdown("""
             <button 
-                onclick="copyToClipboard()" 
+                onclick="copyContent()" 
+                class="copy-button"
                 style="
                     width: 100%;
                     padding: 8px;
@@ -337,15 +339,8 @@ def main():
                     border: none;
                     border-radius: 4px;
                     cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
                     transition: background-color 0.3s;
-                "
-                onmouseover="this.style.backgroundColor='#4338CA'"
-                onmouseout="this.style.backgroundColor='#4F46E5'"
-            >
+                ">
                 📋 Copy
             </button>
         """, unsafe_allow_html=True)
@@ -362,13 +357,6 @@ def main():
                 any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
                 any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
         ]
-    
-    # Make argument data available to JavaScript
-    st.markdown(f"""
-        <script>
-        const arguments_data = {argument_data};
-        </script>
-    """, unsafe_allow_html=True)
     
     # Display arguments
     for arg in filtered_arguments:

@@ -233,7 +233,7 @@ def create_position_section(position_data, position_type):
     color = "#4F46E5" if position_type == "Appellant" else "#E11D48"
     
     st.markdown(f"""
-        <h4 style="color: {color}; font-size: 1.1rem; margin-bottom: 1rem;">{position_type}'s Position</h4>
+        <h3 style="color: {color}; font-size: 19.2px;">{position_type}'s Position</h3>
     """, unsafe_allow_html=True)
     
     # Main Argument

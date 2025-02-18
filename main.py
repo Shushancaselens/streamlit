@@ -250,13 +250,12 @@ def create_position_section(position_data, position_type):
         st.markdown(f"- {detail}")
     
     # Evidence
-    st.markdown("""<h5 style="font-size: 16px; margin-bottom: 12px;">Evidence</h5>""", unsafe_allow_html=True)
+    st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div style="
+            <div class="evidence-card" style="
                 display: flex;
                 align-items: center;
-                gap: 12px;
                 padding: 12px 16px;
                 background-color: white;
                 border: 1px solid #e5e7eb;
@@ -264,42 +263,29 @@ def create_position_section(position_data, position_type):
                 margin-bottom: 8px;
                 transition: all 0.2s;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            "
-            onmouseover="this.style.borderColor='#4D68F9'; this.style.backgroundColor='#F8FAFF'"
-            onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'"
-            >
-                <div style="
-                    background-color: #EEF2FF;
-                    color: #4D68F9;
+            ">
+                <span style="
+                    background-color: #F3F4F6;
+                    color: #4B5563;
                     padding: 4px 8px;
                     border-radius: 4px;
                     font-size: 13px;
                     font-weight: 500;
-                    min-width: 45px;
-                    text-align: center;
-                ">{evidence['id']}</div>
-                <div style="
-                    color: #1F2937;
+                    margin-right: 12px;
+                ">{evidence['id']}</span>
+                <a href="/evidence/{evidence['id']}" 
+                   style="
+                    color: #4B5563;
+                    text-decoration: none;
                     font-size: 14px;
                     flex-grow: 1;
-                    line-height: 1.4;
-                ">{evidence['desc']}</div>
-                <button 
-                    onclick="navigator.clipboard.writeText('{evidence['desc']}')"
-                    style="
-                        background: none;
-                        border: none;
-                        cursor: pointer;
-                        color: #6B7280;
-                        padding: 4px;
-                        border-radius: 4px;
-                        transition: all 0.2s;
-                    "
-                    onmouseover="this.style.backgroundColor='#F3F4F6'"
-                    onmouseout="this.style.backgroundColor='transparent'"
+                    transition: color 0.2s;
+                   "
+                   onmouseover="this.style.color='#4D68F9'"
+                   onmouseout="this.style.color='#4B5563'"
                 >
-                    📋
-                </button>
+                    {evidence['desc']}
+                </a>
             </div>
         """, unsafe_allow_html=True)
     

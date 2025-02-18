@@ -259,39 +259,26 @@ def create_position_section(position_data, position_type):
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div class="evidence-card" style="
+            <div style="
                 display: flex;
                 align-items: center;
-                padding: 12px 16px;
+                padding: 16px;
                 background-color: white;
-                border: 1px solid #e5e7eb;
+                border: 1px solid #F3F4F6;
                 border-radius: 8px;
-                margin-bottom: 8px;
-                transition: all 0.2s;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                margin-bottom: 12px;
+                min-height: 56px;
             ">
                 <span style="
-                    background-color: #F3F4F6;
-                    color: #4B5563;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 13px;
+                    min-width: 40px;
                     font-weight: 500;
-                    margin-right: 12px;
+                    color: #6B7280;
+                    margin-right: 16px;
                 ">{evidence['id']}</span>
-                <a href="/evidence/{evidence['id']}" 
-                   style="
-                    color: #4B5563;
-                    text-decoration: none;
+                <span style="
+                    color: #374151;
                     font-size: 14px;
-                    flex-grow: 1;
-                    transition: color 0.2s;
-                   "
-                   onmouseover="this.style.color='#4D68F9'"
-                   onmouseout="this.style.color='#4B5563'"
-                >
-                    {evidence['desc']}
-                </a>
+                ">{evidence['desc']}</span>
             </div>
         """, unsafe_allow_html=True)
     

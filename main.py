@@ -251,50 +251,42 @@ def create_position_section(position_data, position_type):
     
     # Evidence
     st.markdown("""
-        <div style="margin: 24px 0 16px 0;">
-            <h5 style="
-                margin: 0 0 16px 0;
-                font-size: 16px;
-                color: #111827;
-                font-weight: 600;
-            ">Evidence</h5>
-            </div>
+        <div style="margin: 28px 0 16px 0;">
+            <h5 style="font-size: 16px; color: #111827; margin-bottom: 16px;">Evidence</h5>
+        </div>
     """, unsafe_allow_html=True)
-    
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div style="
+            <div class="evidence-card" style="
                 display: flex;
                 align-items: center;
                 padding: 12px 16px;
                 background-color: white;
                 border: 1px solid #e5e7eb;
                 border-radius: 8px;
-                margin: 0 0 12px 0;
+                margin-bottom: 12px;
                 transition: all 0.2s;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             ">
-                <div style="
+                <span style="
                     background-color: #F3F4F6;
                     color: #4B5563;
                     padding: 4px 8px;
                     border-radius: 4px;
                     font-size: 13px;
                     font-weight: 500;
-                    min-width: 48px;
-                    text-align: center;
                     margin-right: 12px;
-                ">{evidence['id']}</div>
+                    min-width: 45px;
+                    text-align: center;
+                ">{evidence['id']}</span>
                 <a href="/evidence/{evidence['id']}" 
                    style="
                     color: #4B5563;
                     text-decoration: none;
                     font-size: 14px;
-                    line-height: 1.5;
                     flex-grow: 1;
                     transition: color 0.2s;
-                    margin: 0;
-                    padding: 0;
+                    line-height: 1.4;
                    "
                    onmouseover="this.style.color='#4D68F9'"
                    onmouseout="this.style.color='#4B5563'"

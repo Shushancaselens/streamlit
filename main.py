@@ -327,7 +327,7 @@ def main():
             onclick="copyToClipboard()"
             style="
                 width: 100%;
-                height: 40px;
+                height: 38px;
                 padding: 0 16px;
                 background-color: #4D68F9;
                 color: white;
@@ -341,7 +341,9 @@ def main():
                 justify-content: center;
                 gap: 8px;
                 transition: background-color 0.2s;
-                margin-top: 3px;
+                margin: 0;
+                position: relative;
+                top: -1px;
             "
             onmouseover="this.style.backgroundColor='#4558D0'"
             onmouseout="this.style.backgroundColor='#4D68F9'"
@@ -361,7 +363,7 @@ def main():
         }}
         </script>
         """
-        html(copy_component, height=45)
+        html(copy_component, height=38)
     
     # Filter arguments based on search
     filtered_arguments = argument_data

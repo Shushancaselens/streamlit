@@ -1,35 +1,4 @@
-# Filter arguments based on search and sidebar filters
-    filtered_arguments = argument_data
-    
-    # Apply category filter
-    if selected_categories:
-        filtered_arguments = [
-            arg for arg in filtered_arguments
-            if arg['category'] in selected_categories
-        ]
-    
-    # Apply year filter
-    def has_case_in_year_range(cases, year_range):
-        for case in cases:
-            if case.strip()[-4:].isdigit():
-                year = int(case.strip()[-4:])
-                if year_range[0] <= year <= year_range[1]:
-                    return True
-        return False
-    
-    filtered_arguments = [
-        arg for arg in filtered_arguments
-        if has_case_in_year_range(arg['appellant']['caselaw'] + arg['respondent']['caselaw'], year_range)
-    ]
-    
-    # Apply text search
-    if search:
-        search = search.lower()
-        filtered_arguments = [
-            arg for arg in filtered_arguments
-            if (search in arg['issue'].lower() or
-                any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any(search in detail.lower() for detail in arg['respondent']['detailsimport streamlit as st
+import streamlit as st
 import pandas as pd
 
 # Set page config for wide layout
@@ -312,6 +281,51 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
+    # Sidebar
+    with st.sidebar:
+        st.title("Filters")
+        
+        # Category filter
+        categories = list(set(arg["category"] for arg in argument_data))
+        selected_categories = st.multiselect(
+            "Select Categories",
+            categories,
+            default=categories
+        )
+        
+        # Party filter
+        party_filter = st.radio(
+            "View Arguments By",
+            ["All", "Appellant Only", "Respondent Only"]
+        )
+        
+        # Date range
+        st.markdown("### Case Law Date Range")
+        min_year = 2017
+        max_year = 2023
+        year_range = st.slider(
+            "Select Years",
+            min_value=min_year,
+            max_value=max_year,
+            value=(min_year, max_year)
+        )
+        
+        # Statistics
+        st.markdown("### Quick Stats")
+        st.markdown(f"**Total Cases:** {len(argument_data)}")
+        st.markdown(f"**Total Evidence Items:** {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
+        st.markdown(f"**Total Case Laws Cited:** {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")
+        
+        # Export options
+        st.markdown("### Export Options")
+        export_format = st.selectbox(
+            "Export Format",
+            ["CSV", "Excel", "PDF"]
+        )
+        if st.button("Export Data", type="primary"):
+            st.write(f"Exporting in {export_format} format...")
+
+    # Main content
     st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
@@ -338,12 +352,54 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on search
+    # Filter arguments based on sidebar selections and search
     filtered_arguments = argument_data
+    
+    # Category filter
+    filtered_arguments = [
+        arg for arg in filtered_arguments
+        if arg['category'] in selected_categories
+    ]
+    
+    # Party filter
+    if party_filter == "Appellant Only":
+        for arg in filtered_arguments:
+            arg['respondent']['details'] = []
+            arg['respondent']['evidence'] = []
+            arg['respondent']['caselaw'] = []
+    elif party_filter == "Respondent Only":
+        for arg in filtered_arguments:
+            arg['appellant']['details'] = []
+            arg['appellant']['evidence'] = []
+            arg['appellant']['caselaw'] = []
+    
+    # Case law year filter
+    def get_case_year(case):
+        try:
+            return int(case.split()[-1])
+        except:
+            return 0
+    
+    filtered_arguments = [
+        {**arg,
+         'appellant': {
+             **arg['appellant'],
+             'caselaw': [case for case in arg['appellant']['caselaw']
+                        if year_range[0] <= get_case_year(case) <= year_range[1]]
+         },
+         'respondent': {
+             **arg['respondent'],
+             'caselaw': [case for case in arg['respondent']['caselaw']
+                        if year_range[0] <= get_case_year(case) <= year_range[1]]
+         }}
+        for arg in filtered_arguments
+    ]
+    
+    # Search filter
     if search:
         search = search.lower()
         filtered_arguments = [
-            arg for arg in argument_data
+            arg for arg in filtered_arguments
             if (search in arg['issue'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
                 any(search in detail.lower() for detail in arg['respondent']['details']) or

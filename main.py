@@ -285,45 +285,103 @@ def main():
     with st.sidebar:
         st.title("Filters")
         
-        # Category filter
-        categories = list(set(arg["category"] for arg in argument_data))
-        selected_categories = st.multiselect(
-            "Select Categories",
-            categories,
-            default=categories
-        )
+        tab1, tab2 = st.tabs(["Filters", "Case Law Summary"])
         
-        # Party filter
-        party_filter = st.radio(
-            "View Arguments By",
-            ["All", "Appellant Only", "Respondent Only"]
-        )
+        with tab1:
+            # Category filter
+            categories = list(set(arg["category"] for arg in argument_data))
+            selected_categories = st.multiselect(
+                "Select Categories",
+                categories,
+                default=categories
+            )
+            
+            # Party filter
+            party_filter = st.radio(
+                "View Arguments By",
+                ["All", "Appellant Only", "Respondent Only"]
+            )
+            
+            # Date range
+            st.markdown("### Case Law Date Range")
+            min_year = 2017
+            max_year = 2023
+            year_range = st.slider(
+                "Select Years",
+                min_value=min_year,
+                max_value=max_year,
+                value=(min_year, max_year)
+            )
+            
+            # Statistics
+            st.markdown("### Quick Stats")
+            st.markdown(f"**Total Cases:** {len(argument_data)}")
+            st.markdown(f"**Total Evidence Items:** {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
+            st.markdown(f"**Total Case Laws Cited:** {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")
+            
+            # Export options
+            st.markdown("### Export Options")
+            export_format = st.selectbox(
+                "Export Format",
+                ["CSV", "Excel", "PDF"]
+            )
+            if st.button("Export Data", type="primary"):
+                st.write(f"Exporting in {export_format} format...")
         
-        # Date range
-        st.markdown("### Case Law Date Range")
-        min_year = 2017
-        max_year = 2023
-        year_range = st.slider(
-            "Select Years",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year)
-        )
-        
-        # Statistics
-        st.markdown("### Quick Stats")
-        st.markdown(f"**Total Cases:** {len(argument_data)}")
-        st.markdown(f"**Total Evidence Items:** {sum(len(arg['appellant']['evidence']) + len(arg['respondent']['evidence']) for arg in argument_data)}")
-        st.markdown(f"**Total Case Laws Cited:** {sum(len(arg['appellant']['caselaw']) + len(arg['respondent']['caselaw']) for arg in argument_data)}")
-        
-        # Export options
-        st.markdown("### Export Options")
-        export_format = st.selectbox(
-            "Export Format",
-            ["CSV", "Excel", "PDF"]
-        )
-        if st.button("Export Data", type="primary"):
-            st.write(f"Exporting in {export_format} format...")
+        with tab2:
+            st.markdown("### Case Law Database")
+            
+            # Group cases by category
+            case_categories = {
+                "Jurisdiction": [
+                    "CAS 2019/A/XYZ",
+                    "CAS 2019/A/123",
+                    "CAS 2018/A/456"
+                ],
+                "Substance Testing": [
+                    "CAS 2018/A/ABC",
+                    "CAS 2017/A/789"
+                ],
+                "Employment": [
+                    "Smith v. Corp Inc. 2021",
+                    "Jones v. Enterprise Ltd 2020",
+                    "Brown v. MegaCorp 2022",
+                    "Wilson v. Tech Solutions 2021"
+                ],
+                "Intellectual Property": [
+                    "TechCo v. Innovate Inc. 2022",
+                    "Patent Holdings v. StartUp 2021",
+                    "Innovation Corp v. PatentCo 2023",
+                    "Tech Solutions v. IP Holdings 2022"
+                ],
+                "Environmental": [
+                    "EcoCorp v. EPA 2022",
+                    "Green Industries v. State 2021",
+                    "EPA v. Industrial Corp 2023",
+                    "State v. Manufacturing Co. 2022"
+                ]
+            }
+            
+            # Case law search
+            case_search = st.text_input("Search Cases", placeholder="Enter case name or keyword...")
+            
+            # Display cases by category with summaries
+            for category, cases in case_categories.items():
+                if case_search.lower() in category.lower() or any(case_search.lower() in case.lower() for case in cases):
+                    st.markdown(f"#### {category}")
+                    for case in cases:
+                        with st.expander(case):
+                            summary = get_case_summary(case)
+                            st.markdown(f"""
+                                **Key Holdings:**  
+                                {summary}
+                                
+                                **Year:** {case.split()[-1]}
+                                
+                                **Citation:** {case}
+                            """)
+                            if st.button("Copy Citation", key=f"copy_{case}_sidebar"):
+                                st.write("Citation copied!")
 
     # Main content
     st.title("Legal Arguments Dashboard")

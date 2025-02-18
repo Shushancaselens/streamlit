@@ -167,8 +167,75 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Sample data remains the same...
-[Previous argument_data remains the same...]
+# Sample data
+argument_data = [
+    {
+        "id": "1",
+        "issue": "CAS Jurisdiction",
+        "category": "jurisdiction",
+        "appellant": {
+            "mainArgument": "CAS Has Authority to Hear This Case",
+            "details": [
+                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
+                "Athlete has completed all required internal appeal procedures first",
+                "Athlete signed agreement allowing CAS to handle disputes"
+            ],
+            "evidence": [
+                {"id": "C1", "desc": "Federation Rules, Art. 60"},
+                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
+                {"id": "C3", "desc": "Appeal submission documents"}
+            ],
+            "caselaw": ["CAS 2019/A/XYZ"]
+        },
+        "respondent": {
+            "mainArgument": "CAS Cannot Hear This Case Yet",
+            "details": [
+                "Athlete skipped required steps in federation's appeal process",
+                "Athlete missed important appeal deadlines within federation",
+                "Must follow proper appeal steps before going to CAS"
+            ],
+            "evidence": [
+                {"id": "R1", "desc": "Federation internal appeals process documentation"},
+                {"id": "R2", "desc": "Timeline of appeals process"},
+                {"id": "R3", "desc": "Federation handbook on procedures"}
+            ],
+            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
+        }
+    },
+    {
+        "id": "2",
+        "issue": "Presence of Substance X",
+        "category": "substance",
+        "appellant": {
+            "mainArgument": "Chain-of-custody errors invalidate test results",
+            "details": [
+                "Sample had a 10-hour delay in transfer",
+                "Sealing procedure was not properly documented",
+                "Independent expert confirms potential degradation"
+            ],
+            "evidence": [
+                {"id": "C4", "desc": "Lab reports #1 and #2"},
+                {"id": "C5", "desc": "Expert Dr. A's statement"},
+                {"id": "C6", "desc": "Chain of custody documentation"}
+            ],
+            "caselaw": ["CAS 2018/A/ABC"]
+        },
+        "respondent": {
+            "mainArgument": "Minor procedural defects do not invalidate results",
+            "details": [
+                "WADA-accredited lab's procedures ensure reliability",
+                "10-hour delay within acceptable limits",
+                "No evidence of sample degradation"
+            ],
+            "evidence": [
+                {"id": "R4", "desc": "Lab accreditation documents"},
+                {"id": "R5", "desc": "Expert Dr. B's analysis"},
+                {"id": "R6", "desc": "Testing protocols"}
+            ],
+            "caselaw": ["CAS 2017/A/789"]
+        }
+    }
+]
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""
@@ -249,8 +316,42 @@ def create_issue_card(arg):
 def main():
     st.title("Legal Arguments Dashboard")
     
-    # Search and export section remains the same...
-    [Previous search and export code remains the same...]
+    # Search bar and export button in the same row
+    col1, col2 = st.columns([0.8, 0.2])
+    with col1:
+        search = st.text_input("", 
+                             placeholder="🔍 Search issues, arguments, or evidence...",
+                             label_visibility="collapsed")
+    with col2:
+        if st.button("📋 Export Summary", type="primary", use_container_width=True):
+            summary_data = []
+            for arg in argument_data:
+                summary_data.append({
+                    "Issue": arg["issue"],
+                    "Appellant Position": arg["appellant"]["mainArgument"],
+                    "Respondent Position": arg["respondent"]["mainArgument"]
+                })
+            df = pd.DataFrame(summary_data)
+            st.download_button(
+                "Download Summary",
+                df.to_csv(index=False),
+                "legal_arguments_summary.csv",
+                "text/csv",
+                use_container_width=True
+            )
+    
+    # Filter arguments based on search
+    filtered_arguments = argument_data
+    if search:
+        search = search.lower()
+        filtered_arguments = [
+            arg for arg in argument_data
+            if (search in arg['issue'].lower() or
+                any(search in detail.lower() for detail in arg['appellant']['details']) or
+                any(search in detail.lower() for detail in arg['respondent']['details']) or
+                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
+                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
+        ]
     
     # Display arguments
     for arg in filtered_arguments:

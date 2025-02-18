@@ -36,6 +36,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Complete argument data
+def get_case_summary(case_id):
+    # Database of case summaries
+    case_summaries = {
+        "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
+        "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
+        "CAS 2018/A/456": "Case established precedent for requiring completion of federation's internal processes before CAS jurisdiction.",
+        "CAS 2018/A/ABC": "Court found chain-of-custody errors significant enough to invalidate test results. Set standards for sample handling.",
+        "CAS 2017/A/789": "Minor procedural defects held insufficient to invalidate otherwise valid test results.",
+        "Smith v. Corp Inc. 2021": "Court found lack of documented warnings and positive performance reviews inconsistent with termination for cause.",
+        "Jones v. Enterprise Ltd 2020": "Established standards for progressive discipline in employment termination cases.",
+        "Brown v. MegaCorp 2022": "Upheld immediate termination where serious misconduct was clearly documented.",
+        "Wilson v. Tech Solutions 2021": "Court emphasized importance of contemporaneous documentation of verbal warnings.",
+        "TechCo v. Innovate Inc. 2022": "Found patent infringement based on post-publication copying and substantial similarity.",
+        "Patent Holdings v. StartUp 2021": "Emphasized importance of timeline evidence in patent infringement cases.",
+        "Innovation Corp v. PatentCo 2023": "Independent development defense succeeded with clear pre-dating evidence.",
+        "Tech Solutions v. IP Holdings 2022": "Court invalidated overly broad patent claims in software industry.",
+        "EcoCorp v. EPA 2022": "Facility compliance upheld based on comprehensive monitoring data and third-party audits.",
+        "Green Industries v. State 2021": "Established standards for environmental compliance documentation.",
+        "EPA v. Industrial Corp 2023": "Violations found due to inadequate monitoring and delayed incident reporting.",
+        "State v. Manufacturing Co. 2022": "Court emphasized importance of timely violation reporting and equipment maintenance."
+    }
+    return case_summaries.get(case_id, "Summary not available.")
+
 argument_data = [
     {
         "id": "1",
@@ -237,16 +260,25 @@ def create_position_section(position_data, position_type):
     # Case Law
     st.markdown("##### Case Law")
     for case in position_data['caselaw']:
-        col1, col2 = st.columns([0.9, 0.1])
-        with col1:
-            st.markdown(f"""
-                <div class="position-card">
-                    {case}
+        summary = get_case_summary(case)
+        st.markdown(f"""
+            <div class="position-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
+                            {case}
+                        </div>
+                        <div style="font-size: 0.875rem; color: #6B7280;">
+                            {summary}
+                        </div>
+                    </div>
+                    <button onclick="navigator.clipboard.writeText('{case}')" 
+                            style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
+                        📋
+                    </button>
                 </div>
-            """, unsafe_allow_html=True)
-        with col2:
-            if st.button("📋", key=f"copy_{case}"):
-                st.write("Copied!")
+            </div>
+        """, unsafe_allow_html=True)
 
 def main():
     st.title("Legal Arguments Dashboard")

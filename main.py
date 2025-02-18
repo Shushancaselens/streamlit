@@ -1,6 +1,3 @@
-I'll add a sidebar while keeping all the existing functionality intact. I'll place this at the beginning of the `main()` function:
-
-```python
 import streamlit as st
 import pandas as pd
 
@@ -209,11 +206,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-
-I've added a sidebar with:
-1. A multiselect filter for case types (CAS, Employment, Patent, Environmental)
-2. Date range sliders for filtering by year (2017-2023)
-3. An informational section at the bottom of the sidebar
-
-The sidebar elements are currently for display only - would you like me to also implement the filtering functionality for these sidebar controls?

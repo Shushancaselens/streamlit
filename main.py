@@ -39,15 +39,14 @@ st.markdown("""
         border-color: #4D68F9;
     }
     /* Radio button styling */
-    div[data-testid="stRadio"] label span[data-testid="stMarkdownContainer"] p {
-        font-size: 14px;
+    div[data-testid="stRadio"] label span[aria-label="Radio"] {
+        color: #4D68F9;
     }
-    div[data-testid="stRadio"] input:checked + div {
-        border-color: #4D68F9 !important;
-        background-color: #4D68F9 !important;
+    div[data-testid="stRadio"] label span[aria-label="Radio"]:hover {
+        color: #3D54E8;
     }
-    div[data-testid="stRadio"] input:hover + div {
-        border-color: #4D68F9 !important;
+    div[data-testid="stRadio"] label[data-checked="true"] span[aria-label="Radio"] {
+        background-color: #4D68F9;
     }
 </style>
 """, unsafe_allow_html=True)

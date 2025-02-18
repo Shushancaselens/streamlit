@@ -315,15 +315,55 @@ def create_position_section(position_data, position_type):
     for detail in position_data['details']:
         st.markdown(f"- {detail}")
     
-    # Evidence
+    # Evidence with Case Law Summary
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
+        # Get related case law summaries
+        related_cases = []
+        case_law_evidence = get_case_law_evidence()
+        for case in position_data['caselaw']:
+            if case in case_law_evidence:
+                case_evidence = case_law_evidence[case]
+                # Check if this evidence is mentioned in the case's key evidence
+                if any(evidence['desc'].lower() in key_ev.lower() for key_ev in case_evidence['key_evidence']):
+                    related_cases.append({
+                        'citation': case,
+                        'summary': case_evidence['summary'],
+                        'relevant_holding': next((holding for holding in case_evidence['key_holdings'] 
+                                               if evidence['desc'].lower() in holding.lower()), 
+                                              case_evidence['key_holdings'][0])
+                    })
+        
         st.markdown(f"""
             <div class="evidence-card">
-                <span class="evidence-tag">{evidence['id']}</span>
-                <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
-                    {evidence['desc']}
-                </a>
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.5rem;">
+                        <span class="evidence-tag">{evidence['id']}</span>
+                        <a href="/evidence/{evidence['id']}" class="evidence-link" target="_blank">
+                            {evidence['desc']}
+                        </a>
+                    </div>
+                    {f'''
+                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e5e7eb;">
+                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
+                            Related Case Law:
+                        </div>
+                        {"".join(f"""
+                            <div style="margin-bottom: 0.5rem; padding-left: 0.5rem; border-left: 2px solid #e5e7eb;">
+                                <div style="font-weight: 500; color: #6B7280; font-size: 0.875rem;">
+                                    {case['citation']}
+                                </div>
+                                <div style="color: #6B7280; font-size: 0.875rem; margin-top: 0.25rem;">
+                                    {case['summary']}
+                                </div>
+                                <div style="color: #4B5563; font-size: 0.875rem; margin-top: 0.25rem;">
+                                    <strong>Relevant Holding:</strong> {case['relevant_holding']}
+                                </div>
+                            </div>
+                        """ for case in related_cases)}
+                    </div>
+                    ''' if related_cases else ''}
+                </div>
             </div>
         """, unsafe_allow_html=True)
     

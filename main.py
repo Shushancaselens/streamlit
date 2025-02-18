@@ -229,14 +229,12 @@ argument_data = [
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""
-    color = "indigo" if position_type == "Appellant" else "rose"
-    
     st.subheader(f"{position_type}'s Position")
     
     # Main Argument
     st.markdown(f"""
         <div class="main-argument">
-            <strong>{position_data['mainArgument']}</strong>
+            <strong style="color: #4D68F9">{position_data['mainArgument']}</strong>
         </div>
     """, unsafe_allow_html=True)
     

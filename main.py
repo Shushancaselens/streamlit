@@ -1,55 +1,126 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
+
+# Configure the page
+st.set_page_config(layout="wide", page_title="Legal Arguments Comparison")
 
 # Custom CSS to match the React design
 st.markdown("""
 <style>
-    .main-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 15px;
-        border: 1px solid #eee;
-        margin: 10px 0;
+    /* General styles */
+    .stApp {
+        background-color: #f8fafc;
     }
-    .evidence-box {
-        background-color: #f8f9fa;
-        padding: 10px;
-        border-radius: 8px;
-        margin: 5px 0;
-        border: 1px solid #eee;
+    
+    /* Search bar styling */
+    .search-container {
+        background: white;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
     }
+    
+    /* Card styling */
+    .argument-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .argument-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* Category tag */
     .category-tag {
-        background-color: #f3f4f6;
-        padding: 5px 15px;
-        border-radius: 15px;
-        font-size: 14px;
+        background: #f3f4f6;
         color: #4b5563;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-block;
     }
-    .appellant-color { color: #4F46E5; }
-    .respondent-color { color: #E11D48; }
+    
+    /* Position headers */
+    .position-header {
+        font-size: 1.125rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .appellant-color {
+        color: #4f46e5;
+    }
+    
+    .respondent-color {
+        color: #e11d48;
+    }
+    
+    /* Evidence styling */
+    .evidence-item {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .evidence-item:hover {
+        border-color: #818cf8;
+        background: #eef2ff;
+    }
+    
     .evidence-id {
-        background-color: #eef2ff;
-        color: #4F46E5;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 12px;
-        margin-right: 10px;
+        background: #eef2ff;
+        color: #4f46e5;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-block;
+        margin-right: 0.5rem;
     }
-    .evidence-id-respondent {
-        background-color: #fff1f2;
-        color: #E11D48;
+    
+    .evidence-id.respondent {
+        background: #fef2f2;
+        color: #e11d48;
     }
-    .case-law {
-        padding: 10px;
-        background-color: white;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        margin: 5px 0;
+    
+    /* Details section */
+    .details-section {
+        background: #f9fafb;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Custom bullet points */
+    .custom-bullet {
+        display: flex;
+        align-items: start;
+        margin-bottom: 0.5rem;
+    }
+    
+    .bullet-point {
+        width: 6px;
+        height: 6px;
+        background: #9ca3af;
+        border-radius: 50%;
+        margin-top: 0.5rem;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Data structure
+# Data
 argument_data = [
     {
         "id": "1",
@@ -84,91 +155,106 @@ argument_data = [
             "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
         }
     },
-    # Add more cases as needed
+    # ... (rest of the argument data)
 ]
 
-def display_party_arguments(data, party_type):
-    """Display arguments for either appellant or respondent"""
-    color_class = "appellant-color" if party_type == "appellant" else "respondent-color"
-    evidence_class = "" if party_type == "appellant" else "evidence-id-respondent"
-    
-    st.markdown(f'<h3 class="{color_class}">{party_type.title()}\'s Position</h3>', unsafe_allow_html=True)
-    
-    # Main Argument
-    st.markdown(f'<div class="evidence-box">{data["mainArgument"]}</div>', unsafe_allow_html=True)
-    
-    # Key Arguments
-    st.markdown("#### Key Arguments")
-    for detail in data["details"]:
-        st.markdown(f'<div class="evidence-box">{detail}</div>', unsafe_allow_html=True)
-    
-    # Evidence
-    st.markdown("#### Evidence")
-    for evidence in data["evidence"]:
-        st.markdown(
-            f'<div class="evidence-box">'
-            f'<span class="evidence-id {evidence_class}">{evidence["id"]}</span>'
-            f'{evidence["desc"]}'
-            f'</div>',
-            unsafe_allow_html=True
-        )
-    
-    # Case Law
-    st.markdown("#### Case Law")
-    for case in data["caselaw"]:
-        st.markdown(f'<div class="case-law">{case}</div>', unsafe_allow_html=True)
-
-# Page title
-st.title("Legal Arguments Comparison")
-
 # Search functionality
-search = st.text_input("Search issues, arguments, or evidence...")
+search = st.text_input("", placeholder="Search issues, arguments, or evidence...", 
+                      help="Search through all fields")
 
-# Copy functionality
-if st.button("Copy Summary"):
-    summary_data = []
-    for arg in argument_data:
-        summary_data.append({
-            "Issue": arg["issue"],
-            "Appellant Position": arg["appellant"]["mainArgument"],
-            "Respondent Position": arg["respondent"]["mainArgument"]
-        })
-    df = pd.DataFrame(summary_data)
-    st.download_button(
-        "Download Summary",
-        df.to_csv(index=False),
-        "legal_arguments_summary.csv",
-        "text/csv"
-    )
+def matches_search(arg, search_term):
+    if not search_term:
+        return True
+    
+    search_term = search_term.lower()
+    
+    # Check issue and category
+    if search_term in arg["issue"].lower() or search_term in arg["category"].lower():
+        return True
+    
+    # Check appellant details
+    for detail in arg["appellant"]["details"]:
+        if search_term in detail.lower():
+            return True
+    
+    # Check respondent details
+    for detail in arg["respondent"]["details"]:
+        if search_term in detail.lower():
+            return True
+    
+    # Check evidence
+    for evidence in arg["appellant"]["evidence"] + arg["respondent"]["evidence"]:
+        if search_term in evidence["desc"].lower():
+            return True
+    
+    return False
 
 # Filter arguments based on search
-filtered_arguments = argument_data
-if search:
-    search_lower = search.lower()
-    filtered_arguments = [
-        arg for arg in argument_data
-        if (search_lower in arg["issue"].lower() or
-            search_lower in arg["appellant"]["mainArgument"].lower() or
-            search_lower in arg["respondent"]["mainArgument"].lower() or
-            any(search_lower in detail.lower() for detail in arg["appellant"]["details"]) or
-            any(search_lower in detail.lower() for detail in arg["respondent"]["details"]))
-    ]
+filtered_arguments = [arg for arg in argument_data if matches_search(arg, search)]
 
 # Display arguments
 for arg in filtered_arguments:
-    st.markdown(f"""
-        <div class="main-card">
-            <h2>{arg["issue"]} <span class="category-tag">{arg["category"]}</span></h2>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    with st.expander("View Details", expanded=arg["id"] == "1"):
-        col1, col2 = st.columns(2)
+    with st.expander(f"{arg['issue']} ({arg['category']})"):
+        cols = st.columns(2)
         
-        with col1:
-            display_party_arguments(arg["appellant"], "appellant")
+        # Appellant's position
+        with cols[0]:
+            st.markdown(f"""
+            <div class='position-header appellant-color'>Appellant's Position</div>
+            <div class='details-section'>
+                <div style='font-weight: 500;'>{arg['appellant']['mainArgument']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("##### Supporting Points")
+            for detail in arg['appellant']['details']:
+                st.markdown(f"""
+                <div class='custom-bullet'>
+                    <div class='bullet-point'></div>
+                    <div>{detail}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("##### Evidence")
+            for evidence in arg['appellant']['evidence']:
+                st.markdown(f"""
+                <div class='evidence-item'>
+                    <span class='evidence-id'>{evidence['id']}</span>
+                    <a href='#'>{evidence['desc']}</a>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("##### Case Law")
+            for case in arg['appellant']['caselaw']:
+                st.markdown(f"- {case}")
         
-        with col2:
-            display_party_arguments(arg["respondent"], "respondent")
-        
-    st.markdown("<hr>", unsafe_allow_html=True)
+        # Respondent's position
+        with cols[1]:
+            st.markdown(f"""
+            <div class='position-header respondent-color'>Respondent's Position</div>
+            <div class='details-section'>
+                <div style='font-weight: 500;'>{arg['respondent']['mainArgument']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("##### Supporting Points")
+            for detail in arg['respondent']['details']:
+                st.markdown(f"""
+                <div class='custom-bullet'>
+                    <div class='bullet-point'></div>
+                    <div>{detail}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("##### Evidence")
+            for evidence in arg['respondent']['evidence']:
+                st.markdown(f"""
+                <div class='evidence-item'>
+                    <span class='evidence-id respondent'>{evidence['id']}</span>
+                    <a href='#'>{evidence['desc']}</a>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("##### Case Law")
+            for case in arg['respondent']['caselaw']:
+                st.markdown(f"- {case}")

@@ -30,6 +30,14 @@ st.markdown("""
     .case-cell {
         color: #1F2937;
     }
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
+        background-color: #4D68F9;
+        color: white;
+    }
+    div[data-testid="stHorizontalBlock"] button[kind="primary"]:hover {
+        background-color: #3D54E6;
+        color: white;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -235,7 +243,7 @@ def main():
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        if st.button("📋 Export Data", use_container_width=True, style={"backgroundColor": "#4D68F9", "color": "white"}):
+        if st.button("📋 Export Data", type="primary", use_container_width=True):
             df = create_table_data()
             st.download_button(
                 "Download Full Data",

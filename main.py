@@ -234,10 +234,11 @@ def create_position_section(position_data, position_type):
     
     # Main Argument
     st.markdown(f"""
-        <div class="main-argument" style="margin-bottom: 2rem;">
+        <div class="main-argument" style="margin: 20px 0; font-size: 1.2rem;">
             <strong>{position_data['mainArgument']}</strong>
         </div>
     """, unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
     # Supporting Points
     st.markdown("##### Supporting Points")

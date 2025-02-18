@@ -280,42 +280,48 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
-    st.title("Legal Arguments Dashboard")
-    
     # Sidebar
     with st.sidebar:
-        st.header("Filters")
+        st.title("Filters")
         
         # Category filter
         categories = list(set(arg["category"] for arg in argument_data))
         selected_categories = st.multiselect(
-            "Select Categories",
+            "Case Categories",
             categories,
             default=categories
         )
         
-        # Case type filter
-        case_types = ["Appellant", "Respondent"]
-        selected_case_types = st.multiselect(
-            "View Arguments From",
-            case_types,
-            default=case_types
+        # Date range (using case law dates)
+        all_years = []
+        for arg in argument_data:
+            for case in arg["appellant"]["caselaw"] + arg["respondent"]["caselaw"]:
+                try:
+                    year = int(case.split()[-1])
+                    all_years.append(year)
+                except:
+                    continue
+        
+        min_year, max_year = min(all_years), max(all_years)
+        year_range = st.slider(
+            "Case Law Year Range",
+            min_value=min_year,
+            max_value=max_year,
+            value=(min_year, max_year)
         )
         
-        # Add a date range if needed
-        st.divider()
-        
-        # Statistics section
-        st.header("Statistics")
+        # Show statistics
+        st.subheader("Statistics")
         total_cases = len(argument_data)
         st.metric("Total Cases", total_cases)
-        
-        # Count evidence pieces
         total_evidence = sum(
             len(arg["appellant"]["evidence"]) + len(arg["respondent"]["evidence"])
             for arg in argument_data
         )
         st.metric("Total Evidence Items", total_evidence)
+
+    # Main content
+    st.title("Legal Arguments Dashboard")
     
     # Search bar and export button in the same row
     col1, col2 = st.columns([0.8, 0.2])
@@ -344,7 +350,9 @@ def main():
     # Filter arguments based on search and sidebar filters
     filtered_arguments = [
         arg for arg in argument_data
-        if arg["category"] in selected_categories
+        if arg["category"] in selected_categories and
+        any(min(year_range) <= int(case.split()[-1]) <= max(year_range)
+            for case in arg["appellant"]["caselaw"] + arg["respondent"]["caselaw"])
     ]
     
     if search:
@@ -353,11 +361,4 @@ def main():
             arg for arg in filtered_arguments
             if (search in arg['issue'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any(search in detail.lower() for detail in arg['respondent']['details']) or
-                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
-                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
-        ]
-    
-    # Display arguments
-    for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} {arg['category']}", expanded=arg['i
+                any(search in detail.lower() for

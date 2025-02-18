@@ -1,4 +1,35 @@
-import streamlit as st
+# Filter arguments based on search and sidebar filters
+    filtered_arguments = argument_data
+    
+    # Apply category filter
+    if selected_categories:
+        filtered_arguments = [
+            arg for arg in filtered_arguments
+            if arg['category'] in selected_categories
+        ]
+    
+    # Apply year filter
+    def has_case_in_year_range(cases, year_range):
+        for case in cases:
+            if case.strip()[-4:].isdigit():
+                year = int(case.strip()[-4:])
+                if year_range[0] <= year <= year_range[1]:
+                    return True
+        return False
+    
+    filtered_arguments = [
+        arg for arg in filtered_arguments
+        if has_case_in_year_range(arg['appellant']['caselaw'] + arg['respondent']['caselaw'], year_range)
+    ]
+    
+    # Apply text search
+    if search:
+        search = search.lower()
+        filtered_arguments = [
+            arg for arg in filtered_arguments
+            if (search in arg['issue'].lower() or
+                any(search in detail.lower() for detail in arg['appellant']['details']) or
+                any(search in detail.lower() for detail in arg['respondent']['detailsimport streamlit as st
 import pandas as pd
 
 # Set page config for wide layout

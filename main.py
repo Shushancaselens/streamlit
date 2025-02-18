@@ -4,6 +4,10 @@ import pandas as pd
 # Set page config for wide layout
 st.set_page_config(layout="wide")
 
+# Initialize session state for expanded sections if not exists
+if 'expanded_sections' not in st.session_state:
+    st.session_state.expanded_sections = {'1'}  # Default first section expanded
+
 # Custom CSS for styling
 st.markdown("""
 <style>
@@ -17,6 +21,12 @@ st.markdown("""
         border-radius: 1rem;
         border: 1px solid #e5e7eb;
         margin-bottom: 1rem;
+        cursor: pointer;
+    }
+    .issue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     .position-card {
         background-color: white;
@@ -51,12 +61,29 @@ st.markdown("""
         border-radius: 0.75rem;
         margin-bottom: 1rem;
     }
-    .search-container {
-        margin-bottom: 2rem;
+    .preview-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
     }
-    .stTextInput>div>div>input {
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
+    .position-preview {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    .arrow-icon {
+        color: #9ca3af;
+        font-size: 1.5rem;
+    }
+    .position-label {
+        color: rgb(79, 70, 229);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .position-label.respondent {
+        color: rgb(225, 29, 72);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -130,6 +157,12 @@ argument_data = [
         }
     }
 ]
+
+def toggle_section(section_id):
+    if section_id in st.session_state.expanded_sections:
+        st.session_state.expanded_sections.remove(section_id)
+    else:
+        st.session_state.expanded_sections.add(section_id)
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""
@@ -215,20 +248,37 @@ def main():
     
     # Display arguments
     for arg in filtered_arguments:
-        st.markdown(f"""
-            <div class="issue-card">
-                <h2>{arg['issue']} <span class="category-tag">{arg['category']}</span></h2>
-            </div>
-        """, unsafe_allow_html=True)
+        # Issue header with dropdown
+        if st.button(
+            f"{arg['issue']} {arg['category']} {'▼' if arg['id'] in st.session_state.expanded_sections else '▶'}",
+            key=f"toggle_{arg['id']}",
+            use_container_width=True,
+            type="secondary"
+        ):
+            toggle_section(arg['id'])
         
-        # Create two columns for appellant and respondent
-        col1, col2 = st.columns(2)
+        # Show preview if not expanded
+        if arg['id'] not in st.session_state.expanded_sections:
+            st.markdown(f"""
+                <div class="position-preview">
+                    <div>
+                        <div class="position-label">Appellant Position</div>
+                        <div class="preview-text">{arg['appellant']['mainArgument']}</div>
+                    </div>
+                    <div>
+                        <div class="position-label respondent">Respondent Position</div>
+                        <div class="preview-text">{arg['respondent']['mainArgument']}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         
-        with col1:
-            create_position_section(arg['appellant'], "Appellant")
-        
-        with col2:
-            create_position_section(arg['respondent'], "Respondent")
+        # Show full content if expanded
+        if arg['id'] in st.session_state.expanded_sections:
+            col1, col2 = st.columns(2)
+            with col1:
+                create_position_section(arg['appellant'], "Appellant")
+            with col2:
+                create_position_section(arg['respondent'], "Respondent")
         
         st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 

@@ -253,32 +253,53 @@ def create_position_section(position_data, position_type):
     # Supporting Points
     st.markdown("##### Supporting Points")
     for detail in position_data['details']:
-        st.markdown(f"- {detail}")
-    
+        st.markdown(f"""
+            <div style="
+                margin-bottom: 16px;
+                line-height: 1.5;
+                padding-right: 20px;
+                min-height: 24px;
+            ">
+                • {detail}
+            </div>
+        """, unsafe_allow_html=True)    
     # Evidence
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:
         st.markdown(f"""
-            <div style="
+            <div class="evidence-card" style="
                 display: flex;
                 align-items: center;
-                padding: 16px;
+                padding: 12px 16px;
                 background-color: white;
-                border: 1px solid #F3F4F6;
+                border: 1px solid #e5e7eb;
                 border-radius: 8px;
-                margin-bottom: 12px;
-                min-height: 56px;
+                margin-bottom: 8px;
+                transition: all 0.2s;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             ">
                 <span style="
-                    min-width: 40px;
+                    background-color: #F3F4F6;
+                    color: #4B5563;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 13px;
                     font-weight: 500;
-                    color: #6B7280;
-                    margin-right: 16px;
+                    margin-right: 12px;
                 ">{evidence['id']}</span>
-                <span style="
-                    color: #374151;
+                <a href="/evidence/{evidence['id']}" 
+                   style="
+                    color: #4B5563;
+                    text-decoration: none;
                     font-size: 14px;
-                ">{evidence['desc']}</span>
+                    flex-grow: 1;
+                    transition: color 0.2s;
+                   "
+                   onmouseover="this.style.color='#4D68F9'"
+                   onmouseout="this.style.color='#4B5563'"
+                >
+                    {evidence['desc']}
+                </a>
             </div>
         """, unsafe_allow_html=True)
     
@@ -412,16 +433,24 @@ def main():
                         overflow-wrap: break-word;
                         hyphens: auto;
                     }
+                    .element-container {
+                        margin-bottom: 1rem;
+                    }
+                    .row-widget.stRadio > div {
+                        flex-direction: row;
+                    }
                 </style>
             """, unsafe_allow_html=True)
-            # Content when expanded
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                create_position_section(arg['appellant'], "Appellant")
-            with col2:
-                create_position_section(arg['respondent'], "Respondent")
+            
+            container = st.container()
+            with container:
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    create_position_section(arg['appellant'], "Appellant")
+                with col2:
+                    create_position_section(arg['respondent'], "Respondent")
         
-        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='divider' style='margin: 1rem 0;'></div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

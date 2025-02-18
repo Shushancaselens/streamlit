@@ -2,16 +2,13 @@ def main():
     # Add sidebar
     with st.sidebar:
         st.title("Dashboard Info")
-        st.markdown("""
-            This dashboard displays legal arguments and related case law. 
-            
-            Use the search bar above to find specific cases, arguments, or evidence.
-            
-            Toggle between Summary and Detailed views to adjust the level of information shown.
-        """)
-        
         st.markdown("---")
-        st.info("For additional help or support, contact the legal team.")
+        st.info(
+            """
+            This dashboard displays legal arguments and related case law.
+            Use the search bar above to find specific cases or arguments.
+            """
+        )
     
     st.title("Legal Arguments Dashboard - Table View")
     

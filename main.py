@@ -1,149 +1,174 @@
-# streamlit_custom_css.py
+import streamlit as st
+import pandas as pd
 
-CSS_STYLES = """
+# Custom CSS to match the React design
+st.markdown("""
 <style>
-    /* Main container styles */
-    .stApp {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1rem;
-    }
-    
-    /* Search bar styles */
-    .stTextInput > div > div > input {
-        padding: 0.75rem 1rem 0.75rem 2.5rem;
-        border-radius: 0.75rem;
-        border: 1px solid #E5E7EB;
-        font-size: 0.875rem;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-    }
-    
-    /* Argument section styles */
-    .argument-section {
-        padding: 1.5rem;
+    .main-card {
         background-color: white;
-        border-radius: 1rem;
-        margin-bottom: 1rem;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #eee;
+        margin: 10px 0;
     }
-    
-    .section-title {
-        font-size: 1.125rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
+    .evidence-box {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+        margin: 5px 0;
+        border: 1px solid #eee;
     }
-    
-    .appellant-color {
-        color: #4F46E5;
+    .category-tag {
+        background-color: #f3f4f6;
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 14px;
+        color: #4b5563;
     }
-    
-    .respondent-color {
-        color: #E11D48;
-    }
-    
-    .main-argument {
-        background-color: #F9FAFB;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        font-weight: 500;
-        margin-bottom: 1.5rem;
-    }
-    
-    .subsection-title {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-        margin: 1rem 0;
-    }
-    
-    /* Card styles */
-    .argument-card {
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .evidence-card {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
-    }
-    
-    .evidence-card:hover {
-        border-color: #818CF8;
-        background-color: rgba(99, 102, 241, 0.05);
-    }
-    
+    .appellant-color { color: #4F46E5; }
+    .respondent-color { color: #E11D48; }
     .evidence-id {
-        padding: 0.25rem 0.75rem;
-        border-radius: 0.5rem;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .appellant-color-bg {
-        background-color: #EEF2FF;
+        background-color: #eef2ff;
         color: #4F46E5;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-right: 10px;
     }
-    
-    .respondent-color-bg {
-        background-color: #FFF1F2;
+    .evidence-id-respondent {
+        background-color: #fff1f2;
         color: #E11D48;
     }
-    
-    .case-law-card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem;
+    .case-law {
+        padding: 10px;
         background-color: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Button styles */
-    .stButton > button {
-        padding: 0.75rem 1.25rem;
-        border-radius: 0.75rem;
-        background-color: #EEF2FF;
-        color: #4F46E5;
-        font-weight: 500;
-        border: none;
-        transition: all 0.2s;
-    }
-    
-    .stButton > button:hover {
-        background-color: #E0E7FF;
-    }
-    
-    /* Expander styles */
-    .streamlit-expanderHeader {
-        border-radius: 1rem;
-        background-color: white;
-        border: 1px solid #E5E7EB;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s;
-    }
-    
-    .streamlit-expanderHeader:hover {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-    
-    .streamlit-expanderContent {
-        border: none !important;
-        background-color: white;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        margin: 5px 0;
     }
 </style>
-"""
+""", unsafe_allow_html=True)
+
+# Data structure
+argument_data = [
+    {
+        "id": "1",
+        "issue": "CAS Jurisdiction",
+        "category": "jurisdiction",
+        "appellant": {
+            "mainArgument": "CAS Has Authority to Hear This Case",
+            "details": [
+                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
+                "Athlete has completed all required internal appeal procedures first",
+                "Athlete signed agreement allowing CAS to handle disputes"
+            ],
+            "evidence": [
+                {"id": "C1", "desc": "Federation Rules, Art. 60"},
+                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
+                {"id": "C3", "desc": "Appeal submission documents"}
+            ],
+            "caselaw": ["CAS 2019/A/XYZ"]
+        },
+        "respondent": {
+            "mainArgument": "CAS Cannot Hear This Case Yet",
+            "details": [
+                "Athlete skipped required steps in federation's appeal process",
+                "Athlete missed important appeal deadlines within federation",
+                "Must follow proper appeal steps before going to CAS"
+            ],
+            "evidence": [
+                {"id": "R1", "desc": "Federation internal appeals process documentation"},
+                {"id": "R2", "desc": "Timeline of appeals process"},
+                {"id": "R3", "desc": "Federation handbook on procedures"}
+            ],
+            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
+        }
+    },
+    # Add more cases as needed
+]
+
+def display_party_arguments(data, party_type):
+    """Display arguments for either appellant or respondent"""
+    color_class = "appellant-color" if party_type == "appellant" else "respondent-color"
+    evidence_class = "" if party_type == "appellant" else "evidence-id-respondent"
+    
+    st.markdown(f'<h3 class="{color_class}">{party_type.title()}\'s Position</h3>', unsafe_allow_html=True)
+    
+    # Main Argument
+    st.markdown(f'<div class="evidence-box">{data["mainArgument"]}</div>', unsafe_allow_html=True)
+    
+    # Key Arguments
+    st.markdown("#### Key Arguments")
+    for detail in data["details"]:
+        st.markdown(f'<div class="evidence-box">{detail}</div>', unsafe_allow_html=True)
+    
+    # Evidence
+    st.markdown("#### Evidence")
+    for evidence in data["evidence"]:
+        st.markdown(
+            f'<div class="evidence-box">'
+            f'<span class="evidence-id {evidence_class}">{evidence["id"]}</span>'
+            f'{evidence["desc"]}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+    
+    # Case Law
+    st.markdown("#### Case Law")
+    for case in data["caselaw"]:
+        st.markdown(f'<div class="case-law">{case}</div>', unsafe_allow_html=True)
+
+# Page title
+st.title("Legal Arguments Comparison")
+
+# Search functionality
+search = st.text_input("Search issues, arguments, or evidence...")
+
+# Copy functionality
+if st.button("Copy Summary"):
+    summary_data = []
+    for arg in argument_data:
+        summary_data.append({
+            "Issue": arg["issue"],
+            "Appellant Position": arg["appellant"]["mainArgument"],
+            "Respondent Position": arg["respondent"]["mainArgument"]
+        })
+    df = pd.DataFrame(summary_data)
+    st.download_button(
+        "Download Summary",
+        df.to_csv(index=False),
+        "legal_arguments_summary.csv",
+        "text/csv"
+    )
+
+# Filter arguments based on search
+filtered_arguments = argument_data
+if search:
+    search_lower = search.lower()
+    filtered_arguments = [
+        arg for arg in argument_data
+        if (search_lower in arg["issue"].lower() or
+            search_lower in arg["appellant"]["mainArgument"].lower() or
+            search_lower in arg["respondent"]["mainArgument"].lower() or
+            any(search_lower in detail.lower() for detail in arg["appellant"]["details"]) or
+            any(search_lower in detail.lower() for detail in arg["respondent"]["details"]))
+    ]
+
+# Display arguments
+for arg in filtered_arguments:
+    st.markdown(f"""
+        <div class="main-card">
+            <h2>{arg["issue"]} <span class="category-tag">{arg["category"]}</span></h2>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    with st.expander("View Details", expanded=arg["id"] == "1"):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            display_party_arguments(arg["appellant"], "appellant")
+        
+        with col2:
+            display_party_arguments(arg["respondent"], "respondent")
+        
+    st.markdown("<hr>", unsafe_allow_html=True)

@@ -328,14 +328,13 @@ def main():
             style="
                 width: 100%;
                 height: 38px;
-                padding: 8px;
                 background-color: #4D68F9;
                 color: white;
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
                 font-size: 14px;
-                line-height: 1;
+                font-weight: 500;
                 display: flex;
                 align-items: center;
                 justify-content: center;

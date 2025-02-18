@@ -283,10 +283,10 @@ def create_position_section(position_data, position_type):
 def main():
     # Sidebar
     with st.sidebar:
-        # Logo and title in a single row
+        # Logo and product name in a flex container
         st.markdown("""
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" style="width: 44px; height: 44px;">
                   <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
                     <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
                   </mask>
@@ -295,9 +295,11 @@ def main():
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
                   </g>
                 </svg>
-                <h1 style="margin: 0; padding: 0; font-size: 1.5rem; font-weight: 600;">Filters</h1>
+                <span style="font-size: 24px; font-weight: 600; color: #4D68F9;">Caselens</span>
             </div>
         """, unsafe_allow_html=True)
+        
+        st.markdown("### Filters")
         
         # Category filter
         categories = list(set(arg["category"] for arg in argument_data))

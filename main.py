@@ -6,6 +6,13 @@ def main():
         st.info(
             """
             This dashboard displays legal arguments and related case law.
+            
+            The dashboard provides:
+            • Detailed case analysis
+            • Supporting evidence
+            • Relevant case law references
+            • Argument summaries
+            
             Use the search bar above to find specific cases or arguments.
             """
         )

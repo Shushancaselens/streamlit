@@ -18,46 +18,20 @@ st.markdown("""
         transition: all 0.2s ease;
     }
     /* Combined title and argument styling */
-    /* Single container styling */
-    .party-container {
-        background-color: white;
-        padding: 24px;
+    .evidence-box {
+        background-color: #f8fafc;
+        padding: 16px;
         border-radius: 12px;
+        margin: 8px 0;
         border: 1px solid #e2e8f0;
-        margin: 16px 0;
     }
     .main-argument {
-        margin: 12px 0 24px 0;
+        margin-top: 8px;
         font-size: 1.1rem;
-        padding: 12px;
-        background-color: #f8fafc;
-        border-radius: 8px;
     }
-    .section {
-        margin-top: 20px;
-    }
-    .section h4 {
-        color: #64748b;
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 12px;
-    }
-    .argument-list, .evidence-list, .case-law-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .argument-list li, .evidence-list li, .case-law-list li {
-        padding: 12px;
-        background-color: #f8fafc;
-        border-radius: 8px;
-        margin-bottom: 8px;
-    }
-    .evidence-id {
-        display: inline-block;
-        margin-right: 8px;
+    h3 {
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .category-tag {
         background-color: #f1f5f9;
@@ -266,34 +240,33 @@ def display_party_section(data, party_type):
     color_class = "appellant-color" if party_type == "appellant" else "respondent-color"
     evidence_class = "" if party_type == "appellant" else "evidence-id-respondent"
     
-    # Single container for all content
+    # Combine title and main argument in one container
     st.markdown(f"""
-        <div class="party-container">
+        <div class="evidence-box">
             <h3 class="{color_class}">{party_type.title()}'s Position</h3>
             <div class="main-argument"><strong>{data["mainArgument"]}</strong></div>
-            
-            <div class="section">
-                <h4>Key Arguments</h4>
-                <ul class="argument-list">
-                    {' '.join(f'<li>{detail}</li>' for detail in data["details"])}
-                </ul>
-            </div>
-            
-            <div class="section">
-                <h4>Evidence</h4>
-                <ul class="evidence-list">
-                    {' '.join(f'<li><span class="evidence-id {evidence_class}">{ev["id"]}</span>{ev["desc"]}</li>' for ev in data["evidence"])}
-                </ul>
-            </div>
-            
-            <div class="section">
-                <h4>Case Law</h4>
-                <ul class="case-law-list">
-                    {' '.join(f'<li>{case_}</li>' for case_ in data["caselaw"])}
-                </ul>
-            </div>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Key Arguments
+    st.markdown("#### Key Arguments")
+    for detail in data["details"]:
+        st.markdown(f'<div class="evidence-box">{detail}</div>', unsafe_allow_html=True)
+    
+    # Evidence
+    st.markdown("#### Evidence")
+    for evidence in data["evidence"]:
+        st.markdown(
+            f'<div class="evidence-box">'
+            f'<span class="evidence-id {evidence_class}">{evidence["id"]}</span>'
+            f'{evidence["desc"]}</div>',
+            unsafe_allow_html=True
+        )
+    
+    # Case Law
+    st.markdown("#### Case Law")
+    for case in data["caselaw"]:
+        st.markdown(f'<div class="case-law">{case}</div>', unsafe_allow_html=True)
 
 # Page Header
 st.markdown('<h1>Legal Arguments Comparison</h1>', unsafe_allow_html=True)

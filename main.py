@@ -281,11 +281,11 @@ def create_position_section(position_data, position_type):
         """, unsafe_allow_html=True)
 
 def main():
-    # Sidebar
+    # Sidebar with only logo
     with st.sidebar:
         # Logo
         st.markdown("""
-            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: center; margin: 20px 0;">
                 <svg width="40" height="40" viewBox="0 0 175 175" xmlns="http://www.w3.org/2000/svg">
                     <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
                         <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
@@ -297,7 +297,8 @@ def main():
                 </svg>
             </div>
         """, unsafe_allow_html=True)
-        st.header("Dashboard Settings")
+    
+    st.title("Legal Arguments Dashboard")
         st.markdown("---")
         # Category filter
         categories = list(set(arg["category"] for arg in argument_data))
@@ -357,8 +358,8 @@ def main():
                 use_container_width=True
             )
     
-    # Filter arguments based on search and categories
-    filtered_arguments = [arg for arg in argument_data if arg["category"] in selected_categories]
+    # Filter arguments based on search
+    filtered_arguments = argument_data
     if search:
         search = search.lower()
         filtered_arguments = [

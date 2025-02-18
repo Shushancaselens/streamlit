@@ -235,7 +235,23 @@ def main():
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        if st.button("📋 Export Data", type="primary", use_container_width=True):
+        if st.button("📋 Export Data", type="primary", use_container_width=True, help="Export data to CSV format"):
+            # Add custom CSS to style the button
+            st.markdown(
+                """
+                <style>
+                    .stButton button {
+                        background-color: #4D68F9 !important;
+                        border-color: #4D68F9 !important;
+                    }
+                    .stButton button:hover {
+                        background-color: #3D50C6 !important;
+                        border-color: #3D50C6 !important;
+                    }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
             df = create_table_data()
             st.download_button(
                 "Download Full Data",

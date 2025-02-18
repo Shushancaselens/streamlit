@@ -272,7 +272,7 @@ def display_party_section(data, party_type):
 st.markdown('<h1>Legal Arguments Comparison</h1>', unsafe_allow_html=True)
 
 # Search and Export
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([2, 1])
 with col1:
     search = st.text_input("", placeholder="Search issues, arguments, or evidence...")
 with col2:

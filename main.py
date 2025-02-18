@@ -39,28 +39,28 @@ argument_data = [
         "appellant": {
             "mainArgument": "Sample Chain of Custody Was Broken",
             "details": [
-                "Gap in documentation during sample transport",
-                "Temperature logs show unauthorized storage conditions",
-                "Multiple handlers accessed samples without proper documentation"
+                "Gap in documentation during sample transportation",
+                "Temperature logs show irregular storage conditions",
+                "Missing signatures on transfer documentation"
             ],
             "evidence": [
-                {"id": "C4", "desc": "Transport logs showing 12-hour gap"},
+                {"id": "C4", "desc": "Transportation logs showing 3-hour gap"},
                 {"id": "C5", "desc": "Temperature monitoring data"},
-                {"id": "C6", "desc": "Lab access records"}
+                {"id": "C6", "desc": "Chain of custody forms"}
             ],
             "caselaw": ["CAS 2018/A/ABC"]
         },
         "respondent": {
-            "mainArgument": "Chain of Custody Remains Valid",
+            "mainArgument": "Chain of Custody Maintained Within Standards",
             "details": [
-                "Minor procedural gaps do not invalidate entire process",
+                "Minor procedural gaps do not invalidate results",
                 "Core sample integrity maintained throughout",
-                "All critical handling steps properly documented"
+                "All critical handoffs properly documented"
             ],
             "evidence": [
-                {"id": "R4", "desc": "Sample integrity test results"},
-                {"id": "R5", "desc": "Lab certification documents"},
-                {"id": "R6", "desc": "Standard operating procedures"}
+                {"id": "R4", "desc": "Laboratory certification of sample integrity"},
+                {"id": "R5", "desc": "Security footage of sample handling"},
+                {"id": "R6", "desc": "Staff testimony on procedures"}
             ],
             "caselaw": ["CAS 2017/A/789"]
         }
@@ -72,28 +72,28 @@ argument_data = [
         "appellant": {
             "mainArgument": "Termination Was Without Proper Cause",
             "details": [
-                "No prior written warnings were issued",
-                "Recent performance review was positive",
-                "Similar incidents by others went unpunished"
+                "No prior disciplinary actions on record",
+                "Recent positive performance review",
+                "No written warnings issued"
             ],
             "evidence": [
-                {"id": "C7", "desc": "Employee performance reviews 2020-2021"},
-                {"id": "C8", "desc": "Department disciplinary records"},
-                {"id": "C9", "desc": "Company HR policies"}
+                {"id": "C7", "desc": "Employee performance records"},
+                {"id": "C8", "desc": "Recent commendation email"},
+                {"id": "C9", "desc": "HR file showing no incidents"}
             ],
             "caselaw": ["Smith v. Corp Inc. 2021", "Jones v. Enterprise Ltd 2020"]
         },
         "respondent": {
             "mainArgument": "Termination Was Justified",
             "details": [
-                "Serious misconduct warranted immediate termination",
-                "Verbal warnings were given and documented",
-                "Clear violation of company policies"
+                "Multiple verbal warnings given",
+                "Documented performance issues",
+                "Violation of company policies"
             ],
             "evidence": [
-                {"id": "R7", "desc": "Incident reports and documentation"},
-                {"id": "R8", "desc": "Manager's contemporaneous notes"},
-                {"id": "R9", "desc": "Signed policy acknowledgments"}
+                {"id": "R7", "desc": "Manager's log of verbal warnings"},
+                {"id": "R8", "desc": "Policy violation reports"},
+                {"id": "R9", "desc": "Witness statements"}
             ],
             "caselaw": ["Brown v. MegaCorp 2022", "Wilson v. Tech Solutions 2021"]
         }
@@ -101,32 +101,32 @@ argument_data = [
     {
         "id": "4",
         "issue": "Patent Infringement",
-        "category": "intellectual_property",
+        "category": "intellectual property",
         "appellant": {
-            "mainArgument": "Patent Was Infringed",
+            "mainArgument": "Clear Patent Infringement",
             "details": [
-                "Defendant's product uses identical technology",
-                "Development started after patent publication",
-                "High similarity in implementation details"
+                "Similar technology developed after patent publication",
+                "Key features match patented design",
+                "No evidence of independent development"
             ],
             "evidence": [
-                {"id": "C10", "desc": "Technical comparison analysis"},
-                {"id": "C11", "desc": "Development timeline documentation"},
-                {"id": "C12", "desc": "Expert witness statement"}
+                {"id": "C10", "desc": "Side-by-side technical comparison"},
+                {"id": "C11", "desc": "Development timeline evidence"},
+                {"id": "C12", "desc": "Expert analysis report"}
             ],
             "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
         },
         "respondent": {
-            "mainArgument": "Independent Development",
+            "mainArgument": "Independent Development, No Infringement",
             "details": [
-                "Technology was developed independently",
-                "Development predates patent filing",
-                "Significant technical differences exist"
+                "Development began before patent filing",
+                "Significant technical differences exist",
+                "Original research documentation available"
             ],
             "evidence": [
-                {"id": "R10", "desc": "Internal development records"},
-                {"id": "R11", "desc": "Prior art documentation"},
-                {"id": "R12", "desc": "Technical differentiation report"}
+                {"id": "R10", "desc": "Pre-dating development records"},
+                {"id": "R11", "desc": "Technical differentiation analysis"},
+                {"id": "R12", "desc": "Research lab notebooks"}
             ],
             "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
         }
@@ -136,30 +136,30 @@ argument_data = [
         "issue": "Environmental Compliance",
         "category": "regulatory",
         "appellant": {
-            "mainArgument": "Facility Meets All Requirements",
+            "mainArgument": "Facility Meets All Environmental Standards",
             "details": [
-                "Continuous monitoring shows compliance",
-                "All required permits are current",
-                "Third-party audits confirm compliance"
+                "Regular compliance monitoring conducted",
+                "All required permits current",
+                "Third-party audits show compliance"
             ],
             "evidence": [
-                {"id": "C13", "desc": "Environmental monitoring data 2020-2023"},
+                {"id": "C13", "desc": "Monthly monitoring reports"},
                 {"id": "C14", "desc": "Current facility permits"},
-                {"id": "C15", "desc": "Independent audit reports"}
+                {"id": "C15", "desc": "Independent audit results"}
             ],
             "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
         },
         "respondent": {
-            "mainArgument": "Multiple Violations Exist",
+            "mainArgument": "Multiple Environmental Violations",
             "details": [
-                "Emissions exceeded limits multiple times",
-                "Required reports were filed late",
-                "Maintenance records are incomplete"
+                "Emissions exceed permitted levels",
+                "Required monitoring not performed",
+                "Incidents not properly reported"
             ],
             "evidence": [
-                {"id": "R13", "desc": "Violation notices"},
-                {"id": "R14", "desc": "Late filing documentation"},
-                {"id": "R15", "desc": "Equipment maintenance logs"}
+                {"id": "R13", "desc": "Emissions test results"},
+                {"id": "R14", "desc": "Missing monitoring logs"},
+                {"id": "R15", "desc": "Incident investigation reports"}
             ],
             "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
         }

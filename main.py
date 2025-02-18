@@ -300,29 +300,55 @@ def main():
 
     st.title("Summary of Arguments")
     
-    # Search bar and export button in the same row
+    # Add copy script to head
+    st.markdown("""
+        <script>
+        function copyToClipboard() {
+            const summary = [];
+            const args = arguments_data;
+            for (const arg of args) {
+                summary.push(
+                    `Issue: ${arg.issue}\n` +
+                    `Appellant: ${arg.appellant.mainArgument}\n` +
+                    `Respondent: ${arg.respondent.mainArgument}\n` +
+                    '---'
+                );
+            }
+            navigator.clipboard.writeText(summary.join('\n\n'));
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
+    # Search bar and copy button in the same row
     col1, col2 = st.columns([0.8, 0.2])
     with col1:
         search = st.text_input("", 
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        if st.button("📋 Copy", type="primary", use_container_width=True):
-            summary_data = []
-            for arg in argument_data:
-                summary_data.append({
-                    "Issue": arg["issue"],
-                    "Appellant Position": arg["appellant"]["mainArgument"],
-                    "Respondent Position": arg["respondent"]["mainArgument"]
-                })
-            df = pd.DataFrame(summary_data)
-            st.download_button(
-                "Copy to Clipboard",
-                df.to_csv(index=False),
-                "legal_arguments_summary.csv",
-                "text/csv",
-                use_container_width=True
-            )
+        st.markdown("""
+            <button 
+                onclick="copyToClipboard()" 
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    background-color: #4F46E5;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    transition: background-color 0.3s;
+                "
+                onmouseover="this.style.backgroundColor='#4338CA'"
+                onmouseout="this.style.backgroundColor='#4F46E5'"
+            >
+                📋 Copy
+            </button>
+        """, unsafe_allow_html=True)
     
     # Filter arguments based on search
     filtered_arguments = argument_data
@@ -336,6 +362,13 @@ def main():
                 any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
                 any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
         ]
+    
+    # Make argument data available to JavaScript
+    st.markdown(f"""
+        <script>
+        const arguments_data = {argument_data};
+        </script>
+    """, unsafe_allow_html=True)
     
     # Display arguments
     for arg in filtered_arguments:

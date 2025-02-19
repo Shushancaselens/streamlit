@@ -38,11 +38,6 @@ st.markdown("""
         background-color: #3D54E8;
         border-color: #4D68F9;
     }
-    /* Radio button styling */
-    div[data-testid="stRadio"] input:checked + div {
-        border-color: #4D68F9 !important;
-        background-color: #4D68F9 !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 

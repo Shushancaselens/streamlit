@@ -4,7 +4,14 @@ import json
 from streamlit.components.v1 import html
 
 # Set page config for wide layout
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Jessup Memorial Penalty Worksheet",
+    page_icon="media/CaseLens Logo.png",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+st.logo("media/CaseLens Logo Sidebar.png", icon_image="media/CaseLens Logo.png", size="large")
+
 
     # Custom CSS for styling
 st.markdown("""

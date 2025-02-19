@@ -341,7 +341,6 @@ def create_position_section(position_data, position_type):
                     </div>
                     <button onclick="navigator.clipboard.writeText('{case}')" 
                             style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                        📋
                     </button>
                 </div>
             </div>

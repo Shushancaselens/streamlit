@@ -329,7 +329,7 @@ def create_position_section(position_data, position_type):
     for case in position_data['caselaw']:
         summary = get_case_summary(case)
         st.markdown(f"""
-            <div class="position-card">
+            <div class="position-card" style="margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
                     <div style="flex-grow: 1;">
                         <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">

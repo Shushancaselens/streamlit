@@ -33,36 +33,6 @@ st.markdown("""
         border-color: #818cf8;
         background-color: #f5f7ff;
     }
-    .st-emotion-cache-keje6w {
-        font-size: 24px !important;
-    }
-    [data-testid="stExpander"] div[role="button"] {
-        font-size: 24px !important;
-    }
-</style>
-""", unsafe_allow_html=True)4338ca;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .evidence-link:hover {
-        color: #3730a3;
-        text-decoration: underline;
-    }
-    .evidence-card {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
-    }
-    .evidence-card:hover {
-        border-color: #818cf8;
-        background-color: #f5f7ff;
-    }
     /* Style for expander headers */
     .streamlit-expanderHeader {
         font-size: 1.3rem !important;

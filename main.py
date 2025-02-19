@@ -250,12 +250,12 @@ def create_position_section(position_data, position_type):
     
     # Supporting Points
     st.markdown("""
-        <div style="margin: 1.5rem 0;">
-            <h5 style="margin-bottom: 2px;">Supporting Points</h5>
+        <div style="margin: 0.5rem 0;">
+            <h5 style="margin-bottom: 0;">Supporting Points</h5>
             <ul style="
                 list-style-type: none;
                 padding-left: 0;
-                margin: 0;
+                margin-top: 0.25rem;
                 display: flex;
                 flex-direction: column;
                 gap: 12px;

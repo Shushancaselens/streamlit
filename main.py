@@ -449,12 +449,7 @@ def main():
     
     # Display arguments
     for arg in filtered_arguments:
-        st.markdown(f"""
-            <h2 style='font-size: 24px; font-weight: 600; color: #1F2937; margin-bottom: 10px;'>
-                {arg['issue']} ({arg['category']})
-            </h2>
-        """, unsafe_allow_html=True)
-        with st.expander("", expanded=arg['id'] == '1'):
+        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
             col1, col2 = st.columns([1, 1])
             with col1:
                 create_position_section(arg['appellant'], "Appellant")

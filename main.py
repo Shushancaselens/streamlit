@@ -173,7 +173,59 @@ argument_data = [
             "evidence": [
                 {"id": "C10", "desc": "Patent documentation and claims analysis"},
                 {"id": "C11", "desc": "Technical comparison report"},
-                {
+                {"id": "C12", "desc": "Expert analysis of defendant's product"}
+            ],
+            "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
+        },
+        "respondent": {
+            "mainArgument": "Our technology was independently developed",
+            "details": [
+                "Development began before patent filing date",
+                "Technology uses different underlying mechanism",
+                "Patent claims are overly broad and invalid"
+            ],
+            "evidence": [
+                {"id": "R10", "desc": "Development timeline documentation"},
+                {"id": "R11", "desc": "Prior art examples"},
+                {"id": "R12", "desc": "Technical differentiation analysis"}
+            ],
+            "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
+        }
+    },
+    {
+        "id": "5",
+        "issue": "Environmental Compliance",
+        "category": "regulatory",
+        "appellant": {
+            "mainArgument": "Facility meets all environmental standards",
+            "details": [
+                "All required permits were obtained and maintained",
+                "Emissions consistently below regulatory limits",
+                "Regular maintenance and monitoring conducted"
+            ],
+            "evidence": [
+                {"id": "C13", "desc": "Environmental impact assessments"},
+                {"id": "C14", "desc": "Continuous monitoring data 2021-2023"},
+                {"id": "C15", "desc": "Third-party compliance audit reports"}
+            ],
+            "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
+        },
+        "respondent": {
+            "mainArgument": "Significant violations of environmental regulations",
+            "details": [
+                "Multiple instances of excess emissions recorded",
+                "Required monitoring equipment malfunctioned",
+                "Failure to report incidents within required timeframe"
+            ],
+            "evidence": [
+                {"id": "R13", "desc": "Violation notices and citations"},
+                {"id": "R14", "desc": "Inspector field reports"},
+                {"id": "R15", "desc": "Community complaint records"}
+            ],
+            "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
+        }
+    }
+]
 
 def create_position_section(position_data, position_type):
     """Create a section for appellant or respondent position"""

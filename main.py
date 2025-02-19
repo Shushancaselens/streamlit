@@ -278,6 +278,9 @@ def create_position_section(position_data, position_type):
     
     st.markdown("</ul></div>", unsafe_allow_html=True)
     
+    # Add separation between Supporting Points and Evidence
+    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
+    
     # Evidence
     st.markdown("##### Evidence")
     for evidence in position_data['evidence']:

@@ -318,6 +318,9 @@ def create_position_section(position_data, position_type):
             </div>
         """, unsafe_allow_html=True)
     
+    # Add separation between Evidence and Case Law
+    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
+    
     # Case Law
     st.markdown("##### Case Law")
     for case in position_data['caselaw']:

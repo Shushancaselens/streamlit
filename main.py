@@ -337,8 +337,11 @@ def create_position_section(position_data, position_type):
             <div class="position-card" style="margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
                     <div style="flex-grow: 1;">
-                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
-                            🗂️ {case} <span style="cursor: pointer; color: #4D68F9;" onclick="navigator.clipboard.writeText('{case}')">🔗</span>
+                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                            🗂️ {case} 
+                            <a href="/cases/{case}" target="_blank" style="margin-left: 8px; text-decoration: none;">
+                                <span style="font-size: 16px; color: #4B5563;">🔗</span>
+                            </a>
                         </div>
                         <div style="font-size: 0.875rem; color: #6B7280;">
                             {summary}

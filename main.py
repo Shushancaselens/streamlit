@@ -308,4 +308,14 @@ def main():
     
     # Display arguments
     for arg in filtered_arguments:
-        with st.exp
+        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                create_position_section(arg['appellant'], "Appellant")
+            with col2:
+                create_position_section(arg['respondent'], "Respondent")
+            
+            st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()

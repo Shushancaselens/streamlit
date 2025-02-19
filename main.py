@@ -299,5 +299,10 @@ def main():
         filtered_arguments = [
             arg for arg in argument_data
             if (search in arg['issue'].lower() or
+                search in arg['category'].lower() or
                 any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any(search
+                any(search in detail.lower() for detail in arg['respondent']['details']) or
+                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
+                any(search in e['desc'].lower() for e in arg['respondent']['evidence']) or
+                any(search in case.lower() for case in arg['appellant']['caselaw']) or
+                any(search in case.lower() for case in arg['respondent']['caselaw']))

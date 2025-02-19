@@ -363,7 +363,7 @@ def create_position_section(position_data, position_type):
 
 def main():
     # Sidebar
-    # with st.sidebar:
+    with st.sidebar:
         # st.markdown("""
         # <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175 175">
         #   <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
@@ -375,7 +375,7 @@ def main():
         #   </g>
         # </svg>
         # """, unsafe_allow_html=True)
-        # st.title("Summary Overview")
+        st.title("Summary Overview")
 
     st.title("Summary of Arguments")
     

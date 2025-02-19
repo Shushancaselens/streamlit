@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import json
-from streamlit.components.v1 import html
 
 # Set page config for wide layout
 st.set_page_config(layout="wide")
@@ -9,345 +7,233 @@ st.set_page_config(layout="wide")
 # Custom CSS for styling
 st.markdown("""
 <style>
-    .evidence-link {
-        color: #4338ca;
-        text-decoration: none;
-        transition: all 0.2s;
+    .stTable {
+        font-size: 14px;
     }
-    .evidence-link:hover {
-        color: #3730a3;
-        text-decoration: underline;
+    .evidence-tag {
+        background-color: #E5E7EB;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #4D68F9;
     }
-    .evidence-card {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
+    .main-argument {
+        font-weight: 500;
+        color: #4D68F9;
     }
-    .evidence-card:hover {
-        border-color: #818cf8;
-        background-color: #f5f7ff;
+    .details-cell {
+        color: #4D68F9;
+    }
+    .evidence-cell {
+        color: #4D68F9;
+    }
+    .case-cell {
+        color: #4D68F9;
+    }
+    div[data-testid="stButton"] button {
+        background-color: #4D68F9;
+        border-color: #4D68F9;
+    }
+    div[data-testid="stButton"] button:hover {
+        background-color: #3D54E8;
+        border-color: #4D68F9;
+    }
+    .stMarkdown a {
+        color: #4D68F9 !important;
+    }
+    .stDataFrame {
+        color: #4D68F9;
+    }
+    .stRadio label {
+        color: #4D68F9 !important;
+    }
+    .stTextInput label {
+        color: #4D68F9 !important;
+    }
+    /* Style for info boxes */
+    .stAlert {
+        border-left-color: #4D68F9 !important;
+    }
+    /* Headers */
+    h1, h2, h3 {
+        color: #4D68F9 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Complete argument data
+# Case summaries dictionary
 def get_case_summary(case_id):
-    # Database of case summaries
     case_summaries = {
-        "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
-        "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
-        "CAS 2018/A/456": "Case established precedent for requiring completion of federation's internal processes before CAS jurisdiction.",
-        "CAS 2018/A/ABC": "Court found chain-of-custody errors significant enough to invalidate test results. Set standards for sample handling.",
-        "CAS 2017/A/789": "Minor procedural defects held insufficient to invalidate otherwise valid test results.",
-        "Smith v. Corp Inc. 2021": "Court found lack of documented warnings and positive performance reviews inconsistent with termination for cause.",
-        "Jones v. Enterprise Ltd 2020": "Established standards for progressive discipline in employment termination cases.",
-        "Brown v. MegaCorp 2022": "Upheld immediate termination where serious misconduct was clearly documented.",
-        "Wilson v. Tech Solutions 2021": "Court emphasized importance of contemporaneous documentation of verbal warnings.",
-        "TechCo v. Innovate Inc. 2022": "Found patent infringement based on post-publication copying and substantial similarity.",
-        "Patent Holdings v. StartUp 2021": "Emphasized importance of timeline evidence in patent infringement cases.",
-        "Innovation Corp v. PatentCo 2023": "Independent development defense succeeded with clear pre-dating evidence.",
-        "Tech Solutions v. IP Holdings 2022": "Court invalidated overly broad patent claims in software industry.",
-        "EcoCorp v. EPA 2022": "Facility compliance upheld based on comprehensive monitoring data and third-party audits.",
-        "Green Industries v. State 2021": "Established standards for environmental compliance documentation.",
-        "EPA v. Industrial Corp 2023": "Violations found due to inadequate monitoring and delayed incident reporting.",
-        "State v. Manufacturing Co. 2022": "Court emphasized importance of timely violation reporting and equipment maintenance."
+        "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals.",
+        "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies.",
+        "CAS 2018/A/456": "Case established precedent for requiring completion of internal processes.",
+        "CAS 2018/A/ABC": "Court found chain-of-custody errors invalidated test results.",
+        "CAS 2017/A/789": "Minor procedural defects held insufficient to invalidate results.",
+        "Smith v. Corp Inc. 2021": "Lack of documented warnings invalidated termination.",
+        "Jones v. Enterprise Ltd 2020": "Established standards for progressive discipline.",
+        "Brown v. MegaCorp 2022": "Upheld termination with clear documentation.",
+        "Wilson v. Tech Solutions 2021": "Emphasized importance of contemporaneous documentation.",
+        "TechCo v. Innovate Inc. 2022": "Found infringement based on copying evidence.",
+        "Patent Holdings v. StartUp 2021": "Timeline evidence crucial in patent cases.",
+        "Innovation Corp v. PatentCo 2023": "Independent development defense succeeded.",
+        "Tech Solutions v. IP Holdings 2022": "Invalidated overly broad patent claims.",
+        "EcoCorp v. EPA 2022": "Compliance upheld with monitoring data.",
+        "Green Industries v. State 2021": "Set documentation standards.",
+        "EPA v. Industrial Corp 2023": "Violations found due to inadequate monitoring.",
+        "State v. Manufacturing Co. 2022": "Emphasized timely reporting importance."
     }
     return case_summaries.get(case_id, "Summary not available.")
 
-argument_data = [
-    {
-        "id": "1",
-        "issue": "CAS Jurisdiction",
-        "category": "jurisdiction",
-        "appellant": {
-            "mainArgument": "CAS Has Authority to Hear This Case",
-            "details": [
-                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
-                "Athlete has completed all required internal appeal procedures first",
-                "Athlete signed agreement allowing CAS to handle disputes"
-            ],
-            "evidence": [
-                {"id": "C1", "desc": "Federation Rules, Art. 60"},
-                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
-                {"id": "C3", "desc": "Appeal submission documents"}
-            ],
-            "caselaw": ["CAS 2019/A/XYZ"]
+# Create table data function
+def create_table_data():
+    argument_data = [
+        {
+            "id": "1",
+            "issue": "CAS Jurisdiction",
+            "category": "jurisdiction",
+            "appellant": {
+                "mainArgument": "CAS Has Authority",
+                "details": ["Federation Rules allow appeals", "Procedures completed", "Agreement signed"],
+                "evidence": [
+                    {"id": "C1", "desc": "Federation Rules"},
+                    {"id": "C2", "desc": "License agreement"}
+                ],
+                "caselaw": ["CAS 2019/A/XYZ"]
+            },
+            "respondent": {
+                "mainArgument": "No Authority Yet",
+                "details": ["Steps skipped", "Deadlines missed"],
+                "evidence": [
+                    {"id": "R1", "desc": "Process documentation"},
+                    {"id": "R2", "desc": "Timeline"}
+                ],
+                "caselaw": ["CAS 2019/A/123"]
+            }
         },
-        "respondent": {
-            "mainArgument": "CAS Cannot Hear This Case Yet",
-            "details": [
-                "Athlete skipped required steps in federation's appeal process",
-                "Athlete missed important appeal deadlines within federation",
-                "Must follow proper appeal steps before going to CAS"
-            ],
-            "evidence": [
-                {"id": "R1", "desc": "Federation internal appeals process documentation"},
-                {"id": "R2", "desc": "Timeline of appeals process"},
-                {"id": "R3", "desc": "Federation handbook on procedures"}
-            ],
-            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
-        }
-    },
-    {
-        "id": "2",
-        "issue": "Presence of Substance X",
-        "category": "substance",
-        "appellant": {
-            "mainArgument": "Chain-of-custody errors invalidate test results",
-            "details": [
-                "Sample had a 10-hour delay in transfer",
-                "Sealing procedure was not properly documented",
-                "Independent expert confirms potential degradation"
-            ],
-            "evidence": [
-                {"id": "C4", "desc": "Lab reports #1 and #2"},
-                {"id": "C5", "desc": "Expert Dr. A's statement"},
-                {"id": "C6", "desc": "Chain of custody documentation"}
-            ],
-            "caselaw": ["CAS 2018/A/ABC"]
+        {
+            "id": "2",
+            "issue": "Patent Validity",
+            "category": "intellectual property",
+            "appellant": {
+                "mainArgument": "Patent Claims Are Valid",
+                "details": ["Novel technical solution", "Non-obvious implementation", "Clear practical application"],
+                "evidence": [
+                    {"id": "C3", "desc": "Technical specifications"},
+                    {"id": "C4", "desc": "Expert testimony"}
+                ],
+                "caselaw": ["Patent Holdings v. StartUp 2021"]
+            },
+            "respondent": {
+                "mainArgument": "Patent Is Invalid",
+                "details": ["Prior art exists", "Claims too broad", "Obvious to experts"],
+                "evidence": [
+                    {"id": "R3", "desc": "Prior art documentation"},
+                    {"id": "R4", "desc": "Industry standards"}
+                ],
+                "caselaw": ["Tech Solutions v. IP Holdings 2022"]
+            }
         },
-        "respondent": {
-            "mainArgument": "Minor procedural defects do not invalidate results",
-            "details": [
-                "WADA-accredited lab's procedures ensure reliability",
-                "10-hour delay within acceptable limits",
-                "No evidence of sample degradation"
-            ],
-            "evidence": [
-                {"id": "R4", "desc": "Lab accreditation documents"},
-                {"id": "R5", "desc": "Expert Dr. B's analysis"},
-                {"id": "R6", "desc": "Testing protocols"}
-            ],
-            "caselaw": ["CAS 2017/A/789"]
-        }
-    },
-    {
-        "id": "3",
-        "issue": "Contract Termination Validity",
-        "category": "employment",
-        "appellant": {
-            "mainArgument": "Termination was wrongful and without cause",
-            "details": [
-                "No prior warnings were issued before termination",
-                "Performance reviews were consistently positive",
-                "Termination violated company policy on progressive discipline"
-            ],
-            "evidence": [
-                {"id": "C7", "desc": "Employee performance reviews 2020-2023"},
-                {"id": "C8", "desc": "Company handbook on disciplinary procedures"},
-                {"id": "C9", "desc": "Email correspondence regarding termination"}
-            ],
-            "caselaw": ["Smith v. Corp Inc. 2021", "Jones v. Enterprise Ltd 2020"]
+        {
+            "id": "3",
+            "issue": "Environmental Compliance",
+            "category": "regulatory",
+            "appellant": {
+                "mainArgument": "Meeting All Standards",
+                "details": ["Regular monitoring conducted", "Reports filed timely", "Equipment maintained"],
+                "evidence": [
+                    {"id": "C5", "desc": "Monitoring logs"},
+                    {"id": "C6", "desc": "Maintenance records"}
+                ],
+                "caselaw": ["EcoCorp v. EPA 2022"]
+            },
+            "respondent": {
+                "mainArgument": "Standards Violated",
+                "details": ["Emissions exceeded limits", "Late reporting", "Poor maintenance"],
+                "evidence": [
+                    {"id": "R5", "desc": "Violation notices"},
+                    {"id": "R6", "desc": "Inspection reports"}
+                ],
+                "caselaw": ["EPA v. Industrial Corp 2023"]
+            }
         },
-        "respondent": {
-            "mainArgument": "Termination was justified due to misconduct",
-            "details": [
-                "Multiple instances of policy violations documented",
-                "Verbal warnings were given on several occasions",
-                "Final incident warranted immediate termination"
-            ],
-            "evidence": [
-                {"id": "R7", "desc": "Internal incident reports"},
-                {"id": "R8", "desc": "Witness statements from supervisors"},
-                {"id": "R9", "desc": "Security footage from incident date"}
-            ],
-            "caselaw": ["Brown v. MegaCorp 2022", "Wilson v. Tech Solutions 2021"]
-        }
-    },
-    {
-        "id": "4",
-        "issue": "Patent Infringement",
-        "category": "intellectual property",
-        "appellant": {
-            "mainArgument": "Defendant's product violates our patent claims",
-            "details": [
-                "Product uses identical method described in patent claims",
-                "Infringement began after patent publication",
-                "Similarities cannot be explained by independent development"
-            ],
-            "evidence": [
-                {"id": "C10", "desc": "Patent documentation and claims analysis"},
-                {"id": "C11", "desc": "Technical comparison report"},
-                {"id": "C12", "desc": "Expert analysis of defendant's product"}
-            ],
-            "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
+        {
+            "id": "4",
+            "issue": "Wrongful Termination",
+            "category": "employment",
+            "appellant": {
+                "mainArgument": "Termination Was Unjustified",
+                "details": ["No prior warnings", "Recent positive review", "Discriminatory intent"],
+                "evidence": [
+                    {"id": "C7", "desc": "Performance reviews"},
+                    {"id": "C8", "desc": "Email communications"}
+                ],
+                "caselaw": ["Smith v. Corp Inc. 2021"]
+            },
+            "respondent": {
+                "mainArgument": "Termination Was Valid",
+                "details": ["Poor performance documented", "Multiple warnings given", "Policy violations"],
+                "evidence": [
+                    {"id": "R7", "desc": "Warning letters"},
+                    {"id": "R8", "desc": "Incident reports"}
+                ],
+                "caselaw": ["Brown v. MegaCorp 2022"]
+            }
         },
-        "respondent": {
-            "mainArgument": "Our technology was independently developed",
-            "details": [
-                "Development began before patent filing date",
-                "Technology uses different underlying mechanism",
-                "Patent claims are overly broad and invalid"
-            ],
-            "evidence": [
-                {"id": "R10", "desc": "Development timeline documentation"},
-                {"id": "R11", "desc": "Prior art examples"},
-                {"id": "R12", "desc": "Technical differentiation analysis"}
-            ],
-            "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
+        {
+            "id": "5",
+            "issue": "Sample Testing",
+            "category": "evidence",
+            "appellant": {
+                "mainArgument": "Test Results Invalid",
+                "details": ["Chain of custody broken", "Storage issues", "Protocol violations"],
+                "evidence": [
+                    {"id": "C9", "desc": "Laboratory records"},
+                    {"id": "C10", "desc": "Temperature logs"}
+                ],
+                "caselaw": ["CAS 2018/A/ABC"]
+            },
+            "respondent": {
+                "mainArgument": "Tests Are Valid",
+                "details": ["Procedures followed", "Minor deviations irrelevant", "Results reliable"],
+                "evidence": [
+                    {"id": "R9", "desc": "Testing protocols"},
+                    {"id": "R10", "desc": "Lab certification"}
+                ],
+                "caselaw": ["CAS 2017/A/789"]
+            }
         }
-    },
-    {
-        "id": "5",
-        "issue": "Environmental Compliance",
-        "category": "regulatory",
-        "appellant": {
-            "mainArgument": "Facility meets all environmental standards",
-            "details": [
-                "All required permits were obtained and maintained",
-                "Emissions consistently below regulatory limits",
-                "Regular maintenance and monitoring conducted"
-            ],
-            "evidence": [
-                {"id": "C13", "desc": "Environmental impact assessments"},
-                {"id": "C14", "desc": "Continuous monitoring data 2021-2023"},
-                {"id": "C15", "desc": "Third-party compliance audit reports"}
-            ],
-            "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
-        },
-        "respondent": {
-            "mainArgument": "Significant violations of environmental regulations",
-            "details": [
-                "Multiple instances of excess emissions recorded",
-                "Required monitoring equipment malfunctioned",
-                "Failure to report incidents within required timeframe"
-            ],
-            "evidence": [
-                {"id": "R13", "desc": "Violation notices and citations"},
-                {"id": "R14", "desc": "Inspector field reports"},
-                {"id": "R15", "desc": "Community complaint records"}
-            ],
-            "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
+    ]
+    
+    rows = []
+    for arg in argument_data:
+        appellant_details = "\n".join([f"• {detail}" for detail in arg['appellant']['details']])
+        appellant_evidence = "\n".join([f"{e['id']}: {e['desc']}" for e in arg['appellant']['evidence']])
+        appellant_cases = "\n".join([f"{case}\n{get_case_summary(case)}" for case in arg['appellant']['caselaw']])
+        
+        respondent_details = "\n".join([f"• {detail}" for detail in arg['respondent']['details']])
+        respondent_evidence = "\n".join([f"{e['id']}: {e['desc']}" for e in arg['respondent']['evidence']])
+        respondent_cases = "\n".join([f"{case}\n{get_case_summary(case)}" for case in arg['respondent']['caselaw']])
+        
+        row = {
+            "issue": f"{arg['issue']} ({arg['category']})",
+            "appellant_position": arg['appellant']['mainArgument'],
+            "appellant_details": appellant_details,
+            "appellant_evidence": appellant_evidence,
+            "appellant_cases": appellant_cases,
+            "respondent_position": arg['respondent']['mainArgument'],
+            "respondent_details": respondent_details,
+            "respondent_evidence": respondent_evidence,
+            "respondent_cases": respondent_cases
         }
-    }
-]
-
-def create_position_section(position_data, position_type):
-    """Create a section for appellant or respondent position"""
-    color = "#4F46E5" if position_type == "Appellant" else "#E11D48"
+        rows.append(row)
     
-    st.markdown(f"""
-        <h3 style="color: {color}; font-size: 19.2px;">{position_type}'s Position</h3>
-    """, unsafe_allow_html=True)
-    
-    # Main Argument
-    st.markdown(f"""
-        <div class="main-argument" style="
-            margin: 20px 0; 
-            font-size: 1.2rem;
-            max-width: 95%;
-            line-height: 1.5;
-            padding-right: 15px;
-        ">
-            <strong>{position_data['mainArgument']}</strong>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Supporting Points
-    st.markdown("""
-        <div style="margin: 1.5rem 0;">
-            <h5 style="margin-bottom: 2px;">Supporting Points</h5>
-            <ul style="
-                list-style-type: none;
-                padding-left: 0;
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-            ">
-    """, unsafe_allow_html=True)
-    
-    for detail in position_data['details']:
-        st.markdown(f"""
-            <li style="
-                display: flex;
-                align-items: flex-start;
-                margin-bottom: 0;
-                line-height: 1.5;
-                padding-right: 20px;
-            ">
-                <span style="margin-right: 10px;">•</span>
-                <span style="flex: 1;">{detail}</span>
-            </li>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("</ul></div>", unsafe_allow_html=True)
-    
-    # Evidence
-    st.markdown("##### Evidence")
-    for evidence in position_data['evidence']:
-        st.markdown(f"""
-            <div class="evidence-card" style="
-                display: flex;
-                align-items: center;
-                padding: 12px 16px;
-                background-color: white;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                margin-bottom: 8px;
-                transition: all 0.2s;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            ">
-                <span style="
-                    background-color: #F3F4F6;
-                    color: #4B5563;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    margin-right: 12px;
-                ">{evidence['id']}</span>
-                <a href="/evidence/{evidence['id']}" 
-                   style="
-                    color: #4B5563;
-                    text-decoration: none;
-                    font-size: 14px;
-                    flex-grow: 1;
-                    transition: color 0.2s;
-                   "
-                   onmouseover="this.style.color='#4D68F9'"
-                   onmouseout="this.style.color='#4B5563'"
-                >
-                    {evidence['desc']}
-                </a>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    # Case Law
-    st.markdown("##### Case Law")
-    for case in position_data['caselaw']:
-        summary = get_case_summary(case)
-        st.markdown(f"""
-            <div class="position-card">
-                <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                    <div style="flex-grow: 1;">
-                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                            {case}
-                        </div>
-                        <div style="font-size: 0.875rem; color: #6B7280;">
-                            {summary}
-                        </div>
-                    </div>
-                    <button onclick="navigator.clipboard.writeText('{case}')" 
-                            style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                        📋
-                    </button>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    return pd.DataFrame(rows)
 
 def main():
-    # Sidebar
+    # Add sidebar with logo and info
     with st.sidebar:
         st.markdown("""
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175 175">
+        <svg width="40" height="40" viewBox="0 0 175 175" xmlns="http://www.w3.org/2000/svg">
           <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
             <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
           </mask>
@@ -357,109 +243,72 @@ def main():
           </g>
         </svg>
         """, unsafe_allow_html=True)
-        st.title("Summary Overview")
+        
+        st.markdown("---")
+        st.info(
+            """
+            This dashboard displays legal arguments and related case law.
+            """
+        )
 
-    st.title("Summary of Arguments")
+    st.title("Legal Arguments Dashboard - Table View")
     
-    # Create a string with all the content to be copied
-    copy_content = []
-    for arg in argument_data:
-        copy_content.append(f"### {arg['issue']} ({arg['category']})")
-        copy_content.append("\nAppellant's Position:")
-        copy_content.append(f"• {arg['appellant']['mainArgument']}")
-        copy_content.append("\nRespondent's Position:")
-        copy_content.append(f"• {arg['respondent']['mainArgument']}\n")
+    # Add view toggle
+    view_type = st.radio("Select View", ["Detailed Table", "Summary Table"], horizontal=True)
     
-    copy_text = "\n".join(copy_content)
-
-    # Search bar and copy button in the same row
+    # Search bar and export button in the same row
     col1, col2 = st.columns([0.8, 0.2])
     with col1:
         search = st.text_input("", 
                              placeholder="🔍 Search issues, arguments, or evidence...",
                              label_visibility="collapsed")
     with col2:
-        # Create a hidden component that will handle the copy functionality
-        copy_component = f"""
-        <textarea id="copy-text" style="position: absolute; left: -9999px;">{copy_text}</textarea>
-        <button
-            onclick="copyToClipboard()"
-            style="
-                width: 100%;
-                height: 38px;
-                padding: 0 16px;
-                background-color: #4D68F9;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: background-color 0.2s;
-                margin-top: 4px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            "
-            onmouseover="this.style.backgroundColor='#4558D0'"
-            onmouseout="this.style.backgroundColor='#4D68F9'"
-        >
-            <span style="font-size: 16px;">📋</span>
-            <span>Copy</span>
-        </button>
-        <script>
-        function copyToClipboard() {{
-            const textArea = document.getElementById('copy-text');
-            textArea.select();
-            document.execCommand('copy');
-            const button = document.querySelector('button');
-            const originalContent = button.innerHTML;
-            button.innerHTML = '<span style="font-size: 16px;">✓</span><span>Copied!</span>';
-            setTimeout(() => button.innerHTML = originalContent, 2000);
-        }}
-        </script>
-        """
-        html(copy_component, height=46)
+        if st.button("📋 Export Data", type="primary", use_container_width=True, help="Export data to CSV"):
+            df = create_table_data()
+            st.download_button(
+                "Download Full Data",
+                df.to_csv(index=False),
+                "legal_arguments_table.csv",
+                "text/csv",
+                use_container_width=True
+            )
     
-    # Filter arguments based on search
-    filtered_arguments = argument_data
+    # Create and filter table data
+    df = create_table_data()
+    
     if search:
         search = search.lower()
-        filtered_arguments = [
-            arg for arg in argument_data
-            if (search in arg['issue'].lower() or
-                any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any(search in detail.lower() for detail in arg['respondent']['details']) or
-                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
-                any(search in e['desc'].lower() for e in arg['respondent']['evidence']))
-        ]
+        mask = df.apply(lambda x: x.astype(str).str.lower().str.contains(search).any(), axis=1)
+        df = df[mask]
     
-    # Display arguments
-    for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
-            st.markdown("""
-                <style>
-                    .stMarkdown {
-                        max-width: 100%;
-                    }
-                    .main-argument {
-                        padding-right: 20px;
-                        word-wrap: break-word;
-                        overflow-wrap: break-word;
-                        hyphens: auto;
-                    }
-                </style>
-            """, unsafe_allow_html=True)
-            # Content when expanded
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                create_position_section(arg['appellant'], "Appellant")
-            with col2:
-                create_position_section(arg['respondent'], "Respondent")
-        
-        st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+    # Display based on view type
+    if view_type == "Summary Table":
+        summary_df = df[["issue", "appellant_position", "respondent_position"]]
+        st.dataframe(
+            summary_df,
+            use_container_width=True,
+            column_config={
+                "issue": st.column_config.TextColumn("Issue", width="medium"),
+                "appellant_position": st.column_config.TextColumn("Appellant Position", width="large"),
+                "respondent_position": st.column_config.TextColumn("Respondent Position", width="large")
+            }
+        )
+    else:
+        st.dataframe(
+            df,
+            use_container_width=True,
+            column_config={
+                "issue": st.column_config.TextColumn("Issue", width="medium"),
+                "appellant_position": st.column_config.TextColumn("Appellant Position", width="large"),
+                "appellant_details": st.column_config.TextColumn("Appellant Details", width="large"),
+                "appellant_evidence": st.column_config.TextColumn("Appellant Evidence", width="large"),
+                "appellant_cases": st.column_config.TextColumn("Appellant Case Law", width="large"),
+                "respondent_position": st.column_config.TextColumn("Respondent Position", width="large"),
+                "respondent_details": st.column_config.TextColumn("Respondent Details", width="large"),
+                "respondent_evidence": st.column_config.TextColumn("Respondent Evidence", width="large"),
+                "respondent_cases": st.column_config.TextColumn("Respondent Case Law", width="large")
+            }
+        )
 
 if __name__ == "__main__":
     main()

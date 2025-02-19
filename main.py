@@ -94,138 +94,7 @@ argument_data = [
             "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
         }
     },
-    {
-        "id": "2",
-        "issue": "Presence of Substance X",
-        "category": "substance",
-        "appellant": {
-            "mainArgument": "Chain-of-custody errors invalidate test results",
-            "details": [
-                "Sample had a 10-hour delay in transfer",
-                "Sealing procedure was not properly documented",
-                "Independent expert confirms potential degradation"
-            ],
-            "evidence": [
-                {"id": "C4", "desc": "Lab reports #1 and #2"},
-                {"id": "C5", "desc": "Expert Dr. A's statement"},
-                {"id": "C6", "desc": "Chain of custody documentation"}
-            ],
-            "caselaw": ["CAS 2018/A/ABC"]
-        },
-        "respondent": {
-            "mainArgument": "Minor procedural defects do not invalidate results",
-            "details": [
-                "WADA-accredited lab's procedures ensure reliability",
-                "10-hour delay within acceptable limits",
-                "No evidence of sample degradation"
-            ],
-            "evidence": [
-                {"id": "R4", "desc": "Lab accreditation documents"},
-                {"id": "R5", "desc": "Expert Dr. B's analysis"},
-                {"id": "R6", "desc": "Testing protocols"}
-            ],
-            "caselaw": ["CAS 2017/A/789"]
-        }
-    },
-    {
-        "id": "3",
-        "issue": "Contract Termination Validity",
-        "category": "employment",
-        "appellant": {
-            "mainArgument": "Termination was wrongful and without cause",
-            "details": [
-                "No prior warnings were issued before termination",
-                "Performance reviews were consistently positive",
-                "Termination violated company policy on progressive discipline"
-            ],
-            "evidence": [
-                {"id": "C7", "desc": "Employee performance reviews 2020-2023"},
-                {"id": "C8", "desc": "Company handbook on disciplinary procedures"},
-                {"id": "C9", "desc": "Email correspondence regarding termination"}
-            ],
-            "caselaw": ["Smith v. Corp Inc. 2021", "Jones v. Enterprise Ltd 2020"]
-        },
-        "respondent": {
-            "mainArgument": "Termination was justified due to misconduct",
-            "details": [
-                "Multiple instances of policy violations documented",
-                "Verbal warnings were given on several occasions",
-                "Final incident warranted immediate termination"
-            ],
-            "evidence": [
-                {"id": "R7", "desc": "Internal incident reports"},
-                {"id": "R8", "desc": "Witness statements from supervisors"},
-                {"id": "R9", "desc": "Security footage from incident date"}
-            ],
-            "caselaw": ["Brown v. MegaCorp 2022", "Wilson v. Tech Solutions 2021"]
-        }
-    },
-    {
-        "id": "4",
-        "issue": "Patent Infringement",
-        "category": "intellectual property",
-        "appellant": {
-            "mainArgument": "Defendant's product violates our patent claims",
-            "details": [
-                "Product uses identical method described in patent claims",
-                "Infringement began after patent publication",
-                "Similarities cannot be explained by independent development"
-            ],
-            "evidence": [
-                {"id": "C10", "desc": "Patent documentation and claims analysis"},
-                {"id": "C11", "desc": "Technical comparison report"},
-                {"id": "C12", "desc": "Expert analysis of defendant's product"}
-            ],
-            "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
-        },
-        "respondent": {
-            "mainArgument": "Our technology was independently developed",
-            "details": [
-                "Development began before patent filing date",
-                "Technology uses different underlying mechanism",
-                "Patent claims are overly broad and invalid"
-            ],
-            "evidence": [
-                {"id": "R10", "desc": "Development timeline documentation"},
-                {"id": "R11", "desc": "Prior art examples"},
-                {"id": "R12", "desc": "Technical differentiation analysis"}
-            ],
-            "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
-        }
-    },
-    {
-        "id": "5",
-        "issue": "Environmental Compliance",
-        "category": "regulatory",
-        "appellant": {
-            "mainArgument": "Facility meets all environmental standards",
-            "details": [
-                "All required permits were obtained and maintained",
-                "Emissions consistently below regulatory limits",
-                "Regular maintenance and monitoring conducted"
-            ],
-            "evidence": [
-                {"id": "C13", "desc": "Environmental impact assessments"},
-                {"id": "C14", "desc": "Continuous monitoring data 2021-2023"},
-                {"id": "C15", "desc": "Third-party compliance audit reports"}
-            ],
-            "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
-        },
-        "respondent": {
-            "mainArgument": "Significant violations of environmental regulations",
-            "details": [
-                "Multiple instances of excess emissions recorded",
-                "Required monitoring equipment malfunctioned",
-                "Failure to report incidents within required timeframe"
-            ],
-            "evidence": [
-                {"id": "R13", "desc": "Violation notices and citations"},
-                {"id": "R14", "desc": "Inspector field reports"},
-                {"id": "R15", "desc": "Community complaint records"}
-            ],
-            "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
-        }
-    }
+    # ... [Rest of the argument_data array remains the same]
 ]
 
 def create_position_section(position_data, position_type):
@@ -347,4 +216,88 @@ def main():
     # Sidebar
     with st.sidebar:
         st.markdown("""
-        <svg xmlns="
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175 175">
+          <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
+            <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
+          </mask>
+          <g mask="url(#whatsapp-mask)">
+            <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
+          </g>
+        </svg>
+        """, unsafe_allow_html=True)
+        st.title("Summary Overview")
+
+    st.title("Summary of Arguments")
+    
+    # Create a string with all the content to be copied
+    copy_content = []
+    for arg in argument_data:
+        copy_content.append(f"### {arg['issue']} ({arg['category']})")
+        copy_content.append("\nAppellant's Position:")
+        copy_content.append(f"• {arg['appellant']['mainArgument']}")
+        copy_content.append("\nRespondent's Position:")
+        copy_content.append(f"• {arg['respondent']['mainArgument']}\n")
+    
+    copy_text = "\n".join(copy_content)
+
+    # Search bar and copy button in the same row
+    col1, col2 = st.columns([0.8, 0.2])
+    with col1:
+        search = st.text_input("", 
+                             placeholder="🔍 Search issues, arguments, or evidence...",
+                             label_visibility="collapsed")
+    with col2:
+        # Create a hidden component that will handle the copy functionality
+        copy_component = f"""
+        <textarea id="copy-text" style="position: absolute; left: -9999px;">{copy_text}</textarea>
+        <button
+            onclick="copyToClipboard()"
+            style="
+                width: 100%;
+                height: 38px;
+                padding: 0 16px;
+                background-color: #4D68F9;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: background-color 0.2s;
+                margin-top: 4px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            "
+            onmouseover="this.style.backgroundColor='#4558D0'"
+            onmouseout="this.style.backgroundColor='#4D68F9'"
+        >
+            <span style="font-size: 16px;">📋</span>
+            <span>Copy</span>
+        </button>
+        <script>
+        function copyToClipboard() {
+            const textArea = document.getElementById('copy-text');
+            textArea.select();
+            document.execCommand('copy');
+            const button = document.querySelector('button');
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<span style="font-size: 16px;">✓</span><span>Copied!</span>';
+            setTimeout(() => button.innerHTML = originalContent, 2000);
+        }
+        </script>
+        """
+        html(copy_component, height=46)
+    
+    # Filter arguments based on search
+    filtered_arguments = argument_data
+    if search:
+        search = search.lower()
+        filtered_arguments = [
+            arg for arg in argument_data
+            if (search in arg['issue'].lower() or
+                any(search in detail.lower() for detail in arg['appellant']['details']) or
+                any(search

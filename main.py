@@ -279,15 +279,15 @@ def main():
             <span>Copy</span>
         </button>
         <script>
-        function copyToClipboard() {
+        function copyToClipboard() {{
             const textArea = document.getElementById('copy-text');
             textArea.select();
             document.execCommand('copy');
             const button = document.querySelector('button');
             const originalContent = button.innerHTML;
             button.innerHTML = '<span style="font-size: 16px;">✓</span><span>Copied!</span>';
-            setTimeout(() => button.innerHTML = originalContent, 2000);
-        }
+            setTimeout(() => {{ button.innerHTML = originalContent; }}, 2000);
+        }}
         </script>
         """
         html(copy_component, height=46)

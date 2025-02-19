@@ -250,16 +250,17 @@ def create_position_section(position_data, position_type):
     
     # Supporting Points
     st.markdown("""
-        <div style="margin: 1.5rem 0;">
+        <div style="margin: 1rem 0;">
             <h5 style="margin-bottom: 0;">Supporting Points</h5>
             <ul style="
                 list-style-type: none;
                 padding-left: 0;
-                margin-top: 5px;
+                margin-top: 8px;
                 display: flex;
                 flex-direction: column;
-                gap: 12px;
+                gap: 8px;
             ">
+    """, unsafe_allow_html=True)">
     """, unsafe_allow_html=True)
     
     for detail in position_data['details']:

@@ -6,7 +6,7 @@ from streamlit.components.v1 import html
 # Set page config for wide layout
 st.set_page_config(layout="wide")
 
-# Custom CSS for styling
+    # Custom CSS for styling
 st.markdown("""
 <style>
     .evidence-link {
@@ -32,6 +32,11 @@ st.markdown("""
     .evidence-card:hover {
         border-color: #818cf8;
         background-color: #f5f7ff;
+    }
+    /* Style for expander headers */
+    .streamlit-expanderHeader {
+        font-size: 1.3rem !important;
+        font-weight: 600 !important;
     }
 </style>
 """, unsafe_allow_html=True)

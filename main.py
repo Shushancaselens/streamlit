@@ -15,48 +15,45 @@ st.markdown("""
         padding: 2px 6px;
         border-radius: 4px;
         font-size: 12px;
-        color: #4D68F9;
+        color: #4B5563;
     }
     .main-argument {
         font-weight: 500;
-        color: #4D68F9;
+        color: #1F2937;
     }
     .details-cell {
-        color: #4D68F9;
+        color: #4B5563;
     }
     .evidence-cell {
-        color: #4D68F9;
+        color: #4338CA;
     }
     .case-cell {
-        color: #4D68F9;
+        color: #1F2937;
     }
-    div[data-testid="stButton"] button {
-        background-color: #4D68F9;
-        border-color: #4D68F9;
+    /* Global button styling */
+    button {
+        background-color: #4D68F9 !important;
+        border-color: #4D68F9 !important;
     }
-    div[data-testid="stButton"] button:hover {
-        background-color: #3D54E8;
-        border-color: #4D68F9;
+    button:hover {
+        background-color: #3D54E8 !important;
+        border-color: #4D68F9 !important;
     }
-    .stMarkdown a {
+    /* Radio buttons */
+    .stRadio label span {
         color: #4D68F9 !important;
     }
-    .stDataFrame {
-        color: #4D68F9;
-    }
-    .stRadio label {
+    .stRadio label input:checked + span {
         color: #4D68F9 !important;
     }
-    .stTextInput label {
-        color: #4D68F9 !important;
+    /* Download button */
+    .stDownloadButton button {
+        background-color: #4D68F9 !important;
+        border-color: #4D68F9 !important;
+        color: white !important;
     }
-    /* Style for info boxes */
-    .stAlert {
-        border-left-color: #4D68F9 !important;
-    }
-    /* Headers */
-    h1, h2, h3 {
-        color: #4D68F9 !important;
+    .stDownloadButton button:hover {
+        background-color: #3D54E8 !important;
     }
 </style>
 """, unsafe_allow_html=True)

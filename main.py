@@ -30,30 +30,18 @@ st.markdown("""
     .case-cell {
         color: #1F2937;
     }
-    /* Global button styling */
-    button {
+    div[data-testid="stButton"] button {
+        background-color: #4D68F9;
+        border-color: #4D68F9;
+    }
+    div[data-testid="stButton"] button:hover {
+        background-color: #3D54E8;
+        border-color: #4D68F9;
+    }
+    /* Radio button styling */
+    div[data-testid="stRadio"] input:checked + div {
+        border-color: #4D68F9 !important;
         background-color: #4D68F9 !important;
-        border-color: #4D68F9 !important;
-    }
-    button:hover {
-        background-color: #3D54E8 !important;
-        border-color: #4D68F9 !important;
-    }
-    /* Radio buttons */
-    .stRadio label span {
-        color: #4D68F9 !important;
-    }
-    .stRadio label input:checked + span {
-        color: #4D68F9 !important;
-    }
-    /* Download button */
-    .stDownloadButton button {
-        background-color: #4D68F9 !important;
-        border-color: #4D68F9 !important;
-        color: white !important;
-    }
-    .stDownloadButton button:hover {
-        background-color: #3D54E8 !important;
     }
 </style>
 """, unsafe_allow_html=True)

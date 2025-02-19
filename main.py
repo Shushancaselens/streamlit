@@ -333,7 +333,7 @@ def create_position_section(position_data, position_type):
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
                     <div style="flex-grow: 1;">
                         <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem;">
-                            {case}
+                            🗂️ {case}
                         </div>
                         <div style="font-size: 0.875rem; color: #6B7280;">
                             {summary}

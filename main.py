@@ -258,7 +258,7 @@ def create_position_section(position_data, position_type):
                 margin: 0;
                 display: flex;
                 flex-direction: column;
-                gap: 6px;
+                gap: 2px;
             ">
     """, unsafe_allow_html=True)
     

@@ -238,7 +238,7 @@ def create_position_section(position_data, position_type):
     # Main Argument
     st.markdown(f"""
         <div class="main-argument" style="
-            margin: 20px 0; 
+            margin: 10px 0; 
             font-size: 1.2rem;
             max-width: 95%;
             line-height: 1.5;
@@ -247,7 +247,6 @@ def create_position_section(position_data, position_type):
             <strong>{position_data['mainArgument']}</strong>
         </div>
     """, unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
     
     # Supporting Points
     st.markdown("""

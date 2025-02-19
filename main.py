@@ -36,7 +36,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Complete argument data
 def get_case_summary(case_id):
     # Database of case summaries
     case_summaries = {
@@ -93,8 +92,7 @@ argument_data = [
             ],
             "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
         }
-    },
-    # ... [Rest of the argument_data array remains the same]
+    }
 ]
 
 def create_position_section(position_data, position_type):
@@ -306,3 +304,8 @@ def main():
                 any(search in e['desc'].lower() for e in arg['respondent']['evidence']) or
                 any(search in case.lower() for case in arg['appellant']['caselaw']) or
                 any(search in case.lower() for case in arg['respondent']['caselaw']))
+        ]
+    
+    # Display arguments
+    for arg in filtered_arguments:
+        with st.exp

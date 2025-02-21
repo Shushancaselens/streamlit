@@ -65,8 +65,62 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Component rendering functions from before...
-[Previous render_fact_item, render_supporting_point, and render_exhibit_item functions remain the same]
+def render_fact_item(fact, is_disputed, source="", paragraphs="", classified=True):
+    with st.container():
+        st.markdown(f"""
+            <div class="fact-item">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📅</span>
+                    <p style="margin: 0; color: rgb(55, 65, 81);">{fact}</p>
+                </div>
+                <div style="margin-top: 0.5rem; padding-left: 1.25rem;">
+                    <span style="font-size: 0.875rem; color: {'red' if is_disputed else 'green'}">
+                        {f'Disputed by {source}' if is_disputed else 'Undisputed'}
+                    </span>
+                    <span style="font-size: 0.875rem; color: rgb(107, 114, 128); margin-left: 1rem;">
+                        ¶{paragraphs}
+                    </span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+def render_supporting_point(content, paragraphs, is_legal=True, is_direct=True):
+    with st.container():
+        st.markdown(f"""
+            <div class="supporting-point">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; 
+                          background-color: {'rgb(219, 234, 254)' if is_legal else 'rgb(220, 252, 231)'};
+                          color: {'rgb(30, 64, 175)' if is_legal else 'rgb(22, 101, 52)'};
+                          border-radius: 0.25rem;">
+                        {'Legal' if is_legal else 'Factual'}
+                    </span>
+                    {f'<span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background-color: rgb(243, 244, 246); color: rgb(31, 41, 55); border-radius: 0.25rem;">Indirect</span>' if not is_direct else ''}
+                </div>
+                <p style="margin: 0; color: rgb(55, 65, 81);">{content}</p>
+                <span style="font-size: 0.75rem; color: rgb(107, 114, 128); display: block; margin-top: 0.25rem;">
+                    ¶{paragraphs}
+                </span>
+            </div>
+        """, unsafe_allow_html=True)
+
+def render_exhibit_item(id, title, summary, citations):
+    with st.container():
+        st.markdown(f"""
+            <div class="exhibit-item">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="margin: 0; font-weight: 500;">{id}: {title}</p>
+                        <p style="font-size: 0.875rem; color: rgb(75, 85, 99); margin-top: 0.25rem;">{summary}</p>
+                        <div style="margin-top: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: rgb(107, 114, 128);">Cited in: </span>
+                            {' '.join([f'<span style="font-size: 0.75rem; background-color: rgb(229, 231, 235); border-radius: 0.25rem; padding: 0.125rem 0.5rem; margin-left: 0.25rem;">¶{cite}</span>' for cite in citations])}
+                        </div>
+                    </div>
+                    <button style="background: none; border: none; color: rgb(107, 114, 128); cursor: pointer;">🔗</button>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
 def render_case_law(case_number, paragraphs, summary):
     with st.container():
@@ -141,7 +195,6 @@ def render_sub_argument_section(title, overview_text):
             st.markdown("""
                 <div class="counter-argument">
                     <p>Respondent argues that minor variations in name usage and registration gaps weaken the continuity claim.</p>
-                    
                 </div>
             """, unsafe_allow_html=True)
             render_supporting_point(
@@ -176,7 +229,7 @@ def main():
         with col2:
             st.button("📊 Show Disputed Only")
         with col3:
-            st.download_button("📥 Export", "data")
+            st.download_button("📥 Export", "data", "timeline.csv")
             
         col1, col2 = st.columns(2)
         
@@ -213,7 +266,7 @@ def main():
         with col3:
             st.button("📋 Copy")
         with col4:
-            st.download_button("📥 Export to Excel", "data")
+            st.download_button("📥 Export to Excel", "data", "arguments.xlsx")
 
         # Arguments content
         st.header("Sporting Succession")
@@ -315,85 +368,4 @@ def main():
                     is_legal=True
                 )
                 render_supporting_point(
-                    "Legal precedent requiring comprehensive analysis beyond public opinion",
-                    "43-44",
-                    is_legal=True
-                )
-
-            with st.expander("Key Facts"):
-                render_fact_item(
-                    "Significant changes in club identity since 1975",
-                    True,
-                    source="Appellant",
-                    paragraphs="30-31"
-                )
-                render_fact_item(
-                    "Operations ceased between 1975-1976",
-                    False,
-                    paragraphs="32-33"
-                )
-                render_fact_item(
-                    "Different management structure post-1976",
-                    True,
-                    source="Appellant",
-                    paragraphs="34-35"
-                )
-
-            render_sub_argument_section(
-                "1. Club Name Analysis Response",
-                "Direct response to alleged name continuity, highlighting registration gaps and unauthorized usage."
-            )
-            
-            render_sub_argument_section(
-                "2. Club Colors Analysis Response",
-                "Documented variations in club colors demonstrate lack of continuity."
-            )
-
-            st.markdown("### Case Law")
-            render_case_law(
-                "CAS 2017/A/5465",
-                "55-58",
-                "Establishes primacy of operational continuity over superficial similarities"
-            )
-
-    with tab3:
-        col1, col2, col3 = st.columns([6, 2, 2])
-        with col1:
-            st.header("Evidence Summary")
-        with col3:
-            st.download_button("📥 Export", "data")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant's Exhibits")
-            render_exhibit_item(
-                "A-1",
-                "Historical Registration Documents",
-                "Official records showing club name usage since 1950",
-                ["20", "21", "24"]
-            )
-            render_exhibit_item(
-                "A-2",
-                "Media Archive Collection",
-                "Press coverage demonstrating consistent name usage",
-                ["28", "29", "30"]
-            )
-            
-        with col2:
-            st.subheader("Respondent's Exhibits")
-            render_exhibit_item(
-                "R-1",
-                "Historical Registration Records",
-                "Documents showing registration gaps and changes",
-                ["50", "51", "54"]
-            )
-            render_exhibit_item(
-                "R-2",
-                "Historical Color Documentation",
-                "Records showing variations in club colors",
-                ["63", "64", "65"]
-            )
-
-if __name__ == "__main__":
-    main()
+                    "Legal precedent

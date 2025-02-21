@@ -219,6 +219,9 @@ def render_sub_argument_section(title, overview_text):
             )
 
 def main():
+    # Configure the initial page settings
+    st.set_page_config(layout="wide", page_title="Legal Arguments Analysis")
+    
     # Main tabs
     tab1, tab2, tab3 = st.tabs(["📅 Timeline", "⚖️ Arguments", "🔗 Evidence"])
     
@@ -270,6 +273,7 @@ def main():
 
         # Arguments content
         st.header("Sporting Succession")
+        
         col1, col2 = st.columns(2)
         
         with col1:
@@ -364,8 +368,4 @@ def main():
                 st.markdown("### Legal Supporting Points")
                 render_supporting_point(
                     "CAS jurisprudence: public perception secondary to operational continuity",
-                    "40-42",
-                    is_legal=True
-                )
-                render_supporting_point(
-                    "Legal precedent
+                    "40-42

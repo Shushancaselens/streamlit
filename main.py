@@ -142,6 +142,182 @@ with tabs[1]:  # Arguments tab
                 </div>
                 """, unsafe_allow_html=True)
             
+            # Key Facts
+            with st.expander("Key Facts", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div class="supporting-point">
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Club has maintained same name since 1950
+                        </p>
+                        <span class="factual-tag">Undisputed</span>
+                        <span class="paragraph-ref">¶20-21</span>
+                    </div>
+                    <div class="supporting-point">
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Colors and logo unchanged since founding
+                        </p>
+                        <span class="factual-tag">Disputed by Respondent</span>
+                        <span class="paragraph-ref">¶22-23</span>
+                    </div>
+                    <div class="supporting-point">
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Continuous fan support and membership records
+                        </p>
+                        <span class="factual-tag">Undisputed</span>
+                        <span class="paragraph-ref">¶24-25</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Club Name Analysis Response
+            with st.expander("Club Name Analysis Response", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</p>
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Direct response to alleged name continuity, highlighting registration gaps and unauthorized usage.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Direct Legal Points</p>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Name registration voided during 1975-1976 period
+                            </p>
+                            <span class="paragraph-ref">¶50-52</span>
+                        </div>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Trademark protection lapsed and obtained by different entity
+                            </p>
+                            <span class="paragraph-ref">¶53-55</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Evidence</p>
+                        <div class="supporting-point">
+                            <p style="font-size: 0.875rem; font-weight: 500;">R-1: Historical Registration Records</p>
+                            <p style="font-size: 0.75rem; color: #6b7280;">Documents showing registration gaps and changes</p>
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">
+                                Cited in: <span class="paragraph-ref">¶50</span> <span class="paragraph-ref">¶51</span> <span class="paragraph-ref">¶54</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Case Law
+            with st.expander("Case Law", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div class="supporting-point">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p style="font-size: 0.875rem; font-weight: 500;">CAS 2017/A/5465</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                                    ¶55-58: Operational continuity requirement
+                                </p>
+                                <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                    Establishes primacy of operational continuity over superficial similarities
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Club Name Analysis
+            with st.expander("Club Name Analysis", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</p>
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Analysis of the club name demonstrates clear historical continuity and legal protection of naming rights.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Direct Legal Points</p>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Name registration complies with regulations
+                            </p>
+                            <span class="paragraph-ref">¶20-22</span>
+                        </div>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Trademark protection since 1960
+                            </p>
+                            <span class="paragraph-ref">¶23-25</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Evidence</p>
+                        <div class="supporting-point">
+                            <p style="font-size: 0.875rem; font-weight: 500;">A-1: Historical Registration Documents</p>
+                            <p style="font-size: 0.75rem; color: #6b7280;">Official records showing continuous name usage since 1950</p>
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">
+                                Cited in: <span class="paragraph-ref">¶20</span> <span class="paragraph-ref">¶21</span> <span class="paragraph-ref">¶24</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Club Colors Analysis
+            with st.expander("Club Colors Analysis", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</p>
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Club colors represent a fundamental element of identity, maintained consistently since establishment.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Direct Legal Points</p>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Color trademark registration
+                            </p>
+                            <span class="paragraph-ref">¶46-48</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Case Law
+            with st.expander("Case Law", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div class="supporting-point">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p style="font-size: 0.875rem; font-weight: 500;">CAS 2016/A/4576</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">
+                                    ¶45-48: Criteria for sporting succession
+                                </p>
+                                <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                    Establishes key factors for determining sporting succession
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
             # Public Perception Analysis
             with st.expander("Public Perception Analysis", expanded=True):
                 st.markdown("""

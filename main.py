@@ -1,171 +1,283 @@
 import streamlit as st
 import pandas as pd
 
-def render_fact_item(fact, is_disputed, source="", paragraphs="", classified=True):
-    with st.container():
-        st.markdown(f"""
-            <div class="fact-item">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📅</span>
-                    <p style="margin: 0; color: rgb(55, 65, 81);">{fact}</p>
-                </div>
-                <div style="margin-top: 0.5rem; padding-left: 1.25rem;">
-                    <span style="font-size: 0.875rem; color: {'red' if is_disputed else 'green'}">
-                        {f'Disputed by {source}' if is_disputed else 'Undisputed'}
-                    </span>
-                    <span style="font-size: 0.875rem; color: rgb(107, 114, 128); margin-left: 1rem;">
-                        ¶{paragraphs}
-                    </span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+# Configure page settings
+st.set_page_config(layout="wide")
 
-def render_supporting_point(content, paragraphs, is_legal=True, is_direct=True):
-    with st.container():
-        st.markdown(f"""
-            <div class="supporting-point">
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background-color: {'rgb(219, 234, 254)' if is_legal else 'rgb(220, 252, 231)'};
-                          color: {'rgb(30, 64, 175)' if is_legal else 'rgb(22, 101, 52)'};
-                          border-radius: 0.25rem;">
-                        {'Legal' if is_legal else 'Factual'}
-                    </span>
-                    {f'<span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background-color: rgb(243, 244, 246); color: rgb(31, 41, 55); border-radius: 0.25rem;">Indirect</span>' if not is_direct else ''}
-                </div>
-                <p style="margin: 0; color: rgb(55, 65, 81);">{content}</p>
-                <span style="font-size: 0.75rem; color: rgb(107, 114, 128); display: block; margin-top: 0.25rem;">
-                    ¶{paragraphs}
-                </span>
-            </div>
-        """, unsafe_allow_html=True)
+# Custom CSS to match the original design
+st.markdown("""
+<style>
+    /* General styles */
+    .stApp {
+        background-color: #f9fafb;
+    }
+    
+    /* Card styles */
+    .card {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    /* Typography */
+    .header-blue {
+        color: #2563eb;
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .header-red {
+        color: #dc2626;
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Supporting point styles */
+    .supporting-point {
+        background-color: #f3f4f6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .legal-tag {
+        background-color: #dbeafe;
+        color: #1e40af;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+    }
+    
+    .factual-tag {
+        background-color: #dcfce7;
+        color: #166534;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+    }
+    
+    .indirect-tag {
+        background-color: #f3f4f6;
+        color: #374151;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Paragraph reference style */
+    .paragraph-ref {
+        color: #6b7280;
+        font-size: 0.75rem;
+    }
 
-def render_exhibit_item(id, title, summary, citations):
-    with st.container():
-        st.markdown(f"""
-            <div class="exhibit-item">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <p style="margin: 0; font-weight: 500;">{id}: {title}</p>
-                        <p style="font-size: 0.875rem; color: rgb(75, 85, 99); margin-top: 0.25rem;">{summary}</p>
-                        <div style="margin-top: 0.5rem;">
-                            <span style="font-size: 0.75rem; color: rgb(107, 114, 128);">Cited in: </span>
-                            {' '.join([f'<span style="font-size: 0.75rem; background-color: rgb(229, 231, 235); border-radius: 0.25rem; padding: 0.125rem 0.5rem; margin-left: 0.25rem;">¶{cite}</span>' for cite in citations])}
+    /* Custom tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 1rem;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .stTabs [data-baseweb="tab-border"] {
+        display: none;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Initialize session state
+if 'current_view' not in st.session_state:
+    st.session_state.current_view = 'detailed'
+
+# Header with search and view options
+st.markdown("### Arguments Analysis")
+
+col1, col2, col3 = st.columns([2, 1, 1])
+with col1:
+    st.text_input("🔍 Search arguments...", placeholder="Enter keywords...")
+with col2:
+    view_type = st.radio("View Type:", ["Detailed", "Table"], horizontal=True, key="view_type")
+with col3:
+    st.button("📥 Export to Excel")
+    st.button("📋 Copy")
+
+# Tabs for main sections
+tabs = st.tabs(["⏱️ Timeline", "⚖️ Arguments", "📎 Evidence"])
+
+with tabs[1]:  # Arguments tab
+    if view_type == "Detailed":
+        # Two-column layout for detailed view
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown('<p class="header-blue">Appellant\'s Position</p>', unsafe_allow_html=True)
+            
+            # General Introduction
+            with st.expander("General Introduction", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <p style="font-size: 0.875rem; color: #374151; margin-bottom: 0.75rem;">
+                        Assessment of sporting succession requires comprehensive analysis of multiple established criteria, 
+                        including but not limited to the club's name, colors, logo, and public perception. Each element 
+                        must be evaluated both independently and as part of the broader succession context.
+                    </p>
+                    <p style="font-size: 0.875rem; color: #374151;">
+                        The analysis follows CAS jurisprudence on sporting succession, particularly focusing on continuous 
+                        use and public recognition of club identity elements.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Public Perception Analysis
+            with st.expander("Public Perception Analysis", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</p>
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Public perception strongly supports recognition as sporting successor, demonstrated through 
+                            consistent fan support and media treatment.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Legal Supporting Points</p>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Public perception as key factor in CAS jurisprudence
+                            </p>
+                            <span class="paragraph-ref">¶15-17</span>
                         </div>
                     </div>
-                    <button style="background: none; border: none; color: rgb(107, 114, 128); cursor: pointer;">🔗</button>
+                    
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Factual Supporting Points</p>
+                        <div class="supporting-point">
+                            <span class="factual-tag">Factual</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Consistent media recognition since 1950
+                            </p>
+                            <span class="paragraph-ref">¶18-19</span>
+                        </div>
+                        <div class="supporting-point">
+                            <span class="factual-tag">Factual</span>
+                            <span class="indirect-tag">Indirect</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Uninterrupted fan support and recognition
+                            </p>
+                            <span class="paragraph-ref">¶20-21</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-def render_sub_argument_section(title, content, points_data, paragraphs):
-    with st.expander(title):
-        st.write(content)
+                """, unsafe_allow_html=True)
         
-        if points_data.get('legal_direct'):
-            st.markdown("### Direct Legal Points")
-            for point in points_data['legal_direct']:
-                render_supporting_point(point['content'], point['paragraphs'], True, True)
-                
-        if points_data.get('legal_indirect'):
-            st.markdown("### Indirect Legal Points")
-            for point in points_data['legal_indirect']:
-                render_supporting_point(point['content'], point['paragraphs'], True, False)
-                
-        if points_data.get('factual_direct'):
-            st.markdown("### Direct Factual Points")
-            for point in points_data['factual_direct']:
-                render_supporting_point(point['content'], point['paragraphs'], False, True)
-                
-        if points_data.get('factual_indirect'):
-            st.markdown("### Indirect Factual Points")
-            for point in points_data['factual_indirect']:
-                render_supporting_point(point['content'], point['paragraphs'], False, False)
-                
-        if points_data.get('evidence'):
-            st.markdown("### Evidence")
-            for exhibit in points_data['evidence']:
-                render_exhibit_item(**exhibit)
-
-def main():
-    st.set_page_config(layout="wide", page_title="Legal Arguments Analysis")
+        with col2:
+            st.markdown('<p class="header-red">Respondent\'s Position</p>', unsafe_allow_html=True)
+            
+            # General Introduction
+            with st.expander("General Introduction", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <p style="font-size: 0.875rem; color: #374151; margin-bottom: 0.75rem;">
+                        Sporting succession analysis must consider practical realities beyond superficial similarities. 
+                        Historical gaps and substantive changes in operations preclude finding of succession.
+                    </p>
+                    <p style="font-size: 0.875rem; color: #374151;">
+                        Recent CAS jurisprudence emphasizes the need for continuous operational connection, not merely 
+                        similar identifying elements.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Public Perception Analysis
+            with st.expander("Public Perception Analysis", expanded=True):
+                st.markdown("""
+                <div class="card">
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</p>
+                        <p style="font-size: 0.875rem; color: #374151;">
+                            Public perception alone insufficient to establish sporting succession; substantial operational 
+                            discontinuities override superficial recognition.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Legal Supporting Points</p>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                CAS jurisprudence: public perception secondary to operational continuity
+                            </p>
+                            <span class="paragraph-ref">¶40-42</span>
+                        </div>
+                        <div class="supporting-point">
+                            <span class="legal-tag">Legal</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Legal precedent requiring comprehensive analysis beyond public opinion
+                            </p>
+                            <span class="paragraph-ref">¶43-44</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Factual Supporting Points</p>
+                        <div class="supporting-point">
+                            <span class="factual-tag">Factual</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Media coverage gaps between 1975-1976
+                            </p>
+                            <span class="paragraph-ref">¶45-46</span>
+                        </div>
+                        <div class="supporting-point">
+                            <span class="factual-tag">Factual</span>
+                            <p style="font-size: 0.875rem; color: #374151; margin-top: 0.5rem;">
+                                Fan support divided between multiple claiming entities
+                            </p>
+                            <span class="paragraph-ref">¶47-48</span>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
     
-    # Custom CSS
-    st.markdown("""
-        <style>
-        .fact-item, .supporting-point, .exhibit-item {
-            background-color: rgb(249, 250, 251);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
+    else:  # Table view
+        # Create sample data for the table view
+        data = {
+            'Issue': ['Jurisdiction', 'Public Perception', 'Club Name', 'Club Colors'],
+            'Appellant Position': [
+                'CAS has jurisdiction based on agreement',
+                'Strong public recognition supports succession',
+                'Continuous use of name since 1950',
+                'Consistent use of colors'
+            ],
+            'Respondent Position': [
+                'Agreement does not cover this dispute',
+                'Public perception not decisive',
+                'Registration gaps in name usage',
+                'Color variations documented'
+            ]
         }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Main tabs
-    tab1, tab2, tab3 = st.tabs(["📅 Timeline", "⚖️ Arguments", "🔗 Evidence"])
-    
-    with tab1:
-        st.header("Event Timeline")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant's Timeline")
-            render_fact_item(
-                "Agreement signed on February 19, 2025",
-                False,
-                paragraphs="15-16"
-            )
-            
-        with col2:
-            st.subheader("Respondent's Timeline")
-            render_fact_item(
-                "Authorization request filed on February 15, 2025",
-                True,
-                source="Appellant",
-                paragraphs="22-23"
-            )
-    
-    with tab2:
-        st.header("Arguments")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant's Position")
-            club_name_data = {
-                'legal_direct': [
-                    {'content': "Name registration complies with regulations", 'paragraphs': "20-22"}
-                ],
-                'evidence': [
-                    {
-                        'id': "A-1",
-                        'title': "Historical Registration Documents",
-                        'summary': "Official records showing name usage",
-                        'citations': ["20", "21", "24"]
-                    }
-                ]
-            }
-            render_sub_argument_section(
-                "Club Name Analysis",
-                "Analysis of the club name demonstrates continuity.",
-                club_name_data,
-                "20-45"
-            )
-            
-        with col2:
-            st.subheader("Respondent's Position")
-    
-    with tab3:
-        st.header("Evidence")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant's Exhibits")
-            render_exhibit_item(
-                "A-1",
-                "Historical Registration Documents",
-                "Official records showing club name usage since 1950",
-                ["20", "21", "24"]
-            )
+        df = pd.DataFrame(data)
+        st.dataframe(df, use_container_width=True)
 
-if __name__ == "__main__":
-    main()
+with tabs[0]:  # Timeline tab
+    st.markdown("### Event Timeline")
+    # Add timeline implementation here
+
+with tabs[2]:  # Evidence tab
+    st.markdown("### Evidence Summary")
+    # Add evidence implementation here

@@ -128,15 +128,34 @@ def render_case_law(case_number, paragraphs, summary):
             </div>
         """, unsafe_allow_html=True)
 
-def render_sub_argument_section(title, content, points_data):
+def render_sub_argument_section(title, content, points_data, paragraphs):
     with st.expander(title):
-        # Overview
-        st.markdown("### Overview")
-        st.write(content)
+        # Use custom styling to match the original design
+        st.markdown(f"""
+            <div style="border: 1px solid rgb(229, 231, 235); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; padding: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>▼</span>
+                        <h5 style="margin: 0; font-weight: 500; font-size: 0.875rem;">{title}</h5>
+                    </div>
+                    <span style="font-size: 0.75rem; color: rgb(107, 114, 128);">¶{paragraphs}</span>
+                </div>
+                <div style="padding: 1rem; border-top: 1px solid rgb(229, 231, 235);">
+                    <div style="margin-bottom: 1rem;">
+                        <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Overview</h6>
+                        <p style="color: rgb(55, 65, 81); font-size: 0.875rem;">{content}</p>
+                    </div>
+                """, unsafe_allow_html=True)
         
         # Legal Points
-        st.markdown("### Legal Supporting Points")
-        st.markdown("#### Direct Legal Points")
+        st.markdown("""
+            <div style="margin-bottom: 1rem;">
+                <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Legal Supporting Points</h6>
+                <div style="margin-bottom: 1rem;">
+                    <h6 style="font-size: 0.75rem; font-weight: 500; color: rgb(75, 85, 99); margin-bottom: 0.5rem;">Direct Legal Points</h6>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
         for point in points_data.get('legal_direct', []):
             render_supporting_point(point['content'], point['paragraphs'], is_legal=True, is_direct=True)
             
@@ -156,11 +175,17 @@ def render_sub_argument_section(title, content, points_data):
             for point in points_data['factual_indirect']:
                 render_supporting_point(point['content'], point['paragraphs'], is_legal=False, is_direct=False)
         
-        # Evidence if present
+                    # Evidence if present
         if points_data.get('evidence'):
-            st.markdown("### Evidence")
+            st.markdown("""
+                <div style="margin-top: 1rem;">
+                    <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Evidence</h6>
+                </div>
+            """, unsafe_allow_html=True)
             for exhibit in points_data['evidence']:
                 render_exhibit_item(**exhibit)
+            
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
 def main():
     # Main tabs
@@ -215,13 +240,27 @@ def main():
             with col3_2:
                 st.download_button("📥 Export", "data", "arguments.xlsx")
 
-        # Sporting Succession section
-        st.header("Sporting Succession")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant's Position")
+        # Arguments section container
+        arguments_container = st.container()
+        with arguments_container:
+            # Card-like container for Sporting Succession
+            st.markdown("""
+                <div style="background-color: white; border: 1px solid rgb(229, 231, 235); border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div style="padding: 1rem; border-bottom: 1px solid rgb(229, 231, 235); cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Sporting Succession</h2>
+                            <span style="font-size: 0.875rem; color: rgb(37, 99, 235); background: rgb(239, 246, 255); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">
+                                ¶15-18
+                            </span>
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                """, unsafe_allow_html=True)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown('<h3 style="color: rgb(37, 99, 235); font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Appellant\'s Position</h3>', unsafe_allow_html=True)
             
             # General Introduction
             with st.expander("General Introduction", expanded=True):
@@ -285,9 +324,12 @@ def main():
                     }
                 ]
             }
-            render_sub_argument_section("1. Club Name Analysis", 
+            render_sub_argument_section(
+                "1. Club Name Analysis", 
                 "Analysis of the club name demonstrates clear historical continuity and legal protection of naming rights.",
-                club_name_data)
+                club_name_data,
+                "20-45"
+            )
 
             # Counter-Arguments section
             with st.expander("Counter-Arguments"):

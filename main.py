@@ -8,37 +8,95 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 # Add custom CSS for styling
 st.markdown("""
 <style>
+    /* Reset some Streamlit defaults */
+    .stApp {
+        font-family: sans-serif;
+    }
+    
+    /* Hide Streamlit elements we don't need */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
     /* Card styling */
     .card {
         background-color: white;
         border-radius: 8px;
-        padding: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         margin-bottom: 16px;
+        overflow: hidden;
     }
     
-    /* Claimant and Respondent specific colors */
-    .claimant-color { color: #3182CE; }
-    .respondent-color { color: #E53E3E; }
-    .claimant-bg { background-color: #EBF8FF; }
-    .respondent-bg { background-color: #FFF5F5; }
-    .claimant-border { border: 1px solid #BEE3F8; }
-    .respondent-border { border: 1px solid #FEB2B2; }
+    /* Argument section styling */
+    .arg-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .arg-header:hover {
+        background-color: #F7FAFC;
+    }
+    .arg-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .arg-content {
+        padding: 16px;
+        border-top: 1px solid #EDF2F7;
+    }
     
-    /* Badges */
+    /* Side-specific styling */
+    .claimant-header {
+        background-color: #EBF5FF;
+        border: 1px solid #BEE3F8;
+        border-radius: 8px;
+    }
+    .respondent-header {
+        background-color: #FFF5F5;
+        border: 1px solid #FED7D7;
+        border-radius: 8px;
+    }
+    .claimant-text {
+        color: #3182CE;
+    }
+    .respondent-text {
+        color: #E53E3E;
+    }
+    .claimant-badge {
+        background-color: #EBF8FF;
+        color: #2B6CB0;
+    }
+    .respondent-badge {
+        background-color: #FFF5F5; 
+        color: #C53030;
+    }
+    
+    /* Badge styling */
     .badge {
         display: inline-block;
         padding: 2px 8px;
         border-radius: 4px;
         font-size: 12px;
-        margin-right: 4px;
+    }
+    .para-badge {
+        background-color: #EDF2F7;
+        color: #4A5568;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 4px;
     }
     .legal-badge {
-        background-color: #EBF8FF;
+        background-color: #BEE3F8;
         color: #2C5282;
     }
     .factual-badge {
-        background-color: #F0FFF4;
+        background-color: #C6F6D5;
         color: #276749;
     }
     .disputed-badge {
@@ -46,43 +104,48 @@ st.markdown("""
         color: #C53030;
     }
     
-    /* Timeline table */
-    .timeline-table th {
+    /* Point containers */
+    .overview-box {
         background-color: #F7FAFC;
-        padding: 8px 12px;
-        text-align: left;
-        font-weight: 500;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
     }
-    .timeline-table td {
-        padding: 8px 12px;
-        border-top: 1px solid #E2E8F0;
+    .point-box {
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
     }
-    .timeline-table tr:nth-child(even) {
+    .legal-box {
+        background-color: #EBF8FF;
+    }
+    .factual-box {
+        background-color: #F0FFF4;
+    }
+    .evidence-box {
         background-color: #F7FAFC;
-    }
-    .timeline-table .disputed {
-        background-color: #FFF5F5;
     }
     
-    /* Exhibits table */
-    .stDataFrame {
-        font-size: 14px;
+    /* Custom bullet points */
+    .bullet-list {
+        list-style-type: none;
+        padding-left: 0;
     }
-    
-    /* Custom header styling */
-    .header-container {
-        display: flex; 
-        justify-content: space-between; 
+    .bullet-list li {
+        display: flex;
         align-items: center;
-        margin-bottom: 1rem;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .bullet-point {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #3182CE;
+        flex-shrink: 0;
     }
     
-    /* No margin on generated paragraphs */
-    .argument-container p {
-        margin-bottom: 0 !important;
-    }
-    
-    /* Override Streamlit defaults */
+    /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 24px;
     }
@@ -99,35 +162,89 @@ st.markdown("""
         border-bottom: 2px solid #3182CE;
     }
     
-    /* Point styling */
-    .point-container {
+    /* Timeline and Exhibits table styling */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .custom-table th {
         background-color: #F7FAFC;
-        border-radius: 6px;
+        text-align: left;
         padding: 12px;
-        margin: 8px 0;
+        border-bottom: 1px solid #E2E8F0;
+        color: #4A5568;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .custom-table td {
+        padding: 12px;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 14px;
+    }
+    .custom-table tr.disputed {
+        background-color: #FFF5F5;
     }
     
-    /* Custom expander styling */
-    .custom-expander {
-        border: 1px solid #E2E8F0;
-        border-radius: 6px;
-        margin-bottom: 8px;
+    /* Topic view styling */
+    .topic-header {
+        margin-bottom: 16px;
     }
-    .custom-expander-header {
-        padding: 8px 12px;
-        background-color: #F7FAFC;
-        border-radius: 6px 6px 0 0;
-        cursor: pointer;
+    .topic-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2D3748;
+    }
+    .topic-desc {
+        font-size: 14px;
+        color: #718096;
+        margin-top: 4px;
+    }
+    
+    /* Hide checkbox label but keep the checkbox */
+    .toggle-arg .stCheckbox {
+        position: absolute;
+        opacity: 0;
+    }
+    .toggle-arg p {
+        display: none;
+    }
+    
+    /* Hide default Streamlit margins */
+    .element-container {
+        margin-bottom: 0 !important;
+    }
+    div[data-testid="stVerticalBlock"] > div.element-container {
+        margin-bottom: 0 !important;
+    }
+
+    /* Vertically center align the elements */
+    .flex-center {
         display: flex;
-        justify-content: space-between;
         align-items: center;
     }
-    .custom-expander-content {
-        padding: 12px;
-        border-top: 1px solid #E2E8F0;
-        border-radius: 0 0 6px 6px;
-    }
 </style>
+""", unsafe_allow_html=True)
+
+# JavaScript for custom components behavior
+st.markdown("""
+<script>
+function toggleArgument(id) {
+    const content = document.getElementById('content-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    
+    if (content.style.display === 'none' || !content.style.display) {
+        content.style.display = 'block';
+        chevron.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>`;
+    } else {
+        content.style.display = 'none';
+        chevron.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>`;
+    }
+}
+</script>
 """, unsafe_allow_html=True)
 
 # Define data structures for the app
@@ -237,6 +354,45 @@ def get_argument_data():
                             "children": {}
                         }
                     }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "legal_points": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "is_disputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
+                        }
+                    ],
+                    "factual_points": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "is_disputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Visual evidence of consistent color usage",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {}
                 }
             }
         },
@@ -363,6 +519,45 @@ def get_argument_data():
                             "children": {}
                         }
                     }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis Rebuttal",
+                    "paragraphs": "241-249",
+                    "overview": {
+                        "points": [
+                            "Significant color variations",
+                            "Trademark registration gaps",
+                            "Multiple competing color claims"
+                        ],
+                        "paragraphs": "241-242"
+                    },
+                    "legal_points": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "is_disputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
+                        }
+                    ],
+                    "factual_points": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "is_disputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Visual evidence of color scheme changes",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ],
+                    "children": {}
                 }
             }
         },
@@ -515,238 +710,429 @@ def get_exhibits_data():
     ]
     return pd.DataFrame(data)
 
-# Initialize session state for expanded arguments
-def init_session_state():
-    if "expanded" not in st.session_state:
-        st.session_state.expanded = {}
-    if "view_mode" not in st.session_state:
-        st.session_state.view_mode = "default"
-    if "active_tab" not in st.session_state:
-        st.session_state.active_tab = 0
+# Initialize session state
+if "expanded" not in st.session_state:
+    st.session_state.expanded = {}
+    
+if "view_mode" not in st.session_state:
+    st.session_state.view_mode = "default"
 
-# Function to toggle expanded state
-def toggle_argument(arg_id, side):
-    key = f"{side}_{arg_id}"
-    if key in st.session_state.expanded:
-        st.session_state.expanded[key] = not st.session_state.expanded[key]
-    else:
-        st.session_state.expanded[key] = True
-
-# Function to check if argument is expanded
-def is_expanded(arg_id, side):
-    key = f"{side}_{arg_id}"
-    if key in st.session_state.expanded:
-        return st.session_state.expanded[key]
-    return False
-
-# Function to render a legal point
-def render_legal_point(point):
-    st.markdown(f"""
-    <div class="point-container" style="background-color: #EBF8FF; border: 1px solid #BEE3F8;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-            <span class="badge legal-badge">Legal</span>
-            {f'<span class="badge disputed-badge">Disputed</span>' if point.get('is_disputed', False) else ''}
+# Render HTML argument section - uses custom HTML/CSS instead of Streamlit components
+def render_html_argument(arg, side):
+    # Get the expanded state key for this argument
+    key = f"{side}_{arg['id']}"
+    is_expanded = st.session_state.expanded.get(key, False)
+    
+    # Get child count
+    child_count = len(arg.get("children", {}))
+    
+    # Set styling based on side
+    side_class = "claimant" if side == "claimant" else "respondent"
+    
+    # Render overview section if available
+    overview_html = ""
+    if "overview" in arg and "points" in arg["overview"]:
+        points_html = ""
+        for point in arg["overview"]["points"]:
+            points_html += f"""
+            <li>
+                <div class="bullet-point"></div>
+                <span>{point}</span>
+            </li>
+            """
+        
+        overview_html = f"""
+        <div class="overview-box">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <h6 style="font-size: 14px; font-weight: 500; margin: 0;">Key Points</h6>
+                <span class="para-badge">¶{arg["overview"]["paragraphs"]}</span>
+            </div>
+            <ul class="bullet-list">
+                {points_html}
+            </ul>
         </div>
-        <p style="font-size: 0.9rem;">{point.get('point', '')}</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
-            {''.join([f'<span class="badge legal-badge">{reg}</span>' for reg in point.get('regulations', [])])}
-            <span style="font-size: 0.8rem; color: #4A5568;">¶{point.get('paragraphs', '')}</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Function to render a factual point
-def render_factual_point(point):
-    st.markdown(f"""
-    <div class="point-container" style="background-color: #F0FFF4; border: 1px solid #C6F6D5;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-            <span class="badge factual-badge">Factual</span>
-            {f'<span class="badge disputed-badge">Disputed by {point.get("source", "")}</span>' if point.get("is_disputed", False) else ''}
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            <span style="font-size: 0.8rem; color: #4A5568;">{point.get('date', '')}</span>
-        </div>
-        <p style="font-size: 0.9rem;">{point.get('point', '')}</p>
-        <span style="font-size: 0.8rem; color: #4A5568; display: inline-block; margin-top: 8px;">¶{point.get('paragraphs', '')}</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Function to render evidence
-def render_evidence(evidence):
-    st.markdown(f"""
-    <div class="point-container">
-        <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-                <p style="font-size: 0.9rem; font-weight: 500; margin-bottom: 4px;">{evidence.get('id', '')}: {evidence.get('title', '')}</p>
-                <p style="font-size: 0.8rem; color: #4A5568; margin-bottom: 8px;">{evidence.get('summary', '')}</p>
-                <div>
-                    <span style="font-size: 0.8rem; color: #4A5568;">Cited in: </span>
-                    {''.join([f'<span style="background-color: #E2E8F0; color: #4A5568; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">¶{cite}</span>' for cite in evidence.get('citations', [])])}
+        """
+    
+    # Render legal points if available
+    legal_points_html = ""
+    if "legal_points" in arg and arg["legal_points"]:
+        points_html = ""
+        for point in arg["legal_points"]:
+            disputed = ""
+            if point.get("is_disputed", False):
+                disputed = '<span class="badge disputed-badge">Disputed</span>'
+            
+            regulations_html = ""
+            for reg in point.get("regulations", []):
+                regulations_html += f'<span class="badge legal-badge">{reg}</span>'
+            
+            points_html += f"""
+            <div class="point-box legal-box">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span class="badge legal-badge">Legal</span>
+                    {disputed}
+                </div>
+                <p style="font-size: 14px; margin: 0 0 8px 0;">{point["point"]}</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    {regulations_html}
+                    <span class="para-badge">¶{point["paragraphs"]}</span>
                 </div>
             </div>
-            <button style="background: none; border: none; color: #3182CE; cursor: pointer; height: 24px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                </svg>
-            </button>
+            """
+        
+        legal_points_html = f"""
+        <div style="margin-bottom: 16px;">
+            <h6 style="font-size: 14px; font-weight: 500; margin: 0 0 8px 0;">Legal Points</h6>
+            {points_html}
         </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Function to render case law
-def render_case_law(case):
-    st.markdown(f"""
-    <div class="point-container">
-        <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                    <p style="font-size: 0.9rem; font-weight: 500;">{case.get('case_number', '')}</p>
-                    <span style="font-size: 0.8rem; color: #4A5568;">¶{case.get('paragraphs', '')}</span>
+        """
+    
+    # Render factual points if available
+    factual_points_html = ""
+    if "factual_points" in arg and arg["factual_points"]:
+        points_html = ""
+        for point in arg["factual_points"]:
+            disputed = ""
+            if point.get("is_disputed", False):
+                disputed = f'<span class="badge disputed-badge">Disputed by {point.get("source", "")}</span>'
+            
+            points_html += f"""
+            <div class="point-box factual-box">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span class="badge factual-badge">Factual</span>
+                    {disputed}
                 </div>
-                <p style="font-size: 0.8rem; color: #4A5568; margin-bottom: 8px;">{case.get('title', '')}</p>
-                <p style="font-size: 0.9rem; margin-bottom: 8px;">{case.get('relevance', '')}</p>
-                <div>
-                    <span style="font-size: 0.8rem; color: #4A5568;">Key Paragraphs: </span>
-                    {''.join([f'<span style="background-color: #E2E8F0; color: #4A5568; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 4px;">¶{para}</span>' for para in case.get('cited_paragraphs', [])])}
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span style="font-size: 12px; color: #4A5568;">{point.get("date", "")}</span>
+                </div>
+                <p style="font-size: 14px; margin: 0 0 8px 0;">{point["point"]}</p>
+                <span class="para-badge">¶{point["paragraphs"]}</span>
+            </div>
+            """
+        
+        factual_points_html = f"""
+        <div style="margin-bottom: 16px;">
+            <h6 style="font-size: 14px; font-weight: 500; margin: 0 0 8px 0;">Factual Points</h6>
+            {points_html}
+        </div>
+        """
+    
+    # Render evidence if available
+    evidence_html = ""
+    if "evidence" in arg and arg["evidence"]:
+        items_html = ""
+        for item in arg["evidence"]:
+            citations_html = ""
+            for citation in item.get("citations", []):
+                citations_html += f'<span class="para-badge" style="margin-left: 4px;">¶{citation}</span>'
+            
+            items_html += f"""
+            <div class="point-box evidence-box">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="font-size: 14px; font-weight: 500; margin: 0 0 4px 0;">{item["id"]}: {item["title"]}</p>
+                        <p style="font-size: 12px; color: #4A5568; margin: 0 0 8px 0;">{item["summary"]}</p>
+                        <div>
+                            <span style="font-size: 12px; color: #4A5568;">Cited in: </span>
+                            {citations_html}
+                        </div>
+                    </div>
+                    <button style="background: none; border: none; cursor: pointer; color: #3182CE; height: 24px; width: 24px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <button style="background: none; border: none; color: #3182CE; cursor: pointer; height: 24px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                </svg>
-            </button>
+            """
+        
+        evidence_html = f"""
+        <div style="margin-bottom: 16px;">
+            <h6 style="font-size: 14px; font-weight: 500; margin: 0 0 8px 0;">Evidence</h6>
+            {items_html}
+        </div>
+        """
+    
+    # Render case law if available
+    case_law_html = ""
+    if "case_law" in arg and arg["case_law"]:
+        items_html = ""
+        for case in arg["case_law"]:
+            cited_paras_html = ""
+            for para in case.get("cited_paragraphs", []):
+                cited_paras_html += f'<span class="para-badge" style="margin-left: 4px;">¶{para}</span>'
+            
+            items_html += f"""
+            <div class="point-box evidence-box">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <p style="font-size: 14px; font-weight: 500; margin: 0;">{case["case_number"]}</p>
+                            <span class="para-badge">¶{case["paragraphs"]}</span>
+                        </div>
+                        <p style="font-size: 12px; color: #4A5568; margin: 0 0 8px 0;">{case["title"]}</p>
+                        <p style="font-size: 14px; margin: 0 0 8px 0;">{case["relevance"]}</p>
+                        <div>
+                            <span style="font-size: 12px; color: #4A5568;">Key Paragraphs: </span>
+                            {cited_paras_html}
+                        </div>
+                    </div>
+                    <button style="background: none; border: none; cursor: pointer; color: #3182CE; height: 24px; width: 24px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            """
+        
+        case_law_html = f"""
+        <div style="margin-bottom: 16px;">
+            <h6 style="font-size: 14px; font-weight: 500; margin: 0 0 8px 0;">Case Law</h6>
+            {items_html}
+        </div>
+        """
+    
+    # Combine all content
+    content_html = overview_html + legal_points_html + factual_points_html + evidence_html + case_law_html
+    
+    # Check if we have child arguments
+    has_children = len(arg.get("children", {})) > 0
+    
+    display_style = "block" if is_expanded else "none"
+    chevron_html = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+    """ if not is_expanded else """
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+    """
+    
+    # Build the full HTML for the argument
+    html = f"""
+    <div class="card" id="arg-{side}-{arg['id']}">
+        <div class="arg-header {side_class}-header" onclick="document.getElementById('checkbox-{key}').click();">
+            <div class="arg-title">
+                <span id="chevron-{key}">{chevron_html}</span>
+                <h5 class="{side_class}-text" style="font-size: 14px; font-weight: 500; margin: 0;">
+                    {arg['id']}. {arg['title']}
+                </h5>
+                {f'<span class="badge {side_class}-badge">{child_count} subarguments</span>' if child_count > 0 else f'<span class="para-badge">¶{arg["paragraphs"]}</span>'}
+            </div>
+        </div>
+        <div class="arg-content" id="content-{key}" style="display: {display_style};">
+            {content_html}
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    
+    # Use a hidden checkbox to track state
+    st.checkbox("", key=f"checkbox-{key}", value=is_expanded, label_visibility="collapsed")
+    
+    # Update session state when checkbox changes
+    if f"checkbox-{key}" in st.session_state:
+        st.session_state.expanded[key] = st.session_state[f"checkbox-{key}"]
+    
+    return html
 
-# Function to render an argument
-def render_argument(arg, side, level=0):
-    # Check if this argument has children
-    has_children = arg.get("children", {})
-    child_count = len(has_children)
-    
-    # Create a unique key for the expander
-    arg_key = f"{side}_{arg['id']}"
-    
-    # Style based on side
-    bg_color = "#EBF8FF" if side == "claimant" else "#FFF5F5"
-    text_color = "#3182CE" if side == "claimant" else "#E53E3E"
-    
-    # Expander for the argument
-    expanded = st.checkbox(
-        f"{arg['id']}. {arg['title']}",
-        key=arg_key,
-        value=is_expanded(arg['id'], side),
-        help=arg.get('paragraphs', '')
-    )
-    
-    # Store expanded state
-    st.session_state.expanded[arg_key] = expanded
-    
-    if expanded:
-        with st.container():
-            # Overview points
-            if "overview" in arg and "points" in arg["overview"]:
-                st.markdown("#### Key Points")
-                with st.container():
-                    for point in arg["overview"]["points"]:
-                        st.markdown(f"• {point}")
-                st.markdown(f"Paragraphs: {arg['overview']['paragraphs']}")
-                st.markdown("---")
-            
-            # Legal points
-            if "legal_points" in arg and arg["legal_points"]:
-                st.markdown("#### Legal Points")
-                for point in arg["legal_points"]:
-                    render_legal_point(point)
-                st.markdown("---")
-            
-            # Factual points
-            if "factual_points" in arg and arg["factual_points"]:
-                st.markdown("#### Factual Points")
-                for point in arg["factual_points"]:
-                    render_factual_point(point)
-                st.markdown("---")
-            
-            # Evidence
-            if "evidence" in arg and arg["evidence"]:
-                st.markdown("#### Evidence")
-                for item in arg["evidence"]:
-                    render_evidence(item)
-                st.markdown("---")
-            
-            # Case law
-            if "case_law" in arg and arg["case_law"]:
-                st.markdown("#### Case Law")
-                for case in arg["case_law"]:
-                    render_case_law(case)
-                st.markdown("---")
-            
-            # Render children
-            if child_count > 0:
-                for child_id, child in arg.get("children", {}).items():
-                    st.markdown(f"### Sub-argument {child_id}")
-                    render_argument(child, side, level + 1)
-
-# Function to render argument pair side by side
+# Render side-by-side arguments
 def render_argument_pair(claimant_arg, respondent_arg):
+    # Create columns for side-by-side display
     col1, col2 = st.columns(2)
     
+    # Render claimant arguments
     with col1:
-        st.markdown(f"<h3 style='color: #3182CE;'>Claimant</h3>", unsafe_allow_html=True)
-        render_argument(claimant_arg, "claimant")
+        components.html(
+            render_html_argument(claimant_arg, "claimant"),
+            height=400,  # Adjust based on content
+            scrolling=True
+        )
     
+    # Render respondent arguments
     with col2:
-        st.markdown(f"<h3 style='color: #E53E3E;'>Respondent</h3>", unsafe_allow_html=True)
-        render_argument(respondent_arg, "respondent")
+        components.html(
+            render_html_argument(respondent_arg, "respondent"),
+            height=400,  # Adjust based on content
+            scrolling=True
+        )
 
 # Function to render by topic
 def render_topic_view(topics, claimant_args, respondent_args):
     for topic in topics:
-        st.markdown(f"## {topic['title']}")
-        st.markdown(f"*{topic['description']}*")
-        st.markdown("---")
+        st.markdown(f"""
+        <div class="topic-header">
+            <h2 class="topic-title">{topic['title']}</h2>
+            <p class="topic-desc">{topic['description']}</p>
+        </div>
+        """, unsafe_allow_html=True)
         
+        # Column headers
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(f'<h3 class="claimant-text" style="font-size: 16px; font-weight: 600;">Claimant\'s Arguments</h3>', unsafe_allow_html=True)
+        with col2:
+            st.markdown(f'<h3 class="respondent-text" style="font-size: 16px; font-weight: 600;">Respondent\'s Arguments</h3>', unsafe_allow_html=True)
+        
+        # Render each argument pair for this topic
         for arg_id in topic.get("argument_ids", []):
             if arg_id in claimant_args and arg_id in respondent_args:
                 render_argument_pair(claimant_args[arg_id], respondent_args[arg_id])
+        
+        st.markdown("---")
+
+# Timeline view with HTML
+def render_timeline_html(timeline_df, search="", disputed_only=False):
+    # Apply filters
+    filtered_df = timeline_df.copy()
+    
+    if search:
+        mask = (
+            filtered_df["appellant_version"].str.contains(search, case=False, na=False) |
+            filtered_df["respondent_version"].str.contains(search, case=False, na=False)
+        )
+        filtered_df = filtered_df[mask]
+    
+    if disputed_only:
+        filtered_df = filtered_df[filtered_df["status"] == "Disputed"]
+    
+    # Build HTML table
+    rows_html = ""
+    for _, row in filtered_df.iterrows():
+        row_class = "disputed" if row["status"] == "Disputed" else ""
+        status_color = "color: #C53030;" if row["status"] == "Disputed" else "color: #2F855A;"
+        
+        rows_html += f"""
+        <tr class="{row_class}">
+            <td>{row["date"]}</td>
+            <td>{row["appellant_version"]}</td>
+            <td>{row["respondent_version"]}</td>
+            <td style="{status_color}">{row["status"]}</td>
+        </tr>
+        """
+    
+    html = f"""
+    <div style="max-height: 500px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 6px;">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>APPELLANT'S VERSION</th>
+                    <th>RESPONDENT'S VERSION</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+    </div>
+    """
+    
+    return html
+
+# Exhibits view with HTML
+def render_exhibits_html(exhibits_df, search="", party_filter="All Parties", type_filter="All Types"):
+    # Apply filters
+    filtered_df = exhibits_df.copy()
+    
+    if search:
+        mask = (
+            filtered_df["id"].str.contains(search, case=False, na=False) |
+            filtered_df["title"].str.contains(search, case=False, na=False) |
+            filtered_df["summary"].str.contains(search, case=False, na=False)
+        )
+        filtered_df = filtered_df[mask]
+    
+    if party_filter != "All Parties":
+        filtered_df = filtered_df[filtered_df["party"] == party_filter]
+    
+    if type_filter != "All Types":
+        filtered_df = filtered_df[filtered_df["type"] == type_filter]
+    
+    # Build HTML table
+    rows_html = ""
+    for _, row in filtered_df.iterrows():
+        party_class = "claimant-badge" if row["party"] == "Appellant" else "respondent-badge"
+        
+        rows_html += f"""
+        <tr>
+            <td>{row["id"]}</td>
+            <td><span class="badge {party_class}">{row["party"]}</span></td>
+            <td>{row["title"]}</td>
+            <td><span class="badge para-badge">{row["type"]}</span></td>
+            <td>{row["summary"]}</td>
+            <td><a href="#" style="color: #3182CE; text-decoration: none;">View</a></td>
+        </tr>
+        """
+    
+    html = f"""
+    <div style="max-height: 500px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 6px;">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>EXHIBIT ID</th>
+                    <th>PARTY</th>
+                    <th>TITLE</th>
+                    <th>TYPE</th>
+                    <th>SUMMARY</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+    </div>
+    """
+    
+    return html
 
 # Main app function
 def main():
-    # Initialize app state
-    init_session_state()
-    
     # Set app title
-    st.title("Legal Arguments Analysis")
+    st.markdown('<h1 style="font-size: 1.8rem; margin-bottom: 1rem;">Legal Arguments Analysis</h1>', unsafe_allow_html=True)
     
     # Create tabs
-    tabs = st.tabs(["Summary of Arguments", "Timeline", "Exhibits"])
+    tab1, tab2, tab3 = st.tabs(["Summary of Arguments", "Timeline", "Exhibits"])
     
     # Get the data
     claimant_args, respondent_args, topics = get_argument_data()
+    timeline_df = get_timeline_data()
+    exhibits_df = get_exhibits_data()
     
-    # Arguments tab
-    with tabs[0]:
+    # Summary of Arguments tab
+    with tab1:
         # View mode selection
-        view_mode = st.radio(
-            "View Mode",
-            ["Standard View", "Topic View"],
-            horizontal=True,
-            index=0 if st.session_state.view_mode == "default" else 1,
-            label_visibility="collapsed",
-        )
-        st.session_state.view_mode = "default" if view_mode == "Standard View" else "topic"
+        col1, col2 = st.columns([4, 1])
+        with col2:
+            view_mode = st.radio(
+                "View Mode:",
+                ["Standard View", "Topic View"],
+                horizontal=True,
+                index=0 if st.session_state.view_mode == "default" else 1,
+                label_visibility="collapsed"
+            )
+            st.session_state.view_mode = "default" if view_mode == "Standard View" else "topic"
         
         # Display arguments based on view mode
         if st.session_state.view_mode == "default":
+            # Column headers
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f'<h2 style="color: #3182CE; font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Claimant\'s Arguments</h2>', unsafe_allow_html=True)
+            with col2:
+                st.markdown(f'<h2 style="color: #E53E3E; font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Respondent\'s Arguments</h2>', unsafe_allow_html=True)
+            
             # Display arguments in standard view
             for arg_id in claimant_args:
                 if arg_id in respondent_args:
@@ -756,96 +1142,92 @@ def main():
             render_topic_view(topics, claimant_args, respondent_args)
     
     # Timeline tab
-    with tabs[1]:
-        # Get timeline data
-        timeline_df = get_timeline_data()
-        
-        # Search and filter
+    with tab2:
+        # Search and filter options
         col1, col2 = st.columns([3, 1])
         with col1:
-            search = st.text_input("Search events...", key="timeline_search")
+            timeline_search = st.text_input("Search events...", key="timeline_search")
         with col2:
             disputed_only = st.checkbox("Disputed events only", key="disputed_filter")
         
-        # Apply filters
-        filtered_df = timeline_df
-        if search:
-            mask = (
-                filtered_df["appellant_version"].str.contains(search, case=False, na=False) |
-                filtered_df["respondent_version"].str.contains(search, case=False, na=False)
-            )
-            filtered_df = filtered_df[mask]
-        
-        if disputed_only:
-            filtered_df = filtered_df[filtered_df["status"] == "Disputed"]
-        
-        # Style the timeline table
-        def highlight_disputed(row):
-            if row["status"] == "Disputed":
-                return ["background-color: #FFF5F5"] * len(row)
-            return [""] * len(row)
+        # Add copy and export buttons
+        col1, col2 = st.columns([5, 1])
+        with col2:
+            st.markdown("""
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px;">
+                <button style="display: flex; align-items: center; gap: 4px; background-color: white; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button style="display: flex; align-items: center; gap: 4px; background-color: white; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </button>
+            </div>
+            """, unsafe_allow_html=True)
         
         # Display timeline
-        st.dataframe(
-            filtered_df.style.apply(highlight_disputed, axis=1),
-            use_container_width=True,
-            hide_index=True,
+        components.html(
+            render_timeline_html(timeline_df, timeline_search, disputed_only),
+            height=500,
+            scrolling=False
         )
     
     # Exhibits tab
-    with tabs[2]:
-        # Get exhibits data
-        exhibits_df = get_exhibits_data()
-        
-        # Search and filters
+    with tab3:
+        # Search and filter options
         col1, col2, col3 = st.columns([3, 1, 1])
         with col1:
-            search = st.text_input("Search exhibits...", key="exhibits_search")
+            exhibits_search = st.text_input("Search exhibits...", key="exhibits_search")
         with col2:
             party_filter = st.selectbox(
-                "Party",
+                "Party", 
                 ["All Parties", "Appellant", "Respondent"],
                 key="party_filter"
             )
         with col3:
-            type_options = ["All Types"] + list(exhibits_df["type"].unique())
-            type_filter = st.selectbox("Type", type_options, key="type_filter")
-        
-        # Apply filters
-        filtered_df = exhibits_df
-        if search:
-            mask = (
-                filtered_df["id"].str.contains(search, case=False, na=False) |
-                filtered_df["title"].str.contains(search, case=False, na=False) |
-                filtered_df["summary"].str.contains(search, case=False, na=False)
+            type_options = ["All Types"] + sorted(exhibits_df["type"].unique().tolist())
+            type_filter = st.selectbox(
+                "Type",
+                type_options,
+                key="type_filter"
             )
-            filtered_df = filtered_df[mask]
         
-        if party_filter != "All Parties":
-            filtered_df = filtered_df[filtered_df["party"] == party_filter]
-        
-        if type_filter != "All Types":
-            filtered_df = filtered_df[filtered_df["type"] == type_filter]
-        
-        # Style the exhibits table
-        def color_party(val):
-            if val == "Appellant":
-                return "background-color: #EBF8FF; color: #2B6CB0;"
-            elif val == "Respondent":
-                return "background-color: #FFF5F5; color: #C53030;"
-            return ""
-        
-        # Add a view column
-        filtered_df["actions"] = "View"
-        
+        # Add copy and export buttons
+        col1, col2 = st.columns([5, 1])
+        with col2:
+            st.markdown("""
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px;">
+                <button style="display: flex; align-items: center; gap: 4px; background-color: white; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button style="display: flex; align-items: center; gap: 4px; background-color: white; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </button>
+            </div>
+            """, unsafe_allow_html=True)
+            
         # Display exhibits
-        st.dataframe(
-            filtered_df.style.applymap(color_party, subset=["party"]),
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "actions": st.column_config.LinkColumn("Actions")
-            }
+        components.html(
+            render_exhibits_html(exhibits_df, exhibits_search, party_filter, type_filter),
+            height=500,
+            scrolling=False
         )
 
 # Run the app

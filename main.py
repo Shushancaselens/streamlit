@@ -107,66 +107,6 @@ def get_argument_data():
                                     "summary": "Official documentation of registration history",
                                     "citations": ["25", "26", "28"]
                                 }
-                            ],
-                            "children": {
-                                "1.1.1.1": {
-                                    "id": "1.1.1.1",
-                                    "title": "Registration Gap Analysis",
-                                    "paragraphs": "31-35",
-                                    "overview": {
-                                        "points": [
-                                            "Detailed analysis of 1975-1976 gap",
-                                            "Legal force majeure considerations",
-                                            "Public usage during gap period"
-                                        ],
-                                        "paragraphs": "31"
-                                    },
-                                    "legalPoints": [
-                                        {
-                                            "point": "Administrative gap explained by force majeure",
-                                            "isDisputed": False,
-                                            "regulations": ["Administrative Law"],
-                                            "paragraphs": "32-33"
-                                        }
-                                    ],
-                                    "factualPoints": [
-                                        {
-                                            "point": "Club activities continued during gap period",
-                                            "date": "1975-1976",
-                                            "isDisputed": False,
-                                            "paragraphs": "33-34"
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        "1.1.2": {
-                            "id": "1.1.2",
-                            "title": "Public Recognition",
-                            "paragraphs": "36-42",
-                            "legalPoints": [
-                                {
-                                    "point": "Public perception as legal factor in CAS jurisprudence",
-                                    "isDisputed": False,
-                                    "regulations": ["CAS 2016/A/4576 ¶24"],
-                                    "paragraphs": "36-37"
-                                }
-                            ],
-                            "factualPoints": [
-                                {
-                                    "point": "Continuous media recognition since 1950",
-                                    "date": "1950-present",
-                                    "isDisputed": False,
-                                    "paragraphs": "38-39"
-                                }
-                            ],
-                            "evidence": [
-                                {
-                                    "id": "C-3",
-                                    "title": "Media Archive Collection",
-                                    "summary": "Press coverage demonstrating continuous recognition",
-                                    "citations": ["38", "39", "40"]
-                                }
                             ]
                         }
                     }
@@ -207,28 +147,7 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57"
-                                },
-                                {
-                                    "point": "Temporary third color addition in 1980s",
-                                    "date": "1982-1988",
-                                    "isDisputed": False,
-                                    "paragraphs": "58-59"
-                                }
-                            ]
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -349,59 +268,6 @@ def get_argument_data():
                                     "summary": "Official documentation of registration termination",
                                     "citations": ["226", "227"]
                                 }
-                            ],
-                            "children": {
-                                "1.1.1.1": {
-                                    "id": "1.1.1.1",
-                                    "title": "Legal Entity Discontinuity",
-                                    "paragraphs": "231-235",
-                                    "legalPoints": [
-                                        {
-                                            "point": "New registration created distinct legal entity",
-                                            "isDisputed": True,
-                                            "regulations": ["Company Law §15"],
-                                            "paragraphs": "231-232"
-                                        }
-                                    ],
-                                    "factualPoints": [
-                                        {
-                                            "point": "Different ownership structure post-1976",
-                                            "date": "1976",
-                                            "isDisputed": False,
-                                            "paragraphs": "233-234"
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        "1.1.2": {
-                            "id": "1.1.2",
-                            "title": "Public Recognition Rebuttal",
-                            "paragraphs": "236-240",
-                            "legalPoints": [
-                                {
-                                    "point": "Public perception secondary to operational continuity",
-                                    "isDisputed": True,
-                                    "regulations": ["CAS 2017/A/5465 ¶45"],
-                                    "paragraphs": "236-237"
-                                }
-                            ],
-                            "factualPoints": [
-                                {
-                                    "point": "Media referred to 'new club' in 1976",
-                                    "date": "1976",
-                                    "isDisputed": True,
-                                    "source": "Claimant",
-                                    "paragraphs": "238-239"
-                                }
-                            ],
-                            "evidence": [
-                                {
-                                    "id": "R-3",
-                                    "title": "Newspaper Articles 1976",
-                                    "summary": "Media reports referring to new club formation",
-                                    "citations": ["238", "239"]
-                                }
                             ]
                         }
                     }
@@ -442,29 +308,7 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Symbolism Analysis",
-                            "paragraphs": "247-249",
-                            "factualPoints": [
-                                {
-                                    "point": "Pre-1976 colors represented original city district",
-                                    "date": "1950-1975",
-                                    "isDisputed": False,
-                                    "paragraphs": "247"
-                                },
-                                {
-                                    "point": "Post-1976 colors represented new ownership region",
-                                    "date": "1976-present",
-                                    "isDisputed": True,
-                                    "source": "Claimant",
-                                    "paragraphs": "248-249"
-                                }
-                            ]
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -718,24 +562,13 @@ def main():
             }}
             
             /* Argument container and pairs */
-            .argument-container {{
-                display: flex;
-                flex-direction: column;
-            }}
-            
             .argument-pair {{
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 1.5rem;
-                margin-bottom: 0;
+                margin-bottom: 1rem;
                 position: relative;
             }}
-            
-            .argument-pair-children {{
-                display: none;
-                margin-top: 0.5rem;
-            }}
-            
             .argument-side {{
                 position: relative;
             }}
@@ -774,50 +607,36 @@ def main():
                 border-color: #fed7d7;
             }}
             
+            /* Child arguments container */
+            .argument-children {{
+                padding-left: 1.5rem;
+                position: relative;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+                display: none;
+            }}
+            
             /* Connector lines for tree structure */
-            .connectors {{
-                position: relative;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                height: 20px;
-            }}
-            
-            .connector-line-left {{
+            .connector-vertical {{
                 position: absolute;
-                left: 12px;
+                left: 0.75rem;
                 top: 0;
-                width: 1px;
+                width: 2px;
                 height: 100%;
+                z-index: 1;
+            }}
+            .connector-horizontal {{
+                position: absolute;
+                left: 0;
+                top: 1.25rem;
+                width: 0.75rem;
+                height: 2px;
+                z-index: 1;
+            }}
+            .claimant-connector {{
                 background-color: rgba(59, 130, 246, 0.5);
             }}
-            
-            .connector-line-right {{
-                position: absolute;
-                right: calc(50% + 6px);
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: rgba(239, 68, 68, 0.5);
-            }}
-            
-            .nested-argument {{
-                display: flex;
-                margin-left: 24px;
-                position: relative;
-            }}
-            
-            .nested-argument::before {{
-                content: "";
-                position: absolute;
-                left: -12px;
-                top: 20px;
-                width: 12px;
-                height: 1px;
-                background-color: rgba(59, 130, 246, 0.5);
-            }}
-            
-            .nested-argument.respondent::before {{
+            .respondent-connector {{
                 background-color: rgba(239, 68, 68, 0.5);
             }}
             
@@ -1064,6 +883,29 @@ def main():
             .disputed {{
                 color: #c53030;
             }}
+
+            /* Sub-argument styling */
+            .sub-argument {
+                margin-left: 1.5rem;
+                position: relative;
+                margin-top: 0.5rem;
+            }
+            .sub-argument-connector {
+                position: absolute;
+                left: -0.75rem;
+                top: 1.25rem;
+                width: 0.75rem;
+                height: 2px;
+            }
+            .nested-level-1 {
+                margin-left: 1.5rem;
+            }
+            .nested-level-2 {
+                margin-left: 3rem;
+            }
+            .nested-level-3 {
+                margin-left: 4.5rem;
+            }
         </style>
     </head>
     <body>
@@ -1472,11 +1314,11 @@ def main():
                 return content;
             }}
             
-            // Render a single argument
-            function renderArgument(arg, side) {{
+            // Render a single argument including its children
+            function renderArgument(arg, side, level = 0) {{
                 if (!arg) return '';
                 
-                const fullId = `${{side}}-${{arg.id}}`;
+                const argId = `${{side}}-${{arg.id}}`;
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
@@ -1484,11 +1326,12 @@ def main():
                 const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
                 const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
+                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
                 
                 // Header content
                 const headerHtml = `
                 <div class="argument-header-left">
-                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                    <svg id="chevron-${{argId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                     <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
@@ -1503,132 +1346,73 @@ def main():
                 </div>
                 `;
                 
-                // Detailed content
+                // Content for this argument
                 const contentHtml = renderArgumentContent(arg);
                 
-                // Complete argument HTML
-                return `
-                <div class="argument ${{headerClass}}">
-                    <div class="argument-header" onclick="toggleArgumentPair('${{arg.id}}')">
-                        ${{headerHtml}}
-                    </div>
-                    <div id="content-${{fullId}}" class="argument-content">
-                        ${{contentHtml}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Recursively build a nested structure of argument pairs
-            function buildArgumentTree(claimantArgs, respondentArgs, argId = '', level = 0) {{
-                if (!argId) {{
-                    // Build the top level argument pairs
-                    let treeHtml = '';
-                    for (const id in claimantArgs) {{
-                        if (respondentArgs[id]) {{
-                            treeHtml += buildArgumentTree(claimantArgs, respondentArgs, id, level);
-                        }}
-                    }}
-                    return treeHtml;
-                }}
-                
-                // Get the arguments
-                const claimantArg = navigateArgument(claimantArgs, argId);
-                const respondentArg = navigateArgument(respondentArgs, argId);
-                
-                if (!claimantArg || !respondentArg) return '';
-                
-                // Render the current pair
-                const pairId = `pair-${{argId}}`;
-                const claimantId = `claimant-${{argId}}`;
-                const respondentId = `respondent-${{argId}}`;
-                
-                // Determine if there are child arguments
-                const claimantChildren = claimantArg.children || {{}};
-                const respondentChildren = respondentArg.children || {{}};
-                
-                // Find all unique child IDs
-                const allChildIds = [...new Set([
-                    ...Object.keys(claimantChildren),
-                    ...Object.keys(respondentChildren)
-                ])];
-                
-                const hasChildren = allChildIds.length > 0;
-                
-                // Build child arguments recursively
+                // Children arguments (if any)
                 let childrenHtml = '';
                 if (hasChildren) {{
+                    let subArgsHtml = '';
+                    Object.values(arg.children).forEach(child => {{
+                        subArgsHtml += renderArgument(child, side, level + 1);
+                    }});
+                    
                     childrenHtml = `
-                    <div id="children-${{pairId}}" class="argument-pair-children">
-                        ${{allChildIds.map(childId => {{
-                            return buildArgumentTree(
-                                claimantChildren,
-                                respondentChildren,
-                                childId,
-                                level + 1
-                            );
-                        }}).join('')}}
+                    <div id="children-${{argId}}" class="argument-children">
+                        <div class="connector-vertical ${{connectorClass}}"></div>
+                        ${{subArgsHtml}}
                     </div>
                     `;
                 }}
                 
-                // Build the connector lines if not root level
-                const connectorHtml = level > 0 ? `
-                <div class="connectors">
-                    <div style="position: relative;">
-                        <div class="connector-line-left"></div>
-                    </div>
-                    <div style="position: relative;">
-                        <div class="connector-line-right"></div>
-                    </div>
-                </div>
-                ` : '';
+                // Determine if this is a nested argument
+                const nestedClass = level > 0 ? `nested-level-${{level}}` : '';
+                const horizontalConnector = level > 0 ? `<div class="sub-argument-connector ${{connectorClass}}"></div>` : '';
                 
-                // Render the argument pair
+                // Complete argument HTML
                 return `
-                <div id="${{pairId}}" class="argument-container">
-                    ${{connectorHtml}}
-                    <div class="argument-pair">
-                        <div class="argument-side ${{level > 0 ? 'nested-argument' : ''}}">
-                            ${{renderArgument(claimantArg, 'claimant')}}
-                        </div>
-                        <div class="argument-side ${{level > 0 ? 'nested-argument respondent' : ''}}">
-                            ${{renderArgument(respondentArg, 'respondent')}}
-                        </div>
+                <div class="argument ${{headerClass}} ${{nestedClass}}" style="position: relative;">
+                    ${{horizontalConnector}}
+                    <div class="argument-header" onclick="toggleArgument('${{argId}}')">
+                        ${{headerHtml}}
+                    </div>
+                    <div id="content-${{argId}}" class="argument-content">
+                        ${{contentHtml}}
                     </div>
                     ${{childrenHtml}}
                 </div>
                 `;
             }}
             
-            // Helper function to navigate to a nested argument using its ID
-            function navigateArgument(args, id) {{
-                // If it's a root level argument
-                if (args[id]) return args[id];
-                
-                // Handle nested paths (like 1.1.1)
-                const parts = id.split('.');
-                if (parts.length === 1) return null;
-                
-                // Get the root argument
-                let currentArg = args[parts[0]];
-                if (!currentArg) return null;
-                
-                // Navigate to the nested argument
-                for (let i = 1; i < parts.length; i++) {{
-                    if (!currentArg.children || !currentArg.children[id.substring(0, id.lastIndexOf(parts[i]) + parts[i].length)]) {{
-                        return null;
-                    }}
-                    currentArg = currentArg.children[id.substring(0, id.lastIndexOf(parts[i]) + parts[i].length)];
-                }}
-                
-                return currentArg;
+            // Render a pair of arguments (claimant and respondent)
+            function renderArgumentPair(claimantArg, respondentArg) {{
+                return `
+                <div class="argument-pair">
+                    <div class="argument-side">
+                        ${{renderArgument(claimantArg, 'claimant')}}
+                    </div>
+                    <div class="argument-side">
+                        ${{renderArgument(respondentArg, 'respondent')}}
+                    </div>
+                </div>
+                `;
             }}
             
             // Render the standard arguments view
             function renderStandardArguments() {{
                 const container = document.getElementById('standard-arguments-container');
-                let html = buildArgumentTree(argsData.claimantArgs, argsData.respondentArgs);
+                let html = '';
+                
+                // For each top-level argument
+                Object.keys(argsData.claimantArgs).forEach(argId => {{
+                    if (argsData.respondentArgs[argId]) {{
+                        const claimantArg = argsData.claimantArgs[argId];
+                        const respondentArg = argsData.respondentArgs[argId];
+                        
+                        html += renderArgumentPair(claimantArg, respondentArg);
+                    }}
+                }});
+                
                 container.innerHTML = html;
             }}
             
@@ -1652,7 +1436,12 @@ def main():
                     
                     // Add arguments for this topic
                     topic.argumentIds.forEach(argId => {{
-                        html += buildArgumentTree(argsData.claimantArgs, argsData.respondentArgs, argId);
+                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                            const claimantArg = argsData.claimantArgs[argId];
+                            const respondentArg = argsData.respondentArgs[argId];
+                            
+                            html += renderArgumentPair(claimantArg, respondentArg);
+                        }}
                     }});
                     
                     html += `</div>`;
@@ -1661,34 +1450,54 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle argument pair expansion
-            function toggleArgumentPair(argId) {{
-                // Toggle content display for both sides
-                const claimantContent = document.getElementById(`content-claimant-${{argId}}`);
-                const respondentContent = document.getElementById(`content-respondent-${{argId}}`);
-                const claimantChevron = document.getElementById(`chevron-claimant-${{argId}}`);
-                const respondentChevron = document.getElementById(`chevron-respondent-${{argId}}`);
-                const childrenContainer = document.getElementById(`children-pair-${{argId}}`);
+            // Find paired argument by ID
+            function findPairedArgument(id) {{
+                const [side, argId] = id.split('-');
+                const oppositeSide = side === 'claimant' ? 'respondent' : 'claimant';
+                return `${{oppositeSide}}-${{argId}}`;
+            }}
+            
+            // Toggle argument expansion (and its pair)
+            function toggleArgument(id) {{
+                // Toggle this argument
+                const contentEl = document.getElementById(`content-${{id}}`);
+                const childrenEl = document.getElementById(`children-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                // Check if these elements exist
-                if (!claimantContent || !respondentContent) return;
+                if (!contentEl) return;
                 
-                // Toggle the argument content
-                const isExpanded = claimantContent.style.display === 'block';
-                claimantContent.style.display = isExpanded ? 'none' : 'block';
-                respondentContent.style.display = isExpanded ? 'none' : 'block';
+                const isExpanded = contentEl.style.display === 'block';
+                contentEl.style.display = isExpanded ? 'none' : 'block';
                 
-                // Update chevron rotation
-                if (claimantChevron) claimantChevron.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                if (respondentChevron) respondentChevron.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                
-                // Toggle children if they exist
-                if (childrenContainer) {{
-                    childrenContainer.style.display = isExpanded ? 'none' : 'block';
+                if (chevronEl) {{
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
                 }}
                 
-                // Update the expanded state
-                expandedStates[argId] = !isExpanded;
+                if (childrenEl) {{
+                    childrenEl.style.display = isExpanded ? 'none' : 'block';
+                }}
+                
+                // Save expanded state
+                expandedStates[id] = !isExpanded;
+                
+                // Toggle paired argument
+                const pairedId = findPairedArgument(id);
+                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
+                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
+                
+                if (pairedContentEl) {{
+                    pairedContentEl.style.display = contentEl.style.display;
+                    expandedStates[pairedId] = expandedStates[id];
+                }}
+                
+                if (pairedChevronEl) {{
+                    pairedChevronEl.style.transform = chevronEl.style.transform;
+                }}
+                
+                if (pairedChildrenEl) {{
+                    pairedChildrenEl.style.display = childrenEl ? childrenEl.style.display : 'none';
+                }}
             }}
             
             // Render timeline

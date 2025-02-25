@@ -401,7 +401,7 @@ def render_argument_section(arg_id, title, paragraphs, side, level=0, overview=N
         type="secondary"
     ):
         toggle_argument(arg_id)
-        st.experimental_rerun()
+        st.rerun()
         
     # If expanded, show the content
     if is_expanded:
@@ -1011,7 +1011,7 @@ with tab_cols[0]:
                 type="secondary" if st.session_state.active_tab == "arguments" else "primary",
                 use_container_width=True):
         switch_tab("arguments")
-        st.experimental_rerun()
+        st.rerun()
 with tab_cols[1]:
     if st.button("Timeline", 
                 key="tab_timeline",
@@ -1019,7 +1019,7 @@ with tab_cols[1]:
                 type="secondary" if st.session_state.active_tab == "timeline" else "primary",
                 use_container_width=True):
         switch_tab("timeline")
-        st.experimental_rerun()
+        st.rerun()
 with tab_cols[2]:
     if st.button("Exhibits", 
                 key="tab_exhibits",
@@ -1027,7 +1027,7 @@ with tab_cols[2]:
                 type="secondary" if st.session_state.active_tab == "exhibits" else "primary",
                 use_container_width=True):
         switch_tab("exhibits")
-        st.experimental_rerun()
+        st.rerun()
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
@@ -1051,13 +1051,13 @@ if st.session_state.active_tab == 'arguments':
                     key="view_standard",
                     type="secondary" if st.session_state.view_mode == "default" else "primary"):
             switch_view_mode("default")
-            st.experimental_rerun()
+            st.rerun()
     with view_toggle_cols[2]:
         if st.button("Topic View", 
                     key="view_topic",
                     type="secondary" if st.session_state.view_mode == "hierarchical" else "primary"):
             switch_view_mode("hierarchical")
-            st.experimental_rerun()
+            st.rerun()
     
     if st.session_state.view_mode == 'default':
         # Standard view with all arguments

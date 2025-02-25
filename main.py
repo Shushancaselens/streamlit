@@ -7,17 +7,82 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
-    # This is a simplified version with just essential data
+    # This includes full content for the arguments
     claimant_args = {
         "1": {
             "id": "1",
             "title": "Sporting Succession",
-            "paragraphs": "15-18"
+            "paragraphs": "15-18",
+            "overview": {
+                "points": [
+                    "Analysis of multiple established criteria",
+                    "Focus on continuous use of identifying elements",
+                    "Public recognition assessment"
+                ],
+                "paragraphs": "15-16"
+            },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence establishes criteria for sporting succession",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2016/A/4576"],
+                    "paragraphs": "15-17"
+                }
+            ],
+            "factualPoints": [
+                {
+                    "point": "Continuous operation under same name since 1950",
+                    "date": "1950-present",
+                    "isDisputed": False,
+                    "paragraphs": "18-19"
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-1",
+                    "title": "Historical Registration Documents",
+                    "summary": "Official records showing continuous name usage",
+                    "citations": ["20", "21", "24"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2016/A/4576",
+                    "title": "Criteria for sporting succession",
+                    "relevance": "Establishes key factors for succession",
+                    "paragraphs": "45-48",
+                    "citedParagraphs": ["45", "46", "47"]
+                }
+            ],
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis",
+                    "paragraphs": "20-45"
+                }
+            }
         },
         "2": {
             "id": "2",
             "title": "Doping Violation Chain of Custody",
-            "paragraphs": "70-125"
+            "paragraphs": "70-125",
+            "overview": {
+                "points": [
+                    "Analysis of sample collection and handling procedures",
+                    "Evaluation of laboratory testing protocols",
+                    "Assessment of chain of custody documentation"
+                ],
+                "paragraphs": "70-72"
+            },
+            "legalPoints": [
+                {
+                    "point": "WADA Code Article 5 establishes procedural requirements",
+                    "isDisputed": False,
+                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                    "paragraphs": "73-75"
+                }
+            ],
+            "children": {}
         }
     }
     
@@ -25,12 +90,78 @@ def get_argument_data():
         "1": {
             "id": "1",
             "title": "Sporting Succession Rebuttal",
-            "paragraphs": "200-218"
+            "paragraphs": "200-218",
+            "overview": {
+                "points": [
+                    "Challenge to claimed continuity of operations",
+                    "Analysis of discontinuities in club operations",
+                    "Dispute over public recognition factors"
+                ],
+                "paragraphs": "200-202"
+            },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence requires operational continuity not merely identification",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2017/A/5465"],
+                    "paragraphs": "203-205"
+                }
+            ],
+            "factualPoints": [
+                {
+                    "point": "Operations ceased between 1975-1976",
+                    "date": "1975-1976",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "206-207"
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-1",
+                    "title": "Federation Records",
+                    "summary": "Records showing non-participation in 1975-1976 season",
+                    "citations": ["208", "209", "210"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2017/A/5465",
+                    "title": "Operational continuity requirement",
+                    "relevance": "Establishes primacy of operational continuity",
+                    "paragraphs": "211-213",
+                    "citedParagraphs": ["212"]
+                }
+            ],
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis Rebuttal",
+                    "paragraphs": "220-240"
+                }
+            }
         },
         "2": {
             "id": "2",
             "title": "Doping Chain of Custody Defense",
-            "paragraphs": "250-290"
+            "paragraphs": "250-290",
+            "overview": {
+                "points": [
+                    "Defense of sample collection procedures",
+                    "Validation of laboratory testing protocols",
+                    "Completeness of documentation"
+                ],
+                "paragraphs": "250-252"
+            },
+            "legalPoints": [
+                {
+                    "point": "Minor procedural deviations do not invalidate results",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2019/A/6148"],
+                    "paragraphs": "253-255"
+                }
+            ],
+            "children": {}
         }
     }
     
@@ -356,6 +487,100 @@ def main():
             .disputed {{
                 color: #c53030;
             }}
+            
+            /* Content sections */
+            .section-title {{
+                font-size: 0.875rem;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                color: #2d3748;
+            }}
+            
+            /* Overview points */
+            .overview-section {{
+                background-color: #f7fafc;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }}
+            .overview-header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.5rem;
+            }}
+            .paragraph-tag {{
+                font-size: 0.75rem;
+                background-color: #ebf8ff;
+                color: #2b6cb0;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+            }}
+            .point-list {{
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }}
+            .point-item {{
+                display: flex;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }}
+            .point-bullet {{
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: #3182ce;
+                margin-top: 0.5rem;
+            }}
+            
+            /* Legal points */
+            .legal-point {{
+                background-color: #ebf8ff;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .legal-badge {{
+                background-color: #bee3f8;
+                color: #2c5282;
+            }}
+            .regulation-tag {{
+                font-size: 0.75rem;
+                background-color: #ebf8ff;
+                color: #2b6cb0;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                margin-right: 0.5rem;
+            }}
+            
+            /* Factual points */
+            .factual-point {{
+                background-color: #f0fff4;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .factual-badge {{
+                background-color: #c6f6d5;
+                color: #276749;
+            }}
+            
+            /* Evidence and case law */
+            .evidence-item {{
+                background-color: #f7fafc;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .citation-tag {{
+                font-size: 0.75rem;
+                background-color: #edf2f7;
+                color: #4a5568;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                margin-right: 0.25rem;
+            }}
         </style>
     </head>
     <body>
@@ -545,6 +770,220 @@ def main():
                 }});
             }});
             
+            // Render overview points
+            function renderOverviewPoints(overview) {{
+                if (!overview || !overview.points || overview.points.length === 0) return '';
+                
+                const pointsHtml = overview.points.map(point => `
+                    <div class="point-item">
+                        <div class="point-bullet"></div>
+                        <span style="font-size: 0.875rem; color: #4a5568;">${{point}}</span>
+                    </div>
+                `).join('');
+                
+                return `
+                <div class="overview-section">
+                    <div class="overview-header">
+                        <h6 class="section-title">Key Points</h6>
+                        <span class="paragraph-tag">¶${{overview.paragraphs}}</span>
+                    </div>
+                    <div class="point-list">
+                        ${{pointsHtml}}
+                    </div>
+                </div>
+                `;
+            }}
+            
+            // Render legal points
+            function renderLegalPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    const regulations = point.regulations
+                        ? point.regulations.map(reg => `<span class="regulation-tag">${{reg}}</span>`).join('')
+                        : '';
+                    
+                    return `
+                    <div class="legal-point">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                            <span class="badge legal-badge">Legal</span>
+                            ${{disputed}}
+                        </div>
+                        <p style="font-size: 0.875rem; color: #4a5568;">${{point.point}}</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                            ${{regulations}}
+                            <span style="font-size: 0.75rem; color: #718096;">¶${{point.paragraphs}}</span>
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-bottom: 1.5rem;">
+                    <h6 class="section-title">Legal Points</h6>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render factual points
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed
+                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>`
+                        : '';
+                    
+                    return `
+                    <div class="factual-point">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                            <span class="badge factual-badge">Factual</span>
+                            ${{disputed}}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span style="font-size: 0.75rem; color: #718096;">${{point.date}}</span>
+                        </div>
+                        <p style="font-size: 0.875rem; color: #4a5568;">${{point.point}}</p>
+                        <span style="font-size: 0.75rem; color: #718096; display: inline-block; margin-top: 0.5rem;">¶${{point.paragraphs}}</span>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-bottom: 1.5rem;">
+                    <h6 class="section-title">Factual Points</h6>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render evidence
+            function renderEvidence(evidence) {{
+                if (!evidence || evidence.length === 0) return '';
+                
+                const itemsHtml = evidence.map(item => {{
+                    const citations = item.citations
+                        ? `<div style="margin-top: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: #718096;">Cited in: </span>
+                            ${{item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')}}
+                          </div>`
+                        : '';
+                    
+                    return `
+                    <div class="evidence-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <p style="font-size: 0.875rem; font-weight: 500;">${{item.id}}: ${{item.title}}</p>
+                                <p style="font-size: 0.75rem; color: #718096; margin-top: 0.25rem;">${{item.summary}}</p>
+                                ${{citations}}
+                            </div>
+                            <button style="background: none; border: none; color: #3182ce; cursor: pointer; height: 24px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-bottom: 1.5rem;">
+                    <h6 class="section-title">Evidence</h6>
+                    ${{itemsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render case law
+            function renderCaseLaw(cases) {{
+                if (!cases || cases.length === 0) return '';
+                
+                const itemsHtml = cases.map(item => {{
+                    const citedParagraphs = item.citedParagraphs
+                        ? `<div style="margin-top: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs: </span>
+                            ${{item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('')}}
+                          </div>`
+                        : '';
+                    
+                    return `
+                    <div class="evidence-item">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <p style="font-size: 0.875rem; font-weight: 500;">${{item.caseNumber}}</p>
+                                    <span style="font-size: 0.75rem; color: #718096;">¶${{item.paragraphs}}</span>
+                                </div>
+                                <p style="font-size: 0.75rem; color: #718096; margin-top: 0.25rem;">${{item.title}}</p>
+                                <p style="font-size: 0.875rem; color: #4a5568; margin-top: 0.5rem;">${{item.relevance}}</p>
+                                ${{citedParagraphs}}
+                            </div>
+                            <button style="background: none; border: none; color: #3182ce; cursor: pointer; height: 24px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-bottom: 1.5rem;">
+                    <h6 class="section-title">Case Law</h6>
+                    ${{itemsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render the argument content
+            function renderArgumentContent(arg) {{
+                if (!arg) return '';
+                
+                let content = '';
+                
+                // Add overview points
+                if (arg.overview) {{
+                    content += renderOverviewPoints(arg.overview);
+                }}
+                
+                // Add legal points
+                if (arg.legalPoints) {{
+                    content += renderLegalPoints(arg.legalPoints);
+                }}
+                
+                // Add factual points
+                if (arg.factualPoints) {{
+                    content += renderFactualPoints(arg.factualPoints);
+                }}
+                
+                // Add evidence
+                if (arg.evidence) {{
+                    content += renderEvidence(arg.evidence);
+                }}
+                
+                // Add case law
+                if (arg.caseLaw) {{
+                    content += renderCaseLaw(arg.caseLaw);
+                }}
+                
+                return content || '<p>No additional details available.</p>';
+            }}
+            
             // Render the standard arguments view
             function renderStandardArguments() {{
                 const container = document.getElementById('standard-arguments-container');
@@ -570,7 +1009,7 @@ def main():
                                 <span style="font-size: 0.75rem; color: #3182ce; padding: 0.25rem 0.5rem; background-color: #ebf8ff; border-radius: 0.25rem;">¶${{claimantArg.paragraphs}}</span>
                             </div>
                             <div id="content-claimant-${{argId}}" class="argument-content">
-                                <p>Detailed information about this argument would appear here when expanded.</p>
+                                ${{renderArgumentContent(claimantArg)}}
                             </div>
                         </div>
                         `;
@@ -589,7 +1028,7 @@ def main():
                                 <span style="font-size: 0.75rem; color: #e53e3e; padding: 0.25rem 0.5rem; background-color: #fff5f5; border-radius: 0.25rem;">¶${{respondentArg.paragraphs}}</span>
                             </div>
                             <div id="content-respondent-${{argId}}" class="argument-content">
-                                <p>Detailed information about this argument would appear here when expanded.</p>
+                                ${{renderArgumentContent(respondentArg)}}
                             </div>
                         </div>
                         `;
@@ -638,7 +1077,7 @@ def main():
                                     <span style="font-size: 0.75rem; color: #3182ce; padding: 0.25rem 0.5rem; background-color: #ebf8ff; border-radius: 0.25rem;">¶${{claimantArg.paragraphs}}</span>
                                 </div>
                                 <div id="topic-content-claimant-${{argId}}" class="argument-content">
-                                    <p>Detailed information about this argument would appear here when expanded.</p>
+                                    ${{renderArgumentContent(claimantArg)}}
                                 </div>
                             </div>
                             
@@ -655,7 +1094,7 @@ def main():
                                     <span style="font-size: 0.75rem; color: #e53e3e; padding: 0.25rem 0.5rem; background-color: #fff5f5; border-radius: 0.25rem;">¶${{respondentArg.paragraphs}}</span>
                                 </div>
                                 <div id="topic-content-respondent-${{argId}}" class="argument-content">
-                                    <p>Detailed information about this argument would appear here when expanded.</p>
+                                    ${{renderArgumentContent(respondentArg)}}
                                 </div>
                             </div>
                             `;

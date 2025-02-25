@@ -166,7 +166,22 @@ def get_argument_data():
                                     "isDisputed": False,
                                     "paragraphs": "58-59"
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Historical documents showing color usage",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 }
@@ -349,7 +364,22 @@ def get_argument_data():
                                     "source": "Claimant",
                                     "paragraphs": "248-249"
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Historical brand guidelines showing color changes",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 }
@@ -612,12 +642,7 @@ def main():
                 margin-bottom: 1rem;
                 position: relative;
             }}
-            .argument-row {{
-                display: flex;
-                width: 100%;
-            }}
-            .arg-container {{
-                flex: 1;
+            .argument-side {{
                 position: relative;
             }}
             
@@ -627,7 +652,6 @@ def main():
                 border-radius: 0.375rem;
                 overflow: hidden;
                 margin-bottom: 1rem;
-                width: 100%;
             }}
             .argument-header {{
                 padding: 0.75rem 1rem;
@@ -674,7 +698,7 @@ def main():
             }}
             .connector-horizontal {{
                 position: absolute;
-                left: 0;
+                left: 0.75rem;
                 top: 1.25rem;
                 width: 0.75rem;
                 height: 1px;
@@ -1082,7 +1106,7 @@ def main():
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
             
-            // Keep track of expanded states - we'll use an object to track the state of each argument by its ID
+            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
             const expandedStates = {{}};
             
             // Tab switching
@@ -1338,43 +1362,12 @@ def main():
                 return content;
             }}
             
-            // Process argument tree to find subarguments
-            function collectChildArgKeys(argObj, prefix = "") {{
-                let result = [];
-                if (!argObj || !argObj.children) return result;
-                
-                Object.keys(argObj.children).forEach(childKey => {{
-                    const fullKey = prefix ? `${{prefix}}-${{childKey}}` : childKey;
-                    result.push(fullKey);
-                    
-                    // Process nested children
-                    const childArgs = collectChildArgKeys(argObj.children[childKey], fullKey);
-                    result = result.concat(childArgs);
-                }});
-                
-                return result;
-            }}
-            
-            // Recursive function to get all descendant argument paths for an argument
-            function getDescendantPaths(argObj, path = "", currentKey = "") {{
-                if (!argObj || !argObj.children) return [];
-                
-                let result = [];
-                Object.entries(argObj.children).forEach(([childKey, childObj]) => {{
-                    const childPath = path ? `${{path}}-${{childKey}}` : childKey;
-                    result.push(childPath);
-                    
-                    // Get nested children paths
-                    const childPaths = getDescendantPaths(childObj, childPath, childKey);
-                    result = result.concat(childPaths);
-                }});
-                
-                return result;
-            }}
-            
-            // Function to generate the content for a single subargument
-            function generateArgument(arg, side, pathId) {{
+            // Render a single argument including its children
+            function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
+                
+                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
+                const fullId = `${{side}}-${{argId}}`;
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
@@ -1385,123 +1378,70 @@ def main():
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
                 const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
                 
-                const argId = `${{side}}-${{pathId}}`;
-                
                 // Header content
-                const header = `
-                <div class="argument-header" onclick="toggleArgument('${{argId}}', '${{pathId}}')">
-                    <div class="argument-header-left">
-                        <svg id="chevron-${{argId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                        <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
-                            ${{arg.id}}. ${{arg.title}}
-                        </h5>
-                    </div>
-                    <div>
-                        ${{hasChildren 
-                            ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
-                            : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
-                        }}
-                    </div>
+                const headerHtml = `
+                <div class="argument-header-left">
+                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
+                        ${{arg.id}}. ${{arg.title}}
+                    </h5>
                 </div>
-                `;
-                
-                // Content
-                const content = `
-                <div id="content-${{argId}}" class="argument-content">
-                    ${{renderArgumentContent(arg)}}
-                </div>
-                `;
-                
-                return `
-                <div class="argument ${{headerClass}}">
-                    ${{header}}
-                    ${{content}}
-                </div>
-                `;
-            }}
-            
-            // Generate the HTML for children of a given argument
-            function generateChildArguments(argObj, side, parentPath) {{
-                if (!argObj || !argObj.children) return '';
-                
-                // Create HTML for each direct child
-                let childHTML = '';
-                
-                // Sort the child keys to ensure consistent order
-                const childKeys = Object.keys(argObj.children).sort();
-                
-                childKeys.forEach(childKey => {{
-                    const childArg = argObj.children[childKey];
-                    const childPath = parentPath ? `${{parentPath}}-${{childKey}}` : childKey;
-                    const childId = `${{side}}-${{childPath}}`;
-                    
-                    const hasGrandchildren = childArg.children && Object.keys(childArg.children).length > 0;
-                    
-                    // First generate the argument itself
-                    childHTML += `
-                    <div class="nested-argument" style="position: relative;">
-                        <div class="connector-horizontal ${{side === 'claimant' ? 'claimant-connector' : 'respondent-connector'}}"></div>
-                        ${{generateArgument(childArg, side, childPath)}}
-                    </div>`;
-                    
-                    // Then add a container for its children (if any)
-                    if (hasGrandchildren) {{
-                        childHTML += `
-                        <div id="children-${{childId}}" class="argument-children" style="display: none;">
-                            <div class="connector-vertical ${{side === 'claimant' ? 'claimant-connector' : 'respondent-connector'}}"></div>
-                            ${{generateChildArguments(childArg, side, childPath)}}
-                        </div>`;
+                <div>
+                    ${{hasChildren 
+                        ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
+                        : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
                     }}
-                }});
+                </div>
+                `;
                 
-                return childHTML;
-            }}
-            
-            // Generate paired row of arguments and their children
-            function generateArgumentRow(claimantArg, respondentArg, level = 0) {{
-                const claimantId = claimantArg.id;
-                const respondentId = respondentArg.id;
+                // Detailed content
+                const contentHtml = renderArgumentContent(arg);
                 
-                const hasClaimantChildren = claimantArg.children && Object.keys(claimantArg.children).length > 0;
-                const hasRespondentChildren = respondentArg.children && Object.keys(respondentArg.children).length > 0;
-                
-                // Generate the parent arguments first
-                const claimantArgHTML = generateArgument(claimantArg, 'claimant', claimantId);
-                const respondentArgHTML = generateArgument(respondentArg, 'respondent', respondentId);
-                
-                // Start building the row HTML
-                let rowHTML = `
-                <div class="argument-row">
-                    <div class="arg-container">
-                        ${{claimantArgHTML}}
+                // Child arguments
+                let childrenHtml = '';
+                if (hasChildren) {{
+                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
+                        // Pass the full path for this argument's children
+                        return renderArgument(child, side, argId, level + 1);
+                    }}).join('');
+                    
+                    childrenHtml = `
+                    <div id="children-${{fullId}}" class="argument-children">
+                        <div class="connector-vertical ${{connectorClass}}"></div>
+                        ${{childrenArgs}}
                     </div>
-                    <div class="arg-container">
-                        ${{respondentArgHTML}}
-                    </div>
-                </div>`;
-                
-                // Add the children container if either side has children
-                if (hasClaimantChildren || hasRespondentChildren) {{
-                    rowHTML += `
-                    <div class="argument-row" style="margin-top: 0.5rem;">
-                        <div class="arg-container">
-                            <div id="children-claimant-${{claimantId}}" class="argument-children" style="display: none;">
-                                <div class="connector-vertical claimant-connector"></div>
-                                ${{generateChildArguments(claimantArg, 'claimant', claimantId)}}
-                            </div>
-                        </div>
-                        <div class="arg-container">
-                            <div id="children-respondent-${{respondentId}}" class="argument-children" style="display: none;">
-                                <div class="connector-vertical respondent-connector"></div>
-                                ${{generateChildArguments(respondentArg, 'respondent', respondentId)}}
-                            </div>
-                        </div>
-                    </div>`;
+                    `;
                 }}
                 
-                return rowHTML;
+                // Complete argument HTML
+                return `
+                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
+                        ${{headerHtml}}
+                    </div>
+                    <div id="content-${{fullId}}" class="argument-content">
+                        ${{contentHtml}}
+                    </div>
+                    ${{childrenHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render a pair of arguments (claimant and respondent)
+            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
+                return `
+                <div class="argument-pair">
+                    <div class="argument-side">
+                        ${{renderArgument(claimantArg, 'claimant')}}
+                    </div>
+                    <div class="argument-side">
+                        ${{renderArgument(respondentArg, 'respondent')}}
+                    </div>
+                </div>
+                `;
             }}
             
             // Render the standard arguments view
@@ -1515,7 +1455,7 @@ def main():
                         const claimantArg = argsData.claimantArgs[argId];
                         const respondentArg = argsData.respondentArgs[argId];
                         
-                        html += generateArgumentRow(claimantArg, respondentArg);
+                        html += renderArgumentPair(claimantArg, respondentArg);
                     }}
                 }});
                 
@@ -1546,7 +1486,7 @@ def main():
                             const claimantArg = argsData.claimantArgs[argId];
                             const respondentArg = argsData.respondentArgs[argId];
                             
-                            html += generateArgumentRow(claimantArg, respondentArg);
+                            html += renderArgumentPair(claimantArg, respondentArg);
                         }}
                     }});
                     
@@ -1556,51 +1496,47 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle argument expansion
-            function toggleArgument(argId, pathId) {{
-                // Split the ID to get side and argument ID
-                const [side, ...rest] = argId.split('-');
+            // Toggle argument expansion - updated to handle nested paths
+            function toggleArgument(fullId, argPath) {{
+                // Determine the side (claimant or respondent)
+                const [side, ...rest] = fullId.split('-');
                 
-                // Handle this argument's content
-                const contentEl = document.getElementById(`content-${{argId}}`);
-                const chevronEl = document.getElementById(`chevron-${{argId}}`);
+                // Toggle this argument
+                const contentEl = document.getElementById(`content-${{fullId}}`);
+                const childrenEl = document.getElementById(`children-${{fullId}}`);
+                const chevronEl = document.getElementById(`chevron-${{fullId}}`);
                 
-                // Toggle expansion
                 const isExpanded = contentEl.style.display === 'block';
                 contentEl.style.display = isExpanded ? 'none' : 'block';
-                
                 if (chevronEl) {{
                     chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
                 }}
-                
-                // Handle this argument's children container
-                const childrenEl = document.getElementById(`children-${{argId}}`);
                 if (childrenEl) {{
                     childrenEl.style.display = isExpanded ? 'none' : 'block';
                 }}
                 
                 // Save expanded state
-                expandedStates[argId] = !isExpanded;
+                expandedStates[fullId] = !isExpanded;
                 
-                // Handle the corresponding argument on the other side
+                // Find and toggle the paired argument based on the path
                 const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const pairedId = `${{otherSide}}-${{pathId}}`;
+                const pairedId = `${{otherSide}}-${{argPath}}`;
                 
                 const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
                 const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
+                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
                 
                 if (pairedContentEl) {{
                     pairedContentEl.style.display = contentEl.style.display;
-                    expandedStates[pairedId] = expandedStates[argId];
-                    
-                    if (pairedChevronEl) {{
-                        pairedChevronEl.style.transform = chevronEl.style.transform;
-                    }}
-                    
-                    if (pairedChildrenEl) {{
-                        pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
-                    }}
+                    expandedStates[pairedId] = expandedStates[fullId];
+                }}
+                
+                if (pairedChevronEl) {{
+                    pairedChevronEl.style.transform = chevronEl.style.transform;
+                }}
+                
+                if (pairedChildrenEl) {{
+                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
                 }}
             }}
             

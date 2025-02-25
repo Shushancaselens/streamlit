@@ -740,75 +740,112 @@ def render_argument_section(arg_data, side, level=0):
     header_class = "claimant-header" if side == "claimant" else "respondent-header"
     text_color = "text-blue-600" if side == "claimant" else "text-red-600"
     
-    # Render the argument header
-    expander = st.expander(
-        f"{arg_id}. {arg_data['title']} (¶{arg_data['paragraphs']})",
-        expanded=is_expanded
-    )
-    
-    # Update session state when expander is clicked
-    if expander.expanded != is_expanded:
-        st.session_state.expanded_states[arg_id] = expander.expanded
-    
-    # Render the argument content if expanded
-    with expander:
-        # Overview points
-        if "overview" in arg_data and arg_data["overview"] and "points" in arg_data["overview"]:
-            render_overview_points(
-                arg_data["overview"]["points"],
-                arg_data["overview"]["paragraphs"]
-            )
+    # For top level arguments, use expanders
+    if level == 0:
+        expander = st.expander(
+            f"{arg_id}. {arg_data['title']} (¶{arg_data['paragraphs']})",
+            expanded=is_expanded
+        )
         
-        # Legal points
-        if "legal_points" in arg_data and arg_data["legal_points"]:
-            st.markdown("##### Legal Points", unsafe_allow_html=True)
-            for point in arg_data["legal_points"]:
-                render_legal_point(
-                    point["point"],
-                    point.get("is_disputed", False),
-                    point.get("regulations", []),
-                    point.get("paragraphs", "")
-                )
+        # Update session state when expander is clicked
+        if expander.expanded != is_expanded:
+            st.session_state.expanded_states[arg_id] = expander.expanded
         
-        # Factual points
-        if "factual_points" in arg_data and arg_data["factual_points"]:
-            st.markdown("##### Factual Points", unsafe_allow_html=True)
-            for point in arg_data["factual_points"]:
-                render_factual_point(
-                    point["point"],
-                    point.get("date", ""),
-                    point.get("is_disputed", False),
-                    point.get("source", ""),
-                    point.get("paragraphs", "")
-                )
+        # Render the argument content if expanded
+        with expander:
+            render_argument_content(arg_data)
+            
+            # Render child arguments if they exist
+            if "children" in arg_data and arg_data["children"]:
+                for child_id, child_data in arg_data["children"].items():
+                    # Instead of recursion with expanders, use a custom display for children
+                    st.markdown(f"<hr style='margin: 1rem 0;'>", unsafe_allow_html=True)
+                    st.markdown(f"<h4 style='margin-left: {level + 1}rem;'>{child_id}. {child_data['title']} (¶{child_data['paragraphs']})</h4>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin-left: {level + 1}rem;'>", unsafe_allow_html=True)
+                    render_argument_content(child_data)
+                    st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Recursively handle deeper nested children, but with indentation not expanders
+                    render_nested_children(child_data, side, level + 1)
+    else:
+        # For non-top level arguments, just render directly
+        st.markdown(f"<h4 style='margin-left: {level}rem;'>{arg_id}. {arg_data['title']} (¶{arg_data['paragraphs']})</h4>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {level}rem;'>", unsafe_allow_html=True)
+        render_argument_content(arg_data)
+        st.markdown("</div>", unsafe_allow_html=True)
         
-        # Evidence
-        if "evidence" in arg_data and arg_data["evidence"]:
-            st.markdown("##### Evidence", unsafe_allow_html=True)
-            for item in arg_data["evidence"]:
-                render_evidence(
-                    item["id"],
-                    item["title"],
-                    item["summary"],
-                    item.get("citations", [])
-                )
-        
-        # Case Law
-        if "case_law" in arg_data and arg_data["case_law"]:
-            st.markdown("##### Case Law", unsafe_allow_html=True)
-            for item in arg_data["case_law"]:
-                render_case_law(
-                    item["case_number"],
-                    item["title"],
-                    item["relevance"],
-                    item.get("paragraphs", ""),
-                    item.get("cited_paragraphs", [])
-                )
-        
-        # Render child arguments if they exist
+        # Recursively handle children
         if "children" in arg_data and arg_data["children"]:
             for child_id, child_data in arg_data["children"].items():
-                render_argument_section(child_data, side, level + 1)
+                render_nested_children(child_data, side, level + 1)
+
+# Helper function to render nested children with indentation
+def render_nested_children(arg_data, side, level):
+    st.markdown(f"<hr style='margin: 1rem 0;'>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='margin-left: {level}rem;'>{arg_data['id']}. {arg_data['title']} (¶{arg_data['paragraphs']})</h4>", unsafe_allow_html=True)
+    st.markdown(f"<div style='margin-left: {level}rem;'>", unsafe_allow_html=True)
+    render_argument_content(arg_data)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Recursively handle deeper nested children
+    if "children" in arg_data and arg_data["children"]:
+        for child_id, child_data in arg_data["children"].items():
+            render_nested_children(child_data, side, level + 1)
+
+# Function to render the content of an argument without the container logic
+def render_argument_content(arg_data):
+    # Overview points
+    if "overview" in arg_data and arg_data["overview"] and "points" in arg_data["overview"]:
+        render_overview_points(
+            arg_data["overview"]["points"],
+            arg_data["overview"]["paragraphs"]
+        )
+    
+    # Legal points
+    if "legal_points" in arg_data and arg_data["legal_points"]:
+        st.markdown("##### Legal Points", unsafe_allow_html=True)
+        for point in arg_data["legal_points"]:
+            render_legal_point(
+                point["point"],
+                point.get("is_disputed", False),
+                point.get("regulations", []),
+                point.get("paragraphs", "")
+            )
+    
+    # Factual points
+    if "factual_points" in arg_data and arg_data["factual_points"]:
+        st.markdown("##### Factual Points", unsafe_allow_html=True)
+        for point in arg_data["factual_points"]:
+            render_factual_point(
+                point["point"],
+                point.get("date", ""),
+                point.get("is_disputed", False),
+                point.get("source", ""),
+                point.get("paragraphs", "")
+            )
+    
+    # Evidence
+    if "evidence" in arg_data and arg_data["evidence"]:
+        st.markdown("##### Evidence", unsafe_allow_html=True)
+        for item in arg_data["evidence"]:
+            render_evidence(
+                item["id"],
+                item["title"],
+                item["summary"],
+                item.get("citations", [])
+            )
+    
+    # Case Law
+    if "case_law" in arg_data and arg_data["case_law"]:
+        st.markdown("##### Case Law", unsafe_allow_html=True)
+        for item in arg_data["case_law"]:
+            render_case_law(
+                item["case_number"],
+                item["title"],
+                item["relevance"],
+                item.get("paragraphs", ""),
+                item.get("cited_paragraphs", [])
+            )
 
 # Function to render a two-column argument display
 def render_argument_pair(claimant_arg, respondent_arg):

@@ -7,6 +7,7 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
+    # Ensure we have matching titles between claimant and respondent sides
     claimant_args = {
         "1": {
             "id": "1",
@@ -69,7 +70,8 @@ def get_argument_data():
                     "legalPoints": [
                         {
                             "point": "Name registration complies with regulations",
-                            "isDisputed": False,
+                            "isDisputed": True, # Marked as disputed to match respondent
+                            "disputedBy": "Respondent",
                             "regulations": ["Name Registration Act"],
                             "paragraphs": "22-24"
                         },
@@ -83,7 +85,7 @@ def get_argument_data():
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
-                            "title": "Registration History",
+                            "title": "Registration Documentation",  # Matching title
                             "paragraphs": "25-30",
                             "factualPoints": [
                                 {
@@ -126,7 +128,8 @@ def get_argument_data():
                     "legalPoints": [
                         {
                             "point": "Color trademark registration valid since 1960",
-                            "isDisputed": False,
+                            "isDisputed": True,
+                            "disputedBy": "Respondent",
                             "regulations": ["Trademark Act"],
                             "paragraphs": "48-50"
                         }
@@ -147,28 +150,7 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57"
-                                },
-                                {
-                                    "point": "Temporary third color addition in 1980s",
-                                    "date": "1982-1988",
-                                    "isDisputed": False,
-                                    "paragraphs": "58-59"
-                                }
-                            ]
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -259,6 +241,7 @@ def get_argument_data():
                         {
                             "point": "Registration lapse voided legal continuity",
                             "isDisputed": True,
+                            "disputedBy": "Claimant",
                             "regulations": ["Registration Act"],
                             "paragraphs": "223-225"
                         }
@@ -266,7 +249,7 @@ def get_argument_data():
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
-                            "title": "Registration Gap Evidence",
+                            "title": "Registration Documentation", # Matching title
                             "paragraphs": "226-230",
                             "factualPoints": [
                                 {
@@ -295,7 +278,7 @@ def get_argument_data():
                 },
                 "1.2": {
                     "id": "1.2",
-                    "title": "Club Colors Analysis Rebuttal",
+                    "title": "Club Colors Analysis Rebuttal", 
                     "paragraphs": "241-249",
                     "overview": {
                         "points": [
@@ -308,7 +291,8 @@ def get_argument_data():
                     "legalPoints": [
                         {
                             "point": "Color trademark lapsed during 1975-1976",
-                            "isDisputed": False,
+                            "isDisputed": True,
+                            "disputedBy": "Claimant",
                             "regulations": ["Trademark Act"],
                             "paragraphs": "243-244"
                         }
@@ -329,29 +313,7 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Changes Analysis",
-                            "paragraphs": "247-249",
-                            "factualPoints": [
-                                {
-                                    "point": "Pre-1976 colors represented original city district",
-                                    "date": "1950-1975",
-                                    "isDisputed": False,
-                                    "paragraphs": "247"
-                                },
-                                {
-                                    "point": "Post-1976 colors represented new ownership region",
-                                    "date": "1976-present",
-                                    "isDisputed": True,
-                                    "source": "Claimant",
-                                    "paragraphs": "248-249"
-                                }
-                            ]
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -662,16 +624,16 @@ def main():
                 position: absolute;
                 left: 0.75rem;
                 top: 0;
-                width: 1px;
+                width: 2px;
                 height: 100%;
                 background-color: #e2e8f0;
             }}
             .connector-horizontal {{
                 position: absolute;
                 left: 0;
-                top: 1.25rem;
+                top: 1.5rem;
                 width: 0.75rem;
-                height: 1px;
+                height: 2px;
                 background-color: #e2e8f0;
             }}
             .claimant-connector {{
@@ -709,6 +671,7 @@ def main():
             .disputed-badge {{
                 background-color: #fed7d7;
                 color: #c53030;
+                font-weight: 500;
             }}
             .type-badge {{
                 background-color: #edf2f7;
@@ -925,53 +888,16 @@ def main():
                 color: #c53030;
             }}
             
-            /* Highlight for disputed items */
-            .disputed-point {
-                border-left: 4px solid #e53e3e;
-            }
+            /* Improved indication of disputed points */
+            .disputed-point {{
+                border-left: 3px solid #e53e3e;
+            }}
             
-            /* Ensure consistent heights */
-            .argument-row {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-            }
-            
-            /* Improve visibility of nested structures */
-            .nested-argument {
-                margin-left: 24px;
+            /* Enhanced hierarchy for arguments */
+            .nested-argument {{
+                margin-left: 1.5rem;
                 position: relative;
-            }
-            
-            .nested-argument::before {
-                content: "";
-                position: absolute;
-                left: -24px;
-                top: 0;
-                bottom: 0;
-                width: 2px;
-                background-color: #e2e8f0;
-            }
-            
-            .nested-argument::after {
-                content: "";
-                position: absolute;
-                left: -24px;
-                top: 24px;
-                width: 24px;
-                height: 2px;
-                background-color: #e2e8f0;
-            }
-            
-            .claimant-argument .nested-argument::before,
-            .claimant-argument .nested-argument::after {
-                background-color: rgba(59, 130, 246, 0.5);
-            }
-            
-            .respondent-argument .nested-argument::before,
-            .respondent-argument .nested-argument::after {
-                background-color: rgba(239, 68, 68, 0.5);
-            }
+            }}
         </style>
     </head>
     <body>
@@ -1124,11 +1050,12 @@ def main():
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
             
-            // Keep track of expanded states for arguments
-            const expandedStates = {{}};
-            
-            // Map to track parent-child relationships
-            const parentChildMap = {{}};
+            // Global state tracking
+            const state = {{
+                expandedArgs: new Set(),  // Use a Set to track expanded arguments
+                pathMap: new Map(),       // Map argument IDs to full paths
+                parentMap: new Map()      // Track parent-child relationships
+            }};
             
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
@@ -1175,65 +1102,6 @@ def main():
                 }});
             }});
             
-            // Build the parent-child map for tracking relationships
-            function buildParentChildMap() {{
-                // Helper function to process arguments
-                function processArguments(args, side, parentPath = '') {{
-                    Object.entries(args).forEach(([argId, arg]) => {{
-                        const fullId = parentPath ? `${{parentPath}}-${{arg.id}}` : arg.id;
-                        const fullIdWithSide = `${{side}}-${{fullId}}`;
-                        
-                        // If this has a parent, add to parent-child map
-                        if (parentPath) {{
-                            const parentId = `${{side}}-${{parentPath}}`;
-                            if (!parentChildMap[parentId]) {{
-                                parentChildMap[parentId] = [];
-                            }}
-                            parentChildMap[parentId].push(fullIdWithSide);
-                        }}
-                        
-                        // Process children if any
-                        if (arg.children && Object.keys(arg.children).length > 0) {{
-                            processArguments(arg.children, side, fullId);
-                        }}
-                    }});
-                }}
-                
-                // Process both sides
-                processArguments(argsData.claimantArgs, 'claimant');
-                processArguments(argsData.respondentArgs, 'respondent');
-            }}
-            
-            // Function to get all parent IDs for a given argument
-            function getParentIds(argId) {{
-                const parts = argId.split('-');
-                const side = parts[0];
-                const path = parts.slice(1).join('-');
-                
-                // Build list of parent IDs
-                const parentIds = [];
-                const pathParts = path.split('-');
-                
-                let currentPath = '';
-                for (let i = 0; i < pathParts.length - 1; i++) {{
-                    currentPath = currentPath ? `${{currentPath}}-${{pathParts[i]}}` : pathParts[i];
-                    parentIds.push(`${{side}}-${{currentPath}}`);
-                }}
-                
-                return parentIds.reverse(); // Return parents from top to bottom
-            }}
-            
-            // Function to get the corresponding argument on the other side
-            function getCorrespondingArgId(argId) {{
-                const parts = argId.split('-');
-                const side = parts[0];
-                const path = parts.slice(1).join('-');
-                
-                // Switch sides
-                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                return `${{otherSide}}-${{path}}`;
-            }}
-            
             // Render overview points
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
@@ -1263,15 +1131,17 @@ def main():
                 if (!points || points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                    const isDisputed = point.isDisputed;
+                    const disputed = isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed${{point.disputedBy ? ` by ${point.disputedBy}` : ''}}</span>` 
                         : '';
-                    
-                    const disputedClass = point.isDisputed ? 'disputed-point' : '';
                     
                     const regulations = point.regulations 
                         ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
                         : '';
+                    
+                    // Add special styling for disputed points
+                    const disputedClass = isDisputed ? 'disputed-point' : '';
                     
                     return `
                     <div class="legal-point ${{disputedClass}}">
@@ -1301,11 +1171,13 @@ def main():
                 if (!points || points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
+                    const isDisputed = point.isDisputed;
+                    const disputed = isDisputed 
                         ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
                         : '';
                     
-                    const disputedClass = point.isDisputed ? 'disputed-point' : '';
+                    // Add special styling for disputed points
+                    const disputedClass = isDisputed ? 'disputed-point' : '';
                     
                     return `
                     <div class="factual-point ${{disputedClass}}">
@@ -1446,6 +1318,72 @@ def main():
                 return content;
             }}
             
+            // Build hierarchy and relationship maps for arguments
+            function buildArgumentMaps(args, side, parentPath = '') {{
+                Object.entries(args).forEach(([id, arg]) => {{
+                    const fullPath = parentPath ? `${{parentPath}}-${{id}}` : id;
+                    const fullId = `${{side}}-${{fullPath}}`;
+                    
+                    // Store the full path for this argument
+                    state.pathMap.set(fullId, fullPath);
+                    
+                    // Store parent relationship if not a root node
+                    if (parentPath) {{
+                        const parentId = `${{side}}-${{parentPath}}`;
+                        state.parentMap.set(fullId, parentId);
+                    }}
+                    
+                    // Process children recursively
+                    if (arg.children && Object.keys(arg.children).length > 0) {{
+                        buildArgumentMaps(arg.children, side, fullPath);
+                    }}
+                }});
+            }}
+            
+            // Build all argument maps at initialization
+            function initializeArgumentMaps() {{
+                buildArgumentMaps(argsData.claimantArgs, 'claimant');
+                buildArgumentMaps(argsData.respondentArgs, 'respondent');
+            }}
+            
+            // Find all parent elements for an argument
+            function getAllParents(argId) {{
+                const parents = [];
+                let currentId = argId;
+                
+                while (state.parentMap.has(currentId)) {{
+                    const parentId = state.parentMap.get(currentId);
+                    parents.push(parentId);
+                    currentId = parentId;
+                }}
+                
+                return parents;
+            }}
+            
+            // Ensure all parents of an element are expanded
+            function ensureParentsExpanded(argId) {{
+                const parents = getAllParents(argId);
+                
+                parents.forEach(parentId => {{
+                    const contentEl = document.getElementById(`content-${{parentId}}`);
+                    const childrenEl = document.getElementById(`children-${{parentId}}`);
+                    const chevronEl = document.getElementById(`chevron-${{parentId}}`);
+                    
+                    if (contentEl && !state.expandedArgs.has(parentId)) {{
+                        contentEl.style.display = 'block';
+                        state.expandedArgs.add(parentId);
+                        
+                        if (chevronEl) {{
+                            chevronEl.style.transform = 'rotate(90deg)';
+                        }}
+                        
+                        if (childrenEl) {{
+                            childrenEl.style.display = 'block';
+                        }}
+                    }}
+                }});
+            }}
+            
             // Render a single argument including its children
             function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
@@ -1453,25 +1391,40 @@ def main():
                 const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
                 const fullId = `${{side}}-${{argId}}`;
                 
+                // Set up paths for state tracking
+                const contentId = `content-${{fullId}}`;
+                const childrenId = `children-${{fullId}}`;
+                const chevronId = `chevron-${{fullId}}`;
+                
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
+                
+                // Check for any disputed points to highlight this argument
+                const hasDisputedPoints = 
+                    (arg.legalPoints && arg.legalPoints.some(p => p.isDisputed)) || 
+                    (arg.factualPoints && arg.factualPoints.some(p => p.isDisputed));
                 
                 // Style based on side
                 const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
                 const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
                 const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
-                const sideClass = side === 'claimant' ? 'claimant-argument' : 'respondent-argument';
+                
+                // Add disputed indicator if needed
+                const disputedIndicator = hasDisputedPoints 
+                    ? `<span class="badge disputed-badge">Disputed</span>` 
+                    : '';
                 
                 // Header content
                 const headerHtml = `
                 <div class="argument-header-left">
-                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                    <svg id="${{chevronId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                     <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
                         ${{arg.id}}. ${{arg.title}}
                     </h5>
+                    ${{disputedIndicator}}
                 </div>
                 <div>
                     ${{hasChildren 
@@ -1488,31 +1441,26 @@ def main():
                 let childrenHtml = '';
                 if (hasChildren) {{
                     const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        // Pass the full path for this argument's children
                         return renderArgument(child, side, argId, level + 1);
                     }}).join('');
                     
                     childrenHtml = `
-                    <div id="children-${{fullId}}" class="argument-children">
+                    <div id="${{childrenId}}" class="argument-children">
                         <div class="connector-vertical ${{connectorClass}}"></div>
                         ${{childrenArgs}}
                     </div>
                     `;
                 }}
                 
-                // Create nesting class if needed
-                const nestingClass = level > 0 ? 'nested-argument' : '';
-                
                 // Complete argument HTML
                 return `
-                <div class="argument-row ${{sideClass}}">
-                    <div class="argument ${{headerClass}} ${{nestingClass}}" data-arg-id="${{fullId}}" data-parent-path="${{path}}" data-level="${{level}}">
-                        <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
-                            ${{headerHtml}}
-                        </div>
-                        <div id="content-${{fullId}}" class="argument-content">
-                            ${{contentHtml}}
-                        </div>
+                <div class="argument ${{headerClass}}" data-id="${{fullId}}" data-level="${{level}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
+                        ${{headerHtml}}
+                    </div>
+                    <div id="${{contentId}}" class="argument-content">
+                        ${{contentHtml}}
                     </div>
                     ${{childrenHtml}}
                 </div>
@@ -1531,91 +1479,6 @@ def main():
                     </div>
                 </div>
                 `;
-            }}
-            
-            // Toggle argument expansion - improved hierarchical logic
-            function toggleArgument(argId) {{
-                // Get all parent IDs for this argument
-                const parentIds = getParentIds(argId);
-                const correspondingArgId = getCorrespondingArgId(argId);
-                const correspondingParentIds = getParentIds(correspondingArgId);
-                
-                // First, make sure all parent arguments are expanded
-                [...parentIds, ...correspondingParentIds].forEach(parentId => {{
-                    const parentContentEl = document.getElementById(`content-${{parentId}}`);
-                    const parentChildrenEl = document.getElementById(`children-${{parentId}}`);
-                    const parentChevronEl = document.getElementById(`chevron-${{parentId}}`);
-                    
-                    if (parentContentEl && !expandedStates[parentId]) {{
-                        // Expand this parent
-                        parentContentEl.style.display = 'block';
-                        if (parentChildrenEl) parentChildrenEl.style.display = 'block';
-                        if (parentChevronEl) parentChevronEl.style.transform = 'rotate(90deg)';
-                        expandedStates[parentId] = true;
-                    }}
-                }});
-                
-                // Now toggle this argument
-                const contentEl = document.getElementById(`content-${{argId}}`);
-                const childrenEl = document.getElementById(`children-${{argId}}`);
-                const chevronEl = document.getElementById(`chevron-${{argId}}`);
-                
-                const isExpanded = expandedStates[argId];
-                
-                // Toggle this argument's state
-                if (contentEl) {{
-                    contentEl.style.display = isExpanded ? 'none' : 'block';
-                }}
-                if (chevronEl) {{
-                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                }}
-                if (childrenEl) {{
-                    childrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
-                
-                // Update state
-                expandedStates[argId] = !isExpanded;
-                
-                // Also toggle corresponding argument on other side
-                const corrContentEl = document.getElementById(`content-${{correspondingArgId}}`);
-                const corrChildrenEl = document.getElementById(`children-${{correspondingArgId}}`);
-                const corrChevronEl = document.getElementById(`chevron-${{correspondingArgId}}`);
-                
-                if (corrContentEl) {{
-                    corrContentEl.style.display = contentEl.style.display;
-                    expandedStates[correspondingArgId] = expandedStates[argId];
-                }}
-                if (corrChevronEl) {{
-                    corrChevronEl.style.transform = chevronEl.style.transform;
-                }}
-                if (corrChildrenEl) {{
-                    corrChildrenEl.style.display = childrenEl ? childrenEl.style.display : 'none';
-                }}
-                
-                // If collapsing, also collapse all children
-                if (isExpanded) {{
-                    // Get all children
-                    const childrenIds = parentChildMap[argId] || [];
-                    const corrChildrenIds = parentChildMap[correspondingArgId] || [];
-                    
-                    // Collapse all children
-                    [...childrenIds, ...corrChildrenIds].forEach(childId => {{
-                        const childContentEl = document.getElementById(`content-${{childId}}`);
-                        const childChildrenEl = document.getElementById(`children-${{childId}}`);
-                        const childChevronEl = document.getElementById(`chevron-${{childId}}`);
-                        
-                        if (childContentEl) {{
-                            childContentEl.style.display = 'none';
-                            expandedStates[childId] = false;
-                        }}
-                        if (childChevronEl) {{
-                            childChevronEl.style.transform = '';
-                        }}
-                        if (childChildrenEl) {{
-                            childChildrenEl.style.display = 'none';
-                        }}
-                    }});
-                }}
             }}
             
             // Render the standard arguments view
@@ -1668,6 +1531,72 @@ def main():
                 }});
                 
                 container.innerHTML = html;
+            }}
+            
+            // Toggle argument expansion - improved hierarchical handling
+            function toggleArgument(fullId) {{
+                // Get information about this argument
+                const [side, argPath] = fullId.split('-', 1)[0] === 'claimant' || fullId.split('-', 1)[0] === 'respondent' 
+                    ? [fullId.split('-', 1)[0], fullId.substring(fullId.indexOf('-') + 1)] 
+                    : [fullId, ''];
+                
+                const contentId = `content-${{fullId}}`;
+                const childrenId = `children-${{fullId}}`;
+                const chevronId = `chevron-${{fullId}}`;
+                
+                // Elements to update
+                const contentEl = document.getElementById(contentId);
+                const childrenEl = document.getElementById(childrenId);
+                const chevronEl = document.getElementById(chevronId);
+                
+                // Check current state
+                const isExpanded = state.expandedArgs.has(fullId);
+                
+                // Toggle this argument
+                if (isExpanded) {{
+                    state.expandedArgs.delete(fullId);
+                    contentEl.style.display = 'none';
+                    if (chevronEl) chevronEl.style.transform = '';
+                    if (childrenEl) childrenEl.style.display = 'none';
+                }} else {{
+                    state.expandedArgs.add(fullId);
+                    contentEl.style.display = 'block';
+                    if (chevronEl) chevronEl.style.transform = 'rotate(90deg)';
+                    if (childrenEl) childrenEl.style.display = 'block';
+                    
+                    // Ensure all parent containers are also expanded
+                    ensureParentsExpanded(fullId);
+                }}
+                
+                // Find and toggle the paired argument
+                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
+                const pairedId = `${{otherSide}}-${{argPath}}`;
+                const pairedContentId = `content-${{pairedId}}`;
+                const pairedChildrenId = `children-${{pairedId}}`;
+                const pairedChevronId = `chevron-${{pairedId}}`;
+                
+                // Elements for paired argument
+                const pairedContentEl = document.getElementById(pairedContentId);
+                const pairedChildrenEl = document.getElementById(pairedChildrenId);
+                const pairedChevronEl = document.getElementById(pairedChevronId);
+                
+                // Update paired argument to match
+                if (pairedContentEl) {{
+                    if (isExpanded) {{
+                        state.expandedArgs.delete(pairedId);
+                        pairedContentEl.style.display = 'none';
+                        if (pairedChevronEl) pairedChevronEl.style.transform = '';
+                        if (pairedChildrenEl) pairedChildrenEl.style.display = 'none';
+                    }} else {{
+                        state.expandedArgs.add(pairedId);
+                        pairedContentEl.style.display = 'block';
+                        if (pairedChevronEl) pairedChevronEl.style.transform = 'rotate(90deg)';
+                        if (pairedChildrenEl) pairedChildrenEl.style.display = 'block';
+                        
+                        // Ensure all parent containers for paired argument are also expanded
+                        ensureParentsExpanded(pairedId);
+                    }}
+                }}
             }}
             
             // Render timeline
@@ -1777,20 +1706,23 @@ def main():
             }}
             
             // Initialize the page
-            buildParentChildMap(); // Build the parent-child map first
+            initializeArgumentMaps();  // Build hierarchy maps
             renderStandardArguments();
             renderTopicView();
             
             // Set up event listeners
-            document.getElementById('timeline-search').addEventListener('input', renderTimeline);
-            document.getElementById('disputed-only').addEventListener('change', renderTimeline);
-            document.getElementById('exhibits-search').addEventListener('input', renderExhibits);
-            document.getElementById('party-filter').addEventListener('change', renderExhibits);
-            document.getElementById('type-filter').addEventListener('change', renderExhibits);
+            document.getElementById('timeline-search')?.addEventListener('input', renderTimeline);
+            document.getElementById('disputed-only')?.addEventListener('change', renderTimeline);
+            document.getElementById('exhibits-search')?.addEventListener('input', renderExhibits);
+            document.getElementById('party-filter')?.addEventListener('change', renderExhibits);
+            document.getElementById('type-filter')?.addEventListener('change', renderExhibits);
             
             // Set initial active button style
             document.querySelector('.view-btn.active').style.backgroundColor = 'white';
             document.querySelector('.view-btn.active').style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+            
+            // Make this function available in the global scope for the onclick handlers
+            window.toggleArgument = toggleArgument;
         </script>
     </body>
     </html>

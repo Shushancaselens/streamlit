@@ -54,6 +54,20 @@ def add_custom_css():
         color: white !important;
     }
     
+    /* Hide toggle buttons but keep them functional */
+    button[data-testid="baseButton-secondary"]:has(div:contains("Toggle")) {
+        position: absolute;
+        opacity: 0;
+        height: 1px;
+        width: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+    
     /* Argument sections */
     .argument-header {
         background-color: #f9fafb;
@@ -226,8 +240,7 @@ with tab[0]:  # Summary of Arguments
         
         # Header with expand/collapse control
         header_html = f"""
-        <div class="argument-header {color_class}" 
-             onclick="this.dispatchEvent(new CustomEvent('click_header', {{'bubbles': true, 'detail': '{id}'}}))">
+        <div class="argument-header {color_class}">
             <div style="display: flex; align-items: center;">
                 <span style="margin-right: 0.5rem;">{id}. {title}</span>
                 <span class="tag tag-{color_class.split('-')[0]}" style="font-size: 0.75rem;">¶{paragraphs}</span>
@@ -236,23 +249,9 @@ with tab[0]:  # Summary of Arguments
         """
         st.markdown(header_html, unsafe_allow_html=True)
         
-        # Handle click event via JavaScript callback
-        handle_click = st.experimental_user(`
-            function(el) {
-                el.addEventListener('click_header', (e) => {
-                    let id = e.detail;
-                    window.parent.postMessage({
-                        type: 'streamlit:setComponentValue',
-                        value: id,
-                        dataType: 'string'
-                    }, '*');
-                });
-                return true;
-            }
-        `, default=None, key=f"click_{id}")
-        
-        if handle_click:
-            st.session_state.expanded_args[handle_click] = not st.session_state.expanded_args.get(handle_click, False)
+        # Handle click through Streamlit buttons (hidden with CSS styling)
+        if st.button(f"Toggle {id}", key=f"toggle_{id}", help=f"Expand/collapse {title}"):
+            st.session_state.expanded_args[id] = not st.session_state.expanded_args.get(id, False)
             st.experimental_rerun()
         
         # Content (only shown if expanded)

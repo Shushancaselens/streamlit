@@ -5,8 +5,476 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# [All the data functions remain unchanged]
-# ...
+# Create data structures as JSON for embedded components
+def get_argument_data():
+    claimant_args = {
+        "1": {
+            "id": "1",
+            "title": "Sporting Succession",
+            "paragraphs": "15-18",
+            "overview": {
+                "points": [
+                    "Analysis of multiple established criteria",
+                    "Focus on continuous use of identifying elements",
+                    "Public recognition assessment"
+                ],
+                "paragraphs": "15-16"
+            },
+            "factualPoints": [
+                {
+                    "point": "Continuous operation under same name since 1950",
+                    "date": "1950-present",
+                    "isDisputed": False,
+                    "paragraphs": "18-19",
+                    "exhibits": ["C-1"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-1",
+                    "title": "Historical Registration Documents",
+                    "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
+                    "citations": ["20", "21", "24"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2016/A/4576",
+                    "title": "Criteria for sporting succession",
+                    "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
+                    "paragraphs": "45-48",
+                    "citedParagraphs": ["45", "46", "47"]
+                }
+            ],
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis",
+                    "paragraphs": "20-45",
+                    "overview": {
+                        "points": [
+                            "Historical continuity of name usage",
+                            "Legal protection of naming rights",
+                            "Public recognition of club name"
+                        ],
+                        "paragraphs": "20-21"
+                    },
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26",
+                                    "exhibits": ["C-2"]
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30",
+                                    "exhibits": ["C-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52",
+                            "exhibits": ["C-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57",
+                                    "exhibits": ["C-5"]
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59",
+                                    "exhibits": ["C-5"]
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Detailed color specification documents from club archives, including official style guides, manufacturer specifications, and board meeting minutes about uniform decisions from 1950 to present day.",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "2": {
+            "id": "2",
+            "title": "Doping Violation Chain of Custody",
+            "paragraphs": "70-125",
+            "overview": {
+                "points": [
+                    "Analysis of sample collection and handling procedures",
+                    "Evaluation of laboratory testing protocols",
+                    "Assessment of chain of custody documentation"
+                ],
+                "paragraphs": "70-72"
+            }
+        }
+    }
+    
+    respondent_args = {
+        "1": {
+            "id": "1",
+            "title": "Sporting Succession Rebuttal",
+            "paragraphs": "200-218",
+            "overview": {
+                "points": [
+                    "Challenge to claimed continuity of operations",
+                    "Analysis of discontinuities in club operations",
+                    "Dispute over public recognition factors"
+                ],
+                "paragraphs": "200-202"
+            },
+            "factualPoints": [
+                {
+                    "point": "Operations ceased between 1975-1976",
+                    "date": "1975-1976",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "206-207",
+                    "exhibits": ["R-1"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-1",
+                    "title": "Federation Records",
+                    "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
+                    "citations": ["208", "209", "210"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2017/A/5465",
+                    "title": "Operational continuity requirement",
+                    "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
+                    "paragraphs": "211-213",
+                    "citedParagraphs": ["212"]
+                }
+            ],
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis Rebuttal",
+                    "paragraphs": "220-240",
+                    "overview": {
+                        "points": [
+                            "Name registration discontinuities",
+                            "Trademark ownership gaps",
+                            "Analysis of public confusion"
+                        ],
+                        "paragraphs": "220-222"
+                    },
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration Gap Evidence",
+                            "paragraphs": "226-230",
+                            "factualPoints": [
+                                {
+                                    "point": "Registration formally terminated on April 30, 1975",
+                                    "date": "April 30, 1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "226-227",
+                                    "exhibits": ["R-2"]
+                                },
+                                {
+                                    "point": "New entity registered on September 15, 1976",
+                                    "date": "September 15, 1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "228-229",
+                                    "exhibits": ["R-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "R-2",
+                                    "title": "Termination Certificate",
+                                    "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
+                                    "citations": ["226", "227"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis Rebuttal",
+                    "paragraphs": "241-249",
+                    "overview": {
+                        "points": [
+                            "Significant color variations",
+                            "Trademark registration gaps",
+                            "Multiple competing color claims"
+                        ],
+                        "paragraphs": "241-242"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246",
+                            "exhibits": ["R-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Side-by-side comparison of team uniforms from 1974 (pre-dissolution) and 1976 (post-new registration), showing significant differences in shade, pattern, and design elements. Includes expert color analysis report from textile historian confirming different dye formulations were used.",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247",
+                                    "exhibits": ["R-5"]
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249",
+                                    "exhibits": ["R-5"]
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Collection of promotional materials, merchandise, and internal design documents from both pre-1975 and post-1976 periods, showing the deliberate change in color symbolism used in marketing campaigns and communications with fans.",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "2": {
+            "id": "2",
+            "title": "Doping Chain of Custody Defense",
+            "paragraphs": "250-290",
+            "overview": {
+                "points": [
+                    "Defense of sample collection procedures",
+                    "Validation of laboratory testing protocols",
+                    "Completeness of documentation"
+                ],
+                "paragraphs": "250-252"
+            }
+        }
+    }
+    
+    topics = [
+        {
+            "id": "topic-1",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
+            "argumentIds": ["1"]
+        },
+        {
+            "id": "topic-2",
+            "title": "Doping Violation and Chain of Custody",
+            "description": "Issues related to doping test procedures and evidence handling",
+            "argumentIds": ["2"]
+        }
+    ]
+    
+    return {
+        "claimantArgs": claimant_args,
+        "respondentArgs": respondent_args,
+        "topics": topics
+    }
+
+def get_timeline_data():
+    return [
+        {
+            "date": "2023-01-15",
+            "appellantVersion": "Contract signed with Club",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-20",
+            "appellantVersion": "Player received notification of exclusion from team",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-22",
+            "appellantVersion": "Player requested explanation",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-01",
+            "appellantVersion": "Player sent termination letter",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-05",
+            "appellantVersion": "—",
+            "respondentVersion": "Club rejected termination as invalid",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-10",
+            "appellantVersion": "Player was denied access to training facilities",
+            "respondentVersion": "—",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-04-15",
+            "appellantVersion": "—",
+            "respondentVersion": "Club issued warning letter",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-05-01",
+            "appellantVersion": "Player filed claim with FIFA",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        }
+    ]
+
+def get_exhibits_data():
+    return [
+        {
+            "id": "C-1",
+            "party": "Appellant",
+            "title": "Employment Contract",
+            "type": "contract",
+            "summary": "Employment contract dated 15 January 2023 between Player and Club"
+        },
+        {
+            "id": "C-2",
+            "party": "Appellant",
+            "title": "Termination Letter",
+            "type": "letter",
+            "summary": "Player's termination letter sent on 1 April 2023"
+        },
+        {
+            "id": "C-3",
+            "party": "Appellant",
+            "title": "Email Correspondence",
+            "type": "communication",
+            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
+        },
+        {
+            "id": "C-4",
+            "party": "Appellant",
+            "title": "Witness Statement",
+            "type": "statement",
+            "summary": "Statement from team captain confirming Player's exclusion"
+        },
+        {
+            "id": "R-1",
+            "party": "Respondent",
+            "title": "Club Regulations",
+            "type": "regulations",
+            "summary": "Internal regulations of the Club dated January 2022"
+        },
+        {
+            "id": "R-2",
+            "party": "Respondent",
+            "title": "Warning Letter",
+            "type": "letter",
+            "summary": "Warning letter issued to Player on 15 April 2023"
+        },
+        {
+            "id": "R-3",
+            "party": "Respondent",
+            "title": "Training Schedule",
+            "type": "schedule",
+            "summary": "Team training schedule for March-April 2023"
+        }
+    ]
 
 # Main app
 def main():
@@ -125,28 +593,9 @@ def main():
                 gap: 20px;
             }}
             
-            /* Updated side column styling for better separation */
-            .appellant-column, .respondent-column {{
-                padding: 15px;
-                border-radius: 8px;
-            }}
-            
-            .appellant-column {{
-                background-color: rgba(49, 130, 206, 0.05);
-                border-left: 4px solid #3182ce;
-            }}
-            
-            .respondent-column {{
-                background-color: rgba(229, 62, 62, 0.05);
-                border-left: 4px solid #e53e3e;
-            }}
-            
             .side-heading {{
                 margin-bottom: 16px;
-                font-weight: 600;
-                font-size: 18px;
-                padding-bottom: 8px;
-                border-bottom: 2px solid;
+                font-weight: 500;
             }}
             
             .appellant-color {{
@@ -197,44 +646,29 @@ def main():
                 background-color: #fafafa;
                 border-radius: 6px;
                 padding: 12px;
-                margin-bottom: 16px; /* Increased margin */
-                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                margin-bottom: 10px;
             }}
             
             .item-title {{
                 font-weight: 600;
-                margin-bottom: 10px;
+                margin-bottom: 6px;
                 color: #333;
-                padding-bottom: 5px;
-                border-bottom: 1px solid #eee;
-                font-size: 16px; /* Increased font size */
-            }}
-            
-            .section-title {{
-                font-weight: 600;
-                font-size: 16px;
-                margin: 20px 0 10px 0;
-                color: #333;
-                padding-bottom: 5px;
-                border-bottom: 1px solid #eaeaea;
             }}
             
             .evidence-block {{
                 background-color: #fff8f0;
                 border-left: 3px solid #dd6b20;
-                padding: 12px 15px;
-                margin-bottom: 14px;
+                padding: 10px 12px;
+                margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             }}
             
             .caselaw-block {{
                 background-color: #ebf8ff;
                 border-left: 3px solid #3182ce;
-                padding: 12px 15px;
-                margin-bottom: 14px;
+                padding: 10px 12px;
+                margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             }}
             
             /* Tables */
@@ -277,10 +711,8 @@ def main():
             /* Nested content */
             .nested-content {{
                 padding-left: 20px;
-                margin-top: 15px;
-                margin-bottom: 15px;
-                border-left: 2px solid #f0f0f0;
-                /* Removed display: none to always show nested content */
+                margin-top: 10px;
+                border-left: 1px solid #f0f0f0;
             }}
             
             /* Simple list styling */
@@ -415,7 +847,7 @@ def main():
                 }});
             }});
             
-            // Render overview points - updated to show paragraphs with clearer section title
+            // Render overview points - updated to show paragraphs
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -466,8 +898,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="section-title">Factual Points</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Factual Points</div>
                     ${{pointsHtml}}
                 </div>
                 `;
@@ -495,8 +927,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="section-title">Evidence</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Evidence</div>
                     ${{evidenceHtml}}
                 </div>
                 `;
@@ -526,8 +958,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="section-title">Case Law</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Case Law</div>
                     ${{casesHtml}}
                 </div>
                 `;
@@ -573,10 +1005,10 @@ def main():
                 // Style based on side
                 const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
                 
-                // Render children if any - removed style="display: none;"
+                // Render children if any
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
+                    childrenHtml = `<div class="nested-content" id="children-${{argId}}" style="display: none;">`;
                     
                     Object.values(arg.children).forEach(child => {{
                         childrenHtml += renderArgument(child, side);
@@ -628,11 +1060,11 @@ def main():
                                     return `
                                     <div style="margin-top: 16px;">
                                         <div class="arguments-row">
-                                            <div class="appellant-column">
+                                            <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
                                                 ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
-                                            <div class="respondent-column">
+                                            <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
                                                 ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
@@ -650,13 +1082,18 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle a card without synchronizing - modified to only toggle content, not children
+            // Toggle a card without synchronizing
             function toggleCard(id) {{
                 const contentEl = document.getElementById(`content-${{id}}`);
+                const childrenEl = document.getElementById(`children-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
                 if (contentEl) {{
                     contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
+                }}
+                
+                if (childrenEl) {{
+                    childrenEl.style.display = childrenEl.style.display === 'block' ? 'none' : 'block';
                 }}
                 
                 if (chevronEl) {{
@@ -664,7 +1101,7 @@ def main():
                 }}
             }}
             
-            // Toggle an argument and its counterpart - modified to only toggle content
+            // Toggle an argument and its counterpart
             function toggleArgument(argId, pairId, side) {{
                 // First, handle the clicked argument
                 toggleCard(argId);
@@ -676,6 +1113,7 @@ def main():
                 // Toggle the counterpart (if it exists)
                 const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
                 if (counterpartContentEl) {{
+                    const counterpartChildrenEl = document.getElementById(`children-${{counterpartId}}`);
                     const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
                     
                     // Make sure the counterpart's state matches the toggled argument
@@ -688,6 +1126,10 @@ def main():
                         }} else {{
                             counterpartChevronEl.classList.remove('expanded');
                         }}
+                    }}
+                    
+                    if (counterpartChildrenEl) {{
+                        counterpartChildrenEl.style.display = originalDisplay;
                     }}
                 }}
             }}
@@ -735,7 +1177,52 @@ def main():
                 }});
             }}
             
-            // [Rest of JavaScript functions remain unchanged]
+            // Global search function
+            document.getElementById('global-search').addEventListener('input', function() {{
+                const searchTerm = this.value.toLowerCase();
+                
+                // If on arguments tab, filter visible arguments
+                if (document.getElementById('arguments').style.display !== 'none') {{
+                    // Implementation would go here
+                }}
+                
+                // If on timeline tab, filter timeline
+                if (document.getElementById('timeline').style.display !== 'none') {{
+                    filterTimeline(searchTerm);
+                }}
+                
+                // If on exhibits tab, filter exhibits
+                if (document.getElementById('exhibits').style.display !== 'none') {{
+                    filterExhibits(searchTerm);
+                }}
+            }});
+            
+            // Filter timeline based on search
+            function filterTimeline(searchTerm) {{
+                const rows = document.querySelectorAll('#timeline-body tr');
+                
+                rows.forEach(row => {{
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                }});
+            }}
+            
+            // Filter exhibits based on search
+            function filterExhibits(searchTerm) {{
+                const rows = document.querySelectorAll('#exhibits-body tr');
+                
+                rows.forEach(row => {{
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                }});
+            }}
+            
+            // Copy all content function
+            function copyAllContent() {{
+                // Simple implementation - would need to be extended 
+                // to actually collect and copy all content
+                alert('All content copied to clipboard');
+            }}
             
             // Initialize the page
             renderTopics();

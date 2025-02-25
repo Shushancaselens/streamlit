@@ -653,6 +653,12 @@ def main():
                 overflow: hidden;
                 margin-bottom: 1rem;
             }}
+            .argument-children .argument {{
+                margin-bottom: 0.5rem;
+            }}
+            .argument-children .argument:last-child {{
+                margin-bottom: 0;
+            }}
             .argument-header {{
                 padding: 0.75rem 1rem;
                 cursor: pointer;
@@ -685,6 +691,7 @@ def main():
                 padding-left: 1.5rem;
                 display: none;
                 position: relative;
+                margin-bottom: 0;
             }}
             
             /* Connector lines for tree structure */
@@ -953,6 +960,12 @@ def main():
             }}
             .disputed {{
                 color: #c53030;
+            }}
+
+            /* Fixes for argument tree alignment */
+            .argument-pair .argument-side {{
+                display: flex;
+                flex-direction: column;
             }}
         </style>
     </head>
@@ -1402,10 +1415,13 @@ def main():
                 // Child arguments
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        // Pass the full path for this argument's children
-                        return renderArgument(child, side, argId, level + 1);
-                    }}).join('');
+                    // Sort children by ID to ensure consistent rendering order
+                    const childrenArgs = Object.entries(arg.children)
+                        .sort(([idA], [idB]) => idA.localeCompare(idB, undefined, {{numeric: true}}))
+                        .map(([childId, child]) => {{
+                            // Pass the full path for this argument's children
+                            return renderArgument(child, side, argId, level + 1);
+                        }}).join('');
                     
                     childrenHtml = `
                     <div id="children-${{fullId}}" class="argument-children">

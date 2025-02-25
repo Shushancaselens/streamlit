@@ -936,3 +936,9 @@ def main():
                 font-size: 0.875rem;
                 font-weight: 500;
                 color: #4a5568;
+                border-bottom: 1px solid #e2e8f0;
+            }}
+            .data-table td {{
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                border-bottom: 1px solid #e2e

@@ -634,7 +634,17 @@ def main():
                 color: #e53e3e;
             }}
             
-            /* Argumen
+            /* Argument container and pairs */
+            .argument-pair {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+                position: relative;
+            }}
+            .argument-side {{
+                position: relative;
+            }}
             
             /* Argument card and details */
             .argument {{
@@ -1422,10 +1432,6 @@ def main():
             
             // Render a pair of arguments (claimant and respondent)
             function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
-                // First create a mapping of content sections to improve alignment
-                const claimantSections = analyzeArgumentStructure(claimantArg);
-                const respondentSections = analyzeArgumentStructure(respondentArg);
-                
                 return `
                 <div class="argument-pair">
                     <div class="argument-side">
@@ -1436,20 +1442,6 @@ def main():
                     </div>
                 </div>
                 `;
-            }}
-            
-            // Analyze argument structure to help with alignment
-            function analyzeArgumentStructure(arg) {{
-                if (!arg) return {{}};
-                const sections = {{}};
-                
-                if (arg.overview) sections.overview = true;
-                if (arg.legalPoints && arg.legalPoints.length) sections.legalPoints = true;
-                if (arg.factualPoints && arg.factualPoints.length) sections.factualPoints = true;
-                if (arg.evidence && arg.evidence.length) sections.evidence = true;
-                if (arg.caseLaw && arg.caseLaw.length) sections.caseLaw = true;
-                
-                return sections;
             }}
             
             // Render the standard arguments view

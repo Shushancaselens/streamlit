@@ -7,7 +7,6 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
-    # Data definitions here (same as before)
     claimant_args = {
         "1": {
             "id": "1",
@@ -108,7 +107,22 @@ def get_argument_data():
                                     "summary": "Official documentation of registration history",
                                     "citations": ["25", "26", "28"]
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.1.1.1": {
+                                    "id": "1.1.1.1",
+                                    "title": "Administrative Records Verification",
+                                    "paragraphs": "31-35",
+                                    "factualPoints": [
+                                        {
+                                            "point": "Independent verification of registration documents",
+                                            "date": "2022",
+                                            "isDisputed": False,
+                                            "paragraphs": "31-32"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 },
@@ -148,7 +162,56 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57"
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Preservation",
+                                    "paragraphs": "61-65",
+                                    "factualPoints": [
+                                        {
+                                            "point": "Core identity maintained despite minor variations",
+                                            "date": "1950-2022",
+                                            "isDisputed": False,
+                                            "paragraphs": "61-62"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "1.2.2": {
+                            "id": "1.2.2",
+                            "title": "Fan Recognition Analysis",
+                            "paragraphs": "66-69",
+                            "factualPoints": [
+                                {
+                                    "point": "Survey showing 95% fan recognition of club colors",
+                                    "date": "2021",
+                                    "isDisputed": False,
+                                    "paragraphs": "66-67"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },
@@ -171,7 +234,35 @@ def get_argument_data():
                     "regulations": ["WADA Code 2021", "International Standard for Testing"],
                     "paragraphs": "73-75"
                 }
-            ]
+            ],
+            "children": {
+                "2.1": {
+                    "id": "2.1",
+                    "title": "Sample Collection Procedures",
+                    "paragraphs": "76-85",
+                    "factualPoints": [
+                        {
+                            "point": "Collection protocol followed WADA guidelines",
+                            "date": "2022-11-15",
+                            "isDisputed": False,
+                            "paragraphs": "76-78"
+                        }
+                    ]
+                },
+                "2.2": {
+                    "id": "2.2",
+                    "title": "Laboratory Analysis Process",
+                    "paragraphs": "86-95",
+                    "factualPoints": [
+                        {
+                            "point": "WADA accredited laboratory performed testing",
+                            "date": "2022-11-20",
+                            "isDisputed": False,
+                            "paragraphs": "86-88"
+                        }
+                    ]
+                }
+            }
         }
     }
     
@@ -269,7 +360,22 @@ def get_argument_data():
                                     "summary": "Official documentation of registration termination",
                                     "citations": ["226", "227"]
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.1.1.1": {
+                                    "id": "1.1.1.1",
+                                    "title": "Registration Document Verification",
+                                    "paragraphs": "231-235",
+                                    "factualPoints": [
+                                        {
+                                            "point": "Independent verification of termination certificate",
+                                            "date": "2022",
+                                            "isDisputed": False,
+                                            "paragraphs": "231-232"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 },
@@ -309,7 +415,57 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247"
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Brand Identity Disruption",
+                                    "paragraphs": "250-255",
+                                    "factualPoints": [
+                                        {
+                                            "point": "Significant changes in visual identity post-1976",
+                                            "date": "1976-1980",
+                                            "isDisputed": False,
+                                            "paragraphs": "250-251"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "1.2.2": {
+                            "id": "1.2.2",
+                            "title": "Fan Perception Analysis",
+                            "paragraphs": "256-260",
+                            "factualPoints": [
+                                {
+                                    "point": "Survey showing 45% of fans perceive post-1976 club as different entity",
+                                    "date": "2021",
+                                    "isDisputed": False,
+                                    "paragraphs": "256-257"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },
@@ -332,7 +488,35 @@ def get_argument_data():
                     "regulations": ["CAS 2019/A/6148"],
                     "paragraphs": "253-255"
                 }
-            ]
+            ],
+            "children": {
+                "2.1": {
+                    "id": "2.1",
+                    "title": "Sample Collection Defense",
+                    "paragraphs": "256-265",
+                    "factualPoints": [
+                        {
+                            "point": "Minor deviations did not compromise sample integrity",
+                            "date": "2022-11-15",
+                            "isDisputed": False,
+                            "paragraphs": "256-258"
+                        }
+                    ]
+                },
+                "2.2": {
+                    "id": "2.2",
+                    "title": "Laboratory Analysis Validation",
+                    "paragraphs": "266-275",
+                    "factualPoints": [
+                        {
+                            "point": "Testing methods were scientifically validated and reliable",
+                            "date": "2022-11-20",
+                            "isDisputed": False,
+                            "paragraphs": "266-268"
+                        }
+                    ]
+                }
+            }
         }
     }
     
@@ -574,12 +758,12 @@ def main():
                 position: relative;
             }}
             
-            /* Argument card and details */
+            /* Argument card and details - Updated styling to match screenshot */
             .argument {{
-                border: 1px solid #e2e8f0;
                 border-radius: 0.375rem;
                 overflow: hidden;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
+                background-color: #f8fafc; /* Lighter background */
             }}
             .argument-header {{
                 padding: 0.75rem 1rem;
@@ -587,6 +771,12 @@ def main():
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                border-bottom: 1px solid #e2e8f0;
+                background-color: #f8fafc; /* Lighter background */
+                transition: background-color 0.2s;
+            }}
+            .argument-header:hover {{
+                background-color: #f1f5f9; /* Subtle hover effect */
             }}
             .argument-header-left {{
                 display: flex;
@@ -595,17 +785,104 @@ def main():
             }}
             .argument-content {{
                 padding: 1rem;
-                border-top: 1px solid #e2e8f0;
                 display: none;
                 background-color: white;
             }}
-            .claimant-header {{
-                background-color: #ebf8ff;
-                border-color: #bee3f8;
+            
+            /* Styling for sub-arguments */
+            .sub-argument {{
+                margin-left: 1.5rem;
+                position: relative;
+                border-left: 1px solid #e2e8f0;
+                padding-left: 1rem;
+                margin-top: 0.5rem;
             }}
-            .respondent-header {{
-                background-color: #fff5f5;
-                border-color: #fed7d7;
+            .sub-argument .argument-header {{
+                background-color: white;
+                border: none;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 0.5rem 1rem;
+            }}
+            
+            /* Updated legal points styling to match screenshot */
+            .legal-point-section {{
+                margin-bottom: 1.5rem;
+            }}
+            .legal-point-section h6 {{
+                font-size: 0.9rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: #4a5568;
+            }}
+            .legal-point {{
+                background-color: #f8fafc;
+                border-radius: 0.25rem;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+            }}
+            .legal-point-header {{
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }}
+            .legal-badge {{
+                display: inline-block;
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+                border-radius: 0.25rem;
+                background-color: #ebf8ff;
+                color: #2c5282;
+            }}
+            .disputed-badge {{
+                display: inline-block;
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+                border-radius: 0.25rem;
+                background-color: #fed7d7;
+                color: #c53030;
+            }}
+            .legal-point-content {{
+                font-size: 0.9rem;
+                margin-bottom: 0.75rem;
+            }}
+            .regulation-badge {{
+                display: inline-block;
+                padding: 0.2rem 0.5rem;
+                font-size: 0.75rem;
+                border-radius: 0.25rem;
+                background-color: #ebf8ff;
+                color: #2c5282;
+                margin-right: 0.5rem;
+            }}
+            .paragraph-badge {{
+                font-size: 0.75rem;
+                color: #718096;
+            }}
+            
+            /* Nested arguments styling to show the hierarchy clearly */
+            .nested-argument {{
+                border-left: 1px solid #e2e8f0;
+                margin-left: 1.5rem;
+                padding-left: 0.75rem;
+                margin-top: 0.25rem;
+                position: relative;
+            }}
+            .nested-argument:before {{
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 0.75rem;
+                height: 1px;
+                background-color: #e2e8f0;
+            }}
+            .argument-title {{
+                color: #3182ce;
+                font-weight: 500;
+            }}
+            .argument-title-respondent {{
+                color: #e53e3e;
+                font-weight: 500;
             }}
             
             /* Child arguments container */
@@ -613,36 +890,14 @@ def main():
                 padding-left: 1.5rem;
                 display: none;
                 position: relative;
-            }}
-            
-            /* Connector lines for tree structure */
-            .connector-vertical {{
-                position: absolute;
-                left: 0.75rem;
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: #e2e8f0;
-            }}
-            .connector-horizontal {{
-                position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
-                height: 1px;
-                background-color: #e2e8f0;
-            }}
-            .claimant-connector {{
-                background-color: rgba(59, 130, 246, 0.5);
-            }}
-            .respondent-connector {{
-                background-color: rgba(239, 68, 68, 0.5);
+                border-left: 1px solid #e2e8f0;
+                margin-top: 0.25rem;
             }}
             
             /* Badge styling */
             .badge {{
                 display: inline-block;
-                padding: 0.25rem 0.5rem;
+                padding: 0.2rem 0.5rem;
                 border-radius: 0.25rem;
                 font-size: 0.75rem;
             }}
@@ -654,19 +909,10 @@ def main():
                 background-color: #fff5f5;
                 color: #e53e3e;
             }}
-            .legal-badge {{
-                background-color: #ebf8ff;
-                color: #2c5282;
-                margin-right: 0.25rem;
-            }}
             .factual-badge {{
                 background-color: #f0fff4;
                 color: #276749;
                 margin-right: 0.25rem;
-            }}
-            .disputed-badge {{
-                background-color: #fed7d7;
-                color: #c53030;
             }}
             .type-badge {{
                 background-color: #edf2f7;
@@ -678,136 +924,10 @@ def main():
                 margin-bottom: 1.5rem;
             }}
             .content-section-title {{
-                font-size: 0.875rem;
-                font-weight: 500;
-                margin-bottom: 0.5rem;
-            }}
-            .point-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .point-header {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.25rem;
-            }}
-            .point-date {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.25rem;
-                font-size: 0.75rem;
-                color: #718096;
-            }}
-            .point-text {{
-                font-size: 0.875rem;
-                color: #4a5568;
-            }}
-            .point-citation {{
-                display: inline-block;
-                margin-top: 0.5rem;
-                font-size: 0.75rem;
-                color: #718096;
-            }}
-            
-            /* Overview points */
-            .overview-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }}
-            .overview-header {{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 0.5rem;
-            }}
-            .overview-list {{
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }}
-            .overview-item {{
-                display: flex;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }}
-            .overview-bullet {{
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background-color: #3182ce;
-                margin-top: 0.5rem;
-            }}
-            
-            /* Evidence and Case Law */
-            .reference-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .reference-header {{
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 0.25rem;
-            }}
-            .reference-title {{
-                font-size: 0.875rem;
-                font-weight: 500;
-            }}
-            .reference-summary {{
-                font-size: 0.75rem;
-                color: #718096;
-                margin-top: 0.25rem;
-                margin-bottom: 0.5rem;
-            }}
-            .reference-citations {{
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.25rem;
-                margin-top: 0.5rem;
-            }}
-            .citation-tag {{
-                background-color: #edf2f7;
-                color: #4a5568;
-                padding: 0.125rem 0.375rem;
-                border-radius: 0.25rem;
-                font-size: 0.75rem;
-            }}
-            
-            /* Legal references styling */
-            .legal-point {{
-                background-color: #ebf8ff;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .factual-point {{
-                background-color: #f0fff4;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            
-            /* Topic view */
-            .topic-section {{
-                margin-bottom: 2rem;
-            }}
-            .topic-title {{
-                font-size: 1.25rem;
+                font-size: 0.9rem;
                 font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 0.25rem;
-            }}
-            .topic-description {{
-                font-size: 0.875rem;
-                color: #718096;
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
+                color: #4a5568;
             }}
             
             /* Timeline & Exhibits */
@@ -883,49 +1003,33 @@ def main():
                 color: #c53030;
             }}
             
-            /* NEW: Alignment specific styles */
-            /* Argument grid with synchronized rows */
-            .synchronized-row {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
+            /* Toggle chevron with rotation */
+            .chevron {{
+                transition: transform 0.2s;
+            }}
+            .chevron.rotated {{
+                transform: rotate(90deg);
             }}
             
-            /* Force equal heights between pairs */
-            .synchronized-argument {{
-                display: flex;
-                flex-direction: column;
+            /* Visual indicator of sub-arguments */
+            .subargument-count {{
+                font-size: 0.75rem;
+                font-weight: normal;
+                padding: 0.1rem 0.5rem;
+                border-radius: 9999px;
+                background-color: #edf2f7;
+                color: #4a5568;
             }}
             
-            /* Ensure content sections align */
-            .aligned-content-section {{
-                display: flex;
-                flex-direction: column;
+            /* Display all nested arguments initially */
+            .show-all-arguments .argument-children {{
+                display: block;
             }}
-            
-            /* Synchronized children expansion */
-            .synchronized-children {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                padding-left: 1.5rem;
-                position: relative;
+            .show-all-arguments .argument-content {{
+                display: block;
             }}
-            
-            /* Container for each point to enforce alignment */
-            .point-container {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 0.5rem;
-            }}
-            
-            /* Alignment for section headers */
-            .aligned-section-headers {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 0.5rem;
+            .show-all-arguments .chevron {{
+                transform: rotate(90deg);
             }}
         </style>
     </head>
@@ -943,11 +1047,12 @@ def main():
                 <div class="view-toggle-container">
                     <button class="view-btn active" data-view="standard">Standard View</button>
                     <button class="view-btn" data-view="topic">Topic View</button>
+                    <button class="view-btn" data-view="expanded">Show All Sub-arguments</button>
                 </div>
             </div>
             
             <!-- Standard View -->
-            <div id="standard-view" class="view-content">
+            <div id="standard-view" class="view-content show-all-arguments">
                 <div class="arguments-header">
                     <h3 class="claimant-color">Claimant's Arguments</h3>
                     <h3 class="respondent-color">Respondent's Arguments</h3>
@@ -1079,12 +1184,6 @@ def main():
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
             
-            // Keep track of expanded states
-            const expandedStates = {{}};
-            
-            // Track section heights for alignment
-            const sectionHeights = {{}};
-            
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
                 tab.addEventListener('click', function() {{
@@ -1123,302 +1222,134 @@ def main():
                     if (viewId === 'standard') {{
                         document.getElementById('standard-view').style.display = 'block';
                         document.getElementById('topic-view').style.display = 'none';
-                    }} else {{
+                        document.getElementById('standard-view').classList.remove('show-all-arguments');
+                    }} else if (viewId === 'topic') {{
                         document.getElementById('standard-view').style.display = 'none';
                         document.getElementById('topic-view').style.display = 'block';
+                        document.getElementById('topic-view').classList.remove('show-all-arguments');
+                    }} else if (viewId === 'expanded') {{
+                        document.getElementById('standard-view').style.display = 'block';
+                        document.getElementById('topic-view').style.display = 'none';
+                        document.getElementById('standard-view').classList.add('show-all-arguments');
                     }}
                 }});
             }});
-            
-            // Render overview points
-            function renderOverviewPoints(overview, id) {{
-                if (!overview || !overview.points || overview.points.length === 0) return '';
-                
-                const pointsHtml = overview.points.map(point => 
-                    `<div class="overview-item">
-                        <div class="overview-bullet"></div>
-                        <span class="point-text">${{point}}</span>
-                    </div>`
-                ).join('');
-                
-                return `
-                <div id="overview-${{id}}" class="overview-block">
-                    <div class="overview-header">
-                        <h6 class="content-section-title">Key Points</h6>
-                        <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
-                    </div>
-                    <div class="overview-list">
-                        ${{pointsHtml}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Render legal points with synced section ID
-            function renderLegalPoints(points, id) {{
+
+            // Render legal points in the flat, cleaner style from screenshot
+            function renderLegalPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
-                const pointsHtml = points.map((point, index) => {{
-                    const pointId = `legal-point-${{id}}-${{index}}`;
-                    
+                const pointsHtml = points.map(point => {{
                     const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        ? `<span class="disputed-badge">Disputed</span>` 
                         : '';
                     
                     const regulations = point.regulations 
-                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
+                        ? point.regulations.map(reg => `<span class="regulation-badge">${{reg}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div id="${{pointId}}" class="legal-point">
-                        <div class="point-header">
-                            <span class="badge legal-badge">Legal</span>
+                    <div class="legal-point">
+                        <div class="legal-point-header">
+                            <span class="legal-badge">Legal</span>
                             ${{disputed}}
                         </div>
-                        <p class="point-text">${{point.point}}</p>
-                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
+                        <p class="legal-point-content">${{point.point}}</p>
+                        <div>
                             ${{regulations}}
-                            <span class="point-citation">¶${{point.paragraphs}}</span>
+                            <span class="paragraph-badge">¶${{point.paragraphs}}</span>
                         </div>
                     </div>
                     `;
                 }}).join('');
                 
                 return `
-                <div id="legal-points-${{id}}" class="content-section aligned-content-section">
-                    <h6 class="content-section-title">Legal Points</h6>
+                <div class="legal-point-section">
+                    <h6>Legal Points</h6>
                     ${{pointsHtml}}
                 </div>
                 `;
             }}
             
-            // Render factual points with synced section ID
-            function renderFactualPoints(points, id) {{
-                if (!points || points.length === 0) return '';
+            // Render sub-arguments recursively
+            function renderSubArguments(arg, side, level = 0) {{
+                if (!arg || !arg.children || Object.keys(arg.children).length === 0) {{
+                    return '';
+                }}
                 
-                const pointsHtml = points.map((point, index) => {{
-                    const pointId = `factual-point-${{id}}-${{index}}`;
-                    
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
-                        : '';
-                    
-                    return `
-                    <div id="${{pointId}}" class="factual-point">
-                        <div class="point-header">
-                            <span class="badge factual-badge">Factual</span>
-                            ${{disputed}}
-                        </div>
-                        <div class="point-date">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            ${{point.date}}
-                        </div>
-                        <p class="point-text">${{point.point}}</p>
-                        <span class="point-citation">¶${{point.paragraphs}}</span>
-                    </div>
-                    `;
-                }}).join('');
+                // Style based on side
+                const textColorClass = side === 'claimant' ? 'argument-title' : 'argument-title-respondent';
                 
-                return `
-                <div id="factual-points-${{id}}" class="content-section aligned-content-section">
-                    <h6 class="content-section-title">Factual Points</h6>
-                    ${{pointsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render evidence with synced section ID
-            function renderEvidence(evidence, id) {{
-                if (!evidence || evidence.length === 0) return '';
+                let html = '';
                 
-                const itemsHtml = evidence.map((item, index) => {{
-                    const itemId = `evidence-${{id}}-${{index}}`;
+                // Render each child argument
+                Object.values(arg.children).forEach(child => {{
+                    const childId = `${{side}}-${{child.id}}`;
+                    const hasSubArgs = child.children && Object.keys(child.children).length > 0;
+                    const subArgCount = hasSubArgs ? Object.keys(child.children).length : 0;
                     
-                    const citations = item.citations 
-                        ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('') 
-                        : '';
-                    
-                    return `
-                    <div id="${{itemId}}" class="reference-block">
-                        <div class="reference-header">
-                            <span class="reference-title">${{item.id}}: ${{item.title}}</span>
-                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    html += `
+                    <div class="nested-argument">
+                        <div class="argument-header" id="header-${{childId}}">
+                            <div class="argument-header-left">
+                                <svg class="chevron" id="chevron-${{childId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
-                            </button>
-                        </div>
-                        <p class="reference-summary">${{item.summary}}</p>
-                        <div class="reference-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
-                            ${{citations}}
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div id="evidence-section-${{id}}" class="content-section aligned-content-section">
-                    <h6 class="content-section-title">Evidence</h6>
-                    ${{itemsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render case law with synced section ID
-            function renderCaseLaw(cases, id) {{
-                if (!cases || cases.length === 0) return '';
-                
-                const itemsHtml = cases.map((item, index) => {{
-                    const itemId = `case-law-${{id}}-${{index}}`;
-                    
-                    const citedParagraphs = item.citedParagraphs 
-                        ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('') 
-                        : '';
-                    
-                    return `
-                    <div id="${{itemId}}" class="reference-block">
-                        <div class="reference-header">
-                            <div>
-                                <span class="reference-title">${{item.caseNumber}}</span>
-                                <span class="point-citation" style="margin-left: 0.5rem;">¶${{item.paragraphs}}</span>
+                                <span class="${{textColorClass}}">${{child.id}}. ${{child.title}}</span>
+                                ${{hasSubArgs ? `<span class="subargument-count">${{subArgCount}} subarguments</span>` : `<span class="paragraph-badge">¶${{child.paragraphs}}</span>`}}
                             </div>
-                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                </svg>
-                            </button>
                         </div>
-                        <p class="reference-summary">${{item.title}}</p>
-                        <p class="point-text">${{item.relevance}}</p>
-                        <div class="reference-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
-                            ${{citedParagraphs}}
+                        
+                        <div class="argument-content" id="content-${{childId}}">
+                            ${{renderLegalPoints(child.legalPoints || [])}}
                         </div>
+                        
+                        ${{renderSubArguments(child, side, level + 1)}}
                     </div>
                     `;
-                }}).join('');
+                }});
                 
-                return `
-                <div id="case-law-section-${{id}}" class="content-section aligned-content-section">
-                    <h6 class="content-section-title">Case Law</h6>
-                    ${{itemsHtml}}
-                </div>
-                `;
+                return html;
             }}
             
-            // Render argument content - now with synchronized sections
-            function renderArgumentContent(arg, side, path) {{
-                // Create unique ID
-                const id = `${{side}}-${{path}}`;
-                
-                // Prepare content sections
-                let content = '';
-                
-                // Overview points
-                if (arg.overview) {{
-                    content += renderOverviewPoints(arg.overview, id);
-                }}
-                
-                // Legal points 
-                if (arg.legalPoints) {{
-                    content += renderLegalPoints(arg.legalPoints, id);
-                }}
-                
-                // Factual points
-                if (arg.factualPoints) {{
-                    content += renderFactualPoints(arg.factualPoints, id);
-                }}
-                
-                // Evidence
-                if (arg.evidence) {{
-                    content += renderEvidence(arg.evidence, id);
-                }}
-                
-                // Case law
-                if (arg.caseLaw) {{
-                    content += renderCaseLaw(arg.caseLaw, id);
-                }}
-                
-                return content;
-            }}
-            
-            // Render a single argument - updated with synchronized rows
-            function renderArgument(arg, side, path = '', level = 0) {{
+            // Render a single argument with sub-arguments
+            function renderArgument(arg, side) {{
                 if (!arg) return '';
                 
-                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
-                const fullId = `${{side}}-${{argId}}`;
-                
+                const argId = `${{side}}-${{arg.id}}`;
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
                 // Style based on side
-                const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
-                const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
-                const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
-                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
+                const headerBgClass = side === 'claimant' ? 'bg-blue-50' : 'bg-red-50';
+                const textColorClass = side === 'claimant' ? 'argument-title' : 'argument-title-respondent';
                 
-                // Header content
-                const headerHtml = `
-                <div class="argument-header-left">
-                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
-                        ${{arg.id}}. ${{arg.title}}
-                    </h5>
-                </div>
-                <div>
-                    ${{hasChildren 
-                        ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
-                        : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
-                    }}
-                </div>
-                `;
-                
-                // Detailed content - with synchronized IDs for alignment
-                const contentHtml = renderArgumentContent(arg, side, argId);
-                
-                // Child arguments - with synchronized display
-                let childrenHtml = '';
-                if (hasChildren) {{
-                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        return renderArgument(child, side, argId, level + 1);
-                    }}).join('');
+                // Main argument
+                let html = `
+                <div class="argument" id="arg-${{argId}}">
+                    <div class="argument-header" id="header-${{argId}}">
+                        <div class="argument-header-left">
+                            <svg class="chevron" id="chevron-${{argId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span class="${{textColorClass}}">${{arg.id}}. ${{arg.title}}</span>
+                            ${{hasChildren ? `<span class="subargument-count">${{childCount}} subarguments</span>` : `<span class="paragraph-badge">¶${{arg.paragraphs}}</span>`}}
+                        </div>
+                    </div>
                     
-                    childrenHtml = `
-                    <div id="children-${{fullId}}" class="argument-children">
-                        <div class="connector-vertical ${{connectorClass}}"></div>
-                        ${{childrenArgs}}
+                    <div class="argument-content" id="content-${{argId}}">
+                        ${{renderLegalPoints(arg.legalPoints || [])}}
                     </div>
-                    `;
-                }}
-                
-                // Complete argument HTML
-                return `
-                <div id="argument-${{fullId}}" class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
-                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
-                        ${{headerHtml}}
-                    </div>
-                    <div id="content-${{fullId}}" class="argument-content">
-                        ${{contentHtml}}
-                    </div>
-                    ${{childrenHtml}}
+                    
+                    ${{renderSubArguments(arg, side)}}
                 </div>
                 `;
+                
+                return html;
             }}
             
-            // Render a pair of arguments - with synchronized heights
-            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
+            // Render a pair of arguments (claimant and respondent)
+            function renderArgumentPair(claimantArg, respondentArg) {{
                 return `
                 <div class="argument-pair">
                     <div class="argument-side">
@@ -1448,74 +1379,26 @@ def main():
                 
                 container.innerHTML = html;
                 
-                // After rendering, apply vertical alignment
-                setTimeout(syncArgumentHeights, 100);
-            }}
-            
-            // Synchronize argument heights between claimant and respondent
-            function syncArgumentHeights() {{
-                // Sync top-level argument content
-                Object.keys(argsData.claimantArgs).forEach(argId => {{
-                    if (argsData.respondentArgs[argId]) {{
-                        // Sync content sections
-                        syncContentSections('claimant', 'respondent', argId);
+                // Add click handlers
+                document.querySelectorAll('.argument-header').forEach(header => {{
+                    header.addEventListener('click', function() {{
+                        // Get the content and chevron elements
+                        const contentId = this.id.replace('header-', 'content-');
+                        const chevronId = this.id.replace('header-', 'chevron-');
                         
-                        // Recursively sync children if they exist
-                        syncChildArguments('claimant', 'respondent', argId, argsData.claimantArgs[argId], argsData.respondentArgs[argId]);
-                    }}
-                }});
-            }}
-            
-            // Sync content sections between claimant and respondent
-            function syncContentSections(sideName1, sideName2, argId) {{
-                // Get content elements for both sides
-                const sections = ['overview', 'legal-points', 'factual-points', 'evidence-section', 'case-law-section'];
-                
-                sections.forEach(section => {{
-                    const section1 = document.getElementById(`${{section}}-${{sideName1}}-${{argId}}`);
-                    const section2 = document.getElementById(`${{section}}-${{sideName2}}-${{argId}}`);
-                    
-                    if (section1 && section2) {{
-                        // Measure heights
-                        const height1 = section1.offsetHeight;
-                        const height2 = section2.offsetHeight;
+                        const content = document.getElementById(contentId);
+                        const chevron = document.getElementById(chevronId);
                         
-                        // Set to max height
-                        const maxHeight = Math.max(height1, height2);
-                        section1.style.minHeight = `${{maxHeight}}px`;
-                        section2.style.minHeight = `${{maxHeight}}px`;
-                    }}
-                }});
-                
-                // If expanded, sync the overall argument content height
-                const side1Content = document.getElementById(`content-${{sideName1}}-${{argId}}`);
-                const side2Content = document.getElementById(`content-${{sideName2}}-${{argId}}`);
-                
-                if (side1Content && side2Content && side1Content.style.display === 'block') {{
-                    const height1 = side1Content.offsetHeight;
-                    const height2 = side2Content.offsetHeight;
-                    const maxHeight = Math.max(height1, height2);
-                    
-                    side1Content.style.minHeight = `${{maxHeight}}px`;
-                    side2Content.style.minHeight = `${{maxHeight}}px`;
-                }}
-            }}
-            
-            // Recursively sync child arguments
-            function syncChildArguments(sideName1, sideName2, parentId, arg1, arg2) {{
-                if (!arg1 || !arg2 || !arg1.children || !arg2.children) return;
-                
-                // For each child in arg1
-                Object.keys(arg1.children).forEach(childId => {{
-                    if (arg2.children[childId]) {{
-                        const fullChildId = parentId ? `${{parentId}}-${{childId}}` : childId;
+                        // Toggle display
+                        if (content) {{
+                            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                        }}
                         
-                        // Sync this child's content sections
-                        syncContentSections(sideName1, sideName2, fullChildId);
-                        
-                        // Recursively sync this child's children
-                        syncChildArguments(sideName1, sideName2, fullChildId, arg1.children[childId], arg2.children[childId]);
-                    }}
+                        // Toggle chevron rotation
+                        if (chevron) {{
+                            chevron.classList.toggle('rotated');
+                        }}
+                    }});
                 }});
             }}
             
@@ -1527,7 +1410,7 @@ def main():
                 // For each topic
                 argsData.topics.forEach(topic => {{
                     html += `
-                    <div class="topic-section">
+                    <div class="topic-section show-all-arguments">
                         <h2 class="topic-title">${{topic.title}}</h2>
                         <p class="topic-description">${{topic.description}}</p>
                         
@@ -1551,60 +1434,6 @@ def main():
                 }});
                 
                 container.innerHTML = html;
-                
-                // Apply vertical alignment
-                setTimeout(syncArgumentHeights, 100);
-            }}
-            
-            // Toggle argument expansion - updated to better handle alignment
-            function toggleArgument(fullId, argPath) {{
-                // Determine the side (claimant or respondent)
-                const [side, ...rest] = fullId.split('-');
-                
-                // Toggle this argument
-                const contentEl = document.getElementById(`content-${{fullId}}`);
-                const childrenEl = document.getElementById(`children-${{fullId}}`);
-                const chevronEl = document.getElementById(`chevron-${{fullId}}`);
-                
-                const isExpanded = contentEl.style.display === 'block';
-                contentEl.style.display = isExpanded ? 'none' : 'block';
-                if (chevronEl) {{
-                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                }}
-                if (childrenEl) {{
-                    childrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
-                
-                // Save expanded state
-                expandedStates[fullId] = !isExpanded;
-                
-                // Find and toggle the paired argument based on the path
-                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const pairedId = `${{otherSide}}-${{argPath}}`;
-                
-                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
-                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
-                
-                if (pairedContentEl) {{
-                    pairedContentEl.style.display = contentEl.style.display;
-                    expandedStates[pairedId] = expandedStates[fullId];
-                }}
-                
-                if (pairedChevronEl) {{
-                    pairedChevronEl.style.transform = chevronEl.style.transform;
-                }}
-                
-                if (pairedChildrenEl) {{
-                    pairedChildrenEl.style.display = childrenEl ? childrenEl.style.display : 'none';
-                }}
-                
-                // If now expanded, make sure heights are in sync
-                if (!isExpanded) {{
-                    setTimeout(() => {{
-                        syncContentSections(side, otherSide, argPath);
-                    }}, 50);
-                }}
             }}
             
             // Render timeline
@@ -1718,11 +1547,11 @@ def main():
             renderTopicView();
             
             // Set up event listeners
-            document.getElementById('timeline-search').addEventListener('input', renderTimeline);
-            document.getElementById('disputed-only').addEventListener('change', renderTimeline);
-            document.getElementById('exhibits-search').addEventListener('input', renderExhibits);
-            document.getElementById('party-filter').addEventListener('change', renderExhibits);
-            document.getElementById('type-filter').addEventListener('change', renderExhibits);
+            document.getElementById('timeline-search')?.addEventListener('input', renderTimeline);
+            document.getElementById('disputed-only')?.addEventListener('change', renderTimeline);
+            document.getElementById('exhibits-search')?.addEventListener('input', renderExhibits);
+            document.getElementById('party-filter')?.addEventListener('change', renderExhibits);
+            document.getElementById('type-filter')?.addEventListener('change', renderExhibits);
             
             // Set initial active button style
             document.querySelector('.view-btn.active').style.backgroundColor = 'white';

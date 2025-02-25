@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from streamlit_echarts import st_echarts
 import streamlit.components.v1 as components
 import json
 

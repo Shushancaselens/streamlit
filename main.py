@@ -350,11 +350,12 @@ def get_argument_data():
         }
     }
     
+    # Modified to have separate topics for each main argument
     topics = [
         {
             "id": "topic-1",
-            "title": "Sporting Succession and Identity",
-            "description": "Questions of club identity, continuity, and succession rights",
+            "title": "Sporting Succession",
+            "description": "Analysis of club succession rights and continuity of operations",
             "argumentIds": ["1"]
         },
         {
@@ -596,17 +597,13 @@ def main():
             .side-heading {{
                 margin-bottom: 16px;
                 font-weight: 500;
-                padding: 8px 12px;
-                border-radius: 6px;
             }}
             
             .appellant-color {{
-                background-color: rgba(49, 130, 206, 0.1);
                 color: #3182ce;
             }}
             
             .respondent-color {{
-                background-color: rgba(229, 62, 62, 0.1);
                 color: #e53e3e;
             }}
             
@@ -717,6 +714,7 @@ def main():
                 padding-left: 20px;
                 margin-top: 10px;
                 border-left: 1px solid #f0f0f0;
+                /* Removed display: none to always show nested content */
             }}
             
             /* Simple list styling */
@@ -759,41 +757,6 @@ def main():
                 font-size: 11px;
                 color: #666;
                 margin-right: 2px;
-            }}
-            
-            /* Argument section styles */
-            .argument-section {{
-                border-radius: 6px;
-                margin-bottom: 10px;
-                border: 1px solid #eee;
-            }}
-            
-            .argument-header {{
-                padding: 10px 15px;
-                font-weight: 500;
-                border-bottom: 1px solid #eee;
-                background-color: #f9f9f9;
-            }}
-            
-            .supporting-points-section {{
-                margin-top: 8px;
-                border-top: 1px dashed #eee;
-                padding-top: 8px;
-            }}
-            
-            .supporting-points-header {{
-                font-weight: 500;
-                margin-bottom: 8px;
-                font-size: 15px;
-                color: #555;
-            }}
-            
-            .claimant-border {{
-                border-left: 4px solid #3182ce;
-            }}
-            
-            .respondent-border {{
-                border-left: 4px solid #e53e3e;
             }}
         </style>
     </head>
@@ -899,7 +862,7 @@ def main():
                 
                 return `
                 <div class="item-block">
-                    <div class="supporting-points-header">Main Points</div>
+                    <div class="item-title">Supporting Points</div>
                     <ul class="point-list">
                         ${{pointsList}}
                     </ul>
@@ -937,8 +900,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="supporting-points-header">Factual Points</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Factual Points</div>
                     ${{pointsHtml}}
                 </div>
                 `;
@@ -966,8 +929,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="supporting-points-header">Evidence</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Evidence</div>
                     ${{evidenceHtml}}
                 </div>
                 `;
@@ -997,8 +960,8 @@ def main():
                 }}).join('');
                 
                 return `
-                <div>
-                    <div class="supporting-points-header">Case Law</div>
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Case Law</div>
                     ${{casesHtml}}
                 </div>
                 `;
@@ -1008,34 +971,24 @@ def main():
             function renderArgumentContent(arg) {{
                 let content = '';
                 
-                // Main Argument Overview
+                // Overview points
                 if (arg.overview) {{
                     content += renderOverviewPoints(arg.overview);
                 }}
                 
-                // Supporting Points Section
-                let supportingContent = '';
-                
                 // Factual points
                 if (arg.factualPoints) {{
-                    supportingContent += renderFactualPoints(arg.factualPoints);
+                    content += renderFactualPoints(arg.factualPoints);
                 }}
                 
                 // Evidence
                 if (arg.evidence) {{
-                    supportingContent += renderEvidence(arg.evidence);
+                    content += renderEvidence(arg.evidence);
                 }}
                 
                 // Case law
                 if (arg.caseLaw) {{
-                    supportingContent += renderCaseLaw(arg.caseLaw);
-                }}
-                
-                if (supportingContent) {{
-                    content += `
-                    <div class="supporting-points-section">
-                        ${{supportingContent}}
-                    </div>`;
+                    content += renderCaseLaw(arg.caseLaw);
                 }}
                 
                 return content;
@@ -1053,9 +1006,8 @@ def main():
                 
                 // Style based on side
                 const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
-                const borderClass = side === 'appellant' ? 'claimant-border' : 'respondent-border';
                 
-                // Render children if any
+                // Render children if any - removed style="display: none;"
                 let childrenHtml = '';
                 if (hasChildren) {{
                     childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
@@ -1068,15 +1020,15 @@ def main():
                 }}
                 
                 return `
-                <div class="argument-section ${{borderClass}}">
-                    <div class="argument-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
+                <div class="card">
+                    <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
                             <span>${{arg.id}}. ${{arg.title}}</span>
-                            <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
                         </div>
+                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
                     </div>
                     <div class="card-content" id="content-${{argId}}">
                         ${{renderArgumentContent(arg)}}
@@ -1086,12 +1038,13 @@ def main():
                 `;
             }}
             
-            // Render arguments by topic
+            // Render arguments by topic - Modified to treat each topic as a separate dropdown
             function renderTopics() {{
                 const container = document.getElementById('topics-container');
                 let html = '';
                 
                 argsData.topics.forEach(topic => {{
+                    // Create a single card per topic
                     html += `
                     <div class="card" style="margin-bottom: 24px;">
                         <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
@@ -1103,36 +1056,34 @@ def main():
                             </div>
                         </div>
                         <div class="card-content" id="content-topic-${{topic.id}}">
-                            <p>${{topic.description}}</p>
-                            
-                            ${{topic.argumentIds.map(argId => {{
-                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                                    return `
-                                    <div style="margin-top: 16px;">
-                                        <div class="arguments-row">
-                                            <div>
-                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
-                                            </div>
-                                            <div>
-                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
-                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
-                                            </div>
-                                        </div>
+                            <p>${{topic.description}}</p>`;
+                    
+                    // For each argumentId in the topic, render the arguments
+                    topic.argumentIds.forEach(argId => {{
+                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                            html += `
+                            <div style="margin-top: 16px;">
+                                <div class="arguments-row">
+                                    <div>
+                                        <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                        ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                     </div>
-                                    `;
-                                }}
-                                return '';
-                            }}).join('')}}
-                        </div>
-                    </div>
-                    `;
+                                    <div>
+                                        <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                        ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
+                                    </div>
+                                </div>
+                            </div>`;
+                        }}
+                    }});
+                    
+                    html += `</div></div>`;
                 }});
                 
                 container.innerHTML = html;
             }}
             
-            // Toggle a card without synchronizing
+            // Toggle a card without synchronizing - modified to only toggle content, not children
             function toggleCard(id) {{
                 const contentEl = document.getElementById(`content-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
@@ -1146,7 +1097,7 @@ def main():
                 }}
             }}
             
-            // Toggle an argument and its counterpart
+            // Toggle an argument and its counterpart - modified to only toggle content
             function toggleArgument(argId, pairId, side) {{
                 // First, handle the clicked argument
                 toggleCard(argId);

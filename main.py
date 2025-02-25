@@ -998,25 +998,25 @@ def main():
                         <div class="card-content" id="content-topic-${{topic.id}}">
                             <p>${{topic.description}}</p>
                             
-                            ${{topic.argumentIds.map(argId => {
-                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {
+                            ${{topic.argumentIds.map(argId => {{
+                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
                                     <div style="margin-top: 16px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                                ${renderArgument(argsData.claimantArgs[argId], 'appellant')}
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
                                             <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
-                                                ${renderArgument(argsData.respondentArgs[argId], 'respondent')}
+                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
                                         </div>
                                     </div>
                                     `;
-                                }
+                                }}
                                 return '';
-                            }).join('')}
+                            }}).join('')}}
                         </div>
                     </div>
                     `;
@@ -1150,6 +1150,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
+    st.title("Legal Arguments Analysis")
     components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

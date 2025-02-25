@@ -72,8 +72,118 @@ def get_argument_data():
                             "isDisputed": False,
                             "regulations": ["Name Registration Act"],
                             "paragraphs": "22-24"
+                        },
+                        {
+                            "point": "Trademark protection since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Law"],
+                            "paragraphs": "25-27"
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26"
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Official documentation of registration history",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
+                        }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Visual evidence of consistent color usage",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57"
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Historical documents showing color usage",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -158,7 +268,111 @@ def get_argument_data():
                             "regulations": ["Registration Act"],
                             "paragraphs": "223-225"
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration Gap Evidence",
+                            "paragraphs": "226-230",
+                            "factualPoints": [
+                                {
+                                    "point": "Registration formally terminated on April 30, 1975",
+                                    "date": "April 30, 1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "226-227"
+                                },
+                                {
+                                    "point": "New entity registered on September 15, 1976",
+                                    "date": "September 15, 1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "228-229"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "R-2",
+                                    "title": "Termination Certificate",
+                                    "summary": "Official documentation of registration termination",
+                                    "citations": ["226", "227"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis Rebuttal",
+                    "paragraphs": "241-249",
+                    "overview": {
+                        "points": [
+                            "Significant color variations",
+                            "Trademark registration gaps",
+                            "Multiple competing color claims"
+                        ],
+                        "paragraphs": "241-242"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
+                        }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Visual evidence of color scheme changes",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247"
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Historical brand guidelines showing color changes",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -406,13 +620,7 @@ def main():
         </style>
     </head>
     <body>
-        <!-- Tab Navigation -->
-        <div class="tabs">
-            <div class="tab active" data-tab="arguments">Summary of Arguments</div>
-        </div>
-        
-        <!-- Arguments Tab -->
-        <div id="arguments" class="tab-content active">
+        <div id="arguments">
             <div class="view-toggle">
                 <div class="view-toggle-container">
                     <button class="view-btn active" data-view="standard">Standard View</button>
@@ -435,7 +643,7 @@ def main():
         
         <script>
             // Initialize data
-            const argsData = JSON.parse(""" + args_json + """);
+            const argsData = """ + args_json + """;
             
             // Keep track of expanded states
             const expandedStates = {};
@@ -562,12 +770,26 @@ def main():
                 if (!evidence || evidence.length === 0) return '';
                 
                 const itemsHtml = evidence.map(item => {
+                    const citations = item.citations 
+                        ? item.citations.map(cite => `<span class="citation-tag">¶${cite}</span>`).join('') 
+                        : '';
+                    
                     return `
                     <div class="reference-block">
                         <div class="reference-header">
                             <span class="reference-title">${item.id}: ${item.title}</span>
+                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
                         </div>
-                        <p class="point-text">${item.summary}</p>
+                        <p class="reference-summary">${item.summary}</p>
+                        <div class="reference-citations">
+                            <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
+                            ${citations}
+                        </div>
                     </div>
                     `;
                 }).join('');
@@ -696,22 +918,16 @@ def main():
                         return renderArgument(child, side, argId);
                     }).join('');
                     
-                    const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
-                    
                     childrenHtml = `
                     <div id="children-${fullId}" class="argument-children">
-                        <div class="connector-vertical ${connectorClass}"></div>
                         ${childrenArgs}
                     </div>
                     `;
                 }
                 
                 // Complete argument HTML
-                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
-                
                 return `
-                <div class="argument ${headerClass}" style="${path ? 'position: relative;' : ''}">
-                    ${path ? `<div class="connector-horizontal ${connectorClass}"></div>` : ''}
+                <div class="argument ${headerClass}">
                     <div class="argument-header" onclick="toggleArgument('${fullId}', '${argId}')">
                         ${headerHtml}
                     </div>

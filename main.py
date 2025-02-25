@@ -870,12 +870,6 @@ def main():
                 padding: 0.75rem;
                 margin-bottom: 0.5rem;
             }}
-            .factual-point {{
-                background-color: #f0fff4;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
             
             /* Topic view */
             .topic-section {{
@@ -1165,7 +1159,7 @@ def main():
                 }});
             }});
             
-            // Render overview points - UPDATED to put paragraphs with each point
+            // Render overview points
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -1231,33 +1225,41 @@ def main():
                 `;
             }}
             
-            // Render factual points
-            function renderFactualPoints(points) {{
+            // Render factual points as exhibits
+            function renderFactualPoints(points, side) {{
                 if (!points || points.length === 0) return '';
                 
-                const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
+                let exhibitCount = 0;
+                const itemsHtml = points.map(point => {{
+                    exhibitCount++;
+                    const prefix = side === 'claimant' ? 'C-F' : 'R-F';
+                    const exhibitId = `${{prefix}}${{exhibitCount}}`;
+                    
+                    // Create a "disputed" tag if needed
+                    const disputedTag = point.isDisputed 
+                        ? `<span class="badge disputed-badge" style="margin-left: 0.5rem;">Disputed by ${{point.source || ''}}</span>` 
                         : '';
+                        
+                    // Format the date for display in the title
+                    const dateDisplay = point.date ? `(${{point.date}})` : '';
                     
                     return `
-                    <div class="factual-point">
-                        <div class="point-header">
-                            <span class="badge factual-badge">Factual</span>
-                            ${{disputed}}
+                    <div class="reference-block">
+                        <div class="reference-header">
+                            <div>
+                                <span class="reference-title">${{exhibitId}}: ${{point.point}} ${{dateDisplay}}</span>
+                                ${{disputedTag}}
+                            </div>
+                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="point-date">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            ${{point.date}}
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <p class="point-text">${{point.point}}</p>
-                            <span class="badge claimant-badge" style="margin-left: 8px;">¶${{point.paragraphs}}</span>
+                        <div class="reference-citations">
+                            <span style="font-size: 0.75rem; color: #718096;">Referenced in:</span>
+                            <span class="citation-tag">¶${{point.paragraphs}}</span>
                         </div>
                     </div>
                     `;
@@ -1265,8 +1267,8 @@ def main():
                 
                 return `
                 <div class="content-section">
-                    <h6 class="content-section-title">Factual Points</h6>
-                    ${{pointsHtml}}
+                    <h6 class="content-section-title">Factual Exhibits</h6>
+                    ${{itemsHtml}}
                 </div>
                 `;
             }}
@@ -1302,7 +1304,7 @@ def main():
                 
                 return `
                 <div class="content-section">
-                    <h6 class="content-section-title">Evidence</h6>
+                    <h6 class="content-section-title">Documentary Exhibits</h6>
                     ${{itemsHtml}}
                 </div>
                 `;
@@ -1350,7 +1352,7 @@ def main():
             }}
             
             // Render argument content
-            function renderArgumentContent(arg) {{
+            function renderArgumentContent(arg, side) {{
                 let content = '';
                 
                 // Overview points
@@ -1363,9 +1365,9 @@ def main():
                     content += renderLegalPoints(arg.legalPoints);
                 }}
                 
-                // Factual points
+                // Factual points as exhibits
                 if (arg.factualPoints) {{
-                    content += renderFactualPoints(arg.factualPoints);
+                    content += renderFactualPoints(arg.factualPoints, side);
                 }}
                 
                 // Evidence
@@ -1416,7 +1418,7 @@ def main():
                 `;
                 
                 // Detailed content
-                const contentHtml = renderArgumentContent(arg);
+                const contentHtml = renderArgumentContent(arg, side);
                 
                 // Child arguments
                 let childrenHtml = '';

@@ -7,6 +7,7 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
+    # Same data structure as before
     claimant_args = {
         "1": {
             "id": "1",
@@ -680,11 +681,27 @@ def main():
                 border-color: #fed7d7;
             }}
             
-            /* Child arguments container */
+            /* Child arguments container - MODIFIED FOR HORIZONTAL LAYOUT */
             .argument-children {{
-                padding-left: 1.5rem;
+                padding-top: 1rem;
                 display: none;
                 position: relative;
+            }}
+            
+            /* Make sub-arguments appear on the same line */
+            .subarguments-row {{
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                width: 100%;
+                overflow-x: auto;
+            }}
+            
+            /* Each subargument in the horizontal row */
+            .subargument {{
+                flex: 1;
+                min-width: 250px;
+                max-width: 500px;
             }}
             
             /* Connector lines for tree structure */
@@ -693,17 +710,33 @@ def main():
                 left: 0.75rem;
                 top: 0;
                 width: 1px;
-                height: 100%;
+                height: 0.5rem;
                 background-color: #e2e8f0;
+            }}
+            
+            /* Modified connector for horizontal layout */
+            .connector-horizontal-container {{
+                position: relative;
+                display: flex;
+                justify-content: center;
+                height: 0.5rem;
+                margin-bottom: 0.5rem;
             }}
             .connector-horizontal {{
                 position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
+                top: 0;
+                width: 1px;
+                height: 100%;
+                background-color: #e2e8f0;
+            }}
+            .connector-horizontal-top {{
+                position: absolute;
+                top: 0;
+                width: 80%;
                 height: 1px;
                 background-color: #e2e8f0;
             }}
+            
             .claimant-connector {{
                 background-color: rgba(59, 130, 246, 0.5);
             }}
@@ -1362,8 +1395,8 @@ def main():
                 return content;
             }}
             
-            // Render a single argument including its children
-            function renderArgument(arg, side, path = '', level = 0) {{
+            // Render a single argument
+            function renderArgument(arg, side, path = '', level = 0, isChild = false) {{
                 if (!arg) return '';
                 
                 const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
@@ -1399,35 +1432,53 @@ def main():
                 // Detailed content
                 const contentHtml = renderArgumentContent(arg);
                 
-                // Child arguments
+                // Child arguments - now in a horizontal row
                 let childrenHtml = '';
                 if (hasChildren) {{
                     const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        // Pass the full path for this argument's children
-                        return renderArgument(child, side, argId, level + 1);
+                        return renderArgument(child, side, argId, level + 1, true);
                     }}).join('');
                     
                     childrenHtml = `
                     <div id="children-${{fullId}}" class="argument-children">
-                        <div class="connector-vertical ${{connectorClass}}"></div>
-                        ${{childrenArgs}}
+                        <div class="connector-horizontal-container">
+                            <div class="connector-horizontal-top ${{connectorClass}}"></div>
+                        </div>
+                        <div class="subarguments-row">
+                            ${{childrenArgs}}
+                        </div>
                     </div>
                     `;
                 }}
                 
-                // Complete argument HTML
-                return `
-                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
-                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
-                        ${{headerHtml}}
+                // Full argument HTML - different for children vs. main arguments
+                if (isChild) {{
+                    return `
+                    <div class="subargument">
+                        <div class="argument ${{headerClass}}">
+                            <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
+                                ${{headerHtml}}
+                            </div>
+                            <div id="content-${{fullId}}" class="argument-content">
+                                ${{contentHtml}}
+                            </div>
+                        </div>
+                        ${{childrenHtml}}
                     </div>
-                    <div id="content-${{fullId}}" class="argument-content">
-                        ${{contentHtml}}
+                    `;
+                }} else {{
+                    return `
+                    <div class="argument ${{headerClass}}">
+                        <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
+                            ${{headerHtml}}
+                        </div>
+                        <div id="content-${{fullId}}" class="argument-content">
+                            ${{contentHtml}}
+                        </div>
+                        ${{childrenHtml}}
                     </div>
-                    ${{childrenHtml}}
-                </div>
-                `;
+                    `;
+                }}
             }}
             
             // Render a pair of arguments (claimant and respondent)

@@ -406,7 +406,13 @@ def main():
         </style>
     </head>
     <body>
-        <div id="arguments">
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="arguments">Summary of Arguments</div>
+        </div>
+        
+        <!-- Arguments Tab -->
+        <div id="arguments" class="tab-content active">
             <div class="view-toggle">
                 <div class="view-toggle-container">
                     <button class="view-btn active" data-view="standard">Standard View</button>
@@ -429,7 +435,7 @@ def main():
         
         <script>
             // Initialize data
-            const argsData = """ + args_json + """;
+            const argsData = JSON.parse(""" + args_json + """);
             
             // Keep track of expanded states
             const expandedStates = {};
@@ -574,6 +580,47 @@ def main():
                 `;
             }
             
+            // Render case law
+            function renderCaseLaw(cases) {
+                if (!cases || cases.length === 0) return '';
+                
+                const itemsHtml = cases.map(item => {
+                    const citedParagraphs = item.citedParagraphs 
+                        ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${para}</span>`).join('') 
+                        : '';
+                    
+                    return `
+                    <div class="reference-block">
+                        <div class="reference-header">
+                            <div>
+                                <span class="reference-title">${item.caseNumber}</span>
+                                <span class="point-citation" style="margin-left: 0.5rem;">¶${item.paragraphs}</span>
+                            </div>
+                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="reference-summary">${item.title}</p>
+                        <p class="point-text">${item.relevance}</p>
+                        <div class="reference-citations">
+                            <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
+                            ${citedParagraphs}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                return `
+                <div class="content-section">
+                    <h6 class="content-section-title">Case Law</h6>
+                    ${itemsHtml}
+                </div>
+                `;
+            }
+            
             // Render argument content
             function renderArgumentContent(arg) {
                 let content = '';
@@ -596,6 +643,11 @@ def main():
                 // Evidence
                 if (arg.evidence) {
                     content += renderEvidence(arg.evidence);
+                }
+                
+                // Case law
+                if (arg.caseLaw) {
+                    content += renderCaseLaw(arg.caseLaw);
                 }
                 
                 return content;
@@ -644,16 +696,22 @@ def main():
                         return renderArgument(child, side, argId);
                     }).join('');
                     
+                    const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
+                    
                     childrenHtml = `
                     <div id="children-${fullId}" class="argument-children">
+                        <div class="connector-vertical ${connectorClass}"></div>
                         ${childrenArgs}
                     </div>
                     `;
                 }
                 
                 // Complete argument HTML
+                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
+                
                 return `
-                <div class="argument ${headerClass}">
+                <div class="argument ${headerClass}" style="${path ? 'position: relative;' : ''}">
+                    ${path ? `<div class="connector-horizontal ${connectorClass}"></div>` : ''}
                     <div class="argument-header" onclick="toggleArgument('${fullId}', '${argId}')">
                         ${headerHtml}
                     </div>

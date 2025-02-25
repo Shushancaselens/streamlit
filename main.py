@@ -563,14 +563,23 @@ def main():
             
             /* Argument container and pairs */
             .argument-pair {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
                 margin-bottom: 1rem;
                 position: relative;
             }}
+            .argument-row {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }}
             .argument-side {{
                 position: relative;
+            }}
+            
+            /* Subarguments container */
+            .subarguments-container {{
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+                display: none;
             }}
             
             /* Argument card and details */
@@ -607,28 +616,9 @@ def main():
                 border-color: #fed7d7;
             }}
             
-            /* Child arguments container */
-            .argument-children {{
-                padding-left: 1.5rem;
-                display: none;
-                position: relative;
-            }}
-            
-            /* Connector lines for tree structure */
-            .connector-vertical {{
+            /* Connectors */
+            .connector-line {{
                 position: absolute;
-                left: 0.75rem;
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: #e2e8f0;
-            }}
-            .connector-horizontal {{
-                position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
-                height: 1px;
                 background-color: #e2e8f0;
             }}
             .claimant-connector {{
@@ -636,6 +626,21 @@ def main():
             }}
             .respondent-connector {{
                 background-color: rgba(239, 68, 68, 0.5);
+            }}
+            .vertical-line {{
+                width: 1px;
+                left: 10px;
+            }}
+            .horizontal-line {{
+                height: 1px;
+                width: 12px;
+            }}
+            .connector-wrapper {{
+                position: relative;
+                padding-left: 1.5rem;
+            }}
+            .connector-container {{
+                position: relative;
             }}
             
             /* Badge styling */
@@ -1289,13 +1294,11 @@ def main():
                 return content;
             }}
             
-            // Render a single argument including its children
-            function renderArgument(arg, side, path = '', level = 0) {{
+            // Render an argument header and content (without children)
+            function renderArgumentNode(arg, side, argId, level = 0) {{
                 if (!arg) return '';
                 
-                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
                 const fullId = `${{side}}-${{argId}}`;
-                
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
@@ -1303,7 +1306,6 @@ def main():
                 const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
                 const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
-                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
                 
                 // Header content
                 const headerHtml = `
@@ -1323,49 +1325,84 @@ def main():
                 </div>
                 `;
                 
-                // Detailed content
-                const contentHtml = renderArgumentContent(arg);
-                
-                // Child arguments
-                let childrenHtml = '';
-                if (hasChildren) {{
-                    const childrenArgs = Object.values(arg.children).map(child => {{
-                        return renderArgument(child, side, argId, level + 1);
-                    }}).join('');
-                    
-                    childrenHtml = `
-                    <div id="children-${{fullId}}" class="argument-children">
-                        <div class="connector-vertical ${{connectorClass}}"></div>
-                        ${{childrenArgs}}
-                    </div>
-                    `;
-                }}
-                
-                // Complete argument HTML
                 return `
-                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
-                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
+                <div class="argument ${{headerClass}}" ${{level > 0 ? 'style="position: relative;"' : ''}}>
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', ${{hasChildren}})">
                         ${{headerHtml}}
                     </div>
                     <div id="content-${{fullId}}" class="argument-content">
-                        ${{contentHtml}}
+                        ${{renderArgumentContent(arg)}}
                     </div>
-                    ${{childrenHtml}}
                 </div>
                 `;
             }}
             
-            // Render a pair of arguments (claimant and respondent)
-            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
+            // Recursively render an argument pair and all its children
+            function renderArgumentPairRecursive(claimantArg, respondentArg, level = 0, parentId = '') {{
+                if (!claimantArg || !respondentArg) return '';
+                
+                // Create IDs
+                const claimantId = parentId ? `${{parentId}}-${{claimantArg.id}}` : claimantArg.id;
+                const respondentId = parentId ? `${{parentId}}-${{respondentArg.id}}` : respondentArg.id;
+                
+                // Connectors for non-root levels
+                const connectorHtml = level > 0 ? `
+                <div class="connector-container">
+                    <div class="connector-wrapper">
+                        <div class="connector-line vertical-line claimant-connector" style="height: 100%; top: 0;"></div>
+                        <div class="connector-line horizontal-line claimant-connector" style="top: 1.25rem; left: 0;"></div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="connector-line vertical-line respondent-connector" style="height: 100%; top: 0;"></div>
+                        <div class="connector-line horizontal-line respondent-connector" style="top: 1.25rem; left: 0;"></div>
+                    </div>
+                </div>
+                ` : '';
+                
+                // Render this argument pair
+                const pairHtml = `
+                <div class="argument-row" ${{level > 0 ? 'style="padding-left: 1.5rem;"' : ''}}>
+                    <div class="argument-side">
+                        ${{renderArgumentNode(claimantArg, 'claimant', claimantId, level)}}
+                    </div>
+                    <div class="argument-side">
+                        ${{renderArgumentNode(respondentArg, 'respondent', respondentId, level)}}
+                    </div>
+                </div>
+                `;
+                
+                // Render subarguments
+                let childrenHtml = '';
+                if (claimantArg.children && respondentArg.children) {{
+                    const childKeys = Object.keys(claimantArg.children);
+                    
+                    childrenHtml = `
+                    <div id="children-claimant-${{claimantId}},respondent-${{respondentId}}" class="subarguments-container">
+                        ${{connectorHtml}}
+                    `;
+                    
+                    // For each child argument
+                    childKeys.forEach(childKey => {{
+                        const claimantChild = claimantArg.children[childKey];
+                        const respondentChild = respondentArg.children[childKey];
+                        
+                        if (claimantChild && respondentChild) {{
+                            childrenHtml += renderArgumentPairRecursive(
+                                claimantChild, 
+                                respondentChild, 
+                                level + 1,
+                                claimantId
+                            );
+                        }}
+                    }});
+                    
+                    childrenHtml += `</div>`;
+                }}
+                
                 return `
                 <div class="argument-pair">
-                    <div class="argument-side">
-                        ${{renderArgument(claimantArg, 'claimant')}}
-                    </div>
-                    <div class="argument-side">
-                        ${{renderArgument(respondentArg, 'respondent')}}
-                    </div>
+                    ${{pairHtml}}
+                    ${{childrenHtml}}
                 </div>
                 `;
             }}
@@ -1381,7 +1418,7 @@ def main():
                         const claimantArg = argsData.claimantArgs[argId];
                         const respondentArg = argsData.respondentArgs[argId];
                         
-                        html += renderArgumentPair(claimantArg, respondentArg);
+                        html += renderArgumentPairRecursive(claimantArg, respondentArg);
                     }}
                 }});
                 
@@ -1412,7 +1449,7 @@ def main():
                             const claimantArg = argsData.claimantArgs[argId];
                             const respondentArg = argsData.respondentArgs[argId];
                             
-                            html += renderArgumentPair(claimantArg, respondentArg);
+                            html += renderArgumentPairRecursive(claimantArg, respondentArg);
                         }}
                     }});
                     
@@ -1423,45 +1460,39 @@ def main():
             }}
             
             // Toggle argument expansion
-            function toggleArgument(id) {{
+            function toggleArgument(id, hasChildren) {{
+                const [side, argId] = id.split('-');
                 const contentEl = document.getElementById(`content-${{id}}`);
-                const childrenEl = document.getElementById(`children-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                // Toggle this argument
-                const isExpanded = contentEl.style.display === 'block';
-                contentEl.style.display = isExpanded ? 'none' : 'block';
-                if (chevronEl) {{
-                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                }}
-                if (childrenEl) {{
-                    childrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
-                
-                // Save expanded state
-                expandedStates[id] = !isExpanded;
-                
-                // Find and toggle the paired argument
-                const [side, argId] = id.split('-');
+                // Find the paired argument
                 const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
                 const pairedId = `${{otherSide}}-${{argId}}`;
-                
                 const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
                 const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
                 
-                if (pairedContentEl) {{
-                    pairedContentEl.style.display = contentEl.style.display;
-                    expandedStates[pairedId] = expandedStates[id];
+                // Find the children container (shared between both sides)
+                const childrenContainerId = `children-claimant-${{argId}},respondent-${{argId}}`;
+                const childrenEl = document.getElementById(childrenContainerId);
+                
+                // Toggle expanded state
+                const isExpanded = contentEl.style.display === 'block';
+                const newState = !isExpanded;
+                
+                // Update elements
+                contentEl.style.display = newState ? 'block' : 'none';
+                if (chevronEl) chevronEl.style.transform = newState ? 'rotate(90deg)' : '';
+                
+                if (pairedContentEl) pairedContentEl.style.display = newState ? 'block' : 'none';
+                if (pairedChevronEl) pairedChevronEl.style.transform = newState ? 'rotate(90deg)' : '';
+                
+                if (hasChildren && childrenEl) {{
+                    childrenEl.style.display = newState ? 'block' : 'none';
                 }}
                 
-                if (pairedChevronEl) {{
-                    pairedChevronEl.style.transform = chevronEl.style.transform;
-                }}
-                
-                if (pairedChildrenEl) {{
-                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
+                // Save state
+                expandedStates[id] = newState;
+                expandedStates[pairedId] = newState;
             }}
             
             // Render timeline
@@ -1594,4 +1625,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

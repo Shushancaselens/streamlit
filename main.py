@@ -5,24 +5,7 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Create data structures as JSON for embedded components
-def get_argument_data():
-    # Same data structure as before
-    # ...
-    
-    return {
-        "claimantArgs": claimant_args,
-        "respondentArgs": respondent_args,
-        "topics": topics
-    }
-
-def get_timeline_data():
-    # Same timeline data as before
-    # ...
-
-def get_exhibits_data():
-    # Same exhibits data as before
-    # ...
+# [All the data functions remain the same]
 
 # Main app
 def main():
@@ -36,45 +19,38 @@ def main():
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
     
-    # Create a single HTML component containing the full UI with minimalistic design
+    # Create a single HTML component with debugging statements
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <style>
-            /* Minimalistic base styling */
+            /* Base styles */
             body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
                 padding: 0;
-                background-color: #fff;
             }}
             
-            /* Simple container */
+            /* Main container */
             .container {{
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
             }}
             
-            /* Header styles */
-            .header {{
-                margin-bottom: 20px;
-            }}
-            
+            /* Tabs */
             .tabs {{
                 display: flex;
                 border-bottom: 1px solid #e1e4e8;
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }}
             
             .tab {{
-                padding: 12px 16px;
+                padding: 10px 16px;
                 cursor: pointer;
-                color: #586069;
-                border-bottom: 2px solid transparent;
                 margin-right: 4px;
             }}
             
@@ -84,20 +60,27 @@ def main():
                 font-weight: 500;
             }}
             
-            /* Main content styles */
-            .content-area {{
+            /* Content areas */
+            .tab-content {{
                 display: none;
             }}
             
-            .content-area.active {{
+            .tab-content.active {{
                 display: block;
             }}
             
-            /* Sections */
-            .section-title {{
+            /* Two-column layout */
+            .two-columns {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }}
+            
+            /* Argument titles */
+            .args-title {{
                 font-size: 18px;
                 font-weight: 500;
-                margin-bottom: 20px;
+                margin-bottom: 16px;
             }}
             
             .claimant-title {{
@@ -108,55 +91,34 @@ def main():
                 color: #e53e3e;
             }}
             
-            /* Split layout */
-            .split-layout {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 24px;
-            }}
-            
-            /* Argument card */
-            .argument-card {{
+            /* Argument cards */
+            .arg-card {{
                 border: 1px solid #e1e4e8;
-                border-radius: 8px;
+                border-radius: 6px;
                 margin-bottom: 16px;
                 overflow: hidden;
             }}
             
-            .argument-header {{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 15px;
-                cursor: pointer;
+            .arg-header {{
+                padding: 12px 16px;
                 background-color: #f6f8fa;
                 border-bottom: 1px solid #e1e4e8;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: pointer;
             }}
             
-            .argument-title {{
+            .arg-title {{
                 display: flex;
                 align-items: center;
                 gap: 8px;
                 font-weight: 500;
             }}
             
-            .argument-content {{
-                padding: 15px;
+            .arg-content {{
+                padding: 16px;
                 display: none;
-            }}
-            
-            .subargument-badge {{
-                background-color: rgba(32, 96, 229, 0.1);
-                color: #2060e5;
-                padding: 4px 10px;
-                border-radius: 16px;
-                font-size: 12px;
-                font-weight: 500;
-            }}
-            
-            .subargument-badge.respondent {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
             }}
             
             /* Chevron */
@@ -168,8 +130,23 @@ def main():
                 transform: rotate(90deg);
             }}
             
+            /* Badges */
+            .subarg-badge {{
+                background-color: rgba(32, 96, 229, 0.1);
+                color: #2060e5;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 500;
+            }}
+            
+            .subarg-badge.respondent {{
+                background-color: rgba(229, 62, 62, 0.1);
+                color: #e53e3e;
+            }}
+            
             /* Content sections */
-            .content-section {{
+            .section {{
                 margin-bottom: 20px;
             }}
             
@@ -178,15 +155,15 @@ def main():
                 margin-bottom: 10px;
             }}
             
+            /* List items */
             .point-list {{
                 list-style-type: none;
                 padding-left: 0;
-                margin: 0;
             }}
             
             .point-list li {{
+                padding-left: 16px;
                 position: relative;
-                padding-left: 20px;
                 margin-bottom: 8px;
             }}
             
@@ -194,117 +171,87 @@ def main():
                 content: "•";
                 position: absolute;
                 left: 0;
-                color: #8c8c8c;
+                color: #666;
             }}
             
             /* Evidence block */
             .evidence-block {{
                 background-color: #fff8f0;
                 border-left: 3px solid #dd6b20;
-                padding: 10px 16px;
+                padding: 12px;
                 margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
             }}
             
-            /* Legal point block */
+            /* Legal block */
             .legal-block {{
                 background-color: #ebf8ff;
-                border-left: 3px solid #3182ce;
-                padding: 10px 16px;
+                border-left: 3px solid #2060e5;
+                padding: 12px;
                 margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
             }}
             
-            /* Tabs for Timeline and Exhibits */
-            .tab-content {{
-                display: none;
-            }}
-            
-            .tab-content.active {{
-                display: block;
-            }}
-            
-            /* Tables */
-            table {{
-                width: 100%;
-                border-collapse: collapse;
+            /* Nested arguments */
+            .nested-args {{
                 margin-top: 16px;
-            }}
-            
-            thead {{
-                background-color: #f6f8fa;
-            }}
-            
-            th, td {{
-                padding: 12px 16px;
-                text-align: left;
-                border-bottom: 1px solid #e1e4e8;
-            }}
-            
-            /* Badges */
-            .badge {{
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-            }}
-            
-            .disputed-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .exhibit-badge {{
-                background-color: rgba(221, 107, 32, 0.1);
-                color: #dd6b20;
-            }}
-            
-            /* Subarguments */
-            .subarguments-container {{
-                margin-top: 12px;
                 border-left: 2px solid #f0f0f0;
                 padding-left: 16px;
+            }}
+            
+            /* Debug info */
+            .debug-info {{
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                padding: 10px;
+                margin: 10px 0;
+                font-family: monospace;
+                font-size: 12px;
             }}
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="header">
-                <h1>Legal Arguments Analysis</h1>
-                <div class="tabs">
-                    <div class="tab active" data-tab="summary">Summary of Arguments</div>
-                    <div class="tab" data-tab="timeline">Timeline</div>
-                    <div class="tab" data-tab="exhibits">Exhibits</div>
-                </div>
+            <h1>Legal Arguments Analysis</h1>
+            
+            <!-- Debug info -->
+            <div class="debug-info" id="debug-info">Debug information will appear here</div>
+            
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="arguments">Summary of Arguments</div>
+                <div class="tab" data-tab="timeline">Timeline</div>
+                <div class="tab" data-tab="exhibits">Exhibits</div>
             </div>
             
-            <!-- Summary tab content -->
-            <div id="summary" class="content-area active">
-                <div class="split-layout">
-                    <!-- Claimant's arguments -->
+            <!-- Arguments tab content -->
+            <div id="arguments" class="tab-content active">
+                <div class="two-columns">
+                    <!-- Claimant's Arguments -->
                     <div>
-                        <h2 class="section-title claimant-title">Claimant's Arguments</h2>
-                        <div id="claimant-arguments"></div>
+                        <h2 class="args-title claimant-title">Claimant's Arguments</h2>
+                        <div id="claimant-args"></div>
                     </div>
                     
-                    <!-- Respondent's arguments -->
+                    <!-- Respondent's Arguments -->
                     <div>
-                        <h2 class="section-title respondent-title">Respondent's Arguments</h2>
-                        <div id="respondent-arguments"></div>
+                        <h2 class="args-title respondent-title">Respondent's Arguments</h2>
+                        <div id="respondent-args"></div>
                     </div>
                 </div>
             </div>
             
             <!-- Timeline tab content -->
-            <div id="timeline" class="content-area">
-                <table id="timeline-table">
+            <div id="timeline" class="tab-content">
+                <h2>Case Timeline</h2>
+                <table id="timeline-table" style="width:100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Appellant's Version</th>
-                            <th>Respondent's Version</th>
-                            <th>Status</th>
+                            <th style="text-align:left; padding:8px;">Date</th>
+                            <th style="text-align:left; padding:8px;">Appellant's Version</th>
+                            <th style="text-align:left; padding:8px;">Respondent's Version</th>
+                            <th style="text-align:left; padding:8px;">Status</th>
                         </tr>
                     </thead>
                     <tbody id="timeline-body"></tbody>
@@ -312,15 +259,16 @@ def main():
             </div>
             
             <!-- Exhibits tab content -->
-            <div id="exhibits" class="content-area">
-                <table id="exhibits-table">
+            <div id="exhibits" class="tab-content">
+                <h2>Case Exhibits</h2>
+                <table id="exhibits-table" style="width:100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Party</th>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Summary</th>
+                            <th style="text-align:left; padding:8px;">ID</th>
+                            <th style="text-align:left; padding:8px;">Party</th>
+                            <th style="text-align:left; padding:8px;">Title</th>
+                            <th style="text-align:left; padding:8px;">Type</th>
+                            <th style="text-align:left; padding:8px;">Summary</th>
                         </tr>
                     </thead>
                     <tbody id="exhibits-body"></tbody>
@@ -329,317 +277,288 @@ def main():
         </div>
         
         <script>
-            // Initialize data
-            const argsData = {args_json};
-            const timelineData = {timeline_json};
-            const exhibitsData = {exhibits_json};
-            
-            // Tab switching
-            document.querySelectorAll('.tab').forEach(tab => {{
-                tab.addEventListener('click', function() {{
-                    // Update tabs
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update content areas
-                    const tabId = this.getAttribute('data-tab');
-                    document.querySelectorAll('.content-area').forEach(content => {{
-                        content.classList.remove('active');
-                    }});
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // Initialize content if needed
-                    if (tabId === 'timeline') renderTimeline();
-                    if (tabId === 'exhibits') renderExhibits();
-                }});
-            }});
-            
-            // Toggle argument details
-            function toggleArgument(id) {{
-                const content = document.getElementById(`content-${{id}}`);
-                const chevron = document.getElementById(`chevron-${{id}}`);
-                
-                if (content.style.display === 'block') {{
-                    content.style.display = 'none';
-                    chevron.classList.remove('expanded');
-                }} else {{
-                    content.style.display = 'block';
-                    chevron.classList.add('expanded');
+            // Debug function
+            function debug(message) {{
+                const debugElement = document.getElementById('debug-info');
+                if (debugElement) {{
+                    debugElement.innerHTML += message + '<br>';
                 }}
+                console.log(message);
             }}
             
-            // Count subarguments
-            function countSubarguments(arg) {{
-                let count = 0;
-                if (arg.children) {{
-                    count += Object.keys(arg.children).length;
+            // Try/catch wrapper for initialization
+            try {{
+                debug("Starting initialization...");
+                
+                // Parse data from JSON
+                const argsData = {args_json};
+                const timelineData = {timeline_json};
+                const exhibitsData = {exhibits_json};
+                
+                debug("Data loaded successfully.");
+                
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {{
+                    tab.addEventListener('click', function() {{
+                        // Update tabs
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Update content
+                        const tabId = this.getAttribute('data-tab');
+                        document.querySelectorAll('.tab-content').forEach(content => {{
+                            content.classList.remove('active');
+                        }});
+                        document.getElementById(tabId).classList.add('active');
+                        
+                        debug("Switched to tab: " + tabId);
+                    }});
+                }});
+                
+                // Toggle argument function
+                window.toggleArgument = function(id) {{
+                    debug("Toggling argument: " + id);
+                    const content = document.getElementById('content-' + id);
+                    const chevron = document.getElementById('chevron-' + id);
                     
-                    // Also count descendant subarguments
+                    if (content) {{
+                        if (content.style.display === 'block') {{
+                            content.style.display = 'none';
+                            if (chevron) chevron.classList.remove('expanded');
+                        }} else {{
+                            content.style.display = 'block';
+                            if (chevron) chevron.classList.add('expanded');
+                        }}
+                    }} else {{
+                        debug("ERROR: Content element not found for ID: " + id);
+                    }}
+                }};
+                
+                // Count subarguments
+                function countSubarguments(arg) {{
+                    if (!arg || !arg.children) return 0;
+                    
+                    let count = Object.keys(arg.children).length;
                     Object.values(arg.children).forEach(child => {{
-                        if (child.children) {{
-                            count += countSubarguments(child);
-                        }}
+                        count += countSubarguments(child);
                     }});
+                    
+                    return count;
                 }}
-                return count;
-            }}
-            
-            // Render key points
-            function renderKeyPoints(overview) {{
-                if (!overview || !overview.points || overview.points.length === 0) return '';
                 
-                const pointsHtml = overview.points.map(point => `<li>${{point}}</li>`).join('');
-                
-                return `
-                <div class="content-section">
-                    <div class="section-header">Key Points</div>
-                    <ul class="point-list">
-                        ${{pointsHtml}}
-                    </ul>
-                </div>
-                `;
-            }}
-            
-            // Render factual points
-            function renderFactualPoints(points) {{
-                if (!points || points.length === 0) return '';
-                
-                const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed</span>` 
-                        : '';
+                // Render key points
+                function renderKeyPoints(overview) {{
+                    if (!overview || !overview.points || overview.points.length === 0) return '';
                     
-                    return `<li>${{point.point}} ${{disputed}}</li>`;
-                }}).join('');
-                
-                return `
-                <div class="content-section">
-                    <div class="section-header">Factual Points</div>
-                    <ul class="point-list">
-                        ${{pointsHtml}}
-                    </ul>
-                </div>
-                `;
-            }}
-            
-            // Render evidence
-            function renderEvidence(evidence) {{
-                if (!evidence || evidence.length === 0) return '';
-                
-                const evidenceHtml = evidence.map(item => {{
-                    return `
-                    <div class="evidence-block">
-                        <div style="font-weight: 500;">${{item.id}}: ${{item.title}}</div>
-                        <div style="margin-top: 6px;">${{item.summary}}</div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div class="content-section">
-                    <div class="section-header">Evidence</div>
-                    ${{evidenceHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render legal points
-            function renderLegalPoints(caseLaw) {{
-                if (!caseLaw || caseLaw.length === 0) return '';
-                
-                const legalHtml = caseLaw.map(item => {{
-                    return `
-                    <div class="legal-block">
-                        <div style="font-weight: 500;">${{item.caseNumber}}: ${{item.title}}</div>
-                        <div style="margin-top: 6px;">${{item.relevance}}</div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div class="content-section">
-                    <div class="section-header">Legal Points</div>
-                    ${{legalHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render subarguments
-            function renderSubarguments(children, party) {{
-                if (!children || Object.keys(children).length === 0) return '';
-                
-                const subargumentsHtml = Object.values(children).map(child => {{
-                    const subCount = countSubarguments(child);
-                    const subCountBadge = subCount > 0 
-                        ? `<span class="subargument-badge ${{party === 'respondent' ? 'respondent' : ''}}">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
-                        : '';
+                    const pointsList = overview.points.map(point => `<li>${{point}}</li>`).join('');
                     
                     return `
-                    <div class="argument-card">
-                        <div class="argument-header" onclick="toggleArgument('${{party}}-${{child.id}}')">
-                            <div class="argument-title">
-                                <svg id="chevron-${{party}}-${{child.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                ${{child.id}}. ${{child.title}}
-                            </div>
-                            ${{subCountBadge}}
-                        </div>
-                        <div class="argument-content" id="content-${{party}}-${{child.id}}">
-                            ${{renderKeyPoints(child.overview)}}
-                            ${{renderFactualPoints(child.factualPoints)}}
-                            ${{renderEvidence(child.evidence)}}
-                            ${{renderLegalPoints(child.caseLaw)}}
-                            
-                            ${{child.children ? renderSubarguments(child.children, party) : ''}}
-                        </div>
+                    <div class="section">
+                        <div class="section-header">Key Points</div>
+                        <ul class="point-list">
+                            ${{pointsList}}
+                        </ul>
                     </div>
                     `;
-                }}).join('');
+                }}
                 
-                return `
-                <div class="subarguments-container">
-                    ${{subargumentsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render claimant arguments
-            function renderClaimantArguments() {{
-                const container = document.getElementById('claimant-arguments');
-                let html = '';
+                // Render factual points
+                function renderFactualPoints(points) {{
+                    if (!points || points.length === 0) return '';
+                    
+                    const pointsList = points.map(point => `<li>${{point.point}}</li>`).join('');
+                    
+                    return `
+                    <div class="section">
+                        <div class="section-header">Factual Points</div>
+                        <ul class="point-list">
+                            ${{pointsList}}
+                        </ul>
+                    </div>
+                    `;
+                }}
                 
-                // Iterate through topics to find all claimant arguments
-                argsData.topics.forEach(topic => {{
-                    topic.argumentIds.forEach(argId => {{
-                        const arg = argsData.claimantArgs[argId];
-                        if (arg) {{
-                            const subCount = countSubarguments(arg);
-                            const subCountBadge = subCount > 0 
-                                ? `<span class="subargument-badge">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
-                                : '';
-                            
-                            html += `
-                            <div class="argument-card">
-                                <div class="argument-header" onclick="toggleArgument('claimant-${{arg.id}}')">
-                                    <div class="argument-title">
-                                        <svg id="chevron-claimant-${{arg.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                        ${{arg.id}}. ${{arg.title}}
-                                    </div>
-                                    ${{subCountBadge}}
+                // Render evidence
+                function renderEvidence(evidence) {{
+                    if (!evidence || evidence.length === 0) return '';
+                    
+                    const evidenceHtml = evidence.map(item => `
+                        <div class="evidence-block">
+                            <strong>${{item.id}}: ${{item.title}}</strong>
+                            <div style="margin-top:6px">${{item.summary}}</div>
+                        </div>
+                    `).join('');
+                    
+                    return `
+                    <div class="section">
+                        <div class="section-header">Evidence</div>
+                        ${{evidenceHtml}}
+                    </div>
+                    `;
+                }}
+                
+                // Render legal points
+                function renderLegalPoints(caseLaw) {{
+                    if (!caseLaw || caseLaw.length === 0) return '';
+                    
+                    const legalHtml = caseLaw.map(item => `
+                        <div class="legal-block">
+                            <strong>${{item.caseNumber}}: ${{item.title}}</strong>
+                            <div style="margin-top:6px">${{item.relevance}}</div>
+                        </div>
+                    `).join('');
+                    
+                    return `
+                    <div class="section">
+                        <div class="section-header">Legal Points</div>
+                        ${{legalHtml}}
+                    </div>
+                    `;
+                }}
+                
+                // Render subarguments
+                function renderSubarguments(children, party) {{
+                    if (!children || Object.keys(children).length === 0) return '';
+                    
+                    const subargumentsHtml = Object.values(children).map(child => {{
+                        const subId = party + '-' + child.id;
+                        const subCount = countSubarguments(child);
+                        const subCountBadge = subCount > 0 
+                            ? `<span class="subarg-badge ${{party === 'respondent' ? 'respondent' : ''}}">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
+                            : '';
+                        
+                        return `
+                        <div class="arg-card">
+                            <div class="arg-header" onclick="toggleArgument('${{subId}}')">
+                                <div class="arg-title">
+                                    <svg id="chevron-${{subId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                    ${{child.id}}. ${{child.title}}
                                 </div>
-                                <div class="argument-content" id="content-claimant-${{arg.id}}">
-                                    ${{renderKeyPoints(arg.overview)}}
-                                    ${{renderFactualPoints(arg.factualPoints)}}
-                                    ${{renderEvidence(arg.evidence)}}
-                                    ${{renderLegalPoints(arg.caseLaw)}}
-                                    
-                                    ${{arg.children ? renderSubarguments(arg.children, 'claimant') : ''}}
-                                </div>
+                                ${{subCountBadge}}
                             </div>
-                            `;
-                        }}
-                    }});
-                }});
-                
-                container.innerHTML = html;
-            }}
-            
-            // Render respondent arguments
-            function renderRespondentArguments() {{
-                const container = document.getElementById('respondent-arguments');
-                let html = '';
-                
-                // Iterate through topics to find all respondent arguments
-                argsData.topics.forEach(topic => {{
-                    topic.argumentIds.forEach(argId => {{
-                        const arg = argsData.respondentArgs[argId];
-                        if (arg) {{
-                            const subCount = countSubarguments(arg);
-                            const subCountBadge = subCount > 0 
-                                ? `<span class="subargument-badge respondent">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
-                                : '';
-                            
-                            html += `
-                            <div class="argument-card">
-                                <div class="argument-header" onclick="toggleArgument('respondent-${{arg.id}}')">
-                                    <div class="argument-title">
-                                        <svg id="chevron-respondent-${{arg.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                        ${{arg.id}}. ${{arg.title}}
-                                    </div>
-                                    ${{subCountBadge}}
-                                </div>
-                                <div class="argument-content" id="content-respondent-${{arg.id}}">
-                                    ${{renderKeyPoints(arg.overview)}}
-                                    ${{renderFactualPoints(arg.factualPoints)}}
-                                    ${{renderEvidence(arg.evidence)}}
-                                    ${{renderLegalPoints(arg.caseLaw)}}
-                                    
-                                    ${{arg.children ? renderSubarguments(arg.children, 'respondent') : ''}}
-                                </div>
+                            <div class="arg-content" id="content-${{subId}}">
+                                ${{renderKeyPoints(child.overview)}}
+                                ${{renderFactualPoints(child.factualPoints)}}
+                                ${{renderEvidence(child.evidence)}}
+                                ${{renderLegalPoints(child.caseLaw)}}
+                                
+                                ${{renderSubarguments(child.children, party)}}
                             </div>
-                            `;
-                        }}
-                    }});
-                }});
+                        </div>
+                        `;
+                    }}).join('');
+                    
+                    return `<div class="nested-args">${{subargumentsHtml}}</div>`;
+                }}
                 
-                container.innerHTML = html;
-            }}
-            
-            // Render timeline
-            function renderTimeline() {{
-                const tbody = document.getElementById('timeline-body');
-                if (!tbody) return;
-                
-                tbody.innerHTML = '';
-                
-                timelineData.forEach(item => {{
-                    const row = document.createElement('tr');
-                    if (item.status === 'Disputed') {{
-                        row.classList.add('disputed');
+                // Render main arguments
+                function renderMainArguments(args, container, party) {{
+                    if (!args || Object.keys(args).length === 0) {{
+                        debug("No arguments found for " + party);
+                        return;
                     }}
                     
-                    row.innerHTML = `
-                        <td>${{item.date}}</td>
-                        <td>${{item.appellantVersion}}</td>
-                        <td>${{item.respondentVersion}}</td>
-                        <td>${{item.status}}</td>
-                    `;
+                    let html = '';
                     
-                    tbody.appendChild(row);
-                }});
-            }}
-            
-            // Render exhibits
-            function renderExhibits() {{
-                const tbody = document.getElementById('exhibits-body');
-                if (!tbody) return;
+                    // Loop through each argument
+                    Object.values(args).forEach(arg => {{
+                        const argId = party + '-' + arg.id;
+                        const subCount = countSubarguments(arg);
+                        const subCountBadge = subCount > 0 
+                            ? `<span class="subarg-badge ${{party === 'respondent' ? 'respondent' : ''}}">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
+                            : '';
+                        
+                        html += `
+                        <div class="arg-card">
+                            <div class="arg-header" onclick="toggleArgument('${{argId}}')">
+                                <div class="arg-title">
+                                    <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                    ${{arg.id}}. ${{arg.title}}
+                                </div>
+                                ${{subCountBadge}}
+                            </div>
+                            <div class="arg-content" id="content-${{argId}}">
+                                ${{renderKeyPoints(arg.overview)}}
+                                ${{renderFactualPoints(arg.factualPoints)}}
+                                ${{renderEvidence(arg.evidence)}}
+                                ${{renderLegalPoints(arg.caseLaw)}}
+                                
+                                ${{renderSubarguments(arg.children, party)}}
+                            </div>
+                        </div>
+                        `;
+                    }});
+                    
+                    // Set the HTML to the container
+                    const containerElement = document.getElementById(container);
+                    if (containerElement) {{
+                        containerElement.innerHTML = html;
+                        debug(party + " arguments rendered successfully.");
+                    }} else {{
+                        debug("ERROR: Container element not found: " + container);
+                    }}
+                }}
                 
-                tbody.innerHTML = '';
-                
-                exhibitsData.forEach(item => {{
-                    const row = document.createElement('tr');
-                    const badgeClass = item.party === 'Appellant' ? '' : 'respondent';
+                // Initialize everything when the DOM is loaded
+                document.addEventListener('DOMContentLoaded', function() {{
+                    debug("DOM loaded, rendering arguments...");
                     
-                    row.innerHTML = `
-                        <td>${{item.id}}</td>
-                        <td>${{item.party}}</td>
-                        <td>${{item.title}}</td>
-                        <td>${{item.type}}</td>
-                        <td>${{item.summary}}</td>
-                    `;
+                    // Render claimant arguments
+                    renderMainArguments(argsData.claimantArgs, 'claimant-args', 'claimant');
                     
-                    tbody.appendChild(row);
+                    // Render respondent arguments
+                    renderMainArguments(argsData.respondentArgs, 'respondent-args', 'respondent');
+                    
+                    // Load timeline data (will be displayed if timeline tab is clicked)
+                    document.querySelector('.tab[data-tab="timeline"]').addEventListener('click', function() {{
+                        const timelineBody = document.getElementById('timeline-body');
+                        if (timelineBody && timelineData.length > 0) {{
+                            timelineBody.innerHTML = timelineData.map(item => `
+                                <tr>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.date}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.appellantVersion}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.respondentVersion}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.status}}</td>
+                                </tr>
+                            `).join('');
+                            debug("Timeline rendered successfully.");
+                        }}
+                    }});
+                    
+                    // Load exhibits data (will be displayed if exhibits tab is clicked)
+                    document.querySelector('.tab[data-tab="exhibits"]').addEventListener('click', function() {{
+                        const exhibitsBody = document.getElementById('exhibits-body');
+                        if (exhibitsBody && exhibitsData.length > 0) {{
+                            exhibitsBody.innerHTML = exhibitsData.map(item => `
+                                <tr>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.id}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.party}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.title}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.type}}</td>
+                                    <td style="padding:8px; border-bottom:1px solid #ddd;">${{item.summary}}</td>
+                                </tr>
+                            `).join('');
+                            debug("Exhibits rendered successfully.");
+                        }}
+                    }});
+                    
+                    debug("Initialization complete.");
                 }});
+                
+                // Also try to render arguments immediately in case DOMContentLoaded already fired
+                debug("Trying immediate render...");
+                renderMainArguments(argsData.claimantArgs, 'claimant-args', 'claimant');
+                renderMainArguments(argsData.respondentArgs, 'respondent-args', 'respondent');
+                
+            }} catch (error) {{
+                // Display any errors in the debug area
+                debug("ERROR: " + error.message);
+                debug("Stack trace: " + error.stack);
             }}
-            
-            // Initialize the app
-            renderClaimantArguments();
-            renderRespondentArguments();
         </script>
     </body>
     </html>
@@ -647,7 +566,7 @@ def main():
     
     # Render the HTML in Streamlit
     st.title("Legal Arguments Analysis")
-    components.html(html_content, height=800, scrolling=True)
+    components.html(html_content, height=900, scrolling=True)
 
 if __name__ == "__main__":
     main()

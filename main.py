@@ -702,14 +702,16 @@ def main():
                 width: 1px;
                 height: 100%;
                 background-color: #e2e8f0;
+                z-index: 1;
             }}
             .connector-horizontal {{
                 position: absolute;
-                left: 0.75rem;
+                left: 0;
                 top: 1.25rem;
                 width: 0.75rem;
                 height: 1px;
                 background-color: #e2e8f0;
+                z-index: 2;
             }}
             .claimant-connector {{
                 background-color: rgba(59, 130, 246, 0.5);
@@ -960,12 +962,6 @@ def main():
             }}
             .disputed {{
                 color: #c53030;
-            }}
-
-            /* Fixes for argument tree alignment */
-            .argument-pair .argument-side {{
-                display: flex;
-                flex-direction: column;
             }}
         </style>
     </head>

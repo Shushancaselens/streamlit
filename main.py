@@ -1650,12 +1650,22 @@ def main():
             renderStandardArguments();
             renderTopicView();
             
+            // Run alignment after a short delay to ensure content is rendered
+            setTimeout(function() {
+                alignArgumentPairs();
+            }, 100);
+            
             // Set up event listeners
             document.getElementById('timeline-search').addEventListener('input', renderTimeline);
             document.getElementById('disputed-only').addEventListener('change', renderTimeline);
             document.getElementById('exhibits-search').addEventListener('input', renderExhibits);
             document.getElementById('party-filter').addEventListener('change', renderExhibits);
             document.getElementById('type-filter').addEventListener('change', renderExhibits);
+            
+            // Add listener for window resize to maintain alignment
+            window.addEventListener('resize', function() {
+                alignArgumentPairs();
+            });
             
             // Set initial active button style
             document.querySelector('.view-btn.active').style.backgroundColor = 'white';

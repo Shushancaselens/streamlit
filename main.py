@@ -7,6 +7,7 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
+    # Data definitions here (same as before)
     claimant_args = {
         "1": {
             "id": "1",
@@ -147,43 +148,7 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57"
-                                },
-                                {
-                                    "point": "Temporary third color addition in 1980s",
-                                    "date": "1982-1988",
-                                    "isDisputed": False,
-                                    "paragraphs": "58-59"
-                                }
-                            ],
-                            "children": {
-                                "1.2.1.1": {
-                                    "id": "1.2.1.1",
-                                    "title": "Historical Color Documentation",
-                                    "paragraphs": "61-65",
-                                    "evidence": [
-                                        {
-                                            "id": "C-5",
-                                            "title": "Color Archives",
-                                            "summary": "Historical documents showing color usage",
-                                            "citations": ["61", "62", "63"]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -344,44 +309,7 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Changes Analysis",
-                            "paragraphs": "247-249",
-                            "factualPoints": [
-                                {
-                                    "point": "Pre-1976 colors represented original city district",
-                                    "date": "1950-1975",
-                                    "isDisputed": False,
-                                    "paragraphs": "247"
-                                },
-                                {
-                                    "point": "Post-1976 colors represented new ownership region",
-                                    "date": "1976-present",
-                                    "isDisputed": True,
-                                    "source": "Claimant",
-                                    "paragraphs": "248-249"
-                                }
-                            ],
-                            "children": {
-                                "1.2.1.1": {
-                                    "id": "1.2.1.1",
-                                    "title": "Color Identity Documentation",
-                                    "paragraphs": "250-255",
-                                    "evidence": [
-                                        {
-                                            "id": "R-5",
-                                            "title": "Marketing Materials",
-                                            "summary": "Historical brand guidelines showing color changes",
-                                            "citations": ["250", "251", "252"]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
+                    ]
                 }
             }
         },
@@ -954,6 +882,51 @@ def main():
             .disputed {{
                 color: #c53030;
             }}
+            
+            /* NEW: Alignment specific styles */
+            /* Argument grid with synchronized rows */
+            .synchronized-row {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }}
+            
+            /* Force equal heights between pairs */
+            .synchronized-argument {{
+                display: flex;
+                flex-direction: column;
+            }}
+            
+            /* Ensure content sections align */
+            .aligned-content-section {{
+                display: flex;
+                flex-direction: column;
+            }}
+            
+            /* Synchronized children expansion */
+            .synchronized-children {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                padding-left: 1.5rem;
+                position: relative;
+            }}
+            
+            /* Container for each point to enforce alignment */
+            .point-container {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 0.5rem;
+            }}
+            
+            /* Alignment for section headers */
+            .aligned-section-headers {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 0.5rem;
+            }}
         </style>
     </head>
     <body>
@@ -1106,8 +1079,11 @@ def main():
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
             
-            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
+            // Keep track of expanded states
             const expandedStates = {{}};
+            
+            // Track section heights for alignment
+            const sectionHeights = {{}};
             
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
@@ -1155,7 +1131,7 @@ def main():
             }});
             
             // Render overview points
-            function renderOverviewPoints(overview) {{
+            function renderOverviewPoints(overview, id) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
                 const pointsHtml = overview.points.map(point => 
@@ -1166,7 +1142,7 @@ def main():
                 ).join('');
                 
                 return `
-                <div class="overview-block">
+                <div id="overview-${{id}}" class="overview-block">
                     <div class="overview-header">
                         <h6 class="content-section-title">Key Points</h6>
                         <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
@@ -1178,11 +1154,13 @@ def main():
                 `;
             }}
             
-            // Render legal points
-            function renderLegalPoints(points) {{
+            // Render legal points with synced section ID
+            function renderLegalPoints(points, id) {{
                 if (!points || points.length === 0) return '';
                 
-                const pointsHtml = points.map(point => {{
+                const pointsHtml = points.map((point, index) => {{
+                    const pointId = `legal-point-${{id}}-${{index}}`;
+                    
                     const disputed = point.isDisputed 
                         ? `<span class="badge disputed-badge">Disputed</span>` 
                         : '';
@@ -1192,7 +1170,7 @@ def main():
                         : '';
                     
                     return `
-                    <div class="legal-point">
+                    <div id="${{pointId}}" class="legal-point">
                         <div class="point-header">
                             <span class="badge legal-badge">Legal</span>
                             ${{disputed}}
@@ -1207,24 +1185,26 @@ def main():
                 }}).join('');
                 
                 return `
-                <div class="content-section">
+                <div id="legal-points-${{id}}" class="content-section aligned-content-section">
                     <h6 class="content-section-title">Legal Points</h6>
                     ${{pointsHtml}}
                 </div>
                 `;
             }}
             
-            // Render factual points
-            function renderFactualPoints(points) {{
+            // Render factual points with synced section ID
+            function renderFactualPoints(points, id) {{
                 if (!points || points.length === 0) return '';
                 
-                const pointsHtml = points.map(point => {{
+                const pointsHtml = points.map((point, index) => {{
+                    const pointId = `factual-point-${{id}}-${{index}}`;
+                    
                     const disputed = point.isDisputed 
                         ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
                         : '';
                     
                     return `
-                    <div class="factual-point">
+                    <div id="${{pointId}}" class="factual-point">
                         <div class="point-header">
                             <span class="badge factual-badge">Factual</span>
                             ${{disputed}}
@@ -1245,24 +1225,26 @@ def main():
                 }}).join('');
                 
                 return `
-                <div class="content-section">
+                <div id="factual-points-${{id}}" class="content-section aligned-content-section">
                     <h6 class="content-section-title">Factual Points</h6>
                     ${{pointsHtml}}
                 </div>
                 `;
             }}
             
-            // Render evidence
-            function renderEvidence(evidence) {{
+            // Render evidence with synced section ID
+            function renderEvidence(evidence, id) {{
                 if (!evidence || evidence.length === 0) return '';
                 
-                const itemsHtml = evidence.map(item => {{
+                const itemsHtml = evidence.map((item, index) => {{
+                    const itemId = `evidence-${{id}}-${{index}}`;
+                    
                     const citations = item.citations 
                         ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div class="reference-block">
+                    <div id="${{itemId}}" class="reference-block">
                         <div class="reference-header">
                             <span class="reference-title">${{item.id}}: ${{item.title}}</span>
                             <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
@@ -1282,24 +1264,26 @@ def main():
                 }}).join('');
                 
                 return `
-                <div class="content-section">
+                <div id="evidence-section-${{id}}" class="content-section aligned-content-section">
                     <h6 class="content-section-title">Evidence</h6>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render case law
-            function renderCaseLaw(cases) {{
+            // Render case law with synced section ID
+            function renderCaseLaw(cases, id) {{
                 if (!cases || cases.length === 0) return '';
                 
-                const itemsHtml = cases.map(item => {{
+                const itemsHtml = cases.map((item, index) => {{
+                    const itemId = `case-law-${{id}}-${{index}}`;
+                    
                     const citedParagraphs = item.citedParagraphs 
                         ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div class="reference-block">
+                    <div id="${{itemId}}" class="reference-block">
                         <div class="reference-header">
                             <div>
                                 <span class="reference-title">${{item.caseNumber}}</span>
@@ -1323,46 +1307,50 @@ def main():
                 }}).join('');
                 
                 return `
-                <div class="content-section">
+                <div id="case-law-section-${{id}}" class="content-section aligned-content-section">
                     <h6 class="content-section-title">Case Law</h6>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render argument content
-            function renderArgumentContent(arg) {{
+            // Render argument content - now with synchronized sections
+            function renderArgumentContent(arg, side, path) {{
+                // Create unique ID
+                const id = `${{side}}-${{path}}`;
+                
+                // Prepare content sections
                 let content = '';
                 
                 // Overview points
                 if (arg.overview) {{
-                    content += renderOverviewPoints(arg.overview);
+                    content += renderOverviewPoints(arg.overview, id);
                 }}
                 
-                // Legal points
+                // Legal points 
                 if (arg.legalPoints) {{
-                    content += renderLegalPoints(arg.legalPoints);
+                    content += renderLegalPoints(arg.legalPoints, id);
                 }}
                 
                 // Factual points
                 if (arg.factualPoints) {{
-                    content += renderFactualPoints(arg.factualPoints);
+                    content += renderFactualPoints(arg.factualPoints, id);
                 }}
                 
                 // Evidence
                 if (arg.evidence) {{
-                    content += renderEvidence(arg.evidence);
+                    content += renderEvidence(arg.evidence, id);
                 }}
                 
                 // Case law
                 if (arg.caseLaw) {{
-                    content += renderCaseLaw(arg.caseLaw);
+                    content += renderCaseLaw(arg.caseLaw, id);
                 }}
                 
                 return content;
             }}
             
-            // Render a single argument including its children
+            // Render a single argument - updated with synchronized rows
             function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
                 
@@ -1396,14 +1384,13 @@ def main():
                 </div>
                 `;
                 
-                // Detailed content
-                const contentHtml = renderArgumentContent(arg);
+                // Detailed content - with synchronized IDs for alignment
+                const contentHtml = renderArgumentContent(arg, side, argId);
                 
-                // Child arguments
+                // Child arguments - with synchronized display
                 let childrenHtml = '';
                 if (hasChildren) {{
                     const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        // Pass the full path for this argument's children
                         return renderArgument(child, side, argId, level + 1);
                     }}).join('');
                     
@@ -1417,7 +1404,7 @@ def main():
                 
                 // Complete argument HTML
                 return `
-                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                <div id="argument-${{fullId}}" class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
                     ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
                     <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
                         ${{headerHtml}}
@@ -1430,7 +1417,7 @@ def main():
                 `;
             }}
             
-            // Render a pair of arguments (claimant and respondent)
+            // Render a pair of arguments - with synchronized heights
             function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
                 return `
                 <div class="argument-pair">
@@ -1460,6 +1447,76 @@ def main():
                 }});
                 
                 container.innerHTML = html;
+                
+                // After rendering, apply vertical alignment
+                setTimeout(syncArgumentHeights, 100);
+            }}
+            
+            // Synchronize argument heights between claimant and respondent
+            function syncArgumentHeights() {{
+                // Sync top-level argument content
+                Object.keys(argsData.claimantArgs).forEach(argId => {{
+                    if (argsData.respondentArgs[argId]) {{
+                        // Sync content sections
+                        syncContentSections('claimant', 'respondent', argId);
+                        
+                        // Recursively sync children if they exist
+                        syncChildArguments('claimant', 'respondent', argId, argsData.claimantArgs[argId], argsData.respondentArgs[argId]);
+                    }}
+                }});
+            }}
+            
+            // Sync content sections between claimant and respondent
+            function syncContentSections(sideName1, sideName2, argId) {{
+                // Get content elements for both sides
+                const sections = ['overview', 'legal-points', 'factual-points', 'evidence-section', 'case-law-section'];
+                
+                sections.forEach(section => {{
+                    const section1 = document.getElementById(`${{section}}-${{sideName1}}-${{argId}}`);
+                    const section2 = document.getElementById(`${{section}}-${{sideName2}}-${{argId}}`);
+                    
+                    if (section1 && section2) {{
+                        // Measure heights
+                        const height1 = section1.offsetHeight;
+                        const height2 = section2.offsetHeight;
+                        
+                        // Set to max height
+                        const maxHeight = Math.max(height1, height2);
+                        section1.style.minHeight = `${{maxHeight}}px`;
+                        section2.style.minHeight = `${{maxHeight}}px`;
+                    }}
+                }});
+                
+                // If expanded, sync the overall argument content height
+                const side1Content = document.getElementById(`content-${{sideName1}}-${{argId}}`);
+                const side2Content = document.getElementById(`content-${{sideName2}}-${{argId}}`);
+                
+                if (side1Content && side2Content && side1Content.style.display === 'block') {{
+                    const height1 = side1Content.offsetHeight;
+                    const height2 = side2Content.offsetHeight;
+                    const maxHeight = Math.max(height1, height2);
+                    
+                    side1Content.style.minHeight = `${{maxHeight}}px`;
+                    side2Content.style.minHeight = `${{maxHeight}}px`;
+                }}
+            }}
+            
+            // Recursively sync child arguments
+            function syncChildArguments(sideName1, sideName2, parentId, arg1, arg2) {{
+                if (!arg1 || !arg2 || !arg1.children || !arg2.children) return;
+                
+                // For each child in arg1
+                Object.keys(arg1.children).forEach(childId => {{
+                    if (arg2.children[childId]) {{
+                        const fullChildId = parentId ? `${{parentId}}-${{childId}}` : childId;
+                        
+                        // Sync this child's content sections
+                        syncContentSections(sideName1, sideName2, fullChildId);
+                        
+                        // Recursively sync this child's children
+                        syncChildArguments(sideName1, sideName2, fullChildId, arg1.children[childId], arg2.children[childId]);
+                    }}
+                }});
             }}
             
             // Render the topic view
@@ -1494,9 +1551,12 @@ def main():
                 }});
                 
                 container.innerHTML = html;
+                
+                // Apply vertical alignment
+                setTimeout(syncArgumentHeights, 100);
             }}
             
-            // Toggle argument expansion - updated to handle nested paths
+            // Toggle argument expansion - updated to better handle alignment
             function toggleArgument(fullId, argPath) {{
                 // Determine the side (claimant or respondent)
                 const [side, ...rest] = fullId.split('-');
@@ -1536,7 +1596,14 @@ def main():
                 }}
                 
                 if (pairedChildrenEl) {{
-                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
+                    pairedChildrenEl.style.display = childrenEl ? childrenEl.style.display : 'none';
+                }}
+                
+                // If now expanded, make sure heights are in sync
+                if (!isExpanded) {{
+                    setTimeout(() => {{
+                        syncContentSections(side, otherSide, argPath);
+                    }}, 50);
                 }}
             }}
             

@@ -429,122 +429,13 @@ def get_argument_data():
         "topics": topics
     }
 
-def get_timeline_data():
-    return [
-        {
-            "date": "2023-01-15",
-            "appellantVersion": "Contract signed with Club",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-03-20",
-            "appellantVersion": "Player received notification of exclusion from team",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-03-22",
-            "appellantVersion": "Player requested explanation",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-01",
-            "appellantVersion": "Player sent termination letter",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-05",
-            "appellantVersion": "—",
-            "respondentVersion": "Club rejected termination as invalid",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-10",
-            "appellantVersion": "Player was denied access to training facilities",
-            "respondentVersion": "—",
-            "status": "Disputed"
-        },
-        {
-            "date": "2023-04-15",
-            "appellantVersion": "—",
-            "respondentVersion": "Club issued warning letter",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-05-01",
-            "appellantVersion": "Player filed claim with FIFA",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        }
-    ]
-
-def get_exhibits_data():
-    return [
-        {
-            "id": "C-1",
-            "party": "Appellant",
-            "title": "Employment Contract",
-            "type": "contract",
-            "summary": "Employment contract dated 15 January 2023 between Player and Club"
-        },
-        {
-            "id": "C-2",
-            "party": "Appellant",
-            "title": "Termination Letter",
-            "type": "letter",
-            "summary": "Player's termination letter sent on 1 April 2023"
-        },
-        {
-            "id": "C-3",
-            "party": "Appellant",
-            "title": "Email Correspondence",
-            "type": "communication",
-            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
-        },
-        {
-            "id": "C-4",
-            "party": "Appellant",
-            "title": "Witness Statement",
-            "type": "statement",
-            "summary": "Statement from team captain confirming Player's exclusion"
-        },
-        {
-            "id": "R-1",
-            "party": "Respondent",
-            "title": "Club Regulations",
-            "type": "regulations",
-            "summary": "Internal regulations of the Club dated January 2022"
-        },
-        {
-            "id": "R-2",
-            "party": "Respondent",
-            "title": "Warning Letter",
-            "type": "letter",
-            "summary": "Warning letter issued to Player on 15 April 2023"
-        },
-        {
-            "id": "R-3",
-            "party": "Respondent",
-            "title": "Training Schedule",
-            "type": "schedule",
-            "summary": "Team training schedule for March-April 2023"
-        }
-    ]
-
 # Main app
 def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
-    timeline_data = get_timeline_data()
-    exhibits_data = get_exhibits_data()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
-    timeline_json = json.dumps(timeline_data)
-    exhibits_json = json.dumps(exhibits_data)
     
     # Title
     st.title("Legal Arguments Analysis")
@@ -562,35 +453,6 @@ def main():
                 color: #333;
                 margin: 0;
                 padding: 0;
-            }}
-            
-            /* Tab navigation */
-            .tabs {{
-                display: flex;
-                border-bottom: 1px solid #e2e8f0;
-                margin-bottom: 1.5rem;
-            }}
-            .tab {{
-                padding: 1rem 1.5rem;
-                font-weight: 500;
-                color: #718096;
-                cursor: pointer;
-                position: relative;
-            }}
-            .tab:hover {{
-                color: #4a5568;
-            }}
-            .tab.active {{
-                color: #3182ce;
-                border-bottom: 2px solid #3182ce;
-            }}
-            
-            /* Tab content sections */
-            .tab-content {{
-                display: none;
-            }}
-            .tab-content.active {{
-                display: block;
             }}
             
             /* View toggle */
@@ -881,64 +743,147 @@ def main():
                 color: #718096;
                 margin-bottom: 1rem;
             }}
+        </style>
+    </head>
+    <body>
+        <!-- Arguments Tab -->
+        <div id="arguments">
+            <div class="view-toggle">
+                <div class="view-toggle-container">
+                    <button class="view-btn active" data-view="standard">Standard View</button>
+                    <button class="view-btn" data-view="topic">Topic View</button>
+                </div>
+            </div>
             
-            /* Timeline & Exhibits */
-            .actions-bar {{
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 1rem;
-            }}
-            .action-btn {{
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                background-color: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                margin-left: 0.5rem;
-                cursor: pointer;
-            }}
-            .search-bar {{
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 1rem;
-            }}
-            .search-input-container {{
-                position: relative;
-            }}
-            .search-input {{
-                padding: 0.625rem 1rem 0.625rem 2.5rem;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                width: 16rem;
-            }}
-            .search-icon {{
-                position: absolute;
-                left: 12px;
-                top: 11px;
+            <!-- Standard View -->
+            <div id="standard-view" class="view-content">
+                <div class="arguments-header">
+                    <h3 class="claimant-color">Claimant's Arguments</h3>
+                    <h3 class="respondent-color">Respondent's Arguments</h3>
+                </div>
+                <div id="standard-arguments-container"></div>
+            </div>
+            
+            <!-- Topic View -->
+            <div id="topic-view" class="view-content" style="display: none;">
+                <div id="topics-container"></div>
+            </div>
+        </div>
+        
+        <script>
+            // Initialize data
+            const argsData = {args_json};
+            
+            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
+            const expandedStates = {{}};
+            
+            // View switching
+            document.querySelectorAll('.view-btn').forEach(btn => {{
+                btn.addEventListener('click', function() {{
+                    // Update buttons
+                    document.querySelectorAll('.view-btn').forEach(b => {{
+                        b.classList.remove('active');
+                        b.style.backgroundColor = '';
+                        b.style.boxShadow = '';
+                    }});
+                    this.classList.add('active');
+                    this.style.backgroundColor = 'white';
+                    this.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+                    
+                    // Update content
+                    const viewId = this.getAttribute('data-view');
+                    if (viewId === 'standard') {{
+                        document.getElementById('standard-view').style.display = 'block';
+                        document.getElementById('topic-view').style.display = 'none';
+                    }} else {{
+                        document.getElementById('standard-view').style.display = 'none';
+                        document.getElementById('topic-view').style.display = 'block';
+                    }}
+                }});
+            }});
+            
+            // Render overview points
+            function renderOverviewPoints(overview) {{
+                if (!overview || !overview.points || overview.points.length === 0) return '';
+                
+                const pointsHtml = overview.points.map(point => 
+                    `<div class="overview-item">
+                        <div class="overview-bullet"></div>
+                        <span class="point-text">${{point}}</span>
+                    </div>`
+                ).join('');
+                
+                return `
+                <div class="overview-block">
+                    <div class="overview-header">
+                        <h6 class="content-section-title">Key Points</h6>
+                        <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
+                    </div>
+                    <div class="overview-list">
+                        ${{pointsHtml}}
+                    </div>
+                </div>
+                `;
             }}
             
-            /* Tables */
-            .data-table {{
-                width: 100%;
-                border-collapse: collapse;
-                background-color: white;
-                border-radius: 0.375rem;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
+            // Render legal points
+            function renderLegalPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    const regulations = point.regulations 
+                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
+                        : '';
+                    
+                    return `
+                    <div class="legal-point">
+                        <div class="point-header">
+                            <span class="badge legal-badge">Legal</span>
+                            ${{disputed}}
+                        </div>
+                        <p class="point-text">${{point.point}}</p>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
+                            ${{regulations}}
+                            <span class="point-citation">¶${{point.paragraphs}}</span>
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <h6 class="content-section-title">Legal Points</h6>
+                    ${{pointsHtml}}
+                </div>
+                `;
             }}
-            .data-table th {{
-                background-color: #f7fafc;
-                padding: 0.75rem 1rem;
-                text-align: left;
-                font-size: 0.875rem;
-                font-weight: 500;
-                color: #4a5568;
-                border-bottom: 1px solid #e2e8f0;
-            }}
-            .data-table td {{
-                padding: 0.75rem 1rem;
-                font-size: 0.875rem;
-                border-bottom: 1px solid #e2e8f0;
+            
+            // Render factual points
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
+                        : '';
+                    
+                    return `
+                    <div class="factual-point">
+                        <div class="point-header">
+                            <span class="badge factual-badge">Factual</span>
+                            ${{disputed}}
+                        </div>
+                        <div class="point-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            ${{point.date}}
+                        </div>
+                        <p class="point-text">${{point.point}}</p>

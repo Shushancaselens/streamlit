@@ -20,13 +20,21 @@ def get_argument_data():
                 ],
                 "paragraphs": "15-16"
             },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence establishes criteria for sporting succession",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2016/A/4576"],
+                    "paragraphs": "15-17"
+                }
+            ],
             "factualPoints": [
                 {
                     "point": "Continuous operation under same name since 1950",
                     "date": "1950-present",
                     "isDisputed": False,
                     "paragraphs": "18-19",
-                    "exhibits": ["C-1", "C-3"]
+                    "exhibits": ["C-1"]
                 }
             ],
             "evidence": [
@@ -59,6 +67,20 @@ def get_argument_data():
                         ],
                         "paragraphs": "20-21"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Name registration complies with regulations",
+                            "isDisputed": False,
+                            "regulations": ["Name Registration Act"],
+                            "paragraphs": "22-24"
+                        },
+                        {
+                            "point": "Trademark protection since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Law"],
+                            "paragraphs": "25-27"
+                        }
+                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -78,7 +100,7 @@ def get_argument_data():
                                     "isDisputed": True,
                                     "source": "Respondent",
                                     "paragraphs": "29-30",
-                                    "exhibits": ["C-2", "C-3"]
+                                    "exhibits": ["C-2"]
                                 }
                             ],
                             "evidence": [
@@ -104,6 +126,14 @@ def get_argument_data():
                         ],
                         "paragraphs": "46-47"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
+                        }
+                    ],
                     "factualPoints": [
                         {
                             "point": "Consistent use of blue and white since founding",
@@ -174,7 +204,15 @@ def get_argument_data():
                     "Assessment of chain of custody documentation"
                 ],
                 "paragraphs": "70-72"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "WADA Code Article 5 establishes procedural requirements",
+                    "isDisputed": False,
+                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                    "paragraphs": "73-75"
+                }
+            ]
         }
     }
     
@@ -191,6 +229,14 @@ def get_argument_data():
                 ],
                 "paragraphs": "200-202"
             },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence requires operational continuity not merely identification",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2017/A/5465"],
+                    "paragraphs": "203-205"
+                }
+            ],
             "factualPoints": [
                 {
                     "point": "Operations ceased between 1975-1976",
@@ -231,6 +277,14 @@ def get_argument_data():
                         ],
                         "paragraphs": "220-222"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Registration lapse voided legal continuity",
+                            "isDisputed": True,
+                            "regulations": ["Registration Act"],
+                            "paragraphs": "223-225"
+                        }
+                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -275,6 +329,14 @@ def get_argument_data():
                         ],
                         "paragraphs": "241-242"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
+                        }
+                    ],
                     "factualPoints": [
                         {
                             "point": "Significant color scheme change in 1976",
@@ -346,7 +408,15 @@ def get_argument_data():
                     "Completeness of documentation"
                 ],
                 "paragraphs": "250-252"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "Minor procedural deviations do not invalidate results",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2019/A/6148"],
+                    "paragraphs": "253-255"
+                }
+            ]
         }
     }
     
@@ -678,6 +748,11 @@ def main():
                 color: #276749;
                 margin-right: 0.25rem;
             }}
+            .exhibit-badge {{
+                background-color: #fef3c7;
+                color: #d97706;
+                margin-right: 0.25rem;
+            }}
             .disputed-badge {{
                 background-color: #fed7d7;
                 color: #c53030;
@@ -685,11 +760,6 @@ def main():
             .type-badge {{
                 background-color: #edf2f7;
                 color: #4a5568;
-            }}
-            .exhibit-badge {{
-                background-color: #FEEBC8;
-                color: #C05621;
-                margin-right: 0.25rem;
             }}
             
             /* Content components */
@@ -730,13 +800,6 @@ def main():
                 margin-top: 0.5rem;
                 font-size: 0.75rem;
                 color: #718096;
-            }}
-            .exhibit-citations {{
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.25rem;
-                margin-top: 0.5rem;
-                align-items: center;
             }}
             
             /* Overview points */
@@ -817,7 +880,13 @@ def main():
                 font-size: 0.75rem;
             }}
             
-            /* Factual points styling */
+            /* Legal references styling */
+            .legal-point {{
+                background-color: #ebf8ff;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
             .factual-point {{
                 background-color: #f0fff4;
                 border-radius: 0.5rem;
@@ -912,24 +981,6 @@ def main():
             }}
             .disputed {{
                 color: #c53030;
-            }}
-            
-            /* Evidence and Case Law expanded styling */
-            .evidence-explanation {{
-                background-color: #ebf8ff;
-                border-left: 3px solid #3182ce;
-                padding: 0.75rem;
-                margin-bottom: 1rem;
-                border-radius: 0 0.25rem 0.25rem 0;
-                font-size: 0.875rem;
-            }}
-            .caselaw-explanation {{
-                background-color: #f0fdf4;
-                border-left: 3px solid #2f855a;
-                padding: 0.75rem;
-                margin-bottom: 1rem;
-                border-radius: 0 0.25rem 0.25rem 0;
-                font-size: 0.875rem;
             }}
         </style>
     </head>
@@ -1131,7 +1182,7 @@ def main():
                 }});
             }});
             
-            // Render overview points - UPDATED to call them Supporting Points
+            // Render overview points - updated to be "Supporting Points" instead of "Key Points"
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -1159,7 +1210,45 @@ def main():
                 `;
             }}
             
-            // Render factual points - UPDATED to show exhibit numbers instead of paragraphs
+            // Render legal points
+            function renderLegalPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    const regulations = point.regulations 
+                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
+                        : '';
+                    
+                    return `
+                    <div class="legal-point">
+                        <div class="point-header">
+                            <span class="badge legal-badge">Legal</span>
+                            ${{disputed}}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <p class="point-text">${{point.point}}</p>
+                            <span class="badge claimant-badge" style="margin-left: 8px;">¶${{point.paragraphs}}</span>
+                        </div>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
+                            ${{regulations}}
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <h6 class="content-section-title">Legal Points</h6>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render factual points - Updated to show exhibit numbers instead of paragraphs
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
@@ -1168,8 +1257,9 @@ def main():
                         ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
                         : '';
                     
-                    const exhibits = point.exhibits 
-                        ? point.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join('') 
+                    // Exhibits badges
+                    const exhibitBadges = point.exhibits && point.exhibits.length > 0
+                        ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${{exhibitId}}</span>`).join('')
                         : '';
                     
                     return `
@@ -1187,10 +1277,11 @@ def main():
                             </svg>
                             ${{point.date}}
                         </div>
-                        <p class="point-text">${{point.point}}</p>
-                        <div class="exhibit-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Referenced in:</span>
-                            ${{exhibits}}
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <p class="point-text">${{point.point}}</p>
+                            <div style="margin-left: 8px; display: flex; gap: 4px;">
+                                ${{exhibitBadges}}
+                            </div>
                         </div>
                     </div>
                     `;
@@ -1204,15 +1295,9 @@ def main():
                 `;
             }}
             
-            // Render evidence - ENHANCED with better explanations
+            // Render evidence
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
-                
-                const explanation = `
-                <div class="evidence-explanation">
-                    <strong>Documentary Exhibits</strong> provide the foundation for factual arguments. Each exhibit is identified by its designation (e.g., C-1, R-2), indicating the submitting party. Exhibits are referenced in paragraphs of written submissions and serve as tangible evidence supporting factual claims. When evaluating exhibits, consider their authenticity, relevance, materiality, and probative value.
-                </div>
-                `;
                 
                 const itemsHtml = evidence.map(item => {{
                     const citations = item.citations 
@@ -1241,22 +1326,15 @@ def main():
                 
                 return `
                 <div class="content-section">
-                    <h6 class="content-section-title">Documentary Exhibits</h6>
-                    ${{explanation}}
+                    <h6 class="content-section-title">Evidence</h6>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render case law - ENHANCED with better explanations
+            // Render case law
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
-                
-                const explanation = `
-                <div class="caselaw-explanation">
-                    <strong>Case Law</strong> establishes legal principles applicable to current disputes. Legal precedents from prior decisions provide interpretive guidance on legal questions. Case law citations indicate the specific authority (e.g., CAS 2016/A/4576), relevant legal principles extracted, and paragraph references to the decision. When evaluating case law, consider the authority of the tribunal, similarity of facts, and consistency with established jurisprudence.
-                </div>
-                `;
                 
                 const itemsHtml = cases.map(item => {{
                     const citedParagraphs = item.citedParagraphs 
@@ -1290,19 +1368,23 @@ def main():
                 return `
                 <div class="content-section">
                     <h6 class="content-section-title">Case Law</h6>
-                    ${{explanation}}
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render argument content - REMOVED Legal Points
+            // Render argument content
             function renderArgumentContent(arg) {{
                 let content = '';
                 
-                // Overview points (renamed to Supporting Points)
+                // Overview points
                 if (arg.overview) {{
                     content += renderOverviewPoints(arg.overview);
+                }}
+                
+                // Legal points
+                if (arg.legalPoints) {{
+                    content += renderLegalPoints(arg.legalPoints);
                 }}
                 
                 // Factual points
@@ -1310,12 +1392,12 @@ def main():
                     content += renderFactualPoints(arg.factualPoints);
                 }}
                 
-                // Evidence (enhanced)
+                // Evidence
                 if (arg.evidence) {{
                     content += renderEvidence(arg.evidence);
                 }}
                 
-                // Case law (enhanced)
+                // Case law
                 if (arg.caseLaw) {{
                     content += renderCaseLaw(arg.caseLaw);
                 }}

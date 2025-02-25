@@ -34,8 +34,7 @@ def get_argument_data():
                     "id": "C-1",
                     "title": "Historical Registration Documents",
                     "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
-                    "citations": ["20", "21", "24"],
-                    "significance": "Provides documentary proof of the continuous legal existence of the club under the same name, establishing an unbroken chain of identity."
+                    "citations": ["20", "21", "24"]
                 }
             ],
             "caseLaw": [
@@ -44,8 +43,7 @@ def get_argument_data():
                     "title": "Criteria for sporting succession",
                     "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
                     "paragraphs": "45-48",
-                    "citedParagraphs": ["45", "46", "47"],
-                    "keyPrinciple": "The panel established that sporting succession requires examining multiple factors in totality rather than any single element in isolation."
+                    "citedParagraphs": ["45", "46", "47"]
                 }
             ],
             "children": {
@@ -88,8 +86,7 @@ def get_argument_data():
                                     "id": "C-2",
                                     "title": "Registration Records",
                                     "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
-                                    "citations": ["25", "26", "28"],
-                                    "significance": "These documents demonstrate the club's formal legal recognition throughout its history, with only a brief administrative gap during 1975-1976 that did not affect actual operations."
+                                    "citations": ["25", "26", "28"]
                                 }
                             ]
                         }
@@ -122,8 +119,7 @@ def get_argument_data():
                             "id": "C-4",
                             "title": "Historical Photographs",
                             "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
-                            "citations": ["53", "54", "55"],
-                            "significance": "Visual documentation proves the consistent use of blue and white as primary club colors, with only minor variations in shade and design elements that maintained the core identity."
+                            "citations": ["53", "54", "55"]
                         }
                     ],
                     "children": {
@@ -157,8 +153,7 @@ def get_argument_data():
                                             "id": "C-5",
                                             "title": "Color Archives",
                                             "summary": "Detailed color specification documents from club archives, including official style guides, manufacturer specifications, and board meeting minutes about uniform decisions from 1950 to present day.",
-                                            "citations": ["61", "62", "63"],
-                                            "significance": "These documents show that while minor variations occurred (particularly during 1982-1988 when gold was temporarily added as an accent color), the fundamental blue and white color scheme remained the defining visual identity of the club."
+                                            "citations": ["61", "62", "63"]
                                         }
                                     ]
                                 }
@@ -211,8 +206,7 @@ def get_argument_data():
                     "id": "R-1",
                     "title": "Federation Records",
                     "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
-                    "citations": ["208", "209", "210"],
-                    "significance": "These records establish that the club completely ceased sporting operations for an entire season, creating a fundamental discontinuity in its existence as a sporting entity despite claims of administrative continuity."
+                    "citations": ["208", "209", "210"]
                 }
             ],
             "caseLaw": [
@@ -221,8 +215,7 @@ def get_argument_data():
                     "title": "Operational continuity requirement",
                     "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
                     "paragraphs": "211-213",
-                    "citedParagraphs": ["212"],
-                    "keyPrinciple": "Participation in competition is the essence of a sporting entity's existence; absence from competition for a full season creates a rebuttable presumption of discontinuity."
+                    "citedParagraphs": ["212"]
                 }
             ],
             "children": {
@@ -264,8 +257,7 @@ def get_argument_data():
                                     "id": "R-2",
                                     "title": "Termination Certificate",
                                     "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
-                                    "citations": ["226", "227"],
-                                    "significance": "These documents prove that legally, two entirely separate entities existed, with the original club formally dissolved for a period of almost 17 months before a new organization adopted similar identifying elements."
+                                    "citations": ["226", "227"]
                                 }
                             ]
                         }
@@ -298,8 +290,7 @@ def get_argument_data():
                             "id": "R-4",
                             "title": "Historical Photographs Comparison",
                             "summary": "Side-by-side comparison of team uniforms from 1974 (pre-dissolution) and 1976 (post-new registration), showing significant differences in shade, pattern, and design elements. Includes expert color analysis report from textile historian confirming different dye formulations were used.",
-                            "citations": ["245", "246", "247"],
-                            "significance": "The visual evidence demonstrates that while both entities used 'blue and white' broadly speaking, the specific implementation changed significantly, reflecting a new visual identity rather than continuity of the original."
+                            "citations": ["245", "246", "247"]
                         }
                     ],
                     "children": {
@@ -334,8 +325,7 @@ def get_argument_data():
                                             "id": "R-5",
                                             "title": "Marketing Materials",
                                             "summary": "Collection of promotional materials, merchandise, and internal design documents from both pre-1975 and post-1976 periods, showing the deliberate change in color symbolism used in marketing campaigns and communications with fans.",
-                                            "citations": ["250", "251", "252"],
-                                            "significance": "These documents reveal that the original club's colors were explicitly tied to the North District's historical blue banners, while the new entity after 1976 chose colors to represent the South Region's maritime heritage - a fundamental shift in symbolic meaning despite surface-level color similarity."
+                                            "citations": ["250", "251", "252"]
                                         }
                                     ]
                                 }
@@ -915,13 +905,6 @@ def main():
                 margin-bottom: 1rem;
                 border-left: 4px solid #1890ff;
             }}
-            .key-principle {{
-                font-style: italic;
-                margin-top: 0.75rem;
-                padding-top: 0.75rem;
-                border-top: 1px solid rgba(24, 144, 255, 0.2);
-                color: #1890ff;
-            }}
 
             /* Documentary evidence styling */
             .documentary-block {{
@@ -930,13 +913,6 @@ def main():
                 padding: 1rem;
                 margin-bottom: 1rem;
                 border-left: 4px solid #faad14;
-            }}
-            .significance-section {{
-                font-style: italic;
-                margin-top: 0.75rem;
-                padding-top: 0.75rem;
-                border-top: 1px solid rgba(250, 173, 20, 0.2);
-                color: #d48806;
             }}
         </style>
     </head>
@@ -1213,7 +1189,7 @@ def main():
                 `;
             }}
             
-            // Render evidence with enhanced explanation
+            // Render evidence with enhanced styling but no significance section
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
@@ -1238,7 +1214,6 @@ def main():
                             <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
                             ${{citations}}
                         </div>
-                        ${{item.significance ? `<p class="significance-section">Significance: ${{item.significance}}</p>` : ''}}
                     </div>
                     `;
                 }}).join('');
@@ -1251,7 +1226,7 @@ def main():
                 `;
             }}
             
-            // Render case law with enhanced explanation
+            // Render case law with enhanced styling but no key principle section
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
@@ -1280,7 +1255,6 @@ def main():
                             <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
                             ${{citedParagraphs}}
                         </div>
-                        ${{item.keyPrinciple ? `<p class="key-principle">Key Principle: ${{item.keyPrinciple}}</p>` : ''}}
                     </div>
                     `;
                 }}).join('');

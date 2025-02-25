@@ -350,12 +350,11 @@ def get_argument_data():
         }
     }
     
-    # Modified to have separate topics for each main argument
     topics = [
         {
             "id": "topic-1",
-            "title": "Sporting Succession",
-            "description": "Analysis of club succession rights and continuity of operations",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
             "argumentIds": ["1"]
         },
         {
@@ -488,6 +487,120 @@ def main():
     args_json = json.dumps(args_data)
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
+    
+    # Add Streamlit sidebar
+    with st.sidebar:
+        st.title("Legal Analysis Tools")
+        
+        # View selector
+        st.header("View Selection")
+        view_option = st.radio(
+            "Select View",
+            ["Arguments", "Timeline", "Exhibits"],
+            index=0
+        )
+        
+        # Topic filter (only for Arguments view)
+        if view_option == "Arguments":
+            st.header("Topic Filter")
+            
+            # Create a list of topic names from the data
+            topic_names = [topic["title"] for topic in args_data["topics"]]
+            
+            # Allow selection of topics
+            selected_topic = st.selectbox(
+                "Select Topic",
+                ["All Topics"] + topic_names
+            )
+            
+            # Party filter
+            st.header("Party Filter")
+            selected_party = st.radio(
+                "Show Arguments For",
+                ["Both Parties", "Appellant Only", "Respondent Only"],
+                index=0
+            )
+            
+            # Display disputed points only
+            show_disputed = st.checkbox("Show Disputed Points Only", value=False)
+        
+        # Date range filter (for Timeline view)
+        if view_option == "Timeline":
+            st.header("Date Filter")
+            
+            # Get min and max dates from timeline data
+            dates = [item["date"] for item in timeline_data]
+            min_date = min(dates) if dates else "2023-01-01"
+            max_date = max(dates) if dates else "2023-12-31"
+            
+            date_range = st.date_input(
+                "Select Date Range",
+                [min_date, max_date]
+            )
+            
+            # Status filter
+            status_filter = st.multiselect(
+                "Status Filter",
+                ["Disputed", "Undisputed"],
+                default=["Disputed", "Undisputed"]
+            )
+        
+        # Exhibit filters
+        if view_option == "Exhibits":
+            st.header("Exhibit Filters")
+            
+            # Party filter
+            exhibit_party = st.multiselect(
+                "Party",
+                ["Appellant", "Respondent"],
+                default=["Appellant", "Respondent"]
+            )
+            
+            # Type filter
+            exhibit_types = list(set([exhibit["type"] for exhibit in exhibits_data]))
+            selected_types = st.multiselect(
+                "Document Type",
+                exhibit_types,
+                default=exhibit_types
+            )
+        
+        # Global search
+        st.header("Search")
+        search_term = st.text_input("Search All Content")
+        
+        # Add export options
+        st.header("Export Options")
+        export_format = st.selectbox(
+            "Export Format",
+            ["PDF", "Word", "JSON"]
+        )
+        st.button("Export")
+        
+        # Add app info at the bottom of sidebar
+        st.markdown("---")
+        st.caption("Legal Arguments Analysis Tool v1.0")
+        st.caption("© 2024 Legal Tech Solutions")
+    
+    # Set JavaScript variables based on sidebar selections
+    if view_option == "Arguments":
+        active_tab = 0
+    elif view_option == "Timeline":
+        active_tab = 1
+    else:  # Exhibits
+        active_tab = 2
+    
+    # Initialize the view options as a JavaScript variable
+    view_options_json = json.dumps({
+        "activeTab": active_tab,
+        "search": search_term,
+        "selectedTopic": selected_topic if view_option == "Arguments" else None,
+        "selectedParty": selected_party if view_option == "Arguments" else None,
+        "showDisputed": show_disputed if view_option == "Arguments" else False,
+        "dateRange": [str(date_range[0]), str(date_range[1])] if view_option == "Timeline" and len(date_range) > 1 else None,
+        "statusFilter": status_filter if view_option == "Timeline" else None,
+        "exhibitParty": exhibit_party if view_option == "Exhibits" else None,
+        "exhibitTypes": selected_types if view_option == "Exhibits" else None
+    })
     
     # Create a single HTML component containing the full UI with minimalistic design
     html_content = f"""
@@ -762,8 +875,8 @@ def main():
     </head>
     <body>
         <div class="container">
-            <!-- Search bar -->
-            <div class="search-container">
+            <!-- Search bar - hide if using Streamlit's search -->
+            <div class="search-container" style="display: none;">
                 <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -781,13 +894,13 @@ def main():
             
             <!-- Simple tabs -->
             <div class="tabs">
-                <div class="tab active" data-tab="arguments">Arguments</div>
+                <div class="tab" data-tab="arguments">Arguments</div>
                 <div class="tab" data-tab="timeline">Timeline</div>
                 <div class="tab" data-tab="exhibits">Exhibits</div>
             </div>
             
             <!-- Arguments Tab -->
-            <div id="arguments" class="tab-content active">
+            <div id="arguments" class="tab-content">
                 <div id="topics-container"></div>
             </div>
             
@@ -828,8 +941,37 @@ def main():
             const argsData = {args_json};
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
+            const viewOptions = {view_options_json};
             
-            // Tab switching
+            // Apply initial options from Streamlit sidebar
+            document.addEventListener('DOMContentLoaded', function() {{
+                // Set active tab based on sidebar selection
+                const tabIndex = viewOptions.activeTab;
+                const tabs = document.querySelectorAll('.tab');
+                if (tabs.length > tabIndex) {{
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabs[tabIndex].classList.add('active');
+                    
+                    // Show the correct content
+                    const tabIds = ['arguments', 'timeline', 'exhibits'];
+                    document.querySelectorAll('.tab-content').forEach(content => {{
+                        content.style.display = 'none';
+                    }});
+                    document.getElementById(tabIds[tabIndex]).style.display = 'block';
+                    
+                    // Initialize content if needed
+                    if (tabIds[tabIndex] === 'timeline') renderTimeline();
+                    if (tabIds[tabIndex] === 'exhibits') renderExhibits();
+                    if (tabIds[tabIndex] === 'arguments') renderTopics();
+                }}
+                
+                // Apply search term if provided
+                if (viewOptions.search) {{
+                    applyGlobalSearch(viewOptions.search);
+                }}
+            }});
+            
+            // Tab switching (remain for user interaction within component)
             document.querySelectorAll('.tab').forEach(tab => {{
                 tab.addEventListener('click', function() {{
                     // Update tabs
@@ -873,6 +1015,13 @@ def main():
             // Render factual points
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
+                
+                // Filter based on sidebar option
+                if (viewOptions.showDisputed) {{
+                    points = points.filter(point => point.isDisputed);
+                }}
+                
+                if (points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
                     const disputed = point.isDisputed 
@@ -998,6 +1147,10 @@ def main():
             function renderArgument(arg, side) {{
                 if (!arg) return '';
                 
+                // Apply party filter from sidebar
+                if (viewOptions.selectedParty === "Appellant Only" && side !== 'appellant') return '';
+                if (viewOptions.selectedParty === "Respondent Only" && side !== 'respondent') return '';
+                
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const argId = `${{side}}-${{arg.id}}`;
                 
@@ -1038,13 +1191,18 @@ def main():
                 `;
             }}
             
-            // Render arguments by topic - Modified to treat each topic as a separate dropdown
+            // Render arguments by topic
             function renderTopics() {{
                 const container = document.getElementById('topics-container');
                 let html = '';
                 
-                argsData.topics.forEach(topic => {{
-                    // Create a single card per topic
+                // Filter topics if a specific one is selected
+                let topicsToRender = argsData.topics;
+                if (viewOptions.selectedTopic && viewOptions.selectedTopic !== "All Topics") {{
+                    topicsToRender = argsData.topics.filter(topic => topic.title === viewOptions.selectedTopic);
+                }}
+                
+                topicsToRender.forEach(topic => {{
                     html += `
                     <div class="card" style="margin-bottom: 24px;">
                         <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
@@ -1056,31 +1214,54 @@ def main():
                             </div>
                         </div>
                         <div class="card-content" id="content-topic-${{topic.id}}">
-                            <p>${{topic.description}}</p>`;
-                    
-                    // For each argumentId in the topic, render the arguments
-                    topic.argumentIds.forEach(argId => {{
-                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                            html += `
-                            <div style="margin-top: 16px;">
-                                <div class="arguments-row">
-                                    <div>
-                                        <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                        ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
+                            <p>${{topic.description}}</p>
+                            
+                            ${{topic.argumentIds.map(argId => {{
+                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                                    // Apply party filter from sidebar options
+                                    const showAppellant = viewOptions.selectedParty !== "Respondent Only";
+                                    const showRespondent = viewOptions.selectedParty !== "Appellant Only";
+                                    
+                                    let columnClass = "arguments-row";
+                                    if (!showAppellant || !showRespondent) {{
+                                        columnClass = "arguments-single";
+                                    }}
+                                    
+                                    return `
+                                    <div style="margin-top: 16px;">
+                                        <div class="${{columnClass}}">
+                                            ${{showAppellant ? `
+                                            <div>
+                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
+                                            </div>
+                                            ` : ''}}
+                                            
+                                            ${{showRespondent ? `
+                                            <div>
+                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
+                                            </div>
+                                            ` : ''}}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 class="side-heading respondent-color">Respondent's Position</h3>
-                                        ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
-                                    </div>
-                                </div>
-                            </div>`;
-                        }}
-                    }});
-                    
-                    html += `</div></div>`;
+                                    `;
+                                }}
+                                return '';
+                            }}).join('')}}
+                        </div>
+                    </div>
+                    `;
                 }});
                 
                 container.innerHTML = html;
+                
+                // Auto-expand first topic if only one is selected
+                if (topicsToRender.length === 1) {{
+                    setTimeout(() => {{
+                        toggleCard(`topic-${{topicsToRender[0].id}}`);
+                    }}, 100);
+                }}
             }}
             
             // Toggle a card without synchronizing - modified to only toggle content, not children
@@ -1130,7 +1311,28 @@ def main():
                 const tbody = document.getElementById('timeline-body');
                 tbody.innerHTML = '';
                 
-                timelineData.forEach(item => {{
+                // Apply filters from sidebar
+                let filteredTimeline = timelineData;
+                
+                // Date filter
+                if (viewOptions.dateRange && viewOptions.dateRange.length === 2) {{
+                    const startDate = new Date(viewOptions.dateRange[0]);
+                    const endDate = new Date(viewOptions.dateRange[1]);
+                    
+                    filteredTimeline = filteredTimeline.filter(item => {{
+                        const itemDate = new Date(item.date);
+                        return itemDate >= startDate && itemDate <= endDate;
+                    }});
+                }}
+                
+                // Status filter
+                if (viewOptions.statusFilter && viewOptions.statusFilter.length > 0) {{
+                    filteredTimeline = filteredTimeline.filter(item => 
+                        viewOptions.statusFilter.includes(item.status)
+                    );
+                }}
+                
+                filteredTimeline.forEach(item => {{
                     const row = document.createElement('tr');
                     if (item.status === 'Disputed') {{
                         row.classList.add('disputed');
@@ -1152,7 +1354,24 @@ def main():
                 const tbody = document.getElementById('exhibits-body');
                 tbody.innerHTML = '';
                 
-                exhibitsData.forEach(item => {{
+                // Apply filters from sidebar
+                let filteredExhibits = exhibitsData;
+                
+                // Party filter
+                if (viewOptions.exhibitParty && viewOptions.exhibitParty.length > 0) {{
+                    filteredExhibits = filteredExhibits.filter(item => 
+                        viewOptions.exhibitParty.includes(item.party)
+                    );
+                }}
+                
+                // Type filter
+                if (viewOptions.exhibitTypes && viewOptions.exhibitTypes.length > 0) {{
+                    filteredExhibits = filteredExhibits.filter(item => 
+                        viewOptions.exhibitTypes.includes(item.type)
+                    );
+                }}
+                
+                filteredExhibits.forEach(item => {{
                     const row = document.createElement('tr');
                     const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
                     
@@ -1168,13 +1387,13 @@ def main():
                 }});
             }}
             
-            // Global search function
-            document.getElementById('global-search').addEventListener('input', function() {{
-                const searchTerm = this.value.toLowerCase();
+            // Global search function - updated to use the search from sidebar
+            function applyGlobalSearch(searchTerm) {{
+                searchTerm = searchTerm.toLowerCase();
                 
                 // If on arguments tab, filter visible arguments
                 if (document.getElementById('arguments').style.display !== 'none') {{
-                    // Implementation would go here
+                    // Implementation would go here - more complex for arguments
                 }}
                 
                 // If on timeline tab, filter timeline
@@ -1186,7 +1405,7 @@ def main():
                 if (document.getElementById('exhibits').style.display !== 'none') {{
                     filterExhibits(searchTerm);
                 }}
-            }});
+            }}
             
             // Filter timeline based on search
             function filterTimeline(searchTerm) {{
@@ -1215,16 +1434,30 @@ def main():
                 alert('All content copied to clipboard');
             }}
             
-            // Initialize the page
-            renderTopics();
-            
-            // Auto-expand first topic
-            setTimeout(() => {{
-                const firstTopic = argsData.topics[0];
-                if (firstTopic) {{
-                    toggleCard(`topic-${{firstTopic.id}}`);
-                }}
-            }}, 100);
+            // Initialize the page based on sidebar selections
+            document.addEventListener('DOMContentLoaded', function() {{
+                const tabIds = ['arguments', 'timeline', 'exhibits'];
+                const activeTabId = tabIds[viewOptions.activeTab || 0];
+                
+                // Set active tab
+                document.querySelectorAll('.tab').forEach(tab => {{
+                    if (tab.getAttribute('data-tab') === activeTabId) {{
+                        tab.classList.add('active');
+                    }} else {{
+                        tab.classList.remove('active');
+                    }}
+                }});
+                
+                // Show active content
+                document.querySelectorAll('.tab-content').forEach(content => {{
+                    content.style.display = content.id === activeTabId ? 'block' : 'none';
+                }});
+                
+                // Initialize content
+                if (activeTabId === 'arguments') renderTopics();
+                if (activeTabId === 'timeline') renderTimeline();
+                if (activeTabId === 'exhibits') renderExhibits();
+            }});
         </script>
     </body>
     </html>

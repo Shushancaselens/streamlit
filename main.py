@@ -977,52 +977,52 @@ def main():
         
         <script>
             // Tab switching
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(tab => {{
+                tab.addEventListener('click', function() {{
                     // Update tabs
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
                     // Update content
                     const tabId = this.getAttribute('data-tab');
-                    document.querySelectorAll('.tab-content').forEach(content => {
+                    document.querySelectorAll('.tab-content').forEach(content => {{
                         content.style.display = 'none';
-                    });
+                    }});
                     document.getElementById(tabId).style.display = 'block';
-                });
-            });
+                }});
+            }});
             
             // Toggle argument expansion
-            function toggleArgument(id) {
-                const contentEl = document.getElementById(`content-\${id}`);
-                const chevronEl = document.getElementById(`chevron-\${id}`);
+            function toggleArgument(id) {{
+                const contentEl = document.getElementById(`content-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                if (contentEl.style.display === 'block') {
+                if (contentEl.style.display === 'block') {{
                     contentEl.style.display = 'none';
                     chevronEl.classList.remove('expanded');
-                } else {
+                }} else {{
                     contentEl.style.display = 'block';
                     chevronEl.classList.add('expanded');
-                }
+                }}
                 
                 // If this is a claimant/respondent pair, toggle the other side too
                 const isClaimant = id.startsWith('claimant');
                 const argNum = id.split('-')[1];
-                const pairedId = isClaimant ? `respondent-\${argNum}` : `claimant-\${argNum}`;
+                const pairedId = isClaimant ? `respondent-${{argNum}}` : `claimant-${{argNum}}`;
                 
-                const pairedContentEl = document.getElementById(`content-\${pairedId}`);
-                const pairedChevronEl = document.getElementById(`chevron-\${pairedId}`);
+                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
                 
-                if (pairedContentEl) {
+                if (pairedContentEl) {{
                     pairedContentEl.style.display = contentEl.style.display;
                     
-                    if (contentEl.style.display === 'block') {
+                    if (contentEl.style.display === 'block') {{
                         pairedChevronEl.classList.add('expanded');
-                    } else {
+                    }} else {{
                         pairedChevronEl.classList.remove('expanded');
-                    }
-                }
-            }
+                    }}
+                }}
+            }}
         </script>
     </body>
     </html>

@@ -20,14 +20,6 @@ def get_argument_data():
                 ],
                 "paragraphs": "15-16"
             },
-            "legalPoints": [
-                {
-                    "point": "CAS jurisprudence establishes criteria for sporting succession",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2016/A/4576"],
-                    "paragraphs": "15-17"
-                }
-            ],
             "factualPoints": [
                 {
                     "point": "Continuous operation under same name since 1950",
@@ -42,7 +34,9 @@ def get_argument_data():
                     "id": "C-1",
                     "title": "Historical Registration Documents",
                     "summary": "Official records showing continuous name usage",
-                    "citations": ["20", "21", "24"]
+                    "citations": ["20", "21", "24"],
+                    "context": "These documents include the original club registration certificate from 1950 along with annual renewal certificates spanning the entire period up to present day. The records show consistent use of the club name across all official documentation.",
+                    "significance": "The continuous record of registration demonstrates an unbroken administrative history, which supports the claim of sporting succession. Particularly noteworthy are the stamps and signatures from the football association confirming the club's status each year."
                 }
             ],
             "caseLaw": [
@@ -51,7 +45,9 @@ def get_argument_data():
                     "title": "Criteria for sporting succession",
                     "relevance": "Establishes key factors for succession",
                     "paragraphs": "45-48",
-                    "citedParagraphs": ["45", "46", "47"]
+                    "citedParagraphs": ["45", "46", "47"],
+                    "keyFindings": "The panel in this case established that sporting succession depends on several key factors: (1) Continuous use of identifying elements such as name, colors, and badge; (2) Uninterrupted participation in competitions; (3) Recognition by the relevant sporting authorities; and (4) Public perception of continuity.",
+                    "precedentialValue": "This case is considered the leading authority on sporting succession and has been cited in numerous subsequent CAS awards. It moved away from previous jurisprudence that focused primarily on legal continuity to a more holistic approach that considers sporting reality."
                 }
             ],
             "children": {
@@ -67,20 +63,6 @@ def get_argument_data():
                         ],
                         "paragraphs": "20-21"
                     },
-                    "legalPoints": [
-                        {
-                            "point": "Name registration complies with regulations",
-                            "isDisputed": False,
-                            "regulations": ["Name Registration Act"],
-                            "paragraphs": "22-24"
-                        },
-                        {
-                            "point": "Trademark protection since 1960",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Law"],
-                            "paragraphs": "25-27"
-                        }
-                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -108,7 +90,9 @@ def get_argument_data():
                                     "id": "C-2",
                                     "title": "Registration Records",
                                     "summary": "Official documentation of registration history",
-                                    "citations": ["25", "26", "28"]
+                                    "citations": ["25", "26", "28"],
+                                    "context": "These documents include the original application for club registration submitted on March 12, 1950, bearing the signatures of the founding members and official approval dated April 3, 1950. Also included are documentation from 1975-1976 showing the administrative process during the reorganization period.",
+                                    "significance": "The registration records establish the formal creation date of the club and provide evidence regarding the contested administrative gap. The reorganization documents show that while there was a procedural lapse in formal registration, club activities continued during this period with the same personnel and facilities."
                                 }
                             ]
                         }
@@ -126,14 +110,6 @@ def get_argument_data():
                         ],
                         "paragraphs": "46-47"
                     },
-                    "legalPoints": [
-                        {
-                            "point": "Color trademark registration valid since 1960",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Act"],
-                            "paragraphs": "48-50"
-                        }
-                    ],
                     "factualPoints": [
                         {
                             "point": "Consistent use of blue and white since founding",
@@ -149,7 +125,9 @@ def get_argument_data():
                             "id": "C-4",
                             "title": "Historical Photographs",
                             "summary": "Visual evidence of consistent color usage",
-                            "citations": ["53", "54", "55"]
+                            "citations": ["53", "54", "55"],
+                            "context": "This collection includes 47 photographs spanning from 1950 to present day showing the team in its official kit during matches, ceremonies, and official photoshoots. The photographs are arranged chronologically and include metadata verifying their dates and occasions. Each decade is represented by multiple images to establish continuity.",
+                            "significance": "The photographic evidence demonstrates the consistent use of blue and white as the primary club colors throughout its history. While there are minor variations in shade and design elements, the core identity remains intact. Particularly notable are the championship photographs from 1958, 1967, 1982, and 2014 showing the consistent color scheme despite changes in kit manufacturers and sponsors."
                         }
                     ],
                     "children": {
@@ -183,7 +161,9 @@ def get_argument_data():
                                             "id": "C-5",
                                             "title": "Color Archives",
                                             "summary": "Historical documents showing color usage",
-                                            "citations": ["61", "62", "63"]
+                                            "citations": ["61", "62", "63"],
+                                            "context": "This exhibit contains the club's official style guides from 1965, 1978, 1985, and 1992, showing the exact Pantone color specifications used in each era. Also included are merchandise catalogs, official communications, and marketing materials that showcase the evolving but consistent color scheme. Of particular interest is the 1985 'Brand Evolution Document' that explicitly addresses the addition of red as an accent color.",
+                                            "significance": "These archives provide precise technical specifications for the club colors across different eras, establishing that while there were variations in exact shades of blue (from navy to royal blue) and layout of white elements, these changes were evolutionary rather than revolutionary. The documents also explain the rationale behind the temporary addition of red elements (1982-1988) as a marketing strategy that was later abandoned to return to the traditional blue and white scheme."
                                         }
                                     ]
                                 }
@@ -204,15 +184,7 @@ def get_argument_data():
                     "Assessment of chain of custody documentation"
                 ],
                 "paragraphs": "70-72"
-            },
-            "legalPoints": [
-                {
-                    "point": "WADA Code Article 5 establishes procedural requirements",
-                    "isDisputed": False,
-                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
-                    "paragraphs": "73-75"
-                }
-            ]
+            }
         }
     }
     
@@ -229,14 +201,6 @@ def get_argument_data():
                 ],
                 "paragraphs": "200-202"
             },
-            "legalPoints": [
-                {
-                    "point": "CAS jurisprudence requires operational continuity not merely identification",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2017/A/5465"],
-                    "paragraphs": "203-205"
-                }
-            ],
             "factualPoints": [
                 {
                     "point": "Operations ceased between 1975-1976",
@@ -252,7 +216,9 @@ def get_argument_data():
                     "id": "R-1",
                     "title": "Federation Records",
                     "summary": "Records showing non-participation in 1975-1976 season",
-                    "citations": ["208", "209", "210"]
+                    "citations": ["208", "209", "210"],
+                    "context": "This exhibit contains official league tables, match reports, and administrative correspondence from the national football federation for the 1975-1976 season. Specifically, it includes the official participant list for the 1975-1976 season showing the absence of the club, minutes from federation meetings discussing the club's withdrawal, and correspondence regarding the reapplication process initiated in late 1976.",
+                    "significance": "These federation records constitute primary evidence from the governing body of the sport showing that the club did not participate in official competitions during the 1975-1976 season. Particularly significant is the March 1976 federation bulletin that categorizes the club as 'inactive' and the September 1976 documentation treating the club's application as a 'new entity' rather than a continuing member."
                 }
             ],
             "caseLaw": [
@@ -261,7 +227,9 @@ def get_argument_data():
                     "title": "Operational continuity requirement",
                     "relevance": "Establishes primacy of operational continuity",
                     "paragraphs": "211-213",
-                    "citedParagraphs": ["212"]
+                    "citedParagraphs": ["212"],
+                    "keyFindings": "This case examined a similar sporting succession dispute involving a 14-month interruption in competitive activities. The panel held that 'mere retention of identifying elements such as name, colors, and badge is insufficient to establish sporting succession if there is a substantial interruption in the club's primary activity—participation in official competitions.' The panel specifically noted that 'the essence of a sporting club is competition; extended absence from competition constitutes a fundamental break in identity.'",
+                    "precedentialValue": "This more recent case refined the principles established in CAS 2016/A/4576 by emphasizing that actual sporting activity takes precedence over symbolic continuity elements. It established a hierarchy of factors where participation in competitions is considered the most essential element of sporting succession, followed by administrative continuity, with symbolic elements (name, colors, etc.) being necessary but not sufficient conditions."
                 }
             ],
             "children": {
@@ -277,14 +245,6 @@ def get_argument_data():
                         ],
                         "paragraphs": "220-222"
                     },
-                    "legalPoints": [
-                        {
-                            "point": "Registration lapse voided legal continuity",
-                            "isDisputed": True,
-                            "regulations": ["Registration Act"],
-                            "paragraphs": "223-225"
-                        }
-                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -311,7 +271,9 @@ def get_argument_data():
                                     "id": "R-2",
                                     "title": "Termination Certificate",
                                     "summary": "Official documentation of registration termination",
-                                    "citations": ["226", "227"]
+                                    "citations": ["226", "227"],
+                                    "context": "This exhibit contains two key official documents: (1) The Termination Certificate issued by the National Sports Registry on April 30, 1975, bearing the official seal and signature of the Registrar, explicitly stating that the club 'has ceased to exist as a registered entity.' (2) The New Entity Registration Certificate dated September 15, 1976, which classifies the application as a 'new registration' rather than a 'renewal' or 'reinstatement' and assigns a new registration number (76/1429) distinct from the previous entity's number (50/0872).",
+                                    "significance": "These official registration documents establish that from a legal and administrative perspective, there was a complete termination of the original entity followed by the creation of a new entity with similar identifying elements. The registration forms filed with the application in 1976 make no reference to being a continuation of the previous club, and the officials who signed these documents treated it as an entirely new entity. The change in registration numbers is particularly significant as it indicates the administrative system considered this a new organization rather than a continuation."
                                 }
                             ]
                         }
@@ -329,14 +291,6 @@ def get_argument_data():
                         ],
                         "paragraphs": "241-242"
                     },
-                    "legalPoints": [
-                        {
-                            "point": "Color trademark lapsed during 1975-1976",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Act"],
-                            "paragraphs": "243-244"
-                        }
-                    ],
                     "factualPoints": [
                         {
                             "point": "Significant color scheme change in 1976",
@@ -352,7 +306,9 @@ def get_argument_data():
                             "id": "R-4",
                             "title": "Historical Photographs Comparison",
                             "summary": "Visual evidence of color scheme changes",
-                            "citations": ["245", "246", "247"]
+                            "citations": ["245", "246", "247"],
+                            "context": "This exhibit presents a side-by-side comparative analysis of team uniforms before and after 1976, including: (1) Match-day photographs from the 1974-75 season showing navy blue and white vertical stripes; (2) First match photographs from October 1976 showing royal blue with white accents; (3) Comparative color analysis performed by an independent design expert identifying specific Pantone color differences; (4) Local newspaper articles from 1976 specifically commenting on the 'new look' of the team with quotes from supporters discussing the color change.",
+                            "significance": "This comparative visual evidence demonstrates that beyond mere shade variations, there was a fundamental redesign of the club colors and pattern upon the 1976 re-establishment. The change from navy blue and white vertical stripes to royal blue with white accents represents a significant rebranding rather than a minor variation. Contemporary accounts from supporters and media coverage confirm that this was perceived as a deliberate break from tradition at the time, with the new ownership explicitly stating they wanted to 'create a new visual identity' for the club."
                         }
                     ],
                     "children": {
@@ -387,7 +343,9 @@ def get_argument_data():
                                             "id": "R-5",
                                             "title": "Marketing Materials",
                                             "summary": "Historical brand guidelines showing color changes",
-                                            "citations": ["250", "251", "252"]
+                                            "citations": ["250", "251", "252"],
+                                            "context": "This collection includes original promotional materials and internal documents explaining the symbolism of the club colors: (1) The 1950 founding charter explicitly stating that the navy blue and white stripes were chosen to represent the maritime heritage of the original North District; (2) The 1976 'New Era' marketing brochure announcing that 'the royal blue color represents the traditional color of [New Owner's] East District where the club will now be based'; (3) Internal design brief documents from 1976 instructing designers to 'create a clear visual break from the past' and 'establish a new beginning through color symbolism'.",
+                                            "significance": "These documents provide crucial context for the color changes, demonstrating that they were not arbitrary aesthetic modifications but deliberate symbolic choices tied to the club's geographic identity. The explicit statements in the 1976 materials about representing a new district and creating 'a clear visual break from the past' directly contradict the claim of continuous identity. The color change was specifically designed and marketed as a transformation rather than an evolution, targeting a new fan base in a different part of the city."
                                         }
                                     ]
                                 }
@@ -408,15 +366,7 @@ def get_argument_data():
                     "Completeness of documentation"
                 ],
                 "paragraphs": "250-252"
-            },
-            "legalPoints": [
-                {
-                    "point": "Minor procedural deviations do not invalidate results",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2019/A/6148"],
-                    "paragraphs": "253-255"
-                }
-            ]
+            }
         }
     }
     
@@ -880,13 +830,26 @@ def main():
                 font-size: 0.75rem;
             }}
             
-            /* Legal references styling */
-            .legal-point {{
-                background-color: #ebf8ff;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
+            /* Detailed information sections */
+            .detail-section {{
+                margin-top: 1rem;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 0.75rem;
+            }}
+            .detail-heading {{
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #4a5568;
                 margin-bottom: 0.5rem;
             }}
+            .detail-content {{
+                font-size: 0.8rem;
+                color: #4a5568;
+                margin-bottom: 0.75rem;
+                line-height: 1.4;
+            }}
+            
+            /* Legal references styling */
             .factual-point {{
                 background-color: #f0fff4;
                 border-radius: 0.5rem;
@@ -1182,7 +1145,7 @@ def main():
                 }});
             }});
             
-            // Render overview points - updated to be "Supporting Points" instead of "Key Points"
+            // Render overview points - Supporting Points
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -1210,45 +1173,7 @@ def main():
                 `;
             }}
             
-            // Render legal points
-            function renderLegalPoints(points) {{
-                if (!points || points.length === 0) return '';
-                
-                const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed</span>` 
-                        : '';
-                    
-                    const regulations = point.regulations 
-                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
-                        : '';
-                    
-                    return `
-                    <div class="legal-point">
-                        <div class="point-header">
-                            <span class="badge legal-badge">Legal</span>
-                            ${{disputed}}
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <p class="point-text">${{point.point}}</p>
-                            <span class="badge claimant-badge" style="margin-left: 8px;">¶${{point.paragraphs}}</span>
-                        </div>
-                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
-                            ${{regulations}}
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div class="content-section">
-                    <h6 class="content-section-title">Legal Points</h6>
-                    ${{pointsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render factual points - Updated to show exhibit numbers instead of paragraphs
+            // Render factual points with exhibit numbers
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
@@ -1295,13 +1220,28 @@ def main():
                 `;
             }}
             
-            // Render evidence
+            // Render evidence - expanded with more detailed explanation
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
                 const itemsHtml = evidence.map(item => {{
                     const citations = item.citations 
                         ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('') 
+                        : '';
+                    
+                    // Additional detailed content
+                    const contextSection = item.context 
+                        ? `<div class="detail-section">
+                              <div class="detail-heading">Document Contents:</div>
+                              <div class="detail-content">${{item.context}}</div>
+                           </div>`
+                        : '';
+                        
+                    const significanceSection = item.significance
+                        ? `<div class="detail-section">
+                              <div class="detail-heading">Evidentiary Significance:</div>
+                              <div class="detail-content">${{item.significance}}</div>
+                           </div>`
                         : '';
                     
                     return `
@@ -1320,25 +1260,42 @@ def main():
                             <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
                             ${{citations}}
                         </div>
+                        ${{contextSection}}
+                        ${{significanceSection}}
                     </div>
                     `;
                 }}).join('');
                 
                 return `
                 <div class="content-section">
-                    <h6 class="content-section-title">Evidence</h6>
+                    <h6 class="content-section-title">Documentary Exhibits</h6>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render case law
+            // Render case law - expanded with more detailed explanation
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
                 const itemsHtml = cases.map(item => {{
                     const citedParagraphs = item.citedParagraphs 
                         ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('') 
+                        : '';
+                    
+                    // Additional detailed content
+                    const keyFindingsSection = item.keyFindings
+                        ? `<div class="detail-section">
+                              <div class="detail-heading">Key Findings:</div>
+                              <div class="detail-content">${{item.keyFindings}}</div>
+                           </div>`
+                        : '';
+                        
+                    const precedentialValueSection = item.precedentialValue
+                        ? `<div class="detail-section">
+                              <div class="detail-heading">Precedential Value:</div>
+                              <div class="detail-content">${{item.precedentialValue}}</div>
+                           </div>`
                         : '';
                     
                     return `
@@ -1361,6 +1318,8 @@ def main():
                             <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
                             ${{citedParagraphs}}
                         </div>
+                        ${{keyFindingsSection}}
+                        ${{precedentialValueSection}}
                     </div>
                     `;
                 }}).join('');
@@ -1380,11 +1339,6 @@ def main():
                 // Overview points
                 if (arg.overview) {{
                     content += renderOverviewPoints(arg.overview);
-                }}
-                
-                // Legal points
-                if (arg.legalPoints) {{
-                    content += renderLegalPoints(arg.legalPoints);
                 }}
                 
                 // Factual points

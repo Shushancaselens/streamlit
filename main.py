@@ -510,80 +510,35 @@ def main():
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
-                padding: 0;
+                padding: 20px;
                 background-color: #fff;
-            }}
-            
-            /* Search bar */
-            .search-container {{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px;
-                margin-bottom: 20px;
-            }}
-            
-            .search-bar {{
-                display: flex;
-                align-items: center;
-                width: 100%;
-                max-width: 1200px;
-                border: 1px solid #e2e8f0;
-                border-radius: 30px;
-                padding: 0 16px;
-                background-color: white;
-            }}
-            
-            .search-input {{
-                flex: 1;
-                padding: 12px 8px;
-                border: none;
-                outline: none;
-                font-size: 14px;
-            }}
-            
-            .copy-button {{
-                display: flex;
-                align-items: center;
-                padding: 8px 16px;
-                margin-left: 16px;
-                background-color: #f0f4ff;
-                border: none;
-                border-radius: 8px;
-                color: #4f46e5;
-                font-weight: 500;
-                cursor: pointer;
-            }}
-            
-            .copy-icon {{
-                margin-right: 8px;
             }}
             
             /* Tab navigation */
             .tabs {{
                 display: flex;
                 border-bottom: 1px solid #e2e8f0;
-                margin-bottom: 1.5rem;
+                margin-bottom: 24px;
             }}
             
             .tab {{
-                padding: 1rem 1.5rem;
+                padding: 12px 24px;
                 font-weight: 500;
-                color: #718096;
+                color: #64748b;
                 cursor: pointer;
                 position: relative;
             }}
             
             .tab:hover {{
-                color: #4a5568;
+                color: #334155;
             }}
             
             .tab.active {{
-                color: #4f46e5;
-                border-bottom: 2px solid #4f46e5;
+                color: #4361EE;
+                border-bottom: 2px solid #4361EE;
             }}
             
-            /* Tab content sections */
+            /* Tab content */
             .tab-content {{
                 display: none;
             }}
@@ -592,302 +547,245 @@ def main():
                 display: block;
             }}
             
-            /* Section container */
-            .section-container {{
-                margin-bottom: 16px;
-                border: 1px solid #f0f0f0;
-                border-radius: 8px;
-                overflow: hidden;
-            }}
-            
-            .section-header {{
+            /* Main container */
+            .main-container {{
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 16px;
-                background-color: #fff;
-                border-bottom: 1px solid #f0f0f0;
-                cursor: pointer;
+                flex-direction: column;
             }}
             
-            .section-title {{
-                font-size: 18px;
-                font-weight: 600;
-                margin: 0;
-            }}
-            
-            .section-tag {{
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 12px;
-                background-color: #f7f7f7;
-                color: #555;
-            }}
-            
-            /* Positions container */
-            .positions-container {{
+            /* Columns layout */
+            .columns {{
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 32px;
-                padding: 16px;
-                background-color: white;
+                gap: 24px;
             }}
             
-            .position-title {{
-                font-size: 16px;
+            /* Argument headings */
+            .column-heading {{
+                font-size: 18px;
+                font-weight: 600;
                 margin-bottom: 16px;
             }}
             
-            .appellant-color {{
-                color: #4f46e5;
+            .claimant-color {{
+                color: #4361EE;
             }}
             
             .respondent-color {{
-                color: #e11d48;
+                color: #E63946;
             }}
             
-            .position-box {{
-                background-color: #f9fafc;
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 20px;
-            }}
-            
-            /* Standard arguments view */
-            .arguments-header {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-            }}
-            
-            .argument-pair {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-                position: relative;
-            }}
-            
-            .argument-side {{
-                position: relative;
-            }}
-            
-            /* Argument card and details */
+            /* Argument sections */
             .argument {{
                 border: 1px solid #e2e8f0;
                 border-radius: 8px;
+                margin-bottom: 16px;
                 overflow: hidden;
-                margin-bottom: 1rem;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             }}
             
             .argument-header {{
-                padding: 0.75rem 1rem;
-                cursor: pointer;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                padding: 12px 16px;
+                cursor: pointer;
             }}
             
-            .argument-header-left {{
+            .argument-title {{
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 8px;
+                font-weight: 500;
+            }}
+            
+            .chevron {{
+                transition: transform 0.2s;
+            }}
+            
+            .chevron.expanded {{
+                transform: rotate(90deg);
+            }}
+            
+            .subarg-badge {{
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 16px;
+                font-size: 12px;
+                font-weight: normal;
+                background-color: #EFF6FF;
+                color: #4361EE;
+            }}
+            
+            .resp-subarg-badge {{
+                background-color: #FEF2F2;
+                color: #E63946;
             }}
             
             .argument-content {{
-                padding: 1rem;
+                padding: 16px;
                 border-top: 1px solid #e2e8f0;
                 display: none;
-                background-color: white;
             }}
             
-            .claimant-header {{
-                background-color: #eff6ff;
-                border-color: #bfdbfe;
-            }}
-            
-            .respondent-header {{
-                background-color: #fff1f2;
-                border-color: #fecdd3;
-            }}
-            
-            /* Child arguments container */
-            .argument-children {{
-                padding-left: 1.5rem;
-                display: none;
-                position: relative;
-            }}
-            
-            /* Connector lines for tree structure */
-            .connector-vertical {{
-                position: absolute;
-                left: 0.75rem;
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: #e2e8f0;
-            }}
-            
-            .connector-horizontal {{
-                position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
-                height: 1px;
-                background-color: #e2e8f0;
-            }}
-            
-            .claimant-connector {{
-                background-color: rgba(79, 70, 229, 0.5);
-            }}
-            
-            .respondent-connector {{
-                background-color: rgba(225, 29, 72, 0.5);
-            }}
-            
-            /* Badge styling */
-            .badge {{
-                display: inline-block;
-                padding: 0.25rem 0.5rem;
-                border-radius: 0.25rem;
-                font-size: 0.75rem;
-            }}
-            
-            .claimant-badge {{
-                background-color: #eff6ff;
-                color: #4f46e5;
-            }}
-            
-            .respondent-badge {{
-                background-color: #fff1f2;
-                color: #e11d48;
-            }}
-            
-            .exhibit-badge {{
-                background-color: #fef3c7;
-                color: #d97706;
-                margin-right: 0.25rem;
-            }}
-            
-            .disputed-badge {{
-                background-color: #fee2e2;
-                color: #b91c1c;
-            }}
-            
-            .type-badge {{
-                background-color: #f1f5f9;
-                color: #64748b;
-            }}
-            
-            /* Timeline & Exhibits tables */
-            .data-table {{
-                width: 100%;
-                border-collapse: collapse;
-                background-color: white;
-                border-radius: 8px;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            }}
-            
-            .data-table th {{
-                text-align: left;
-                padding: 12px 16px;
-                background-color: #f8fafc;
+            /* Section styles */
+            .section-title {{
+                font-size: 16px;
                 font-weight: 500;
-                color: #64748b;
-                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 12px;
             }}
             
-            .data-table td {{
-                padding: 12px 16px;
-                border-bottom: 1px solid #e2e8f0;
-                font-size: 14px;
-            }}
-            
-            .data-table tr:last-child td {{
-                border-bottom: none;
-            }}
-            
-            .undisputed {{
-                color: #10b981;
-            }}
-            
-            .disputed {{
-                color: #ef4444;
-            }}
-            
-            /* Support points list */
-            .support-points-list {{
+            /* Points list */
+            .points-list {{
                 list-style-type: none;
                 padding-left: 0;
-                margin-bottom: 20px;
+                margin-bottom: 24px;
             }}
             
-            .support-point-item {{
+            .point-item {{
                 display: flex;
                 margin-bottom: 8px;
                 align-items: flex-start;
             }}
             
-            .support-point-bullet {{
-                margin-right: 12px;
-                color: #a0aec0;
+            .point-marker {{
+                color: #4361EE;
+                margin-right: 8px;
                 flex-shrink: 0;
             }}
             
-            /* Evidence section */
+            .resp-point-marker {{
+                color: #E63946;
+            }}
+            
+            /* Paragraph references */
+            .para-ref {{
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                background-color: #EFF6FF;
+                color: #4361EE;
+                margin-left: 8px;
+            }}
+            
+            .resp-para-ref {{
+                background-color: #FEF2F2;
+                color: #E63946;
+            }}
+            
+            /* Legal points */
+            .legal-tag {{
+                display: inline-block;
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                background-color: #F3F4F6;
+                color: #6B7280;
+                margin-bottom: 8px;
+            }}
+            
+            .legal-content {{
+                background-color: #F9FAFB;
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 24px;
+            }}
+            
+            .legal-text {{
+                font-size: 15px;
+                margin-bottom: 8px;
+            }}
+            
+            .case-number {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 14px;
+                color: #6B7280;
+            }}
+            
+            /* Factual points */
+            .factual-tag {{
+                display: inline-block;
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                background-color: #ECFDF5;
+                color: #059669;
+                margin-bottom: 8px;
+            }}
+            
+            .date-tag {{
+                display: inline-flex;
+                align-items: center;
+                font-size: 12px;
+                color: #6B7280;
+                margin-bottom: 8px;
+            }}
+            
+            .calendar-icon {{
+                margin-right: 4px;
+            }}
+            
+            .factual-content {{
+                background-color: #F0FDF4;
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 24px;
+            }}
+            
+            .disputed-tag {{
+                display: inline-block;
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                background-color: #FEE2E2;
+                color: #B91C1C;
+                margin-left: 8px;
+            }}
+            
+            /* Evidence */
             .evidence-section {{
-                margin-top: 16px;
+                margin-bottom: 24px;
             }}
             
             .evidence-item {{
                 display: flex;
-                align-items: center;
-                margin-bottom: 8px;
-            }}
-            
-            /* Case law section */
-            .case-law-section {{
-                margin-top: 16px;
-            }}
-            
-            .case-law-item {{
-                display: flex;
                 justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
+                margin-bottom: 16px;
             }}
             
-            .copy-icon-small {{
-                cursor: pointer;
-                color: #a0aec0;
+            .evidence-title {{
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 500;
+            }}
+            
+            .evidence-description {{
+                font-size: 14px;
+                color: #6B7280;
+                margin-top: 4px;
+            }}
+            
+            .citation-list {{
+                display: flex;
+                gap: 4px;
+                margin-top: 8px;
+                flex-wrap: wrap;
+            }}
+            
+            .citation {{
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                background-color: #F3F4F6;
+                color: #6B7280;
             }}
         </style>
     </head>
     <body>
-        <!-- Search and Copy Bar -->
-        <div class="search-container">
-            <div class="search-bar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" id="global-search" class="search-input" placeholder="Search issues, arguments, or evidence...">
-            </div>
-            <button class="copy-button">
-                <div class="copy-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </div>
-                Copy All
-            </button>
-        </div>
-        
         <!-- Tab Navigation -->
         <div class="tabs">
             <div class="tab active" data-tab="arguments">Summary of Arguments</div>
@@ -897,134 +795,199 @@ def main():
         
         <!-- Arguments Tab -->
         <div id="arguments" class="tab-content active">
-            <!-- CAS Jurisdiction Section -->
-            <div class="section-container">
-                <div class="section-header" onclick="toggleSection('jurisdiction')">
-                    <h2 class="section-title">CAS Jurisdiction</h2>
-                    <div class="section-tag">jurisdiction</div>
-                </div>
-                <div id="jurisdiction-content" class="positions-container">
-                    <!-- Appellant's Position -->
+            <div class="main-container">
+                <div class="columns">
                     <div>
-                        <h3 class="position-title appellant-color">Appellant's Position</h3>
-                        <div class="position-box">
-                            <h4 style="margin-top: 0; font-size: 16px; margin-bottom: 16px;">CAS Has Authority to Hear This Case</h4>
-                            
-                            <div>
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Supporting Points</h5>
-                                <ul class="support-points-list">
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals</span>
-                                    </li>
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>Athlete has completed all required internal appeal procedures first</span>
-                                    </li>
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>Athlete signed agreement allowing CAS to handle disputes</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="evidence-section">
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Evidence</h5>
-                                <div class="evidence-item">
-                                    <span class="badge claimant-badge" style="margin-right: 8px;">C1</span>
-                                    <span>Federation Rules, Art. 60</span>
-                                </div>
-                                <div class="evidence-item">
-                                    <span class="badge claimant-badge" style="margin-right: 8px;">C2</span>
-                                    <span>Athlete's license containing arbitration agreement</span>
-                                </div>
-                                <div class="evidence-item">
-                                    <span class="badge claimant-badge" style="margin-right: 8px;">C3</span>
-                                    <span>Appeal submission documents</span>
-                                </div>
-                            </div>
-                            
-                            <div class="case-law-section">
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Case Law</h5>
-                                <div class="case-law-item">
-                                    <span>CAS 2019/A/XYZ</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon-small">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        <h2 class="column-heading claimant-color">Claimant's Arguments</h2>
+                    </div>
+                    <div>
+                        <h2 class="column-heading respondent-color">Respondent's Arguments</h2>
+                    </div>
+                </div>
+                
+                <div class="columns">
+                    <!-- Claimant Arguments -->
+                    <div>
+                        <div class="argument">
+                            <div class="argument-header" onclick="toggleArgument('claimant-1')">
+                                <div class="argument-title">
+                                    <svg class="chevron" id="chevron-claimant-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
                                     </svg>
+                                    <span>1. Sporting Succession</span>
+                                </div>
+                                <span class="subarg-badge">2 subarguments</span>
+                            </div>
+                            <div id="content-claimant-1" class="argument-content">
+                                <div class="section">
+                                    <h3 class="section-title">Key Points</h3>
+                                    <ul class="points-list">
+                                        <li class="point-item">
+                                            <span class="point-marker">•</span>
+                                            <span>Analysis of multiple established criteria <span class="para-ref">¶15-16</span></span>
+                                        </li>
+                                        <li class="point-item">
+                                            <span class="point-marker">•</span>
+                                            <span>Focus on continuous use of identifying elements</span>
+                                        </li>
+                                        <li class="point-item">
+                                            <span class="point-marker">•</span>
+                                            <span>Public recognition assessment</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="section">
+                                    <h3 class="section-title">Legal Points</h3>
+                                    <div>
+                                        <span class="legal-tag">Legal</span>
+                                        <div class="legal-content">
+                                            <p class="legal-text">CAS jurisprudence establishes criteria for sporting succession</p>
+                                            <div class="case-number">
+                                                <span>CAS 2016/A/4576</span>
+                                                <span class="para-ref">¶15-17</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section">
+                                    <h3 class="section-title">Factual Points</h3>
+                                    <div>
+                                        <span class="factual-tag">Factual</span>
+                                        <span class="date-tag">
+                                            <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            1950-present
+                                        </span>
+                                        <div class="factual-content">
+                                            <p>Continuous operation under same name since 1950</p>
+                                            <span class="para-ref">¶18-19</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section evidence-section">
+                                    <h3 class="section-title">Evidence</h3>
+                                    <div class="evidence-item">
+                                        <div>
+                                            <div class="evidence-title">
+                                                <span>C-1: Historical Registration Documents</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="evidence-description">Official records showing continuous name usage</p>
+                                            <div class="citation-list">
+                                                <span>Cited in:</span>
+                                                <span class="citation">¶20</span>
+                                                <span class="citation">¶21</span>
+                                                <span class="citation">¶24</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Respondent's Position -->
+                    <!-- Respondent Arguments -->
                     <div>
-                        <h3 class="position-title respondent-color">Respondent's Position</h3>
-                        <div class="position-box">
-                            <h4 style="margin-top: 0; font-size: 16px; margin-bottom: 16px;">CAS Cannot Hear This Case Yet</h4>
-                            
-                            <div>
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Supporting Points</h5>
-                                <ul class="support-points-list">
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>Athlete skipped required steps in federation's appeal process</span>
-                                    </li>
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>Athlete missed important appeal deadlines within federation</span>
-                                    </li>
-                                    <li class="support-point-item">
-                                        <span class="support-point-bullet">•</span>
-                                        <span>Must follow proper appeal steps before going to CAS</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <div class="evidence-section">
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Evidence</h5>
-                                <div class="evidence-item">
-                                    <span class="badge respondent-badge" style="margin-right: 8px;">R1</span>
-                                    <span>Federation internal appeals process documentation</span>
-                                </div>
-                                <div class="evidence-item">
-                                    <span class="badge respondent-badge" style="margin-right: 8px;">R2</span>
-                                    <span>Timeline of appeals process</span>
-                                </div>
-                                <div class="evidence-item">
-                                    <span class="badge respondent-badge" style="margin-right: 8px;">R3</span>
-                                    <span>Federation handbook on procedures</span>
-                                </div>
-                            </div>
-                            
-                            <div class="case-law-section">
-                                <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Case Law</h5>
-                                <div class="case-law-item">
-                                    <span>CAS 2019/A/123</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon-small">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        <div class="argument">
+                            <div class="argument-header" onclick="toggleArgument('respondent-1')">
+                                <div class="argument-title">
+                                    <svg class="chevron" id="chevron-respondent-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
                                     </svg>
+                                    <span>1. Sporting Succession Rebuttal</span>
                                 </div>
-                                <div class="case-law-item">
-                                    <span>CAS 2018/A/456</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon-small">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
+                                <span class="subarg-badge resp-subarg-badge">2 subarguments</span>
+                            </div>
+                            <div id="content-respondent-1" class="argument-content">
+                                <div class="section">
+                                    <h3 class="section-title">Key Points</h3>
+                                    <ul class="points-list">
+                                        <li class="point-item">
+                                            <span class="point-marker resp-point-marker">•</span>
+                                            <span>Challenge to claimed continuity of operations <span class="para-ref resp-para-ref">¶200-202</span></span>
+                                        </li>
+                                        <li class="point-item">
+                                            <span class="point-marker resp-point-marker">•</span>
+                                            <span>Analysis of discontinuities in club operations</span>
+                                        </li>
+                                        <li class="point-item">
+                                            <span class="point-marker resp-point-marker">•</span>
+                                            <span>Dispute over public recognition factors</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="section">
+                                    <h3 class="section-title">Legal Points</h3>
+                                    <div>
+                                        <span class="legal-tag">Legal</span>
+                                        <div class="legal-content">
+                                            <p class="legal-text">CAS jurisprudence requires operational continuity not merely identification</p>
+                                            <div class="case-number">
+                                                <span>CAS 2017/A/5465</span>
+                                                <span class="para-ref resp-para-ref">¶203-205</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section">
+                                    <h3 class="section-title">Factual Points</h3>
+                                    <div>
+                                        <span class="factual-tag">Factual</span>
+                                        <span class="date-tag">
+                                            <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            1975-1976
+                                        </span>
+                                        <span class="disputed-tag">Disputed by Claimant</span>
+                                        <div class="factual-content">
+                                            <p>Operations ceased between 1975-1976</p>
+                                            <span class="para-ref resp-para-ref">¶206-207</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section evidence-section">
+                                    <h3 class="section-title">Evidence</h3>
+                                    <div class="evidence-item">
+                                        <div>
+                                            <div class="evidence-title">
+                                                <span>R-1: Federation Records</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="evidence-description">Records showing non-participation in 1975-1976 season</p>
+                                            <div class="citation-list">
+                                                <span>Cited in:</span>
+                                                <span class="citation">¶208</span>
+                                                <span class="citation">¶209</span>
+                                                <span class="citation">¶210</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Original Arguments Content -->
-            <div class="arguments-header">
-                <h3 class="appellant-color">Claimant's Arguments</h3>
-                <h3 class="respondent-color">Respondent's Arguments</h3>
-            </div>
-            <div id="standard-arguments-container"></div>
         </div>
         
         <!-- Timeline Tab -->
@@ -1052,7 +1015,7 @@ def main():
                         <th>TITLE</th>
                         <th>TYPE</th>
                         <th>SUMMARY</th>
-                        <th style="text-align: right;">ACTIONS</th>
+                        <th>ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody id="exhibits-body"></tbody>
@@ -1064,17 +1027,6 @@ def main():
             const argsData = {args_json};
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
-            
-            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
-            const expandedStates = {{}};
-            
-            // Toggle section
-            function toggleSection(sectionId) {{
-                const contentEl = document.getElementById(`${{sectionId}}-content`);
-                const isExpanded = contentEl.style.display !== 'none';
-                
-                contentEl.style.display = isExpanded ? 'none' : 'grid';
-            }}
             
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
@@ -1096,323 +1048,35 @@ def main():
                 }});
             }});
             
-            // Render overview points
-            function renderOverviewPoints(overview) {{
-                if (!overview || !overview.points || overview.points.length === 0) return '';
+            // Toggle argument expansion
+            function toggleArgument(id) {{
+                const contentEl = document.getElementById(`content-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                const pointsHtml = overview.points.map(point => 
-                    `<div class="support-point-item">
-                        <span class="support-point-bullet">•</span>
-                        <div>
-                            <span>${{point}}</span>
-                            <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
-                        </div>
-                    </div>`
-                ).join('');
-                
-                return `
-                <div>
-                    <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Supporting Points</h5>
-                    <div class="support-points-list">
-                        ${{pointsHtml}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Render factual points
-            function renderFactualPoints(points) {{
-                if (!points || points.length === 0) return '';
-                
-                const pointsHtml = points.map(point => {{
-                    const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
-                        : '';
-                    
-                    // Exhibits badges
-                    const exhibitBadges = point.exhibits && point.exhibits.length > 0
-                        ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${{exhibitId}}</span>`).join('')
-                        : '';
-                    
-                    return `
-                    <div class="support-point-item">
-                        <span class="support-point-bullet">•</span>
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span class="badge">Factual</span>
-                                ${{disputed}}
-                            </div>
-                            <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                ${{point.date}}
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <p style="margin: 0; font-size: 14px;">${{point.point}}</p>
-                                <div style="margin-left: 8px; display: flex; gap: 4px;">
-                                    ${{exhibitBadges}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div style="margin-top: 16px;">
-                    <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Factual Points</h5>
-                    <div class="support-points-list">
-                        ${{pointsHtml}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Render evidence
-            function renderEvidence(evidence) {{
-                if (!evidence || evidence.length === 0) return '';
-                
-                const itemsHtml = evidence.map(item => {{
-                    const citations = item.citations 
-                        ? item.citations.map(cite => `<span class="badge" style="background-color: #f1f5f9; color: #64748b; margin-right: 4px;">¶${{cite}}</span>`).join('') 
-                        : '';
-                    
-                    return `
-                    <div class="evidence-item" style="margin-bottom: 12px;">
-                        <span class="badge" style="background-color: #fef3c7; color: #d97706; margin-right: 8px;">${{item.id}}</span>
-                        <div>
-                            <div style="font-weight: 500;">${{item.title}}</div>
-                            <p style="margin: 4px 0; font-size: 13px; color: #64748b;">${{item.summary}}</p>
-                            <div>
-                                <span style="font-size: 12px; color: #94a3b8;">Cited in:</span>
-                                ${{citations}}
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div style="margin-top: 16px;">
-                    <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Evidence</h5>
-                    ${{itemsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render case law
-            function renderCaseLaw(cases) {{
-                if (!cases || cases.length === 0) return '';
-                
-                const itemsHtml = cases.map(item => {{
-                    const citedParagraphs = item.citedParagraphs 
-                        ? item.citedParagraphs.map(para => `<span class="badge" style="background-color: #f1f5f9; color: #64748b; margin-right: 4px;">¶${{para}}</span>`).join('') 
-                        : '';
-                    
-                    return `
-                    <div class="case-law-item" style="margin-bottom: 12px;">
-                        <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-weight: 500;">${{item.caseNumber}}</div>
-                                <span style="font-size: 12px; color: #94a3b8;">¶${{item.paragraphs}}</span>
-                            </div>
-                            <p style="margin: 4px 0; font-size: 13px; font-weight: 500;">${{item.title}}</p>
-                            <p style="margin: 4px 0; font-size: 13px; color: #4a5568;">${{item.relevance}}</p>
-                            <div>
-                                <span style="font-size: 12px; color: #94a3b8;">Key Paragraphs:</span>
-                                ${{citedParagraphs}}
-                            </div>
-                        </div>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon-small">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div style="margin-top: 16px;">
-                    <h5 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 500; color: #555;">Case Law</h5>
-                    ${{itemsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render argument content
-            function renderArgumentContent(arg) {{
-                let content = '';
-                
-                // Overview points
-                if (arg.overview) {{
-                    content += renderOverviewPoints(arg.overview);
+                if (contentEl.style.display === 'block') {{
+                    contentEl.style.display = 'none';
+                    chevronEl.classList.remove('expanded');
+                }} else {{
+                    contentEl.style.display = 'block';
+                    chevronEl.classList.add('expanded');
                 }}
                 
-                // Factual points
-                if (arg.factualPoints) {{
-                    content += renderFactualPoints(arg.factualPoints);
-                }}
-                
-                // Evidence
-                if (arg.evidence) {{
-                    content += renderEvidence(arg.evidence);
-                }}
-                
-                // Case law
-                if (arg.caseLaw) {{
-                    content += renderCaseLaw(arg.caseLaw);
-                }}
-                
-                return content;
-            }}
-            
-            // Render a single argument including its children
-            function renderArgument(arg, side, path = '', level = 0) {{
-                if (!arg) return '';
-                
-                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
-                const fullId = `${{side}}-${{argId}}`;
-                
-                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
-                const childCount = hasChildren ? Object.keys(arg.children).length : 0;
-                
-                // Style based on side
-                const baseColor = side === 'claimant' ? '#4f46e5' : '#e11d48';
-                const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
-                const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
-                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
-                
-                // Header content
-                const headerHtml = `
-                <div class="argument-header-left">
-                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}}; margin: 0;">
-                        ${{arg.id}}. ${{arg.title}}
-                    </h5>
-                </div>
-                <div>
-                    ${{hasChildren 
-                        ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
-                        : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
-                    }}
-                </div>
-                `;
-                
-                // Detailed content
-                const contentHtml = renderArgumentContent(arg);
-                
-                // Child arguments
-                let childrenHtml = '';
-                if (hasChildren) {{
-                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
-                        // Pass the full path for this argument's children
-                        return renderArgument(child, side, argId, level + 1);
-                    }}).join('');
-                    
-                    childrenHtml = `
-                    <div id="children-${{fullId}}" class="argument-children">
-                        <div class="connector-vertical ${{connectorClass}}"></div>
-                        ${{childrenArgs}}
-                    </div>
-                    `;
-                }}
-                
-                // Complete argument HTML
-                return `
-                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
-                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
-                        ${{headerHtml}}
-                    </div>
-                    <div id="content-${{fullId}}" class="argument-content">
-                        ${{contentHtml}}
-                    </div>
-                    ${{childrenHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render a pair of arguments (claimant and respondent)
-            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
-                return `
-                <div class="argument-pair">
-                    <div class="argument-side">
-                        ${{renderArgument(claimantArg, 'claimant')}}
-                    </div>
-                    <div class="argument-side">
-                        ${{renderArgument(respondentArg, 'respondent')}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Render the standard arguments view
-            function renderStandardArguments() {{
-                const container = document.getElementById('standard-arguments-container');
-                let html = '';
-                
-                // For each top-level argument
-                Object.keys(argsData.claimantArgs).forEach(argId => {{
-                    if (argsData.respondentArgs[argId]) {{
-                        const claimantArg = argsData.claimantArgs[argId];
-                        const respondentArg = argsData.respondentArgs[argId];
-                        
-                        html += renderArgumentPair(claimantArg, respondentArg);
-                    }}
-                }});
-                
-                container.innerHTML = html;
-            }}
-            
-            // Toggle argument expansion - updated to handle nested paths
-            function toggleArgument(fullId, argPath) {{
-                // Determine the side (claimant or respondent)
-                const [side, ...rest] = fullId.split('-');
-                
-                // Toggle this argument
-                const contentEl = document.getElementById(`content-${{fullId}}`);
-                const childrenEl = document.getElementById(`children-${{fullId}}`);
-                const chevronEl = document.getElementById(`chevron-${{fullId}}`);
-                
-                const isExpanded = contentEl.style.display === 'block';
-                contentEl.style.display = isExpanded ? 'none' : 'block';
-                if (chevronEl) {{
-                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
-                }}
-                if (childrenEl) {{
-                    childrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
-                
-                // Save expanded state
-                expandedStates[fullId] = !isExpanded;
-                
-                // Find and toggle the paired argument based on the path
-                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const pairedId = `${{otherSide}}-${{argPath}}`;
+                // If this is a claimant/respondent pair, toggle the other side too
+                const isClaimant = id.startsWith('claimant');
+                const argNum = id.split('-')[1];
+                const pairedId = isClaimant ? `respondent-${{argNum}}` : `claimant-${{argNum}}`;
                 
                 const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
                 const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
                 
                 if (pairedContentEl) {{
                     pairedContentEl.style.display = contentEl.style.display;
-                    expandedStates[pairedId] = expandedStates[fullId];
-                }}
-                
-                if (pairedChevronEl) {{
-                    pairedChevronEl.style.transform = chevronEl.style.transform;
-                }}
-                
-                if (pairedChildrenEl) {{
-                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
+                    
+                    if (contentEl.style.display === 'block') {{
+                        pairedChevronEl.classList.add('expanded');
+                    }} else {{
+                        pairedChevronEl.classList.remove('expanded');
+                    }}
                 }}
             }}
             
@@ -1435,7 +1099,7 @@ def main():
                         <td>${{item.date}}</td>
                         <td>${{item.appellantVersion}}</td>
                         <td>${{item.respondentVersion}}</td>
-                        <td class="${{item.status.toLowerCase()}}">${{item.status}}</td>
+                        <td>${{item.status}}</td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1452,36 +1116,19 @@ def main():
                 // Render rows
                 exhibitsData.forEach(item => {{
                     const row = document.createElement('tr');
-                    const badgeClass = item.party === 'Appellant' ? 'claimant-badge' : 'respondent-badge';
                     
                     row.innerHTML = `
-                        <td><span class="badge ${{badgeClass}}">${{item.id}}</span></td>
+                        <td>${{item.id}}</td>
                         <td>${{item.party}}</td>
                         <td>${{item.title}}</td>
-                        <td><span class="badge type-badge">${{item.type}}</span></td>
+                        <td>${{item.type}}</td>
                         <td>${{item.summary}}</td>
-                        <td style="text-align: right;"><a href="#" style="color: #4f46e5; text-decoration: none;">View</a></td>
+                        <td><a href="#">View</a></td>
                     `;
                     
                     tbody.appendChild(row);
                 }});
             }}
-            
-            // Initialize the page
-            document.addEventListener('DOMContentLoaded', function() {{
-                // Set up search functionality
-                document.getElementById('global-search').addEventListener('input', function(e) {{
-                    const searchTerm = e.target.value.toLowerCase();
-                    // Implement search highlighting or filtering here
-                }});
-                
-                // Initialize arguments
-                renderStandardArguments();
-                
-                // Initialize tables
-                renderTimeline();
-                renderExhibits();
-            }});
         </script>
     </body>
     </html>

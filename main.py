@@ -456,16 +456,20 @@ with tabs[0]:
         )
         
         # Set expander styling based on side
+        bg_color = "#dbeafe" if color == "blue" else "#fee2e2"
+        border_color = "#93c5fd" if color == "blue" else "#fca5a5"
+        text_color = "#1e40af" if color == "blue" else "#b91c1c"
+        
         expander.markdown(f"""
         <script>
             // Apply styling to the last created expander
             var expanders = document.querySelectorAll('.streamlit-expanderHeader');
             var lastExpander = expanders[expanders.length - 1];
-            lastExpander.style.backgroundColor = '{color == "blue" ? "#dbeafe" : "#fee2e2"}';
+            lastExpander.style.backgroundColor = '{bg_color}';
             lastExpander.style.borderRadius = '0.375rem';
             lastExpander.style.borderWidth = '1px';
-            lastExpander.style.borderColor = '{color == "blue" ? "#93c5fd" : "#fca5a5"}';
-            lastExpander.querySelector('span').style.color = '{color == "blue" ? "#1e40af" : "#b91c1c"}';
+            lastExpander.style.borderColor = '{border_color}';
+            lastExpander.querySelector('span').style.color = '{text_color}';
         </script>
         """, unsafe_allow_html=True)
         

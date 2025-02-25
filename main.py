@@ -252,7 +252,7 @@ with tab[0]:  # Summary of Arguments
         # Handle click through Streamlit buttons (hidden with CSS styling)
         if st.button(f"Toggle {id}", key=f"toggle_{side}_{id}", help=f"Expand/collapse {title}"):
             st.session_state.expanded_args[f"{side}_{id}"] = not st.session_state.expanded_args.get(f"{side}_{id}", False)
-            st.experimental_rerun()
+            st.rerun()
         
         # Content (only shown if expanded)
         if expanded:

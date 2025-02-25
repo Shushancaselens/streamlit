@@ -414,7 +414,60 @@ def main():
                 }}
                 
                 // Render evidence
-      import streamlit as st
+                function renderEvidence(evidence) {{
+                    if (!evidence || evidence.length === 0) return '';
+                    
+                    const itemsHtml = evidence.map(item => {{
+                        const citations = item.citations 
+                            ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('') 
+                            : '';
+                        
+                        return `
+                        <div class="reference-block">
+                            <div class="reference-header">
+                                <span class="reference-title">${{item.id}}: ${{item.title}}</span>
+                                <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="reference-summary">${{item.summary}}</p>
+                            <div class="reference-citations">
+                                <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
+                                ${{citations}}
+                            </div>
+                        </div>
+                        `;
+                    }}).join('');
+                    
+                    return `
+                    <div class="content-section">
+                        <h6 class="content-section-title">Evidence</h6>
+                        ${{itemsHtml}}
+                    </div>
+                    `;
+                }}
+                
+                // Render case law
+                function renderCaseLaw(cases) {{
+                    if (!cases || cases.length === 0) return '';
+                    
+                    const itemsHtml = cases.map(item => {{
+                        const citedParagraphs = item.citedParagraphs 
+                            ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('') 
+                            : '';
+                        
+                        return `
+                        <div class="reference-block">
+                            <div class="reference-header">
+                                <div>
+                                    <span class="reference-title">${{item.caseNumber}}</span>
+                                    <span class="point-citation" style="margin-left: 0.5rem;">¶${{item.paragraphs}}</span>
+                                </div>
+                                <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"import streamlit as st
 import json
 import streamlit.components.v1 as components
 

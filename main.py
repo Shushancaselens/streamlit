@@ -232,7 +232,7 @@ with tab[0]:  # Summary of Arguments
     def render_argument_section(id, title, paragraphs, side, level=0, 
                                 overview=None, legal_points=None, factual_points=None, 
                                 evidence=None, case_law=None):
-        expanded = st.session_state.expanded_args.get(id, False)
+        expanded = st.session_state.expanded_args.get(f"{side}_{id}", False)
         
         # Define colors based on side
         color_class = "claimant-color" if side == "claimant" else "respondent-color"
@@ -250,8 +250,8 @@ with tab[0]:  # Summary of Arguments
         st.markdown(header_html, unsafe_allow_html=True)
         
         # Handle click through Streamlit buttons (hidden with CSS styling)
-        if st.button(f"Toggle {id}", key=f"toggle_{id}", help=f"Expand/collapse {title}"):
-            st.session_state.expanded_args[id] = not st.session_state.expanded_args.get(id, False)
+        if st.button(f"Toggle {id}", key=f"toggle_{side}_{id}", help=f"Expand/collapse {title}"):
+            st.session_state.expanded_args[f"{side}_{id}"] = not st.session_state.expanded_args.get(f"{side}_{id}", False)
             st.experimental_rerun()
         
         # Content (only shown if expanded)

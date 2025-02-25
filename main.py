@@ -335,6 +335,25 @@ def get_argument_data():
         }
     }
     
+    # Unified topic titles
+    unified_titles = {
+        "1": "Sporting Succession and Identity",
+        "2": "Doping Violation and Chain of Custody"
+    }
+    
+    # Unified topic descriptions
+    unified_descriptions = {
+        "1": "Arguments regarding club identity, continuity, and succession rights",
+        "2": "Issues related to doping test procedures and evidence handling"
+    }
+    
+    # Unified subtopic titles
+    unified_subtitles = {
+        "1.1": "Club Name and Registration",
+        "1.2": "Club Colors and Branding",
+        "1.1.1": "Historical Registration Records"
+    }
+    
     topics = [
         {
             "id": "topic-1",
@@ -353,6 +372,9 @@ def get_argument_data():
     return {
         "claimantArgs": claimant_args,
         "respondentArgs": respondent_args,
+        "unifiedTitles": unified_titles,
+        "unifiedDescriptions": unified_descriptions,
+        "unifiedSubtitles": unified_subtitles,
         "topics": topics
     }
 
@@ -547,12 +569,72 @@ def main():
                 box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             }}
             
-            /* Arguments styling */
+            /* Main argument containers */
+            .unified-argument {{
+                margin-bottom: 1rem;
+                border-radius: 0.375rem;
+                border: 1px solid #e2e8f0;
+                overflow: hidden;
+            }}
+            .unified-header {{
+                padding: 0.75rem 1rem;
+                background-color: #f8fafc;
+                border-bottom: 1px solid #e2e8f0;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }}
+            .unified-content {{
+                display: none;
+                padding: 1rem;
+                background-color: white;
+            }}
+            .unified-title {{
+                font-size: 1rem;
+                font-weight: 500;
+                color: #2d3748;
+            }}
+            .unified-description {{
+                font-size: 0.875rem;
+                color: #718096;
+                margin-top: 0.25rem;
+            }}
+            
+            /* Subargument containers */
+            .subargument-unified {{
+                margin: 0.5rem 0;
+                border-radius: 0.375rem;
+                border: 1px solid #edf2f7;
+                overflow: hidden;
+            }}
+            .subargument-header {{
+                padding: 0.5rem 0.75rem;
+                background-color: #f8fafc;
+                border-bottom: 1px solid #edf2f7;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }}
+            .subargument-content {{
+                display: none;
+                padding: 0.75rem;
+                background-color: white;
+            }}
+            
+            /* Arguments side-by-side view */
             .arguments-header {{
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 1.5rem;
                 margin-bottom: 1rem;
+            }}
+            .argument-row {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 0.5rem;
             }}
             .claimant-color {{
                 color: #3182ce;
@@ -561,33 +643,11 @@ def main():
                 color: #e53e3e;
             }}
             
-            /* Argument container and pairs */
-            .argument-pair {{
-                margin-bottom: 1rem;
-                position: relative;
-            }}
-            .argument-row {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-            }}
-            .argument-side {{
-                position: relative;
-            }}
-            
-            /* Subarguments container */
-            .subarguments-container {{
-                margin-top: 0.5rem;
-                margin-bottom: 1rem;
-                display: none;
-            }}
-            
-            /* Argument card and details */
+            /* Argument styling */
             .argument {{
                 border: 1px solid #e2e8f0;
                 border-radius: 0.375rem;
                 overflow: hidden;
-                margin-bottom: 1rem;
             }}
             .argument-header {{
                 padding: 0.75rem 1rem;
@@ -616,7 +676,16 @@ def main():
                 border-color: #fed7d7;
             }}
             
+            /* Subarguments */
+            .subarguments-container {{
+                margin-top: 0.75rem;
+                display: none;
+            }}
+            
             /* Connectors */
+            .connectors {{
+                position: relative;
+            }}
             .connector-line {{
                 position: absolute;
                 background-color: #e2e8f0;
@@ -627,21 +696,6 @@ def main():
             .respondent-connector {{
                 background-color: rgba(239, 68, 68, 0.5);
             }}
-            .vertical-line {{
-                width: 1px;
-                left: 10px;
-            }}
-            .horizontal-line {{
-                height: 1px;
-                width: 12px;
-            }}
-            .connector-wrapper {{
-                position: relative;
-                padding-left: 1.5rem;
-            }}
-            .connector-container {{
-                position: relative;
-            }}
             
             /* Badge styling */
             .badge {{
@@ -649,6 +703,20 @@ def main():
                 padding: 0.25rem 0.5rem;
                 border-radius: 0.25rem;
                 font-size: 0.75rem;
+            }}
+            .count-badge {{
+                padding: 0.125rem 0.5rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                background-color: #edf2f7;
+                color: #4a5568;
+            }}
+            .paragraph-badge {{
+                padding: 0.125rem 0.5rem;
+                border-radius: 0.25rem;
+                font-size: 0.75rem;
+                background-color: #edf2f7;
+                color: #4a5568;
             }}
             .claimant-badge {{
                 background-color: #ebf8ff;
@@ -907,10 +975,6 @@ def main():
             
             <!-- Standard View -->
             <div id="standard-view" class="view-content">
-                <div class="arguments-header">
-                    <h3 class="claimant-color">Claimant's Arguments</h3>
-                    <h3 class="respondent-color">Respondent's Arguments</h3>
-                </div>
                 <div id="standard-arguments-container"></div>
             </div>
             
@@ -1101,7 +1165,7 @@ def main():
                 <div class="overview-block">
                     <div class="overview-header">
                         <h6 class="content-section-title">Key Points</h6>
-                        <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
+                        <span class="paragraph-badge">¶${{overview.paragraphs}}</span>
                     </div>
                     <div class="overview-list">
                         ${{pointsHtml}}
@@ -1294,11 +1358,11 @@ def main():
                 return content;
             }}
             
-            // Render an argument header and content (without children)
-            function renderArgumentNode(arg, side, argId, level = 0) {{
+            // Render a single argument node (for side-by-side view)
+            function renderArgumentNode(arg, side, level = 0) {{
                 if (!arg) return '';
                 
-                const fullId = `${{side}}-${{argId}}`;
+                const id = `${{side}}-${{arg.id}}`;
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
@@ -1310,7 +1374,7 @@ def main():
                 // Header content
                 const headerHtml = `
                 <div class="argument-header-left">
-                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                    <svg id="chevron-${{id}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                     <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
@@ -1319,90 +1383,123 @@ def main():
                 </div>
                 <div>
                     ${{hasChildren 
-                        ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
-                        : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
+                        ? `<span class="count-badge" style="background-color: ${{side === 'claimant' ? '#ebf8ff' : '#fff5f5'}}; color: ${{baseColor}};">${{childCount}} subarguments</span>` 
+                        : `<span class="paragraph-badge" style="background-color: ${{side === 'claimant' ? '#ebf8ff' : '#fff5f5'}}; color: ${{baseColor}};">¶${{arg.paragraphs}}</span>`
                     }}
                 </div>
                 `;
                 
                 return `
-                <div class="argument ${{headerClass}}" ${{level > 0 ? 'style="position: relative;"' : ''}}>
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', ${{hasChildren}})">
+                <div class="argument ${{headerClass}}">
+                    <div class="argument-header" onclick="toggleArgumentSide('${{id}}', true)">
                         ${{headerHtml}}
                     </div>
-                    <div id="content-${{fullId}}" class="argument-content">
+                    <div id="content-${{id}}" class="argument-content">
                         ${{renderArgumentContent(arg)}}
                     </div>
                 </div>
                 `;
             }}
             
-            // Recursively render an argument pair and all its children
-            function renderArgumentPairRecursive(claimantArg, respondentArg, level = 0, parentId = '') {{
-                if (!claimantArg || !respondentArg) return '';
+            // Render a unified argument with claimant and respondent sides
+            function renderUnifiedArgument(id, claimantArg, respondentArg) {{
+                // Get unified title and description
+                const title = argsData.unifiedTitles[id] || `Argument ${{id}}`;
+                const description = argsData.unifiedDescriptions[id] || '';
                 
-                // Create IDs
-                const claimantId = parentId ? `${{parentId}}-${{claimantArg.id}}` : claimantArg.id;
-                const respondentId = parentId ? `${{parentId}}-${{respondentArg.id}}` : respondentArg.id;
+                // Check for children
+                const hasClaimantChildren = claimantArg && claimantArg.children && Object.keys(claimantArg.children).length > 0;
+                const hasRespondentChildren = respondentArg && respondentArg.children && Object.keys(respondentArg.children).length > 0;
+                const hasChildren = hasClaimantChildren || hasRespondentChildren;
                 
-                // Connectors for non-root levels
-                const connectorHtml = level > 0 ? `
-                <div class="connector-container">
-                    <div class="connector-wrapper">
-                        <div class="connector-line vertical-line claimant-connector" style="height: 100%; top: 0;"></div>
-                        <div class="connector-line horizontal-line claimant-connector" style="top: 1.25rem; left: 0;"></div>
-                    </div>
-                    <div class="connector-wrapper">
-                        <div class="connector-line vertical-line respondent-connector" style="height: 100%; top: 0;"></div>
-                        <div class="connector-line horizontal-line respondent-connector" style="top: 1.25rem; left: 0;"></div>
-                    </div>
-                </div>
-                ` : '';
+                // Count arguments on each side
+                const childCount = Math.max(
+                    hasClaimantChildren ? Object.keys(claimantArg.children).length : 0,
+                    hasRespondentChildren ? Object.keys(respondentArg.children).length : 0
+                );
                 
-                // Render this argument pair
-                const pairHtml = `
-                <div class="argument-row" ${{level > 0 ? 'style="padding-left: 1.5rem;"' : ''}}>
-                    <div class="argument-side">
-                        ${{renderArgumentNode(claimantArg, 'claimant', claimantId, level)}}
+                // Parent node header
+                const unifiedHeaderHtml = `
+                <div class="unified-header" onclick="toggleUnifiedArgument('${{id}}')">
+                    <div>
+                        <h3 class="unified-title" id="unified-title-${{id}}">${{title}}</h3>
+                        ${{description ? `<p class="unified-description">${{description}}</p>` : ''}}
                     </div>
-                    <div class="argument-side">
-                        ${{renderArgumentNode(respondentArg, 'respondent', respondentId, level)}}
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        ${{hasChildren ? `<span class="count-badge">${{childCount}} sub-arguments</span>` : ''}}
+                        <svg id="chevron-unified-${{id}}" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
                     </div>
                 </div>
                 `;
                 
-                // Render subarguments
-                let childrenHtml = '';
-                if (claimantArg.children && respondentArg.children) {{
-                    const childKeys = Object.keys(claimantArg.children);
+                // Render sides (claimant and respondent arguments)
+                const sidesHtml = `
+                <div class="arguments-header">
+                    <h3 class="claimant-color">Claimant's Arguments</h3>
+                    <h3 class="respondent-color">Respondent's Arguments</h3>
+                </div>
+                <div class="argument-row">
+                    <div>
+                        ${{claimantArg ? renderArgumentNode(claimantArg, 'claimant') : ''}}
+                    </div>
+                    <div>
+                        ${{respondentArg ? renderArgumentNode(respondentArg, 'respondent') : ''}}
+                    </div>
+                </div>
+                `;
+                
+                // Recursively render sub-arguments if any
+                let subArgumentsHtml = '';
+                if (hasChildren) {{
+                    const allKeys = new Set([
+                        ...(hasClaimantChildren ? Object.keys(claimantArg.children) : []),
+                        ...(hasRespondentChildren ? Object.keys(respondentArg.children) : [])
+                    ]);
                     
-                    childrenHtml = `
-                    <div id="children-claimant-${{claimantId}},respondent-${{respondentId}}" class="subarguments-container">
-                        ${{connectorHtml}}
-                    `;
+                    const sortedKeys = [...allKeys].sort();
                     
-                    // For each child argument
-                    childKeys.forEach(childKey => {{
-                        const claimantChild = claimantArg.children[childKey];
-                        const respondentChild = respondentArg.children[childKey];
+                    sortedKeys.forEach(childId => {{
+                        const claimantChild = hasClaimantChildren ? claimantArg.children[childId] : null;
+                        const respondentChild = hasRespondentChildren ? respondentArg.children[childId] : null;
                         
-                        if (claimantChild && respondentChild) {{
-                            childrenHtml += renderArgumentPairRecursive(
-                                claimantChild, 
-                                respondentChild, 
-                                level + 1,
-                                claimantId
-                            );
+                        if (claimantChild || respondentChild) {{
+                            // Get subtitle if available
+                            const subtitle = argsData.unifiedSubtitles[childId] || `Sub-argument ${{childId}}`;
+                            
+                            subArgumentsHtml += `
+                            <div class="subargument-unified">
+                                <div class="subargument-header" onclick="toggleSubArgument('${{childId}}')">
+                                    <h4 style="font-size: 0.9375rem; font-weight: 500; color: #4a5568;">${{subtitle}}</h4>
+                                    <svg id="chevron-sub-${{childId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </div>
+                                <div id="subcontent-${{childId}}" class="subargument-content" style="display: none;">
+                                    <div class="argument-row">
+                                        <div>
+                                            ${{claimantChild ? renderArgumentNode(claimantChild, 'claimant', 1) : ''}}
+                                        </div>
+                                        <div>
+                                            ${{respondentChild ? renderArgumentNode(respondentChild, 'respondent', 1) : ''}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
                         }}
                     }});
-                    
-                    childrenHtml += `</div>`;
                 }}
                 
+                // Complete unified argument HTML
                 return `
-                <div class="argument-pair">
-                    ${{pairHtml}}
-                    ${{childrenHtml}}
+                <div class="unified-argument">
+                    ${{unifiedHeaderHtml}}
+                    <div id="unified-content-${{id}}" class="unified-content">
+                        ${{sidesHtml}}
+                        ${{subArgumentsHtml ? `<div class="subarguments-container">${{subArgumentsHtml}}</div>` : ''}}
+                    </div>
                 </div>
                 `;
             }}
@@ -1412,13 +1509,13 @@ def main():
                 const container = document.getElementById('standard-arguments-container');
                 let html = '';
                 
-                // For each top-level argument
+                // For each top-level argument pair
                 Object.keys(argsData.claimantArgs).forEach(argId => {{
-                    if (argsData.respondentArgs[argId]) {{
+                    if (argId in argsData.respondentArgs) {{
                         const claimantArg = argsData.claimantArgs[argId];
                         const respondentArg = argsData.respondentArgs[argId];
                         
-                        html += renderArgumentPairRecursive(claimantArg, respondentArg);
+                        html += renderUnifiedArgument(argId, claimantArg, respondentArg);
                     }}
                 }});
                 
@@ -1436,20 +1533,15 @@ def main():
                     <div class="topic-section">
                         <h2 class="topic-title">${{topic.title}}</h2>
                         <p class="topic-description">${{topic.description}}</p>
-                        
-                        <div class="arguments-header">
-                            <h3 class="claimant-color">Claimant's Arguments</h3>
-                            <h3 class="respondent-color">Respondent's Arguments</h3>
-                        </div>
                     `;
                     
-                    // Add arguments for this topic
+                    // Add argument pairs for this topic
                     topic.argumentIds.forEach(argId => {{
-                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                            const claimantArg = argsData.claimantArgs[argId];
-                            const respondentArg = argsData.respondentArgs[argId];
-                            
-                            html += renderArgumentPairRecursive(claimantArg, respondentArg);
+                        const claimantArg = argsData.claimantArgs[argId];
+                        const respondentArg = argsData.respondentArgs[argId];
+                        
+                        if (claimantArg && respondentArg) {{
+                            html += renderUnifiedArgument(argId, claimantArg, respondentArg);
                         }}
                     }});
                     
@@ -1459,40 +1551,70 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle argument expansion
-            function toggleArgument(id, hasChildren) {{
+            // Toggle unified argument (the parent container)
+            function toggleUnifiedArgument(id) {{
+                const contentEl = document.getElementById(`unified-content-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-unified-${{id}}`);
+                
+                const isExpanded = contentEl.style.display === 'block';
+                contentEl.style.display = isExpanded ? 'none' : 'block';
+                
+                if (chevronEl) {{
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
+                }}
+                
+                // Save state
+                expandedStates[`unified-${{id}}`] = !isExpanded;
+            }}
+            
+            // Toggle sub-argument (the unified child container)
+            function toggleSubArgument(id) {{
+                const contentEl = document.getElementById(`subcontent-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-sub-${{id}}`);
+                
+                const isExpanded = contentEl.style.display === 'block';
+                contentEl.style.display = isExpanded ? 'none' : 'block';
+                
+                if (chevronEl) {{
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
+                }}
+                
+                // Save state
+                expandedStates[`sub-${{id}}`] = !isExpanded;
+            }}
+            
+            // Toggle single argument side
+            function toggleArgumentSide(id, syncPair = false) {{
                 const [side, argId] = id.split('-');
                 const contentEl = document.getElementById(`content-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                // Find the paired argument
-                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const pairedId = `${{otherSide}}-${{argId}}`;
-                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
-                
-                // Find the children container (shared between both sides)
-                const childrenContainerId = `children-claimant-${{argId}},respondent-${{argId}}`;
-                const childrenEl = document.getElementById(childrenContainerId);
-                
-                // Toggle expanded state
                 const isExpanded = contentEl.style.display === 'block';
-                const newState = !isExpanded;
+                contentEl.style.display = isExpanded ? 'none' : 'block';
                 
-                // Update elements
-                contentEl.style.display = newState ? 'block' : 'none';
-                if (chevronEl) chevronEl.style.transform = newState ? 'rotate(90deg)' : '';
-                
-                if (pairedContentEl) pairedContentEl.style.display = newState ? 'block' : 'none';
-                if (pairedChevronEl) pairedChevronEl.style.transform = newState ? 'rotate(90deg)' : '';
-                
-                if (hasChildren && childrenEl) {{
-                    childrenEl.style.display = newState ? 'block' : 'none';
+                if (chevronEl) {{
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
                 }}
                 
                 // Save state
-                expandedStates[id] = newState;
-                expandedStates[pairedId] = newState;
+                expandedStates[id] = !isExpanded;
+                
+                // Sync with pair if required
+                if (syncPair) {{
+                    const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
+                    const pairedId = `${{otherSide}}-${{argId}}`;
+                    const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                    const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
+                    
+                    if (pairedContentEl) {{
+                        pairedContentEl.style.display = contentEl.style.display;
+                        expandedStates[pairedId] = expandedStates[id];
+                        
+                        if (pairedChevronEl) {{
+                            pairedChevronEl.style.transform = chevronEl.style.transform;
+                        }}
+                    }}
+                }}
             }}
             
             // Render timeline

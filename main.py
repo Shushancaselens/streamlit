@@ -5,7 +5,24 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# [Keep all the data functions the same]
+# Create data structures as JSON for embedded components
+def get_argument_data():
+    # Same data structure as before
+    # ...
+    
+    return {
+        "claimantArgs": claimant_args,
+        "respondentArgs": respondent_args,
+        "topics": topics
+    }
+
+def get_timeline_data():
+    # Same timeline data as before
+    # ...
+
+def get_exhibits_data():
+    # Same exhibits data as before
+    # ...
 
 # Main app
 def main():
@@ -35,121 +52,170 @@ def main():
                 background-color: #fff;
             }}
             
-            /* Container */
+            /* Simple container */
             .container {{
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
             }}
             
-            /* Main title */
-            .main-title {{
-                font-size: 24px;
-                font-weight: 600;
+            /* Header styles */
+            .header {{
                 margin-bottom: 20px;
             }}
             
-            /* Tabs */
             .tabs {{
                 display: flex;
-                margin-bottom: 30px;
-                border-bottom: 1px solid #eaeaea;
+                border-bottom: 1px solid #e1e4e8;
+                margin-bottom: 25px;
             }}
             
             .tab {{
-                padding: 15px 20px;
+                padding: 12px 16px;
                 cursor: pointer;
-                font-weight: 500;
-                color: #666;
-                position: relative;
+                color: #586069;
+                border-bottom: 2px solid transparent;
+                margin-right: 4px;
             }}
             
             .tab.active {{
-                color: #3182ce;
+                color: #2060e5;
+                border-bottom: 2px solid #2060e5;
+                font-weight: 500;
             }}
             
-            .tab.active::after {{
-                content: '';
-                position: absolute;
-                bottom: -1px;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background-color: #3182ce;
+            /* Main content styles */
+            .content-area {{
+                display: none;
             }}
             
-            /* Columns for arguments */
-            .arguments-container {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-                margin-top: 20px;
+            .content-area.active {{
+                display: block;
             }}
             
-            .column-title {{
-                font-size: 20px;
+            /* Sections */
+            .section-title {{
+                font-size: 18px;
                 font-weight: 500;
                 margin-bottom: 20px;
             }}
             
             .claimant-title {{
-                color: #3182ce;
+                color: #2060e5;
             }}
             
             .respondent-title {{
                 color: #e53e3e;
             }}
             
+            /* Split layout */
+            .split-layout {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }}
+            
             /* Argument card */
             .argument-card {{
+                border: 1px solid #e1e4e8;
+                border-radius: 8px;
+                margin-bottom: 16px;
+                overflow: hidden;
+            }}
+            
+            .argument-header {{
                 display: flex;
                 align-items: center;
+                justify-content: space-between;
                 padding: 15px;
-                border: 1px solid #eaeaea;
-                border-radius: 8px;
-                margin-bottom: 15px;
                 cursor: pointer;
-                transition: all 0.2s;
+                background-color: #f6f8fa;
+                border-bottom: 1px solid #e1e4e8;
             }}
             
-            .argument-card:hover {{
-                background-color: #f9f9f9;
-            }}
-            
-            .argument-card .caret {{
-                margin-right: 10px;
-                transition: transform 0.2s;
-            }}
-            
-            .argument-card .caret.expanded {{
-                transform: rotate(90deg);
-            }}
-            
-            .argument-card .title {{
-                flex: 1;
+            .argument-title {{
+                display: flex;
+                align-items: center;
+                gap: 8px;
                 font-weight: 500;
             }}
             
-            /* Badges */
-            .badge {{
-                display: inline-block;
-                padding: 4px 8px;
-                border-radius: 20px;
+            .argument-content {{
+                padding: 15px;
+                display: none;
+            }}
+            
+            .subargument-badge {{
+                background-color: rgba(32, 96, 229, 0.1);
+                color: #2060e5;
+                padding: 4px 10px;
+                border-radius: 16px;
                 font-size: 12px;
                 font-weight: 500;
             }}
             
-            .claimant-badge {{
-                background-color: rgba(49, 130, 206, 0.1);
-                color: #3182ce;
-            }}
-            
-            .respondent-badge {{
+            .subargument-badge.respondent {{
                 background-color: rgba(229, 62, 62, 0.1);
                 color: #e53e3e;
             }}
             
-            /* Tab content container */
+            /* Chevron */
+            .chevron {{
+                transition: transform 0.2s;
+            }}
+            
+            .chevron.expanded {{
+                transform: rotate(90deg);
+            }}
+            
+            /* Content sections */
+            .content-section {{
+                margin-bottom: 20px;
+            }}
+            
+            .section-header {{
+                font-weight: 500;
+                margin-bottom: 10px;
+            }}
+            
+            .point-list {{
+                list-style-type: none;
+                padding-left: 0;
+                margin: 0;
+            }}
+            
+            .point-list li {{
+                position: relative;
+                padding-left: 20px;
+                margin-bottom: 8px;
+            }}
+            
+            .point-list li:before {{
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: #8c8c8c;
+            }}
+            
+            /* Evidence block */
+            .evidence-block {{
+                background-color: #fff8f0;
+                border-left: 3px solid #dd6b20;
+                padding: 10px 16px;
+                margin-bottom: 12px;
+                border-radius: 0 4px 4px 0;
+            }}
+            
+            /* Legal point block */
+            .legal-block {{
+                background-color: #ebf8ff;
+                border-left: 3px solid #3182ce;
+                padding: 10px 16px;
+                margin-bottom: 12px;
+                border-radius: 0 4px 4px 0;
+            }}
+            
+            /* Tabs for Timeline and Exhibits */
             .tab-content {{
                 display: none;
             }}
@@ -158,75 +224,103 @@ def main():
                 display: block;
             }}
             
-            /* Content inside an expanded argument */
-            .argument-content {{
-                margin-top: 15px;
-                display: none;
+            /* Tables */
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 16px;
+            }}
+            
+            thead {{
+                background-color: #f6f8fa;
+            }}
+            
+            th, td {{
+                padding: 12px 16px;
+                text-align: left;
+                border-bottom: 1px solid #e1e4e8;
+            }}
+            
+            /* Badges */
+            .badge {{
+                display: inline-block;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 500;
+            }}
+            
+            .disputed-badge {{
+                background-color: rgba(229, 62, 62, 0.1);
+                color: #e53e3e;
+            }}
+            
+            .exhibit-badge {{
+                background-color: rgba(221, 107, 32, 0.1);
+                color: #dd6b20;
             }}
             
             /* Subarguments */
-            .subargument-list {{
-                border-left: 2px solid #eaeaea;
-                margin-left: 10px;
-                padding-left: 15px;
-                margin-top: 10px;
+            .subarguments-container {{
+                margin-top: 12px;
+                border-left: 2px solid #f0f0f0;
+                padding-left: 16px;
             }}
         </style>
     </head>
     <body>
         <div class="container">
-            <!-- Main title -->
-            <h1 class="main-title">Legal Arguments Analysis</h1>
-            
-            <!-- Tabs -->
-            <div class="tabs">
-                <div class="tab active" data-tab="summary">Summary of Arguments</div>
-                <div class="tab" data-tab="timeline">Timeline</div>
-                <div class="tab" data-tab="exhibits">Exhibits</div>
+            <div class="header">
+                <h1>Legal Arguments Analysis</h1>
+                <div class="tabs">
+                    <div class="tab active" data-tab="summary">Summary of Arguments</div>
+                    <div class="tab" data-tab="timeline">Timeline</div>
+                    <div class="tab" data-tab="exhibits">Exhibits</div>
+                </div>
             </div>
             
-            <!-- Summary Tab -->
-            <div id="summary-tab" class="tab-content active">
-                <div class="arguments-container">
-                    <!-- Claimant's Arguments -->
-                    <div class="claimant-column">
-                        <h2 class="column-title claimant-title">Claimant's Arguments</h2>
+            <!-- Summary tab content -->
+            <div id="summary" class="content-area active">
+                <div class="split-layout">
+                    <!-- Claimant's arguments -->
+                    <div>
+                        <h2 class="section-title claimant-title">Claimant's Arguments</h2>
                         <div id="claimant-arguments"></div>
                     </div>
                     
-                    <!-- Respondent's Arguments -->
-                    <div class="respondent-column">
-                        <h2 class="column-title respondent-title">Respondent's Arguments</h2>
+                    <!-- Respondent's arguments -->
+                    <div>
+                        <h2 class="section-title respondent-title">Respondent's Arguments</h2>
                         <div id="respondent-arguments"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Timeline Tab -->
-            <div id="timeline-tab" class="tab-content">
-                <table id="timeline-table" style="width: 100%; border-collapse: collapse;">
+            <!-- Timeline tab content -->
+            <div id="timeline" class="content-area">
+                <table id="timeline-table">
                     <thead>
                         <tr>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Date</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Appellant's Version</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Respondent's Version</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Status</th>
+                            <th>Date</th>
+                            <th>Appellant's Version</th>
+                            <th>Respondent's Version</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="timeline-body"></tbody>
                 </table>
             </div>
             
-            <!-- Exhibits Tab -->
-            <div id="exhibits-tab" class="tab-content">
-                <table id="exhibits-table" style="width: 100%; border-collapse: collapse;">
+            <!-- Exhibits tab content -->
+            <div id="exhibits" class="content-area">
+                <table id="exhibits-table">
                     <thead>
                         <tr>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">ID</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Party</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Title</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Type</th>
-                            <th style="text-align: left; padding: 10px; border-bottom: 1px solid #eaeaea;">Summary</th>
+                            <th>ID</th>
+                            <th>Party</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Summary</th>
                         </tr>
                     </thead>
                     <tbody id="exhibits-body"></tbody>
@@ -243,205 +337,277 @@ def main():
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
                 tab.addEventListener('click', function() {{
-                    // Update active tab
+                    // Update tabs
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Show selected tab content
-                    const tabId = this.getAttribute('data-tab') + '-tab';
-                    document.querySelectorAll('.tab-content').forEach(content => {{
+                    // Update content areas
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.content-area').forEach(content => {{
                         content.classList.remove('active');
                     }});
                     document.getElementById(tabId).classList.add('active');
                     
                     // Initialize content if needed
-                    if (tabId === 'timeline-tab') renderTimeline();
-                    if (tabId === 'exhibits-tab') renderExhibits();
+                    if (tabId === 'timeline') renderTimeline();
+                    if (tabId === 'exhibits') renderExhibits();
                 }});
             }});
             
-            // Count subarguments in an argument
-            function countSubarguments(arg) {{
-                if (!arg || !arg.children) return 0;
-                return Object.keys(arg.children).length;
-            }}
-            
-            // Render main arguments list
-            function renderMainArguments() {{
-                const claimantContainer = document.getElementById('claimant-arguments');
-                const respondentContainer = document.getElementById('respondent-arguments');
+            // Toggle argument details
+            function toggleArgument(id) {{
+                const content = document.getElementById(`content-${{id}}`);
+                const chevron = document.getElementById(`chevron-${{id}}`);
                 
-                // Clear containers
-                claimantContainer.innerHTML = '';
-                respondentContainer.innerHTML = '';
-                
-                // Render claimant arguments
-                for (const [argId, arg] of Object.entries(argsData.claimantArgs)) {{
-                    const subargCount = countSubarguments(arg);
-                    const subargBadge = subargCount > 0 ? 
-                        `<div class="badge claimant-badge">${{subargCount}} subarguments</div>` : '';
-                    
-                    const cardHtml = `
-                        <div class="argument-card" id="claimant-arg-${{argId}}" onclick="toggleArgument('claimant', '${{argId}}')">
-                            <div class="caret" id="claimant-caret-${{argId}}">▶</div>
-                            <div class="title">${{arg.id}}. ${{arg.title}}</div>
-                            ${{subargBadge}}
-                        </div>
-                        <div class="argument-content" id="claimant-content-${{argId}}">
-                            <div class="subargument-list" id="claimant-subargs-${{argId}}"></div>
-                        </div>
-                    `;
-                    claimantContainer.innerHTML += cardHtml;
-                }}
-                
-                // Render respondent arguments
-                for (const [argId, arg] of Object.entries(argsData.respondentArgs)) {{
-                    const subargCount = countSubarguments(arg);
-                    const subargBadge = subargCount > 0 ? 
-                        `<div class="badge respondent-badge">${{subargCount}} subarguments</div>` : '';
-                    
-                    const cardHtml = `
-                        <div class="argument-card" id="respondent-arg-${{argId}}" onclick="toggleArgument('respondent', '${{argId}}')">
-                            <div class="caret" id="respondent-caret-${{argId}}">▶</div>
-                            <div class="title">${{arg.id}}. ${{arg.title}}</div>
-                            ${{subargBadge}}
-                        </div>
-                        <div class="argument-content" id="respondent-content-${{argId}}">
-                            <div class="subargument-list" id="respondent-subargs-${{argId}}"></div>
-                        </div>
-                    `;
-                    respondentContainer.innerHTML += cardHtml;
-                }}
-            }}
-            
-            // Toggle an argument's visibility
-            function toggleArgument(side, argId) {{
-                const contentEl = document.getElementById(`${{side}}-content-${{argId}}`);
-                const caretEl = document.getElementById(`${{side}}-caret-${{argId}}`);
-                
-                if (contentEl.style.display === 'block') {{
-                    contentEl.style.display = 'none';
-                    caretEl.textContent = '▶';
+                if (content.style.display === 'block') {{
+                    content.style.display = 'none';
+                    chevron.classList.remove('expanded');
                 }} else {{
-                    contentEl.style.display = 'block';
-                    caretEl.textContent = '▼';
-                    
-                    // Render subarguments if there are any
-                    const arg = side === 'claimant' ? argsData.claimantArgs[argId] : argsData.respondentArgs[argId];
-                    if (arg.children && Object.keys(arg.children).length > 0) {{
-                        renderSubarguments(side, argId, arg.children);
-                    }}
+                    content.style.display = 'block';
+                    chevron.classList.add('expanded');
                 }}
-                
-                // Synchronize if it's a main argument
-                if (argId === '1' || argId === '2') {{
-                    const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                    const otherContentEl = document.getElementById(`${{otherSide}}-content-${{argId}}`);
-                    const otherCaretEl = document.getElementById(`${{otherSide}}-caret-${{argId}}`);
+            }}
+            
+            // Count subarguments
+            function countSubarguments(arg) {{
+                let count = 0;
+                if (arg.children) {{
+                    count += Object.keys(arg.children).length;
                     
-                    if (otherContentEl) {{
-                        otherContentEl.style.display = contentEl.style.display;
-                        otherCaretEl.textContent = caretEl.textContent;
-                        
-                        // Render other side's subarguments if there are any
-                        const otherArg = otherSide === 'claimant' ? argsData.claimantArgs[argId] : argsData.respondentArgs[argId];
-                        if (otherArg && otherArg.children && Object.keys(otherArg.children).length > 0 && contentEl.style.display === 'block') {{
-                            renderSubarguments(otherSide, argId, otherArg.children);
+                    // Also count descendant subarguments
+                    Object.values(arg.children).forEach(child => {{
+                        if (child.children) {{
+                            count += countSubarguments(child);
                         }}
-                    }}
+                    }});
                 }}
+                return count;
+            }}
+            
+            // Render key points
+            function renderKeyPoints(overview) {{
+                if (!overview || !overview.points || overview.points.length === 0) return '';
+                
+                const pointsHtml = overview.points.map(point => `<li>${{point}}</li>`).join('');
+                
+                return `
+                <div class="content-section">
+                    <div class="section-header">Key Points</div>
+                    <ul class="point-list">
+                        ${{pointsHtml}}
+                    </ul>
+                </div>
+                `;
+            }}
+            
+            // Render factual points
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    return `<li>${{point.point}} ${{disputed}}</li>`;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <div class="section-header">Factual Points</div>
+                    <ul class="point-list">
+                        ${{pointsHtml}}
+                    </ul>
+                </div>
+                `;
+            }}
+            
+            // Render evidence
+            function renderEvidence(evidence) {{
+                if (!evidence || evidence.length === 0) return '';
+                
+                const evidenceHtml = evidence.map(item => {{
+                    return `
+                    <div class="evidence-block">
+                        <div style="font-weight: 500;">${{item.id}}: ${{item.title}}</div>
+                        <div style="margin-top: 6px;">${{item.summary}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <div class="section-header">Evidence</div>
+                    ${{evidenceHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render legal points
+            function renderLegalPoints(caseLaw) {{
+                if (!caseLaw || caseLaw.length === 0) return '';
+                
+                const legalHtml = caseLaw.map(item => {{
+                    return `
+                    <div class="legal-block">
+                        <div style="font-weight: 500;">${{item.caseNumber}}: ${{item.title}}</div>
+                        <div style="margin-top: 6px;">${{item.relevance}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <div class="section-header">Legal Points</div>
+                    ${{legalHtml}}
+                </div>
+                `;
             }}
             
             // Render subarguments
-            function renderSubarguments(side, parentId, children) {{
-                const container = document.getElementById(`${{side}}-subargs-${{parentId}}`);
+            function renderSubarguments(children, party) {{
+                if (!children || Object.keys(children).length === 0) return '';
                 
-                // Clear container if already has content
-                if (container.innerHTML !== '') return;
-                
-                // Create HTML for each child
-                for (const [childId, child] of Object.entries(children)) {{
-                    const subargCount = countSubarguments(child);
-                    const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
-                    const subargBadge = subargCount > 0 ? 
-                        `<div class="badge ${{badgeClass}}">${{subargCount}} subarguments</div>` : '';
+                const subargumentsHtml = Object.values(children).map(child => {{
+                    const subCount = countSubarguments(child);
+                    const subCountBadge = subCount > 0 
+                        ? `<span class="subargument-badge ${{party === 'respondent' ? 'respondent' : ''}}">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
+                        : '';
                     
-                    const cardHtml = `
-                        <div class="argument-card" style="margin-top: 10px;" id="${{side}}-arg-${{parentId}}-${{childId}}" onclick="event.stopPropagation(); toggleSubargument('${{side}}', '${{parentId}}', '${{childId}}')">
-                            <div class="caret" id="${{side}}-caret-${{parentId}}-${{childId}}">▶</div>
-                            <div class="title">${{child.id}}. ${{child.title}}</div>
-                            ${{subargBadge}}
+                    return `
+                    <div class="argument-card">
+                        <div class="argument-header" onclick="toggleArgument('${{party}}-${{child.id}}')">
+                            <div class="argument-title">
+                                <svg id="chevron-${{party}}-${{child.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                ${{child.id}}. ${{child.title}}
+                            </div>
+                            ${{subCountBadge}}
                         </div>
-                        <div class="argument-content" id="${{side}}-content-${{parentId}}-${{childId}}">
-                            <div class="subargument-list" id="${{side}}-subargs-${{parentId}}-${{childId}}"></div>
+                        <div class="argument-content" id="content-${{party}}-${{child.id}}">
+                            ${{renderKeyPoints(child.overview)}}
+                            ${{renderFactualPoints(child.factualPoints)}}
+                            ${{renderEvidence(child.evidence)}}
+                            ${{renderLegalPoints(child.caseLaw)}}
+                            
+                            ${{child.children ? renderSubarguments(child.children, party) : ''}}
                         </div>
+                    </div>
                     `;
-                    container.innerHTML += cardHtml;
-                }}
+                }}).join('');
+                
+                return `
+                <div class="subarguments-container">
+                    ${{subargumentsHtml}}
+                </div>
+                `;
             }}
             
-            // Toggle a subargument's visibility
-            function toggleSubargument(side, parentId, childId) {{
-                const contentEl = document.getElementById(`${{side}}-content-${{parentId}}-${{childId}}`);
-                const caretEl = document.getElementById(`${{side}}-caret-${{parentId}}-${{childId}}`);
+            // Render claimant arguments
+            function renderClaimantArguments() {{
+                const container = document.getElementById('claimant-arguments');
+                let html = '';
                 
-                if (contentEl.style.display === 'block') {{
-                    contentEl.style.display = 'none';
-                    caretEl.textContent = '▶';
-                }} else {{
-                    contentEl.style.display = 'block';
-                    caretEl.textContent = '▼';
-                    
-                    // Get the child argument
-                    const parent = side === 'claimant' ? argsData.claimantArgs[parentId] : argsData.respondentArgs[parentId];
-                    const child = parent.children[childId];
-                    
-                    // Render subarguments if there are any
-                    if (child.children && Object.keys(child.children).length > 0) {{
-                        renderNestedSubarguments(side, parentId, childId, child.children);
-                    }}
-                }}
+                // Iterate through topics to find all claimant arguments
+                argsData.topics.forEach(topic => {{
+                    topic.argumentIds.forEach(argId => {{
+                        const arg = argsData.claimantArgs[argId];
+                        if (arg) {{
+                            const subCount = countSubarguments(arg);
+                            const subCountBadge = subCount > 0 
+                                ? `<span class="subargument-badge">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
+                                : '';
+                            
+                            html += `
+                            <div class="argument-card">
+                                <div class="argument-header" onclick="toggleArgument('claimant-${{arg.id}}')">
+                                    <div class="argument-title">
+                                        <svg id="chevron-claimant-${{arg.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                        ${{arg.id}}. ${{arg.title}}
+                                    </div>
+                                    ${{subCountBadge}}
+                                </div>
+                                <div class="argument-content" id="content-claimant-${{arg.id}}">
+                                    ${{renderKeyPoints(arg.overview)}}
+                                    ${{renderFactualPoints(arg.factualPoints)}}
+                                    ${{renderEvidence(arg.evidence)}}
+                                    ${{renderLegalPoints(arg.caseLaw)}}
+                                    
+                                    ${{arg.children ? renderSubarguments(arg.children, 'claimant') : ''}}
+                                </div>
+                            </div>
+                            `;
+                        }}
+                    }});
+                }});
+                
+                container.innerHTML = html;
             }}
             
-            // Render nested subarguments
-            function renderNestedSubarguments(side, parentId, childId, children) {{
-                const container = document.getElementById(`${{side}}-subargs-${{parentId}}-${{childId}}`);
+            // Render respondent arguments
+            function renderRespondentArguments() {{
+                const container = document.getElementById('respondent-arguments');
+                let html = '';
                 
-                // Clear container if already has content
-                if (container.innerHTML !== '') return;
+                // Iterate through topics to find all respondent arguments
+                argsData.topics.forEach(topic => {{
+                    topic.argumentIds.forEach(argId => {{
+                        const arg = argsData.respondentArgs[argId];
+                        if (arg) {{
+                            const subCount = countSubarguments(arg);
+                            const subCountBadge = subCount > 0 
+                                ? `<span class="subargument-badge respondent">${{subCount}} subargument${{subCount !== 1 ? 's' : ''}}</span>` 
+                                : '';
+                            
+                            html += `
+                            <div class="argument-card">
+                                <div class="argument-header" onclick="toggleArgument('respondent-${{arg.id}}')">
+                                    <div class="argument-title">
+                                        <svg id="chevron-respondent-${{arg.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                        ${{arg.id}}. ${{arg.title}}
+                                    </div>
+                                    ${{subCountBadge}}
+                                </div>
+                                <div class="argument-content" id="content-respondent-${{arg.id}}">
+                                    ${{renderKeyPoints(arg.overview)}}
+                                    ${{renderFactualPoints(arg.factualPoints)}}
+                                    ${{renderEvidence(arg.evidence)}}
+                                    ${{renderLegalPoints(arg.caseLaw)}}
+                                    
+                                    ${{arg.children ? renderSubarguments(arg.children, 'respondent') : ''}}
+                                </div>
+                            </div>
+                            `;
+                        }}
+                    }});
+                }});
                 
-                // Create HTML for each nested child
-                for (const [nestedId, nestedChild] of Object.entries(children)) {{
-                    const fullId = `${{parentId}}-${{childId}}-${{nestedId}}`;
-                    const cardHtml = `
-                        <div class="argument-card" style="margin-top: 10px;" id="${{side}}-arg-${{fullId}}" onclick="event.stopPropagation();">
-                            <div class="title">${{nestedChild.id}}. ${{nestedChild.title}}</div>
-                        </div>
-                    `;
-                    container.innerHTML += cardHtml;
-                }}
+                container.innerHTML = html;
             }}
             
             // Render timeline
             function renderTimeline() {{
                 const tbody = document.getElementById('timeline-body');
-                
-                // Skip if already rendered
-                if (tbody.innerHTML !== '') return;
+                if (!tbody) return;
                 
                 tbody.innerHTML = '';
                 
                 timelineData.forEach(item => {{
                     const row = document.createElement('tr');
                     if (item.status === 'Disputed') {{
-                        row.style.backgroundColor = 'rgba(229, 62, 62, 0.05)';
+                        row.classList.add('disputed');
                     }}
                     
                     row.innerHTML = `
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.date}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.appellantVersion}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.respondentVersion}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.status}}</td>
+                        <td>${{item.date}}</td>
+                        <td>${{item.appellantVersion}}</td>
+                        <td>${{item.respondentVersion}}</td>
+                        <td>${{item.status}}</td>
                     `;
                     
                     tbody.appendChild(row);
@@ -451,31 +617,29 @@ def main():
             // Render exhibits
             function renderExhibits() {{
                 const tbody = document.getElementById('exhibits-body');
-                
-                // Skip if already rendered
-                if (tbody.innerHTML !== '') return;
+                if (!tbody) return;
                 
                 tbody.innerHTML = '';
                 
                 exhibitsData.forEach(item => {{
                     const row = document.createElement('tr');
+                    const badgeClass = item.party === 'Appellant' ? '' : 'respondent';
                     
                     row.innerHTML = `
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.id}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">
-                            <span class="badge ${{item.party === 'Appellant' ? 'claimant-badge' : 'respondent-badge'}}">${{item.party}}</span>
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.title}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.type}}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eaeaea;">${{item.summary}}</td>
+                        <td>${{item.id}}</td>
+                        <td>${{item.party}}</td>
+                        <td>${{item.title}}</td>
+                        <td>${{item.type}}</td>
+                        <td>${{item.summary}}</td>
                     `;
                     
                     tbody.appendChild(row);
                 }});
             }}
             
-            // Initialize the page
-            renderMainArguments();
+            // Initialize the app
+            renderClaimantArguments();
+            renderRespondentArguments();
         </script>
     </body>
     </html>

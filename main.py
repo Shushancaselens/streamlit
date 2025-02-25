@@ -5,7 +5,18 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# All the get_argument_data(), get_timeline_data(), and get_exhibits_data() functions remain the same
+# Data functions remain unchanged
+def get_argument_data():
+    # Keep the same data structure
+    # ...
+
+def get_timeline_data():
+    # Keep the same data structure
+    # ...
+
+def get_exhibits_data():
+    # Keep the same data structure
+    # ...
 
 # Main app
 def main():
@@ -25,8 +36,10 @@ def main():
     <html>
     <head>
         <style>
-            /* All the CSS styles remain the same */
-            /* Minimalistic base styling */
+            /* All the styling remains the same */
+            /* ... */
+            
+            /* Base styling */
             body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
@@ -379,7 +392,7 @@ def main():
                 }});
             }});
             
-            // All the render functions remain the same
+            // Render overview points - updated to show paragraphs
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -400,6 +413,7 @@ def main():
                 `;
             }}
             
+            // Render factual points
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
@@ -436,6 +450,7 @@ def main():
                 `;
             }}
             
+            // Render evidence - updated to match required format
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
@@ -464,6 +479,7 @@ def main():
                 `;
             }}
             
+            // Render case law - updated to match required format
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
@@ -494,6 +510,7 @@ def main():
                 `;
             }}
             
+            // Render argument content
             function renderArgumentContent(arg) {{
                 let content = '';
                 
@@ -520,11 +537,15 @@ def main():
                 return content;
             }}
             
+            // Render a single argument including its children
             function renderArgument(arg, side) {{
                 if (!arg) return '';
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const argId = `${{side}}-${{arg.id}}`;
+                
+                // Store corresponding pair ID for synchronization
+                const pairId = arg.id;
                 
                 // Style based on side
                 const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
@@ -543,7 +564,7 @@ def main():
                 
                 return `
                 <div class="card">
-                    <div class="card-header" onclick="toggleCard('${{argId}}')">
+                    <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="9 18 15 12 9 6"></polyline>
@@ -560,6 +581,7 @@ def main():
                 `;
             }}
             
+            // Render arguments by topic
             function renderTopics() {{
                 const container = document.getElementById('topics-container');
                 let html = '';
@@ -605,41 +627,8 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Modified toggle function to handle paired arguments
+            // Toggle a card without synchronizing
             function toggleCard(id) {{
-                // If it's a topic card, just toggle it normally
-                if (id.startsWith('topic-')) {{
-                    const contentEl = document.getElementById(`content-${{id}}`);
-                    const chevronEl = document.getElementById(`chevron-${{id}}`);
-                    
-                    if (contentEl) {{
-                        contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
-                    }}
-                    
-                    if (chevronEl) {{
-                        chevronEl.classList.toggle('expanded');
-                    }}
-                    return;
-                }}
-                
-                // For argument cards, figure out the side and argument ID
-                const parts = id.split('-');
-                const side = parts[0]; // 'appellant' or 'respondent'
-                const argPath = parts.slice(1).join('-'); // The argument path
-                
-                // Toggle this side
-                toggleSingleCard(id);
-                
-                // Get the paired ID on the other side
-                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
-                const pairedId = `${{otherSide}}-${{argPath}}`;
-                
-                // Toggle the paired side
-                toggleSingleCard(pairedId);
-            }}
-            
-            // Helper function to toggle a single card
-            function toggleSingleCard(id) {{
                 const contentEl = document.getElementById(`content-${{id}}`);
                 const childrenEl = document.getElementById(`children-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
@@ -657,6 +646,40 @@ def main():
                 }}
             }}
             
+            // Toggle an argument and its counterpart
+            function toggleArgument(argId, pairId, side) {{
+                // First, handle the clicked argument
+                toggleCard(argId);
+                
+                // Then, determine and handle the counterpart
+                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
+                const counterpartId = `${{otherSide}}-${{pairId}}`;
+                
+                // Toggle the counterpart (if it exists)
+                const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
+                if (counterpartContentEl) {{
+                    const counterpartChildrenEl = document.getElementById(`children-${{counterpartId}}`);
+                    const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                    
+                    // Make sure the counterpart's state matches the toggled argument
+                    const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
+                    counterpartContentEl.style.display = originalDisplay;
+                    
+                    if (counterpartChevronEl) {{
+                        if (originalDisplay === 'block') {{
+                            counterpartChevronEl.classList.add('expanded');
+                        }} else {{
+                            counterpartChevronEl.classList.remove('expanded');
+                        }}
+                    }}
+                    
+                    if (counterpartChildrenEl) {{
+                        counterpartChildrenEl.style.display = originalDisplay;
+                    }}
+                }}
+            }}
+            
+            // Render timeline
             function renderTimeline() {{
                 const tbody = document.getElementById('timeline-body');
                 tbody.innerHTML = '';
@@ -678,6 +701,7 @@ def main():
                 }});
             }}
             
+            // Render exhibits
             function renderExhibits() {{
                 const tbody = document.getElementById('exhibits-body');
                 tbody.innerHTML = '';

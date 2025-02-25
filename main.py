@@ -7,6 +7,8 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
+    # [Your existing data structure code...]
+    # Same as before - keeping all the existing data
     claimant_args = {
         "1": {
             "id": "1",
@@ -635,6 +637,12 @@ def main():
                 color: #f5565b;
             }}
             
+            .para-badge {{
+                background-color: rgba(0, 0, 0, 0.05);
+                color: #666;
+                margin-left: 5px;
+            }}
+            
             /* Evidence and factual points */
             .item-block {{
                 background-color: #fafafa;
@@ -644,8 +652,25 @@ def main():
             }}
             
             .item-title {{
-                font-weight: 500;
+                font-weight: 600;
                 margin-bottom: 6px;
+                color: #333;
+            }}
+            
+            .evidence-block {{
+                background-color: #fff8f0;
+                border-left: 3px solid #ffab00;
+                padding: 10px 12px;
+                margin-bottom: 12px;
+                border-radius: 0 4px 4px 0;
+            }}
+            
+            .caselaw-block {{
+                background-color: #f0f8ff;
+                border-left: 3px solid #4a6cf7;
+                padding: 10px 12px;
+                margin-bottom: 12px;
+                border-radius: 0 4px 4px 0;
             }}
             
             /* Tables */
@@ -703,6 +728,9 @@ def main():
                 position: relative;
                 padding-left: 16px;
                 margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
             }}
             
             ul.point-list li:before {{
@@ -719,6 +747,16 @@ def main():
             
             .chevron.expanded {{
                 transform: rotate(90deg);
+            }}
+            
+            /* Citation tags */
+            .citation-tag {{
+                padding: 2px 5px;
+                background: rgba(0,0,0,0.05);
+                border-radius: 3px;
+                font-size: 11px;
+                color: #666;
+                margin-right: 2px;
             }}
         </style>
     </head>
@@ -811,12 +849,15 @@ def main():
                 }});
             }});
             
-            // Render overview points
+            // Render overview points - updated to show paragraphs
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
                 const pointsList = overview.points.map(point => 
-                    `<li>${{point}}</li>`
+                    `<li>
+                        <span>${{point}}</span>
+                        <span class="para-badge">¶${{overview.paragraphs}}</span>
+                    </li>`
                 ).join('');
                 
                 return `
@@ -850,6 +891,7 @@ def main():
                             <span>
                                 ${{disputed}}
                                 ${{exhibitBadges}}
+                                <span class="para-badge">¶${{point.paragraphs}}</span>
                             </span>
                         </div>
                         <div style="font-size: 12px; color: #666; margin-top: 4px;">${{point.date}}</div>
@@ -865,18 +907,23 @@ def main():
                 `;
             }}
             
-            // Render evidence
+            // Render evidence - updated to match required format
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
                 const evidenceHtml = evidence.map(item => {{
+                    const citations = item.citations && item.citations.length > 0
+                        ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                        : '';
+                    
                     return `
-                    <div class="item-block">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span class="badge exhibit-badge">${{item.id}}</span>
-                            <span>${{item.title}}</span>
+                    <div class="evidence-block">
+                        <div class="item-title">${{item.id}}: ${{item.title}}</div>
+                        <div style="margin: 6px 0;">${{item.summary}}</div>
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <span style="color: #666; margin-right: 5px;">Cited in:</span>
+                            ${{citations}}
                         </div>
-                        <div style="font-size: 14px; margin-top: 8px;">${{item.summary}}</div>
                     </div>
                     `;
                 }}).join('');
@@ -889,16 +936,25 @@ def main():
                 `;
             }}
             
-            // Render case law
+            // Render case law - updated to match required format
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
                 const casesHtml = cases.map(item => {{
+                    const citedParagraphs = item.citedParagraphs && item.citedParagraphs.length > 0
+                        ? item.citedParagraphs.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                        : '';
+                    
                     return `
-                    <div class="item-block">
-                        <div style="font-weight: 500;">${{item.caseNumber}}</div>
-                        <div style="margin-top: 4px;">${{item.title}}</div>
-                        <div style="font-size: 14px; margin-top: 8px;">${{item.relevance}}</div>
+                    <div class="caselaw-block">
+                        <div class="item-title">${{item.caseNumber}}</div>
+                        <div style="font-size: 12px; margin: 2px 0 8px 0;">¶${{item.paragraphs}}</div>
+                        <div style="font-weight: 500; margin-bottom: 4px;">${{item.title}}</div>
+                        <div style="margin: 6px 0;">${{item.relevance}}</div>
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <span style="color: #666; margin-right: 5px;">Key Paragraphs:</span>
+                            ${{citedParagraphs}}
+                        </div>
                     </div>
                     `;
                 }}).join('');

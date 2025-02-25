@@ -713,7 +713,6 @@ def main():
                 padding-left: 20px;
                 margin-top: 10px;
                 border-left: 1px solid #f0f0f0;
-                /* Removed display: none to always show nested content */
             }}
             
             /* Simple list styling */
@@ -758,35 +757,17 @@ def main():
                 margin-right: 2px;
             }}
             
-            /* Main argument styling */
-            .main-argument-card {{
-                margin-bottom: 20px;
-                border: 1px solid #e1e4e8;
-                border-radius: 8px;
-                overflow: hidden;
+            /* Side sections */
+            .appellant-side {{
+                border-left: 3px solid #3182ce;
+                padding-left: 8px;
+                border-radius: 2px;
             }}
             
-            .main-argument-header {{
-                padding: 15px;
-                background-color: #f5f8fa;
-                border-bottom: 1px solid #e1e4e8;
-                font-weight: 600;
-                font-size: 16px;
-            }}
-            
-            .main-argument-content {{
-                padding: 15px;
-            }}
-            
-            .argument-section {{
-                margin-bottom: 20px;
-                padding-bottom: 20px;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            .argument-section:last-child {{
-                border-bottom: none;
-                margin-bottom: 0;
+            .respondent-side {{
+                border-left: 3px solid #e53e3e;
+                padding-left: 8px;
+                border-radius: 2px;
             }}
         </style>
     </head>
@@ -1036,8 +1017,9 @@ def main():
                 
                 // Style based on side
                 const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                const sideClass = side === 'appellant' ? 'appellant-side' : 'respondent-side';
                 
-                // Render children if any - removed style="display: none;"
+                // Render children recursively
                 let childrenHtml = '';
                 if (hasChildren) {{
                     childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
@@ -1050,7 +1032,7 @@ def main():
                 }}
                 
                 return `
-                <div class="card">
+                <div class="card ${{sideClass}}">
                     <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1064,29 +1046,6 @@ def main():
                         ${{renderArgumentContent(arg)}}
                     </div>
                     ${{childrenHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render main argument with its content
-            function renderMainArgument(arg, side) {{
-                if (!arg) return '';
-                
-                // Style based on side
-                const titleClass = side === 'appellant' ? 'appellant-color' : 'respondent-color';
-                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
-                
-                return `
-                <div class="main-argument-card">
-                    <div class="main-argument-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="${{titleClass}}">${{arg.id}}. ${{arg.title}}</span>
-                            <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
-                        </div>
-                    </div>
-                    <div class="main-argument-content">
-                        ${{renderArgumentContent(arg)}}
-                    </div>
                 </div>
                 `;
             }}
@@ -1112,47 +1071,16 @@ def main():
                             
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                                    // First, render the main arguments with their content
-                                    const mainClaimantArg = renderMainArgument(argsData.claimantArgs[argId], 'appellant');
-                                    const mainRespondentArg = renderMainArgument(argsData.respondentArgs[argId], 'respondent');
-                                    
-                                    // Then render the sub-arguments
-                                    const hasClaimantChildren = argsData.claimantArgs[argId].children && 
-                                                               Object.keys(argsData.claimantArgs[argId].children).length > 0;
-                                    
-                                    const hasRespondentChildren = argsData.respondentArgs[argId].children && 
-                                                                 Object.keys(argsData.respondentArgs[argId].children).length > 0;
-                                    
-                                    let claimantChildrenHtml = '';
-                                    if (hasClaimantChildren) {{
-                                        Object.values(argsData.claimantArgs[argId].children).forEach(child => {{
-                                            claimantChildrenHtml += renderArgument(child, 'appellant');
-                                        }});
-                                    }}
-                                    
-                                    let respondentChildrenHtml = '';
-                                    if (hasRespondentChildren) {{
-                                        Object.values(argsData.respondentArgs[argId].children).forEach(child => {{
-                                            respondentChildrenHtml += renderArgument(child, 'respondent');
-                                        }});
-                                    }}
-                                    
                                     return `
                                     <div style="margin-top: 16px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                                ${{mainClaimantArg}}
-                                                <div class="nested-content">
-                                                    ${{claimantChildrenHtml}}
-                                                </div>
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
                                             <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
-                                                ${{mainRespondentArg}}
-                                                <div class="nested-content">
-                                                    ${{respondentChildrenHtml}}
-                                                </div>
+                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
                                         </div>
                                     </div>
@@ -1168,7 +1096,7 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle a card without synchronizing - modified to only toggle content, not children
+            // Toggle a card without synchronizing
             function toggleCard(id) {{
                 const contentEl = document.getElementById(`content-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
@@ -1182,7 +1110,7 @@ def main():
                 }}
             }}
             
-            // Toggle an argument and its counterpart - modified to only toggle content
+            // Toggle an argument and its counterpart
             function toggleArgument(argId, pairId, side) {{
                 // First, handle the clicked argument
                 toggleCard(argId);

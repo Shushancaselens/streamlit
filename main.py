@@ -653,12 +653,6 @@ def main():
                 overflow: hidden;
                 margin-bottom: 1rem;
             }}
-            .argument-children .argument {{
-                margin-bottom: 0.5rem;
-            }}
-            .argument-children .argument:last-child {{
-                margin-bottom: 0;
-            }}
             .argument-header {{
                 padding: 0.75rem 1rem;
                 cursor: pointer;
@@ -691,7 +685,6 @@ def main():
                 padding-left: 1.5rem;
                 display: none;
                 position: relative;
-                margin-bottom: 0;
             }}
             
             /* Connector lines for tree structure */
@@ -702,16 +695,14 @@ def main():
                 width: 1px;
                 height: 100%;
                 background-color: #e2e8f0;
-                z-index: 1;
             }}
             .connector-horizontal {{
                 position: absolute;
-                left: 0;
+                left: 0.75rem;
                 top: 1.25rem;
                 width: 0.75rem;
                 height: 1px;
                 background-color: #e2e8f0;
-                z-index: 2;
             }}
             .claimant-connector {{
                 background-color: rgba(59, 130, 246, 0.5);
@@ -1411,13 +1402,10 @@ def main():
                 // Child arguments
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    // Sort children by ID to ensure consistent rendering order
-                    const childrenArgs = Object.entries(arg.children)
-                        .sort(([idA], [idB]) => idA.localeCompare(idB, undefined, {{numeric: true}}))
-                        .map(([childId, child]) => {{
-                            // Pass the full path for this argument's children
-                            return renderArgument(child, side, argId, level + 1);
-                        }}).join('');
+                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
+                        // Pass the full path for this argument's children
+                        return renderArgument(child, side, argId, level + 1);
+                    }}).join('');
                     
                     childrenHtml = `
                     <div id="children-${{fullId}}" class="argument-children">

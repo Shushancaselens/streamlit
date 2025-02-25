@@ -1651,9 +1651,9 @@ def main():
             renderTopicView();
             
             // Run alignment after a short delay to ensure content is rendered
-            setTimeout(function() {
+            setTimeout(function() {{
                 alignArgumentPairs();
-            }, 100);
+            }}, 100);
             
             // Set up event listeners
             document.getElementById('timeline-search').addEventListener('input', renderTimeline);
@@ -1663,9 +1663,9 @@ def main():
             document.getElementById('type-filter').addEventListener('change', renderExhibits);
             
             // Add listener for window resize to maintain alignment
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function() {{
                 alignArgumentPairs();
-            });
+            }});
             
             // Set initial active button style
             document.querySelector('.view-btn.active').style.backgroundColor = 'white';

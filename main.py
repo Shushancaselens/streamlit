@@ -5,9 +5,8 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Get argument data structure
+# Create data structures as JSON for embedded components
 def get_argument_data():
-    # Same data structure as before, just abbreviated here
     claimant_args = {
         "1": {
             "id": "1",
@@ -73,6 +72,12 @@ def get_argument_data():
                             "isDisputed": False,
                             "regulations": ["Name Registration Act"],
                             "paragraphs": "22-24"
+                        },
+                        {
+                            "point": "Trademark protection since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Law"],
+                            "paragraphs": "25-27"
                         }
                     ],
                     "children": {
@@ -86,6 +91,21 @@ def get_argument_data():
                                     "date": "1950",
                                     "isDisputed": False,
                                     "paragraphs": "25-26"
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Official documentation of registration history",
+                                    "citations": ["25", "26", "28"]
                                 }
                             ]
                         }
@@ -103,21 +123,31 @@ def get_argument_data():
                         ],
                         "paragraphs": "46-47"
                     },
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57"
-                                }
-                            ]
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
                         }
-                    }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Visual evidence of consistent color usage",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ]
                 }
             }
         },
@@ -132,7 +162,15 @@ def get_argument_data():
                     "Assessment of chain of custody documentation"
                 ],
                 "paragraphs": "70-72"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "WADA Code Article 5 establishes procedural requirements",
+                    "isDisputed": False,
+                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                    "paragraphs": "73-75"
+                }
+            ]
         }
     }
     
@@ -157,6 +195,32 @@ def get_argument_data():
                     "paragraphs": "203-205"
                 }
             ],
+            "factualPoints": [
+                {
+                    "point": "Operations ceased between 1975-1976",
+                    "date": "1975-1976",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "206-207"
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-1",
+                    "title": "Federation Records",
+                    "summary": "Records showing non-participation in 1975-1976 season",
+                    "citations": ["208", "209", "210"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2017/A/5465",
+                    "title": "Operational continuity requirement",
+                    "relevance": "Establishes primacy of operational continuity",
+                    "paragraphs": "211-213",
+                    "citedParagraphs": ["212"]
+                }
+            ],
             "children": {
                 "1.1": {
                     "id": "1.1",
@@ -170,6 +234,14 @@ def get_argument_data():
                         ],
                         "paragraphs": "220-222"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Registration lapse voided legal continuity",
+                            "isDisputed": True,
+                            "regulations": ["Registration Act"],
+                            "paragraphs": "223-225"
+                        }
+                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -181,6 +253,20 @@ def get_argument_data():
                                     "date": "April 30, 1975",
                                     "isDisputed": False,
                                     "paragraphs": "226-227"
+                                },
+                                {
+                                    "point": "New entity registered on September 15, 1976",
+                                    "date": "September 15, 1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "228-229"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "R-2",
+                                    "title": "Termination Certificate",
+                                    "summary": "Official documentation of registration termination",
+                                    "citations": ["226", "227"]
                                 }
                             ]
                         }
@@ -198,21 +284,31 @@ def get_argument_data():
                         ],
                         "paragraphs": "241-242"
                     },
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Symbolism Analysis",
-                            "paragraphs": "247-249",
-                            "factualPoints": [
-                                {
-                                    "point": "Pre-1976 colors represented original city district",
-                                    "date": "1950-1975",
-                                    "isDisputed": False,
-                                    "paragraphs": "247"
-                                }
-                            ]
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
                         }
-                    }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Visual evidence of color scheme changes",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ]
                 }
             }
         },
@@ -227,7 +323,15 @@ def get_argument_data():
                     "Completeness of documentation"
                 ],
                 "paragraphs": "250-252"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "Minor procedural deviations do not invalidate results",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2019/A/6148"],
+                    "paragraphs": "253-255"
+                }
+            ]
         }
     }
     
@@ -253,7 +357,6 @@ def get_argument_data():
     }
 
 def get_timeline_data():
-    # Same as before
     return [
         {
             "date": "2023-01-15",
@@ -267,12 +370,35 @@ def get_timeline_data():
             "respondentVersion": "—",
             "status": "Undisputed"
         },
-        # Additional timeline data...
+        {
+            "date": "2023-03-22",
+            "appellantVersion": "Player requested explanation",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-01",
+            "appellantVersion": "Player sent termination letter",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-05",
+            "appellantVersion": "—",
+            "respondentVersion": "Club rejected termination as invalid",
+            "status": "Undisputed"
+        },
         {
             "date": "2023-04-10",
             "appellantVersion": "Player was denied access to training facilities",
             "respondentVersion": "—",
             "status": "Disputed"
+        },
+        {
+            "date": "2023-04-15",
+            "appellantVersion": "—",
+            "respondentVersion": "Club issued warning letter",
+            "status": "Undisputed"
         },
         {
             "date": "2023-05-01",
@@ -283,7 +409,6 @@ def get_timeline_data():
     ]
 
 def get_exhibits_data():
-    # Same as before
     return [
         {
             "id": "C-1",
@@ -299,7 +424,41 @@ def get_exhibits_data():
             "type": "letter",
             "summary": "Player's termination letter sent on 1 April 2023"
         },
-        # Additional exhibits data...
+        {
+            "id": "C-3",
+            "party": "Appellant",
+            "title": "Email Correspondence",
+            "type": "communication",
+            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
+        },
+        {
+            "id": "C-4",
+            "party": "Appellant",
+            "title": "Witness Statement",
+            "type": "statement",
+            "summary": "Statement from team captain confirming Player's exclusion"
+        },
+        {
+            "id": "R-1",
+            "party": "Respondent",
+            "title": "Club Regulations",
+            "type": "regulations",
+            "summary": "Internal regulations of the Club dated January 2022"
+        },
+        {
+            "id": "R-2",
+            "party": "Respondent",
+            "title": "Warning Letter",
+            "type": "letter",
+            "summary": "Warning letter issued to Player on 15 April 2023"
+        },
+        {
+            "id": "R-3",
+            "party": "Respondent",
+            "title": "Training Schedule",
+            "type": "schedule",
+            "summary": "Team training schedule for March-April 2023"
+        }
     ]
 
 # Main app
@@ -317,7 +476,7 @@ def main():
     # Title
     st.title("Legal Arguments Analysis")
     
-    # Create HTML component with modified layout for aligned sub-arguments
+    # Create a single HTML component containing the full UI
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -402,26 +561,24 @@ def main():
                 color: #e53e3e;
             }}
             
-            /* Argument pair container - main grid */
+            /* Argument container and pairs */
             .argument-pair {{
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 1.5rem;
-                margin-bottom: 2rem;
+                margin-bottom: 1rem;
                 position: relative;
             }}
-            
-            /* Argument side column */
             .argument-side {{
                 position: relative;
             }}
             
-            /* Argument card styling */
+            /* Argument card and details */
             .argument {{
+                border: 1px solid #e2e8f0;
                 border-radius: 0.375rem;
                 overflow: hidden;
                 margin-bottom: 1rem;
-                position: relative;
             }}
             .argument-header {{
                 padding: 0.75rem 1rem;
@@ -441,65 +598,44 @@ def main():
                 display: none;
                 background-color: white;
             }}
-            
-            /* Different styling for claimant/respondent */
-            .claimant-card {{
-                border: 1px solid #bee3f8;
-            }}
-            .respondent-card {{
-                border: 1px solid #fed7d7;
-            }}
             .claimant-header {{
                 background-color: #ebf8ff;
+                border-color: #bee3f8;
             }}
             .respondent-header {{
                 background-color: #fff5f5;
+                border-color: #fed7d7;
             }}
             
-            /* Child arguments container - now aligned horizontally */
-            .children-container {{
+            /* Child arguments container */
+            .argument-children {{
+                padding-left: 1.5rem;
                 display: none;
                 position: relative;
-                margin-top: 1.5rem;
             }}
             
             /* Connector lines for tree structure */
-            .connector-line {{
+            .connector-vertical {{
                 position: absolute;
-                background-color: #e2e8f0;
-                z-index: 1;
-            }}
-            
-            /* Vertical connector from parent to children */
-            .vertical-connector {{
-                left: 50%;
+                left: 0.75rem;
                 top: 0;
                 width: 1px;
-                height: 2rem;
-                transform: translateX(-50%);
+                height: 100%;
+                background-color: #e2e8f0;
             }}
-            
-            /* Horizontal connector across children */
-            .horizontal-connector {{
-                left: 15%;
-                top: 2rem;
-                width: 70%;
+            .connector-horizontal {{
+                position: absolute;
+                left: 0.75rem;
+                top: 1.25rem;
+                width: 0.75rem;
                 height: 1px;
+                background-color: #e2e8f0;
             }}
-            
-            /* Vertical connector from horizontal line to each child */
-            .child-vertical-connector {{
-                width: 1px;
-                height: 1rem;
-                top: 2rem;
-            }}
-            
-            /* Color-specific connectors */
             .claimant-connector {{
-                background-color: rgba(59, 130, 246, 0.6);
+                background-color: rgba(59, 130, 246, 0.5);
             }}
             .respondent-connector {{
-                background-color: rgba(239, 68, 68, 0.6);
+                background-color: rgba(239, 68, 68, 0.5);
             }}
             
             /* Badge styling */
@@ -1153,22 +1289,21 @@ def main():
                 return content;
             }}
             
-            // Render a single argument
-            function renderArgument(arg, side, level = 0) {{
+            // Render a single argument including its children
+            function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
                 
-                const id = arg.id;
-                const fullId = `${{side}}-${{id}}`;
+                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
+                const fullId = `${{side}}-${{argId}}`;
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
                 // Style based on side
+                const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
                 const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
-                const cardClass = side === 'claimant' ? 'claimant-card' : 'respondent-card';
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
                 const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
-                const textColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
                 
                 // Header content
                 const headerHtml = `
@@ -1176,8 +1311,8 @@ def main():
                     <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
-                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{textColor}};">
-                        ${{id}}. ${{arg.title}}
+                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
+                        ${{arg.id}}. ${{arg.title}}
                     </h5>
                 </div>
                 <div>
@@ -1191,76 +1326,38 @@ def main():
                 // Detailed content
                 const contentHtml = renderArgumentContent(arg);
                 
-                // Child arguments - now with horizontal alignment
+                // Child arguments
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    // Create a grid for child arguments
-                    let childrenGrid = '';
-                    const children = Object.values(arg.children);
+                    const childrenArgs = Object.values(arg.children).map(child => {{
+                        return renderArgument(child, side, argId, level + 1);
+                    }}).join('');
                     
-                    // Calculate width for each child in the grid
-                    const childWidth = 100 / children.length;
-                    
-                    // Generate position values for vertical connectors under each child
-                    const connectorPositions = [];
-                    for (let i = 0; i < children.length; i++) {{
-                        const pos = ((i + 0.5) * childWidth).toFixed(2);
-                        connectorPositions.push(pos);
-                    }}
-                    
-                    // Create child argument cards
-                    children.forEach((child, index) => {{
-                        childrenGrid += `
-                        <div style="width: ${{childWidth}}%; padding: 0 0.25rem;">
-                            <div class="argument ${{cardClass}}">
-                                <div class="argument-header ${{headerClass}}" onclick="toggleArgument('${{side}}-${{child.id}}')">
-                                    <div class="argument-header-left">
-                                        <svg id="chevron-${{side}}-${{child.id}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                        <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{textColor}};">
-                                            ${{child.id}}. ${{child.title}}
-                                        </h5>
-                                    </div>
-                                    <span class="badge ${{badgeClass}}">¶${{child.paragraphs}}</span>
-                                </div>
-                                <div id="content-${{side}}-${{child.id}}" class="argument-content" style="display: none;">
-                                    ${{renderArgumentContent(child)}}
-                                </div>
-                            </div>
-                            <div class="connector-line child-vertical-connector ${{connectorClass}}" style="left: 50%; transform: translateX(-50%);"></div>
-                        </div>
-                        `;
-                    }});
-                    
-                    // Create the children container with connector lines
                     childrenHtml = `
-                    <div id="children-${{fullId}}" class="children-container" style="display: none;">
-                        <div class="connector-line vertical-connector ${{connectorClass}}"></div>
-                        <div class="connector-line horizontal-connector ${{connectorClass}}"></div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
-                            ${{childrenGrid}}
-                        </div>
+                    <div id="children-${{fullId}}" class="argument-children">
+                        <div class="connector-vertical ${{connectorClass}}"></div>
+                        ${{childrenArgs}}
                     </div>
                     `;
                 }}
                 
                 // Complete argument HTML
                 return `
-                <div class="argument ${{cardClass}}">
-                    <div class="argument-header ${{headerClass}}" onclick="toggleArgument('${{fullId}}')">
+                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
                         ${{headerHtml}}
                     </div>
                     <div id="content-${{fullId}}" class="argument-content">
                         ${{contentHtml}}
                     </div>
+                    ${{childrenHtml}}
                 </div>
-                ${{childrenHtml}}
                 `;
             }}
             
             // Render a pair of arguments (claimant and respondent)
-            function renderArgumentPair(claimantArg, respondentArg) {{
+            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
                 return `
                 <div class="argument-pair">
                     <div class="argument-side">

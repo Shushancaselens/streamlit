@@ -1,10 +1,14 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
-from datetime import datetime
+from streamlit_extras.colored_header import colored_header
+from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.card import card
+import streamlit.components.v1 as components
 import json
+from datetime import datetime
+import re
 
-# Set page config
+# Set page configuration
 st.set_page_config(
     page_title="Legal Arguments Analysis",
     page_icon="⚖️",
@@ -12,78 +16,75 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Apply custom CSS for styling
+# Custom CSS to match the React design
 st.markdown("""
 <style>
-    /* Card styling */
-    .stApp {
+    /* General styling */
+    .main {
         background-color: #f9fafb;
+        padding: 1rem;
     }
     .card {
         background-color: white;
         border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         padding: 1rem;
         margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .card-header {
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 1rem;
-    }
-    .card-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-    }
-    
-    /* Tab styling */
-    .tab-active {
-        border-bottom: 2px solid #3b82f6;
-        color: #3b82f6;
-        font-weight: 500;
-        padding-bottom: 0.5rem;
-    }
-    .tab-inactive {
-        color: #6b7280;
-        padding-bottom: 0.5rem;
-    }
-    .tab-container {
+    .tab-nav {
+        display: flex;
         border-bottom: 1px solid #e5e7eb;
         margin-bottom: 1.5rem;
     }
-    
-    /* Argument styling */
-    .argument-claimant {
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-radius: 0.375rem;
-        margin-bottom: 1rem;
-    }
-    .argument-respondent {
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 0.375rem;
-        margin-bottom: 1rem;
-    }
-    .argument-header-claimant {
-        background-color: rgba(239, 246, 255, 0.7);
-        padding: 0.75rem;
-        border-radius: 0.375rem 0.375rem 0 0;
+    .tab {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
         cursor: pointer;
     }
-    .argument-header-respondent {
-        background-color: rgba(254, 242, 242, 0.7);
-        padding: 0.75rem;
-        border-radius: 0.375rem 0.375rem 0 0;
-        cursor: pointer;
+    .tab-active {
+        color: #2563eb;
+        border-bottom: 2px solid #2563eb;
     }
-    .argument-content {
-        padding: 1rem;
+    .tab-inactive {
+        color: #6b7280;
+    }
+    .tab-inactive:hover {
+        color: #374151;
     }
     
-    /* Badge styling */
+    /* Arguments styling */
+    .argument-header {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        cursor: pointer;
+        border-radius: 0.5rem;
+    }
+    .claimant-header {
+        background-color: rgba(219, 234, 254, 0.4);
+        border: 1px solid #bfdbfe;
+    }
+    .respondent-header {
+        background-color: rgba(254, 226, 226, 0.4);
+        border: 1px solid #fecaca;
+    }
+    .argument-title {
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-left: 0.5rem;
+    }
+    .claimant-title {
+        color: #2563eb;
+    }
+    .respondent-title {
+        color: #dc2626;
+    }
     .badge {
         font-size: 0.75rem;
-        padding: 0.125rem 0.5rem;
+        padding: 0.25rem 0.5rem;
         border-radius: 9999px;
+        margin-left: 0.5rem;
     }
     .badge-blue {
         background-color: #dbeafe;
@@ -93,1163 +94,990 @@ st.markdown("""
         background-color: #fee2e2;
         color: #b91c1c;
     }
-    .badge-green {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
     .badge-gray {
         background-color: #f3f4f6;
         color: #4b5563;
     }
     
-    /* Points styling */
-    .points-container {
+    /* Points and evidence styling */
+    .points-section {
         background-color: #f9fafb;
         border-radius: 0.375rem;
         padding: 1rem;
         margin-bottom: 1rem;
     }
-    .point-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-    .point-bullet {
-        width: 6px;
-        height: 6px;
-        background-color: #3b82f6;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-    }
-    
-    /* Toggle button */
-    .view-toggle {
-        display: inline-flex;
-        background-color: #f3f4f6;
-        border-radius: 0.375rem;
-        padding: 0.25rem;
-    }
-    .view-button {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.875rem;
-        border-radius: 0.25rem;
-    }
-    .view-button-active {
-        background-color: white;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-    
-    /* Evidence reference styling */
-    .evidence-container {
-        background-color: #f9fafb;
+    .legal-point {
+        background-color: #dbeafe;
         border-radius: 0.375rem;
         padding: 0.75rem;
         margin-bottom: 0.5rem;
     }
-    
-    /* Connector line styling */
-    .connector-vertical {
-        position: relative;
+    .factual-point {
+        background-color: #d1fae5;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
     }
-    .connector-vertical:before {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 0;
-        height: 100%;
-        width: 1px;
-        background-color: #d1d5db;
+    .evidence-item {
+        background-color: #f3f4f6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .case-law-item {
+        background-color: #f3f4f6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .disputed-tag {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.75rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.25rem;
+        margin-left: 0.5rem;
+    }
+    .regulation-tag {
+        background-color: #dbeafe;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        margin-right: 0.25rem;
+        display: inline-block;
+    }
+    .paragraph-ref {
+        color: #6b7280;
+        font-size: 0.75rem;
+    }
+    
+    /* Topic view specific styling */
+    .topic-section {
+        margin-bottom: 2rem;
+    }
+    .topic-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.25rem;
+    }
+    .topic-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+    
+    /* Hide Streamlit elements we don't need */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {display:none;}
+    
+    /* Connector lines for nested arguments */
+    .connector-line {
+        border-left: 1px solid rgba(59, 130, 246, 0.5);
+        margin-left: 1rem;
+        padding-left: 1rem;
+    }
+    .connector-line-respondent {
+        border-left: 1px solid rgba(239, 68, 68, 0.5);
+    }
+    
+    /* Custom toggle button styling */
+    .view-toggle {
+        display: flex;
+        background-color: #f3f4f6;
+        border-radius: 0.375rem;
+        padding: 0.25rem;
+        width: fit-content;
+        margin-left: auto;
+        margin-bottom: 1rem;
+    }
+    .toggle-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+    .toggle-btn-active {
+        background-color: white;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .toggle-btn-inactive {
+        color: #6b7280;
+    }
+    .toggle-btn-inactive:hover {
+        color: #374151;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state for expanded arguments
+# Initialize session state for expanded arguments and active tab
 if 'expanded_args' not in st.session_state:
     st.session_state.expanded_args = {}
-
-# Initialize session state for active tab
 if 'active_tab' not in st.session_state:
     st.session_state.active_tab = "arguments"
-
-# Initialize session state for view mode
 if 'view_mode' not in st.session_state:
     st.session_state.view_mode = "default"
 
-# Data for arguments
-arguments_data = {
-    "claimant": {
-        "1": {
-            "id": "1",
-            "title": "Sporting Succession",
-            "paragraphs": "15-18",
-            "overview": {
-                "points": [
-                    "Analysis of multiple established criteria",
-                    "Focus on continuous use of identifying elements",
-                    "Public recognition assessment"
-                ],
-                "paragraphs": "15-16"
-            },
-            "legalPoints": [
-                {
-                    "point": "CAS jurisprudence establishes criteria for sporting succession",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2016/A/4576"],
-                    "paragraphs": "15-17"
-                }
-            ],
-            "factualPoints": [
-                {
-                    "point": "Continuous operation under same name since 1950",
-                    "date": "1950-present",
-                    "isDisputed": False,
-                    "paragraphs": "18-19"
-                }
-            ],
-            "evidence": [
-                {
-                    "id": "C-1",
-                    "title": "Historical Registration Documents",
-                    "summary": "Official records showing continuous name usage",
-                    "citations": ["20", "21", "24"]
-                }
-            ],
-            "caseLaw": [
-                {
-                    "caseNumber": "CAS 2016/A/4576",
-                    "title": "Criteria for sporting succession",
-                    "relevance": "Establishes key factors for succession",
-                    "paragraphs": "45-48",
-                    "citedParagraphs": ["45", "46", "47"]
-                }
-            ],
-            "children": {
-                "1.1": {
-                    "id": "1.1",
-                    "title": "Club Name Analysis",
-                    "paragraphs": "20-45",
-                    "overview": {
-                        "points": [
-                            "Historical continuity of name usage",
-                            "Legal protection of naming rights",
-                            "Public recognition of club name"
-                        ],
-                        "paragraphs": "20-21"
-                    },
-                    "legalPoints": [
-                        {
-                            "point": "Name registration complies with regulations",
-                            "isDisputed": False,
-                            "regulations": ["Name Registration Act"],
-                            "paragraphs": "22-24"
-                        },
-                        {
-                            "point": "Trademark protection since 1960",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Law"],
-                            "paragraphs": "25-27"
-                        }
-                    ],
-                    "children": {}
-                },
-                "1.2": {
-                    "id": "1.2",
-                    "title": "Club Colors Analysis",
-                    "paragraphs": "46-65",
-                    "overview": {
-                        "points": [
-                            "Consistent use of club colors",
-                            "Minor variations analysis",
-                            "Color trademark protection"
-                        ],
-                        "paragraphs": "46-47"
-                    },
-                    "legalPoints": [
-                        {
-                            "point": "Color trademark registration valid since 1960",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Act"],
-                            "paragraphs": "48-50"
-                        }
-                    ],
-                    "factualPoints": [
-                        {
-                            "point": "Consistent use of blue and white since founding",
-                            "date": "1950-present",
-                            "isDisputed": True,
-                            "source": "Respondent",
-                            "paragraphs": "51-52"
-                        }
-                    ],
-                    "evidence": [
-                        {
-                            "id": "C-4",
-                            "title": "Historical Photographs",
-                            "summary": "Visual evidence of consistent color usage",
-                            "citations": ["53", "54", "55"]
-                        }
-                    ],
-                    "children": {}
-                }
-            }
-        },
-        "2": {
-            "id": "2",
-            "title": "Doping Violation Chain of Custody",
-            "paragraphs": "70-125",
-            "overview": {
-                "points": [
-                    "Analysis of sample collection and handling procedures",
-                    "Evaluation of laboratory testing protocols",
-                    "Assessment of chain of custody documentation"
-                ],
-                "paragraphs": "70-72"
-            },
-            "legalPoints": [
-                {
-                    "point": "WADA Code Article 5 establishes procedural requirements",
-                    "isDisputed": False,
-                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
-                    "paragraphs": "73-75"
-                }
-            ],
-            "children": {}
-        }
-    },
-    "respondent": {
-        "1": {
-            "id": "1",
-            "title": "Sporting Succession Rebuttal",
-            "paragraphs": "200-218",
-            "overview": {
-                "points": [
-                    "Challenge to claimed continuity of operations",
-                    "Analysis of discontinuities in club operations",
-                    "Dispute over public recognition factors"
-                ],
-                "paragraphs": "200-202"
-            },
-            "legalPoints": [
-                {
-                    "point": "CAS jurisprudence requires operational continuity not merely identification",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2017/A/5465"],
-                    "paragraphs": "203-205"
-                }
-            ],
-            "factualPoints": [
-                {
-                    "point": "Operations ceased between 1975-1976",
-                    "date": "1975-1976",
-                    "isDisputed": True,
-                    "source": "Claimant",
-                    "paragraphs": "206-207"
-                }
-            ],
-            "evidence": [
-                {
-                    "id": "R-1",
-                    "title": "Federation Records",
-                    "summary": "Records showing non-participation in 1975-1976 season",
-                    "citations": ["208", "209", "210"]
-                }
-            ],
-            "caseLaw": [
-                {
-                    "caseNumber": "CAS 2017/A/5465",
-                    "title": "Operational continuity requirement",
-                    "relevance": "Establishes primacy of operational continuity",
-                    "paragraphs": "211-213",
-                    "citedParagraphs": ["212"]
-                }
-            ],
-            "children": {
-                "1.1": {
-                    "id": "1.1",
-                    "title": "Club Name Analysis Rebuttal",
-                    "paragraphs": "220-240",
-                    "overview": {
-                        "points": [
-                            "Name registration discontinuities",
-                            "Trademark ownership gaps",
-                            "Analysis of public confusion"
-                        ],
-                        "paragraphs": "220-222"
-                    },
-                    "legalPoints": [
-                        {
-                            "point": "Registration lapse voided legal continuity",
-                            "isDisputed": True,
-                            "regulations": ["Registration Act"],
-                            "paragraphs": "223-225"
-                        }
-                    ],
-                    "children": {}
-                },
-                "1.2": {
-                    "id": "1.2",
-                    "title": "Club Colors Analysis Rebuttal",
-                    "paragraphs": "241-249",
-                    "overview": {
-                        "points": [
-                            "Significant color variations",
-                            "Trademark registration gaps",
-                            "Multiple competing color claims"
-                        ],
-                        "paragraphs": "241-242"
-                    },
-                    "legalPoints": [
-                        {
-                            "point": "Color trademark lapsed during 1975-1976",
-                            "isDisputed": False,
-                            "regulations": ["Trademark Act"],
-                            "paragraphs": "243-244"
-                        }
-                    ],
-                    "factualPoints": [
-                        {
-                            "point": "Significant color scheme change in 1976",
-                            "date": "1976",
-                            "isDisputed": True,
-                            "source": "Claimant",
-                            "paragraphs": "245-246"
-                        }
-                    ],
-                    "evidence": [
-                        {
-                            "id": "R-4",
-                            "title": "Historical Photographs Comparison",
-                            "summary": "Visual evidence of color scheme changes",
-                            "citations": ["245", "246", "247"]
-                        }
-                    ],
-                    "children": {}
-                }
-            }
-        },
-        "2": {
-            "id": "2",
-            "title": "Doping Chain of Custody Defense",
-            "paragraphs": "250-290",
-            "overview": {
-                "points": [
-                    "Defense of sample collection procedures",
-                    "Validation of laboratory testing protocols",
-                    "Completeness of documentation"
-                ],
-                "paragraphs": "250-252"
-            },
-            "legalPoints": [
-                {
-                    "point": "Minor procedural deviations do not invalidate results",
-                    "isDisputed": False,
-                    "regulations": ["CAS 2019/A/6148"],
-                    "paragraphs": "253-255"
-                }
-            ],
-            "children": {}
-        }
-    }
-}
-
-# Topics for hierarchical view
-topics_data = [
-    {
-        "id": "topic-1",
-        "title": "Sporting Succession and Identity",
-        "description": "Questions of club identity, continuity, and succession rights",
-        "argumentIds": ["1"]
-    },
-    {
-        "id": "topic-2",
-        "title": "Doping Violation and Chain of Custody",
-        "description": "Issues related to doping test procedures and evidence handling",
-        "argumentIds": ["2"]
-    }
-]
-
-# Data for timeline
-timeline_data = [
-    {"date": "2023-01-15", "appellantVersion": "Contract signed with Club", "respondentVersion": "—", "status": "Undisputed"},
-    {"date": "2023-03-20", "appellantVersion": "Player received notification of exclusion from team", "respondentVersion": "—", "status": "Undisputed"},
-    {"date": "2023-03-22", "appellantVersion": "Player requested explanation", "respondentVersion": "—", "status": "Undisputed"},
-    {"date": "2023-04-01", "appellantVersion": "Player sent termination letter", "respondentVersion": "—", "status": "Undisputed"},
-    {"date": "2023-04-05", "appellantVersion": "—", "respondentVersion": "Club rejected termination as invalid", "status": "Undisputed"},
-    {"date": "2023-04-10", "appellantVersion": "Player was denied access to training facilities", "respondentVersion": "—", "status": "Disputed"},
-    {"date": "2023-04-15", "appellantVersion": "—", "respondentVersion": "Club issued warning letter", "status": "Undisputed"},
-    {"date": "2023-05-01", "appellantVersion": "Player filed claim with FIFA", "respondentVersion": "—", "status": "Undisputed"}
-]
-
-# Data for exhibits
-exhibits_data = [
-    {"id": "C-1", "party": "Appellant", "title": "Employment Contract", "type": "contract", "summary": "Employment contract dated 15 January 2023 between Player and Club"},
-    {"id": "C-2", "party": "Appellant", "title": "Termination Letter", "type": "letter", "summary": "Player's termination letter sent on 1 April 2023"},
-    {"id": "C-3", "party": "Appellant", "title": "Email Correspondence", "type": "communication", "summary": "Email exchanges between Player and Club from 22-30 March 2023"},
-    {"id": "C-4", "party": "Appellant", "title": "Witness Statement", "type": "statement", "summary": "Statement from team captain confirming Player's exclusion"},
-    {"id": "R-1", "party": "Respondent", "title": "Club Regulations", "type": "regulations", "summary": "Internal regulations of the Club dated January 2022"},
-    {"id": "R-2", "party": "Respondent", "title": "Warning Letter", "type": "letter", "summary": "Warning letter issued to Player on 15 April 2023"},
-    {"id": "R-3", "party": "Respondent", "title": "Training Schedule", "type": "schedule", "summary": "Team training schedule for March-April 2023"}
-]
-
-# Custom components
-def render_point_bullet():
-    return """
-    <div style="display: inline-block; width: 6px; height: 6px; background-color: #3b82f6; border-radius: 50%; margin-right: 8px;"></div>
-    """
-
-def render_chevron(is_expanded):
-    if is_expanded:
-        # Down chevron
-        return """
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m6 9 6 6 6-6"/>
-        </svg>
-        """
-    else:
-        # Right chevron
-        return """
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6"/>
-        </svg>
-        """
-
-def render_calendar_icon():
-    return """
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-        <line x1="16" x2="16" y1="2" y2="6"/>
-        <line x1="8" x2="8" y1="2" y2="6"/>
-        <line x1="3" x2="21" y1="10" y2="10"/>
-    </svg>
-    """
-
-def render_link_icon():
-    return """
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-    </svg>
-    """
-
-# Helper function to toggle argument expansion state
-def toggle_arg_expansion(arg_id):
+# Function to toggle argument expansion
+def toggle_expand(arg_id):
     if arg_id in st.session_state.expanded_args:
         st.session_state.expanded_args[arg_id] = not st.session_state.expanded_args[arg_id]
     else:
         st.session_state.expanded_args[arg_id] = True
+    st.experimental_rerun()
 
-# Render Overview Points
-def render_overview_points(overview):
-    if not overview or 'points' not in overview:
-        return
-    
-    html = f"""
-    <div class="points-container">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <h6 style="font-size: 0.875rem; font-weight: 500;">Key Points</h6>
-            <span class="badge badge-blue">¶{overview['paragraphs']}</span>
+# Function to render overview points
+def render_overview_points(points, paragraphs):
+    with st.container():
+        st.markdown(f"""
+        <div class="points-section">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.875rem; font-weight: 500;">Key Points</span>
+                <span class="badge badge-blue">¶{paragraphs}</span>
+            </div>
+            <ul style="list-style-type: none; padding-left: 0; margin-top: 0.5rem;">
+                {"".join([f'<li style="display: flex; align-items: center; margin-bottom: 0.5rem;"><div style="width: 6px; height: 6px; border-radius: 50%; background-color: #3b82f6; margin-right: 0.5rem;"></div><span style="font-size: 0.875rem; color: #4b5563;">{point}</span></li>' for point in points])}
+            </ul>
         </div>
-        <ul style="list-style-type: none; padding-left: 0; margin-top: 0.5rem;">
-    """
-    
-    for point in overview['points']:
-        html += f"""
-        <li class="point-item">
-            <div class="point-bullet"></div>
-            <span style="font-size: 0.875rem; color: #4b5563;">{point}</span>
-        </li>
-        """
-    
-    html += """
-        </ul>
-    </div>
-    """
-    
-    return html
+        """, unsafe_allow_html=True)
 
-# Render Legal Points
-def render_legal_points(legal_points):
-    if not legal_points:
-        return
-    
-    html = """
-    <div style="margin-bottom: 1.5rem;">
-        <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Legal Points</h6>
-    """
-    
-    for point in legal_points:
-        html += f"""
-        <div style="background-color: #dbeafe; border-radius: 0.375rem; padding: 0.75rem; margin-bottom: 0.5rem;">
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
-                <span class="badge badge-blue">Legal</span>
-                {f'<span class="badge badge-red">Disputed</span>' if point.get('isDisputed', False) else ''}
+# Function to render legal points
+def render_legal_points(points):
+    for point in points:
+        st.markdown(f"""
+        <div class="legal-point">
+            <div style="display: flex; align-items: center; margin-bottom: 0.25rem;">
+                <span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background-color: #dbeafe; color: #1e40af; border-radius: 0.25rem;">Legal</span>
+                {f'<span class="disputed-tag">Disputed</span>' if point.get('isDisputed') else ''}
             </div>
             <p style="font-size: 0.875rem; color: #4b5563; margin: 0.5rem 0;">{point['point']}</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
-        """
-        
-        for reg in point.get('regulations', []):
-            html += f'<span class="badge badge-blue">{reg}</span>'
-        
-        html += f"""
-                <span style="font-size: 0.75rem; color: #6b7280;">¶{point.get('paragraphs', '')}</span>
+            <div style="margin-top: 0.5rem;">
+                {"".join([f'<span class="regulation-tag">{reg}</span>' for reg in point.get('regulations', [])])}
+                <span class="paragraph-ref">¶{point['paragraphs']}</span>
             </div>
         </div>
-        """
-    
-    html += "</div>"
-    return html
+        """, unsafe_allow_html=True)
 
-# Render Factual Points
-def render_factual_points(factual_points):
-    if not factual_points:
-        return
-    
-    html = """
-    <div style="margin-bottom: 1.5rem;">
-        <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Factual Points</h6>
-    """
-    
-    for point in factual_points:
-        html += f"""
-        <div style="background-color: #d1fae5; border-radius: 0.375rem; padding: 0.75rem; margin-bottom: 0.5rem;">
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
-                <span class="badge badge-green">Factual</span>
-                {f'<span class="badge badge-red">Disputed by {point.get("source", "")}</span>' if point.get('isDisputed', False) else ''}
+# Function to render factual points
+def render_factual_points(points):
+    for point in points:
+        st.markdown(f"""
+        <div class="factual-point">
+            <div style="display: flex; align-items: center; margin-bottom: 0.25rem;">
+                <span style="font-size: 0.75rem; padding: 0.125rem 0.5rem; background-color: #d1fae5; color: #065f46; border-radius: 0.25rem;">Factual</span>
+                {f'<span class="disputed-tag">Disputed by {point["source"]}</span>' if point.get('isDisputed') else ''}
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                {render_calendar_icon()}
-                <span style="font-size: 0.75rem; color: #6b7280;">{point.get('date', '')}</span>
+            <div style="display: flex; align-items: center; margin-bottom: 0.25rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span style="font-size: 0.75rem; color: #6b7280; margin-left: 0.5rem;">{point['date']}</span>
             </div>
             <p style="font-size: 0.875rem; color: #4b5563; margin: 0.5rem 0;">{point['point']}</p>
-            <span style="font-size: 0.75rem; color: #6b7280; display: block; margin-top: 0.5rem;">¶{point.get('paragraphs', '')}</span>
+            <span class="paragraph-ref">¶{point['paragraphs']}</span>
         </div>
-        """
-    
-    html += "</div>"
-    return html
+        """, unsafe_allow_html=True)
 
-# Render Evidence
-def render_evidence(evidence_items):
-    if not evidence_items:
-        return
-    
-    html = """
-    <div style="margin-bottom: 1.5rem;">
-        <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Evidence</h6>
-    """
-    
-    for item in evidence_items:
-        html += f"""
-        <div class="evidence-container">
+# Function to render evidence references
+def render_evidence(items):
+    for item in items:
+        st.markdown(f"""
+        <div class="evidence-item">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
                     <p style="font-size: 0.875rem; font-weight: 500; margin: 0;">{item['id']}: {item['title']}</p>
                     <p style="font-size: 0.75rem; color: #6b7280; margin: 0.25rem 0;">{item['summary']}</p>
                     <div style="margin-top: 0.5rem;">
                         <span style="font-size: 0.75rem; color: #6b7280;">Cited in: </span>
-        """
-        
-        for cite in item.get('citations', []):
-            html += f'<span style="font-size: 0.75rem; background-color: #e5e7eb; border-radius: 0.25rem; padding: 0.25rem 0.5rem; margin-left: 0.25rem;">¶{cite}</span>'
-        
-        html += f"""
+                        {"".join([f'<span style="font-size: 0.75rem; background-color: #e5e7eb; border-radius: 0.25rem; padding: 0.25rem 0.5rem; margin-left: 0.25rem;">¶{cite}</span>' for cite in item['citations']])}
                     </div>
                 </div>
-                <button style="background: none; border: none; color: #4b5563; padding: 0.25rem; height: 1.5rem; cursor: pointer;">
-                    {render_link_icon()}
+                <button style="background: none; border: none; color: #6b7280; padding: 0.25rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                 </button>
             </div>
         </div>
-        """
-    
-    html += "</div>"
-    return html
+        """, unsafe_allow_html=True)
 
-# Render Case Law
-def render_case_law(case_law_items):
-    if not case_law_items:
-        return
-    
-    html = """
-    <div style="margin-bottom: 1.5rem;">
-        <h6 style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Case Law</h6>
-    """
-    
-    for item in case_law_items:
-        html += f"""
-        <div class="evidence-container">
+# Function to render case law references
+def render_case_law(items):
+    for item in items:
+        st.markdown(f"""
+        <div class="case-law-item">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center;">
                         <p style="font-size: 0.875rem; font-weight: 500; margin: 0;">{item['caseNumber']}</p>
-                        <span style="font-size: 0.75rem; color: #6b7280;">¶{item.get('paragraphs', '')}</span>
+                        <span style="font-size: 0.75rem; color: #6b7280; margin-left: 0.5rem;">¶{item['paragraphs']}</span>
                     </div>
                     <p style="font-size: 0.75rem; color: #6b7280; margin: 0.25rem 0;">{item['title']}</p>
                     <p style="font-size: 0.875rem; color: #4b5563; margin: 0.5rem 0;">{item['relevance']}</p>
-        """
-        
-        if 'citedParagraphs' in item and item['citedParagraphs']:
-            html += """
+                    {f'''
                     <div style="margin-top: 0.5rem;">
                         <span style="font-size: 0.75rem; color: #6b7280;">Key Paragraphs: </span>
-            """
-            
-            for para in item['citedParagraphs']:
-                html += f'<span style="font-size: 0.75rem; background-color: #e5e7eb; border-radius: 0.25rem; padding: 0.25rem 0.5rem; margin-left: 0.25rem;">¶{para}</span>'
-            
-            html += """
+                        {"".join([f'<span style="font-size: 0.75rem; background-color: #e5e7eb; border-radius: 0.25rem; padding: 0.25rem 0.5rem; margin-left: 0.25rem;">¶{para}</span>' for para in item.get('citedParagraphs', [])])}
                     </div>
-            """
-        
-        html += f"""
+                    ''' if item.get('citedParagraphs') else ''}
                 </div>
-                <button style="background: none; border: none; color: #4b5563; padding: 0.25rem; height: 1.5rem; cursor: pointer;">
-                    {render_link_icon()}
+                <button style="background: none; border: none; color: #6b7280; padding: 0.25rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                 </button>
             </div>
         </div>
-        """
-    
-    html += "</div>"
-    return html
+        """, unsafe_allow_html=True)
 
-# Render Argument Content
-def render_argument_content(arg, side):
-    html = ""
+# Function to render an argument section
+def render_argument_section(arg_id, title, paragraphs, side, level=0, overview=None, 
+                           legal_points=None, factual_points=None, evidence=None, 
+                           case_law=None, children=None, is_aligned=False, connector=False):
     
-    # Overview Points
-    if 'overview' in arg:
-        html += render_overview_points(arg['overview']) or ""
+    base_color = "blue" if side == "claimant" else "red"
+    header_class = "claimant-header" if side == "claimant" else "respondent-header"
+    title_class = "claimant-title" if side == "claimant" else "respondent-title"
     
-    # Legal Points
-    if 'legalPoints' in arg and arg['legalPoints']:
-        html += render_legal_points(arg['legalPoints']) or ""
-    
-    # Factual Points
-    if 'factualPoints' in arg and arg['factualPoints']:
-        html += render_factual_points(arg['factualPoints']) or ""
-    
-    # Evidence
-    if 'evidence' in arg and arg['evidence']:
-        html += render_evidence(arg['evidence']) or ""
-    
-    # Case Law
-    if 'caseLaw' in arg and arg['caseLaw']:
-        html += render_case_law(arg['caseLaw']) or ""
-    
-    return html
-
-# Render Argument Section
-def render_argument_section(arg, side, level=0):
-    arg_id = arg['id']
+    # Check if this argument is expanded
     is_expanded = st.session_state.expanded_args.get(arg_id, False)
     
-    # Colors based on side
-    if side == "claimant":
-        base_color = "blue"
-        header_class = "argument-header-claimant"
-        container_class = "argument-claimant"
-    else:
-        base_color = "red"
-        header_class = "argument-header-respondent"
-        container_class = "argument-respondent"
-    
-    # Count subarguments
-    has_children = 'children' in arg and arg['children']
-    child_count = len(arg['children']) if has_children else 0
-    
-    # Create a key for the button
-    button_key = f"{side}-{arg_id}-button"
-    
-    st.markdown(f"""
-    <div class="{container_class}">
-        <div class="{header_class}" id="{button_key}">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                {render_chevron(is_expanded)}
-                <h5 style="font-size: 0.875rem; font-weight: 500; margin: 0;">
-                    {arg_id}. {arg['title']}
-                </h5>
-                {f'<span class="badge badge-{base_color}">{child_count} subarguments</span>' if child_count > 0 else f'<span style="font-size: 0.75rem; color: #6b7280;">¶{arg.get("paragraphs", "")}</span>'}
-            </div>
-        </div>
-        
-        {f'<div class="argument-content" style="display: {"block" if is_expanded else "none"};">{render_argument_content(arg, side)}</div>' if is_expanded else ''}
+    # Create the clickable header
+    header = f"""
+    <div class="argument-header {header_class}" onclick="handleArgClick('{arg_id}')" id="arg-header-{arg_id}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            {'<polyline points="6 9 12 15 18 9"></polyline>' if is_expanded else '<polyline points="9 18 15 12 9 6"></polyline>'}
+        </svg>
+        <span class="argument-title {title_class}">{arg_id}. {title}</span>
+        {f'<span class="badge badge-{base_color}">{len(children) if children else 0} subarguments</span>' if children else f'<span class="badge badge-gray">¶{paragraphs}</span>'}
     </div>
-    """, unsafe_allow_html=True)
+    """
     
-    # JavaScript for handling click
-    components.html(f"""
-    <script>
-        document.getElementById('{button_key}').addEventListener('click', function() {{
-            window.parent.postMessage({{
-                type: 'streamlit:component',
-                action: 'toggleArgExpansion',
-                args: '{arg_id}'
-            }}, '*');
-        }});
-    </script>
-    """, height=0)
-    
-    # If expanded and has children, render them
-    if is_expanded and has_children:
-        for child_id, child_arg in arg['children'].items():
-            render_argument_section(child_arg, side, level + 1)
-
-# Create custom component for argument expansion toggle
-def handle_click_messages():
-    components.html("""
-    <script>
-        window.addEventListener('message', function(event) {
-            const data = event.data;
-            if (data.type === 'streamlit:component' && data.action === 'toggleArgExpansion') {
-                const argId = data.args;
+    # Create a container for the argument
+    with st.container():
+        st.markdown(header, unsafe_allow_html=True)
+        
+        # If expanded, show the content
+        if is_expanded:
+            with st.container():
+                st.markdown('<div style="padding: 1rem; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 0.5rem 0.5rem;">', unsafe_allow_html=True)
                 
-                // Create a button click event on the hidden button with the corresponding key
-                const button = document.getElementById('toggle-' + argId);
-                if (button) {
-                    button.click();
-                }
-            }
-        });
-    </script>
-    """, height=0)
-
-# Handle Argument Pair
-def argument_pair(claimant_arg, respondent_arg, level=0, is_root=True):
-    cols = st.columns(2)
-    
-    with cols[0]:
-        render_argument_section(claimant_arg, "claimant", level)
+                # Overview points
+                if overview and 'points' in overview:
+                    render_overview_points(overview['points'], overview['paragraphs'])
+                
+                # Legal points
+                if legal_points and len(legal_points) > 0:
+                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Legal Points</h6>', unsafe_allow_html=True)
+                    render_legal_points(legal_points)
+                
+                # Factual points
+                if factual_points and len(factual_points) > 0:
+                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Factual Points</h6>', unsafe_allow_html=True)
+                    render_factual_points(factual_points)
+                
+                # Evidence
+                if evidence and len(evidence) > 0:
+                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Evidence</h6>', unsafe_allow_html=True)
+                    render_evidence(evidence)
+                
+                # Case law
+                if case_law and len(case_law) > 0:
+                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Case Law</h6>', unsafe_allow_html=True)
+                    render_case_law(case_law)
+                
+                st.markdown('</div>', unsafe_allow_html=True)
         
-        # Create a hidden button for toggle functionality
-        if st.button(f"Toggle {claimant_arg['id']}", key=f"toggle-{claimant_arg['id']}", help="Toggle argument expansion", visible=False):
-            toggle_arg_expansion(claimant_arg['id'])
-            st.experimental_rerun()
-    
-    with cols[1]:
-        render_argument_section(respondent_arg, "respondent", level)
-        
-        # Create a hidden button for toggle functionality
-        if st.button(f"Toggle {respondent_arg['id']}", key=f"toggle-{respondent_arg['id']}", help="Toggle argument expansion", visible=False):
-            toggle_arg_expansion(respondent_arg['id'])
-            st.experimental_rerun()
-    
-    # Render child argument pairs if both exist and parent is expanded
-    if ('children' in claimant_arg and 'children' in respondent_arg and 
-        claimant_arg['children'] and respondent_arg['children'] and
-        st.session_state.expanded_args.get(claimant_arg['id'], False)):
-        
-        # Match child arguments by their IDs
-        for child_id in claimant_arg['children']:
-            if child_id in respondent_arg['children']:
-                argument_pair(
-                    claimant_arg['children'][child_id],
-                    respondent_arg['children'][child_id],
-                    level + 1,
-                    False
-                )
-
-# Render Arguments View
-def render_arguments_view():
-    # Add view toggle buttons
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        st.markdown("""
-        <div style="display: flex; justify-content: flex-end;">
-            <div class="view-toggle">
-                <button class="view-button view-button-active" id="default-view-btn">Standard View</button>
-                <button class="view-button" id="hierarchical-view-btn">Topic View</button>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # JavaScript for handling view toggle
-        components.html("""
+        # Add JavaScript to handle click events
+        st.markdown(f"""
         <script>
-            document.getElementById('default-view-btn').addEventListener('click', function() {
-                this.classList.add('view-button-active');
-                document.getElementById('hierarchical-view-btn').classList.remove('view-button-active');
-                window.parent.postMessage({
-                    type: 'streamlit:setViewMode',
-                    mode: 'default'
-                }, '*');
-            });
-            
-            document.getElementById('hierarchical-view-btn').addEventListener('click', function() {
-                this.classList.add('view-button-active');
-                document.getElementById('default-view-btn').classList.remove('view-button-active');
-                window.parent.postMessage({
-                    type: 'streamlit:setViewMode',
-                    mode: 'hierarchical'
-                }, '*');
-            });
+        function handleArgClick(id) {{
+            // Use Streamlit's messaging to send the ID back to Python
+            window.parent.postMessage({{
+                type: "streamlit:setComponentValue",
+                value: id,
+                dataType: "json"
+            }}, "*");
+        }}
         </script>
-        """, height=0)
-    
-    # Check if we should show default or hierarchical view
-    if st.session_state.view_mode == "default":
-        # Headers for both columns
-        cols = st.columns(2)
-        with cols[0]:
-            st.markdown('<h2 style="font-size: 1.125rem; font-weight: 600; color: #3b82f6;">Claimant\'s Arguments</h2>', unsafe_allow_html=True)
-        with cols[1]:
-            st.markdown('<h2 style="font-size: 1.125rem; font-weight: 600; color: #ef4444;">Respondent\'s Arguments</h2>', unsafe_allow_html=True)
-        
-        # Render argument pairs
-        for arg_id in arguments_data['claimant']:
-            claimant_arg = arguments_data['claimant'][arg_id]
-            respondent_arg = arguments_data['respondent'][arg_id]
-            argument_pair(claimant_arg, respondent_arg)
-    else:
-        # Hierarchical view
-        for topic in topics_data:
-            st.markdown(f'<h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">{topic["title"]}</h2>', unsafe_allow_html=True)
-            st.markdown(f'<p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem;">{topic["description"]}</p>', unsafe_allow_html=True)
-            
-            # Column headers
-            cols = st.columns(2)
-            with cols[0]:
-                st.markdown('<h3 style="font-size: 1rem; font-weight: 600; color: #3b82f6; margin-bottom: 1rem;">Claimant\'s Arguments</h3>', unsafe_allow_html=True)
-            with cols[1]:
-                st.markdown('<h3 style="font-size: 1rem; font-weight: 600; color: #ef4444; margin-bottom: 1rem;">Respondent\'s Arguments</h3>', unsafe_allow_html=True)
-            
-            # Render argument pairs for this topic
-            for arg_id in topic['argumentIds']:
-                if arg_id in arguments_data['claimant'] and arg_id in arguments_data['respondent']:
-                    argument_pair(arguments_data['claimant'][arg_id], arguments_data['respondent'][arg_id])
-            
-            st.markdown('<hr style="margin: 2rem 0;">', unsafe_allow_html=True)
-
-# Render Timeline View
-def render_timeline_view():
-    # Action buttons
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        st.markdown("""
-        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <button class="view-button" style="border: 1px solid #e5e7eb;">
-                <span style="display: flex; align-items: center; gap: 0.25rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                    </svg>
-                    Copy
-                </span>
-            </button>
-            <button class="view-button" style="border: 1px solid #e5e7eb;">
-                <span style="display: flex; align-items: center; gap: 0.25rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" x2="12" y1="15" y2="3"/>
-                    </svg>
-                    Export Data
-                </span>
-            </button>
-        </div>
         """, unsafe_allow_html=True)
-    
-    # Search and filter
-    col1, col2 = st.columns([3, 1])
+
+# Function to render an argument pair
+def render_argument_pair(claimant_data, respondent_data, level=0, is_root=True):
+    col1, col2 = st.columns(2)
     
     with col1:
-        search = st.text_input("", placeholder="Search events...", label_visibility="collapsed")
+        render_argument_section(
+            arg_id=claimant_data['id'],
+            title=claimant_data['title'],
+            paragraphs=claimant_data['paragraphs'],
+            side="claimant",
+            level=level,
+            overview=claimant_data.get('overview'),
+            legal_points=claimant_data.get('legalPoints'),
+            factual_points=claimant_data.get('factualPoints'),
+            evidence=claimant_data.get('evidence'),
+            case_law=claimant_data.get('caseLaw'),
+            children=claimant_data.get('children'),
+            is_aligned=True
+        )
     
     with col2:
-        disputed_only = st.checkbox("Disputed events only")
+        render_argument_section(
+            arg_id=respondent_data['id'],
+            title=respondent_data['title'],
+            paragraphs=respondent_data['paragraphs'],
+            side="respondent",
+            level=level,
+            overview=respondent_data.get('overview'),
+            legal_points=respondent_data.get('legalPoints'),
+            factual_points=respondent_data.get('factualPoints'),
+            evidence=respondent_data.get('evidence'),
+            case_law=respondent_data.get('caseLaw'),
+            children=respondent_data.get('children'),
+            is_aligned=True
+        )
+
+# Sample data for arguments (same structure as in the React version)
+def get_arguments_data():
+    return [
+        {
+            'id': '1',
+            'claimant': {
+                'id': '1',
+                'title': 'Sporting Succession',
+                'paragraphs': '15-18',
+                'overview': {
+                    'points': [
+                        "Analysis of multiple established criteria",
+                        "Focus on continuous use of identifying elements",
+                        "Public recognition assessment"
+                    ],
+                    'paragraphs': '15-16'
+                },
+                'legalPoints': [
+                    {
+                        'point': 'CAS jurisprudence establishes criteria for sporting succession',
+                        'isDisputed': False,
+                        'regulations': ['CAS 2016/A/4576'],
+                        'paragraphs': '15-17'
+                    }
+                ],
+                'factualPoints': [
+                    {
+                        'point': 'Continuous operation under same name since 1950',
+                        'date': '1950-present',
+                        'isDisputed': False,
+                        'paragraphs': '18-19'
+                    }
+                ],
+                'evidence': [
+                    {
+                        'id': 'C-1',
+                        'title': 'Historical Registration Documents',
+                        'summary': 'Official records showing continuous name usage',
+                        'citations': ['20', '21', '24']
+                    }
+                ],
+                'caseLaw': [
+                    {
+                        'caseNumber': 'CAS 2016/A/4576',
+                        'title': 'Criteria for sporting succession',
+                        'relevance': 'Establishes key factors for succession',
+                        'paragraphs': '45-48',
+                        'citedParagraphs': ['45', '46', '47']
+                    }
+                ],
+                'children': [
+                    # Nested argument sections would go here
+                ]
+            },
+            'respondent': {
+                'id': '1',
+                'title': 'Sporting Succession Rebuttal',
+                'paragraphs': '200-218',
+                'overview': {
+                    'points': [
+                        "Challenge to claimed continuity of operations",
+                        "Analysis of discontinuities in club operations",
+                        "Dispute over public recognition factors"
+                    ],
+                    'paragraphs': '200-202'
+                },
+                'legalPoints': [
+                    {
+                        'point': 'CAS jurisprudence requires operational continuity not merely identification',
+                        'isDisputed': False,
+                        'regulations': ['CAS 2017/A/5465'],
+                        'paragraphs': '203-205'
+                    }
+                ],
+                'factualPoints': [
+                    {
+                        'point': 'Operations ceased between 1975-1976',
+                        'date': '1975-1976',
+                        'isDisputed': True,
+                        'source': 'Claimant',
+                        'paragraphs': '206-207'
+                    }
+                ],
+                'evidence': [
+                    {
+                        'id': 'R-1',
+                        'title': 'Federation Records',
+                        'summary': 'Records showing non-participation in 1975-1976 season',
+                        'citations': ['208', '209', '210']
+                    }
+                ],
+                'caseLaw': [
+                    {
+                        'caseNumber': 'CAS 2017/A/5465',
+                        'title': 'Operational continuity requirement',
+                        'relevance': 'Establishes primacy of operational continuity',
+                        'paragraphs': '211-213',
+                        'citedParagraphs': ['212']
+                    }
+                ],
+                'children': [
+                    # Nested argument sections would go here
+                ]
+            }
+        },
+        {
+            'id': '2',
+            'claimant': {
+                'id': '2',
+                'title': 'Doping Violation Chain of Custody',
+                'paragraphs': '70-125',
+                'overview': {
+                    'points': [
+                        "Analysis of sample collection and handling procedures",
+                        "Evaluation of laboratory testing protocols",
+                        "Assessment of chain of custody documentation"
+                    ],
+                    'paragraphs': '70-72'
+                },
+                'legalPoints': [
+                    {
+                        'point': 'WADA Code Article 5 establishes procedural requirements',
+                        'isDisputed': False,
+                        'regulations': ['WADA Code 2021', 'International Standard for Testing'],
+                        'paragraphs': '73-75'
+                    }
+                ]
+            },
+            'respondent': {
+                'id': '2',
+                'title': 'Doping Chain of Custody Defense',
+                'paragraphs': '250-290',
+                'overview': {
+                    'points': [
+                        "Defense of sample collection procedures",
+                        "Validation of laboratory testing protocols",
+                        "Completeness of documentation"
+                    ],
+                    'paragraphs': '250-252'
+                },
+                'legalPoints': [
+                    {
+                        'point': 'Minor procedural deviations do not invalidate results',
+                        'isDisputed': False,
+                        'regulations': ['CAS 2019/A/6148'],
+                        'paragraphs': '253-255'
+                    }
+                ]
+            }
+        }
+    ]
+
+# Timeline data
+def get_timeline_data():
+    return [
+        { 
+            'date': '2023-01-15', 
+            'appellantVersion': 'Contract signed with Club', 
+            'respondentVersion': '—', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-03-20', 
+            'appellantVersion': 'Player received notification of exclusion from team', 
+            'respondentVersion': '—', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-03-22', 
+            'appellantVersion': 'Player requested explanation', 
+            'respondentVersion': '—', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-04-01', 
+            'appellantVersion': 'Player sent termination letter', 
+            'respondentVersion': '—', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-04-05', 
+            'appellantVersion': '—', 
+            'respondentVersion': 'Club rejected termination as invalid', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-04-10', 
+            'appellantVersion': 'Player was denied access to training facilities', 
+            'respondentVersion': '—', 
+            'status': 'Disputed' 
+        },
+        { 
+            'date': '2023-04-15', 
+            'appellantVersion': '—', 
+            'respondentVersion': 'Club issued warning letter', 
+            'status': 'Undisputed' 
+        },
+        { 
+            'date': '2023-05-01', 
+            'appellantVersion': 'Player filed claim with FIFA', 
+            'respondentVersion': '—', 
+            'status': 'Undisputed' 
+        },
+    ]
+
+# Exhibits data
+def get_exhibits_data():
+    return [
+        {
+            'id': 'C-1',
+            'party': 'Appellant',
+            'title': 'Employment Contract',
+            'type': 'contract',
+            'summary': 'Employment contract dated 15 January 2023 between Player and Club'
+        },
+        {
+            'id': 'C-2',
+            'party': 'Appellant',
+            'title': 'Termination Letter',
+            'type': 'letter',
+            'summary': 'Player\'s termination letter sent on 1 April 2023'
+        },
+        {
+            'id': 'C-3',
+            'party': 'Appellant',
+            'title': 'Email Correspondence',
+            'type': 'communication',
+            'summary': 'Email exchanges between Player and Club from 22-30 March 2023'
+        },
+        {
+            'id': 'C-4',
+            'party': 'Appellant',
+            'title': 'Witness Statement',
+            'type': 'statement',
+            'summary': 'Statement from team captain confirming Player\'s exclusion'
+        },
+        {
+            'id': 'R-1',
+            'party': 'Respondent',
+            'title': 'Club Regulations',
+            'type': 'regulations',
+            'summary': 'Internal regulations of the Club dated January 2022'
+        },
+        {
+            'id': 'R-2',
+            'party': 'Respondent',
+            'title': 'Warning Letter',
+            'type': 'letter',
+            'summary': 'Warning letter issued to Player on 15 April 2023'
+        },
+        {
+            'id': 'R-3',
+            'party': 'Respondent',
+            'title': 'Training Schedule',
+            'type': 'schedule',
+            'summary': 'Team training schedule for March-April 2023'
+        }
+    ]
+
+# Topic data for hierarchical view
+def get_topic_data():
+    return [
+        {
+            'id': 'topic-1',
+            'title': 'Sporting Succession and Identity',
+            'description': 'Questions of club identity, continuity, and succession rights',
+            'arguments': [
+                {
+                    'claimant': {
+                        'id': '1',
+                        'title': 'Sporting Succession',
+                        'paragraphs': '15-18',
+                        'overview': {
+                            'points': [
+                                "Analysis of multiple established criteria",
+                                "Focus on continuous use of identifying elements",
+                                "Public recognition assessment"
+                            ],
+                            'paragraphs': '15-16'
+                        },
+                        'legalPoints': [
+                            {
+                                'point': 'CAS jurisprudence establishes criteria for sporting succession',
+                                'isDisputed': False,
+                                'regulations': ['CAS 2016/A/4576'],
+                                'paragraphs': '15-17'
+                            }
+                        ],
+                        'factualPoints': [
+                            {
+                                'point': 'Continuous operation under same name since 1950',
+                                'date': '1950-present',
+                                'isDisputed': False,
+                                'paragraphs': '18-19'
+                            }
+                        ]
+                    },
+                    'respondent': {
+                        'id': '1',
+                        'title': 'Sporting Succession Rebuttal',
+                        'paragraphs': '200-218',
+                        'overview': {
+                            'points': [
+                                "Challenge to claimed continuity of operations",
+                                "Analysis of discontinuities in club operations",
+                                "Dispute over public recognition factors"
+                            ],
+                            'paragraphs': '200-202'
+                        },
+                        'legalPoints': [
+                            {
+                                'point': 'CAS jurisprudence requires operational continuity not merely identification',
+                                'isDisputed': False,
+                                'regulations': ['CAS 2017/A/5465'],
+                                'paragraphs': '203-205'
+                            }
+                        ],
+                        'factualPoints': [
+                            {
+                                'point': 'Operations ceased between 1975-1976',
+                                'date': '1975-1976',
+                                'isDisputed': True,
+                                'source': 'Claimant',
+                                'paragraphs': '206-207'
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            'id': 'topic-2',
+            'title': 'Doping Violation and Chain of Custody',
+            'description': 'Issues related to doping test procedures and evidence handling',
+            'arguments': [
+                {
+                    'claimant': {
+                        'id': '2',
+                        'title': 'Doping Violation Chain of Custody',
+                        'paragraphs': '70-125',
+                        'overview': {
+                            'points': [
+                                "Analysis of sample collection and handling procedures",
+                                "Evaluation of laboratory testing protocols",
+                                "Assessment of chain of custody documentation"
+                            ],
+                            'paragraphs': '70-72'
+                        },
+                        'legalPoints': [
+                            {
+                                'point': 'WADA Code Article 5 establishes procedural requirements',
+                                'isDisputed': False,
+                                'regulations': ['WADA Code 2021', 'International Standard for Testing'],
+                                'paragraphs': '73-75'
+                            }
+                        ]
+                    },
+                    'respondent': {
+                        'id': '2',
+                        'title': 'Doping Chain of Custody Defense',
+                        'paragraphs': '250-290',
+                        'overview': {
+                            'points': [
+                                "Defense of sample collection procedures",
+                                "Validation of laboratory testing protocols",
+                                "Completeness of documentation"
+                            ],
+                            'paragraphs': '250-252'
+                        },
+                        'legalPoints': [
+                            {
+                                'point': 'Minor procedural deviations do not invalidate results',
+                                'isDisputed': False,
+                                'regulations': ['CAS 2019/A/6148'],
+                                'paragraphs': '253-255'
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+
+# Timeline view component
+def render_timeline_view():
+    data = get_timeline_data()
     
-    # Filter data
-    filtered_timeline = timeline_data
+    search = st.text_input("", placeholder="Search events...", key="timeline_search")
+    col1, col2 = st.columns([4, 1])
+    
+    with col1:
+        st.button("Filter", key="timeline_filter")
+    
+    with col2:
+        show_disputed = st.checkbox("Disputed events only", key="timeline_disputed")
+    
+    # Filter data based on search and checkbox
+    filtered_data = data
     if search:
-        filtered_timeline = [item for item in filtered_timeline if 
-                             search.lower() in item['appellantVersion'].lower() or 
-                             search.lower() in item['respondentVersion'].lower()]
+        filtered_data = [item for item in data if search.lower() in item['appellantVersion'].lower() or search.lower() in item['respondentVersion'].lower()]
     
-    if disputed_only:
-        filtered_timeline = [item for item in filtered_timeline if item['status'] == 'Disputed']
+    if show_disputed:
+        filtered_data = [item for item in filtered_data if item['status'] == 'Disputed']
     
     # Create DataFrame for display
-    df = pd.DataFrame(filtered_timeline)
+    df = pd.DataFrame(filtered_data)
     
-    # Add styling
-    def style_status(val):
-        color = '#16a34a' if val == 'Undisputed' else '#dc2626'
-        return f'color: {color}'
+    # Apply styling
+    def highlight_disputed(val):
+        return 'background-color: rgba(254, 226, 226, 0.5)' if val == 'Disputed' else ''
     
-    def style_row(row):
-        if row['status'] == 'Disputed':
-            return ['background-color: #fee2e2'] * len(row)
-        return [''] * len(row)
+    def color_status(val):
+        return f'color: {"#dc2626" if val == "Disputed" else "#16a34a"}'
     
-    styled_df = df.style.applymap(style_status, subset=['status']).apply(style_row, axis=1)
+    styled_df = df.style.applymap(highlight_disputed, subset=['status'])
+    styled_df = styled_df.applymap(color_status, subset=['status'])
     
-    # Display the table
-    st.dataframe(styled_df, hide_index=True, use_container_width=True)
+    st.dataframe(
+        styled_df,
+        column_config={
+            "date": "DATE",
+            "appellantVersion": "APPELLANT'S VERSION",
+            "respondentVersion": "RESPONDENT'S VERSION",
+            "status": "STATUS"
+        },
+        hide_index=True
+    )
 
-# Render Exhibits View
+# Exhibits view component
 def render_exhibits_view():
-    # Action buttons
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        st.markdown("""
-        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <button class="view-button" style="border: 1px solid #e5e7eb;">
-                <span style="display: flex; align-items: center; gap: 0.25rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                    </svg>
-                    Copy
-                </span>
-            </button>
-            <button class="view-button" style="border: 1px solid #e5e7eb;">
-                <span style="display: flex; align-items: center; gap: 0.25rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" x2="12" y1="15" y2="3"/>
-                    </svg>
-                    Export Data
-                </span>
-            </button>
-        </div>
-        """, unsafe_allow_html=True)
+    data = get_exhibits_data()
     
-    # Search and filters
-    col1, col2, col3 = st.columns([2, 1, 1])
+    search = st.text_input("", placeholder="Search exhibits...", key="exhibits_search")
+    col1, col2 = st.columns([1, 1])
     
     with col1:
-        search = st.text_input("", placeholder="Search exhibits...", label_visibility="collapsed")
+        party_filter = st.selectbox("", ["All Parties", "Appellant", "Respondent"], key="exhibits_party")
     
     with col2:
-        party_filter = st.selectbox("", ["All Parties", "Appellant", "Respondent"], label_visibility="collapsed")
-    
-    with col3:
-        type_options = ["All Types"] + list(set(item["type"] for item in exhibits_data))
-        type_filter = st.selectbox("", type_options, label_visibility="collapsed")
+        types = ["All Types"] + list(set([item['type'] for item in data]))
+        type_filter = st.selectbox("", types, key="exhibits_type")
     
     # Filter data
-    filtered_exhibits = exhibits_data
+    filtered_data = data
     if search:
-        filtered_exhibits = [item for item in filtered_exhibits if 
-                             search.lower() in item['id'].lower() or 
-                             search.lower() in item['title'].lower() or
-                             search.lower() in item['summary'].lower()]
+        filtered_data = [item for item in data if search.lower() in item['id'].lower() or search.lower() in item['title'].lower() or search.lower() in item['summary'].lower()]
     
     if party_filter != "All Parties":
-        filtered_exhibits = [item for item in filtered_exhibits if item['party'] == party_filter]
+        filtered_data = [item for item in filtered_data if item['party'] == party_filter]
     
     if type_filter != "All Types":
-        filtered_exhibits = [item for item in filtered_exhibits if item['type'] == type_filter]
+        filtered_data = [item for item in filtered_data if item['type'] == type_filter]
     
-    # Display exhibits as a dataframe with styling
-    if filtered_exhibits:
-        # Create a DataFrame
-        exhibits_df = pd.DataFrame(filtered_exhibits)
-        
-        # Create HTML table for better styling
-        html_table = """
+    # Create DataFrame
+    df = pd.DataFrame(filtered_data)
+    
+    # Apply styling for party badges
+    def format_party(val):
+        color = "blue" if val == "Appellant" else "red"
+        return f'<span style="background-color: {color}15; color: {color}; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">{val}</span>'
+    
+    def format_type(val):
+        return f'<span style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">{val}</span>'
+    
+    def add_view_button(val):
+        return f'<a href="#" style="color: #2563eb; text-decoration: none;">View</a>'
+    
+    st.markdown(
+        """
+        <div style="height: 600px; overflow-y: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr style="background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #6b7280;">EXHIBIT ID</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #6b7280;">PARTY</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #6b7280;">TITLE</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #6b7280;">TYPE</th>
-                    <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #6b7280;">SUMMARY</th>
-                    <th style="padding: 0.75rem 1rem; text-align: right; font-size: 0.875rem; font-weight: 500; color: #6b7280;">ACTIONS</th>
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">EXHIBIT ID</th>
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">PARTY</th>
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">TITLE</th>
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">TYPE</th>
+                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">SUMMARY</th>
+                    <th style="padding: 12px 16px; text-align: right; font-size: 0.8em; color: #6b7280;">ACTIONS</th>
                 </tr>
             </thead>
             <tbody>
-        """
-        
-        for item in filtered_exhibits:
-            party_badge_color = "blue" if item['party'] == "Appellant" else "red"
-            
-            html_table += f"""
-            <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">{item['id']}</td>
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">
-                    <span class="badge badge-{party_badge_color}">{item['party']}</span>
-                </td>
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">{item['title']}</td>
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">
-                    <span class="badge badge-gray">{item['type']}</span>
-                </td>
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">{item['summary']}</td>
-                <td style="padding: 0.75rem 1rem; font-size: 0.875rem; text-align: right;">
-                    <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 0.875rem;">View</a>
-                </td>
-            </tr>
-            """
-        
-        html_table += """
+                {"".join([f'''
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['id']}</td>
+                    <td style="padding: 12px 16px;">
+                        <span style="background-color: {'rgba(219, 234, 254, 0.7)' if item['party'] == 'Appellant' else 'rgba(254, 226, 226, 0.7)'}; 
+                               color: {'#1e40af' if item['party'] == 'Appellant' else '#b91c1c'}; 
+                               padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">
+                            {item['party']}
+                        </span>
+                    </td>
+                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['title']}</td>
+                    <td style="padding: 12px 16px;">
+                        <span style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">
+                            {item['type']}
+                        </span>
+                    </td>
+                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['summary']}</td>
+                    <td style="padding: 12px 16px; text-align: right;">
+                        <a href="#" style="color: #2563eb; text-decoration: none; font-size: 0.9em;">View</a>
+                    </td>
+                </tr>
+                ''' for item in filtered_data])}
             </tbody>
         </table>
-        """
-        
-        st.markdown(html_table, unsafe_allow_html=True)
-    else:
-        st.info("No exhibits match your search criteria.")
-
-# Main application
-def main():
-    # App container with card styling
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    
-    # Card header
-    st.markdown('<div class="card-header"><h1 class="card-title">Legal Arguments Analysis</h1></div>', unsafe_allow_html=True)
-    
-    # Tabs
-    tab_labels = ["Summary of Arguments", "Timeline", "Exhibits"]
-    
-    st.markdown(
-        f"""
-        <div class="tab-container">
-            <button class={'tab-active' if st.session_state.active_tab == 'arguments' else 'tab-inactive'} id="tab-arguments">Summary of Arguments</button>
-            <button class={'tab-active' if st.session_state.active_tab == 'timeline' else 'tab-inactive'} id="tab-timeline">Timeline</button>
-            <button class={'tab-active' if st.session_state.active_tab == 'exhibits' else 'tab-inactive'} id="tab-exhibits">Exhibits</button>
         </div>
-        """,
+        """, 
         unsafe_allow_html=True
     )
-    
-    # JavaScript for tab switching
-    components.html("""
-    <script>
-        document.getElementById('tab-arguments').addEventListener('click', function() {
-            window.parent.postMessage({
-                type: 'streamlit:setActiveTab',
-                tab: 'arguments'
-            }, '*');
-        });
-        
-        document.getElementById('tab-timeline').addEventListener('click', function() {
-            window.parent.postMessage({
-                type: 'streamlit:setActiveTab',
-                tab: 'timeline'
-            }, '*');
-        });
-        
-        document.getElementById('tab-exhibits').addEventListener('click', function() {
-            window.parent.postMessage({
-                type: 'streamlit:setActiveTab',
-                tab: 'exhibits'
-            }, '*');
-        });
-        
-        window.addEventListener('message', function(event) {
-            const data = event.data;
-            if (data.type === 'streamlit:setActiveTab') {
-                window.parent.postMessage({
-                    type: 'streamlit:component',
-                    action: 'changeTab',
-                    args: data.tab
-                }, '*');
-            }
-            else if (data.type === 'streamlit:setViewMode') {
-                window.parent.postMessage({
-                    type: 'streamlit:component',
-                    action: 'changeViewMode',
-                    args: data.mode
-                }, '*');
-            }
-        });
-    </script>
-    """, height=0)
-    
-    # Handle click events for argument expansion
-    handle_click_messages()
-    
-    # Content based on active tab
-    if st.session_state.active_tab == 'arguments':
-        render_arguments_view()
-    elif st.session_state.active_tab == 'timeline':
-        render_timeline_view()
-    elif st.session_state.active_tab == 'exhibits':
-        render_exhibits_view()
-    
-    # Hidden buttons for handling tab and view mode changes
-    if st.button("Change Tab", key="change-tab-button", help="Change active tab", visible=False):
-        pass
-    
-    if st.button("Change View Mode", key="change-view-mode-button", help="Change view mode", visible=False):
-        pass
-    
-    # Close the card container
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Listen for streamlit component messages
-    components.html("""
+# Hierarchical topic view
+def render_topic_view():
+    topics = get_topic_data()
+    
+    for topic in topics:
+        st.markdown(f"""
+        <div class="topic-section">
+            <h2 class="topic-title">{topic['title']}</h2>
+            <p class="topic-description">{topic['description']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Column headers
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<h3 style="font-size: 1rem; font-weight: 600; color: #2563eb; margin-bottom: 1rem;">Claimant\'s Arguments</h3>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<h3 style="font-size: 1rem; font-weight: 600; color: #dc2626; margin-bottom: 1rem;">Respondent\'s Arguments</h3>', unsafe_allow_html=True)
+        
+        # Argument pairs
+        for arg_pair in topic['arguments']:
+            render_argument_pair(arg_pair['claimant'], arg_pair['respondent'])
+
+# Main UI
+st.markdown('<h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Legal Arguments Analysis</h1>', unsafe_allow_html=True)
+
+# Tab navigation
+tab_html = f"""
+<div class="tab-nav">
+    <div class="tab {'tab-active' if st.session_state.active_tab == 'arguments' else 'tab-inactive'}" 
+         onclick="handleTabClick('arguments')">Summary of Arguments</div>
+    <div class="tab {'tab-active' if st.session_state.active_tab == 'timeline' else 'tab-inactive'}" 
+         onclick="handleTabClick('timeline')">Timeline</div>
+    <div class="tab {'tab-active' if st.session_state.active_tab == 'exhibits' else 'tab-inactive'}" 
+         onclick="handleTabClick('exhibits')">Exhibits</div>
+</div>
+<script>
+function handleTabClick(tab) {{
+    window.parent.postMessage({{
+        type: "streamlit:setComponentValue",
+        value: {{"tab": tab}},
+        dataType: "json"
+    }}, "*");
+}}
+</script>
+"""
+components.html(tab_html, height=50)
+
+# Handle the component's output
+component_value = st.experimental_get_query_params()
+if component_value:
+    if 'tab' in component_value:
+        st.session_state.active_tab = component_value['tab'][0]
+    if 'arg_id' in component_value:
+        toggle_expand(component_value['arg_id'][0])
+
+# Actions bar for Timeline and Exhibits views
+if st.session_state.active_tab in ['timeline', 'exhibits']:
+    col1, col2 = st.columns([5, 1])
+    with col2:
+        st.download_button("Export Data", "exported_data.csv", "Export")
+        st.button("Copy")
+
+# Arguments View Mode Toggle
+if st.session_state.active_tab == 'arguments':
+    toggle_html = f"""
+    <div class="view-toggle">
+        <div class="toggle-btn {'toggle-btn-active' if st.session_state.view_mode == 'default' else 'toggle-btn-inactive'}" 
+             onclick="handleViewToggle('default')">Standard View</div>
+        <div class="toggle-btn {'toggle-btn-active' if st.session_state.view_mode == 'hierarchical' else 'toggle-btn-inactive'}" 
+             onclick="handleViewToggle('hierarchical')">Topic View</div>
+    </div>
     <script>
-        window.addEventListener('message', function(event) {
-            const data = event.data;
+    function handleViewToggle(mode) {{
+        window.parent.postMessage({{
+            type: "streamlit:setComponentValue",
+            value: {{"view_mode": mode}},
+            dataType: "json"
+        }}, "*");
+    }}
+    </script>
+    """
+    components.html(toggle_html, height=50)
+    
+    if st.session_state.view_mode == 'default':
+        # Standard view with all arguments
+        arguments_data = get_arguments_data()
+        for arg_pair in arguments_data:
+            render_argument_pair(arg_pair['claimant'], arg_pair['respondent'])
+    else:
+        # Topic view
+        render_topic_view()
+
+# Timeline view
+elif st.session_state.active_tab == 'timeline':
+    render_timeline_view()
+
+# Exhibits view
+elif st.session_state.active_tab == 'exhibits':
+    render_exhibits_view()
+
+# JavaScript to handle component communication
+st.markdown("""
+<script>
+// Listen for messages from components
+window.addEventListener('message', function(e) {
+    if (e.data.type === 'streamlit:componentOutput') {
+        const data = e.data.value;
+        if (data) {
+            // Update URL parameters
+            const searchParams = new URLSearchParams(window.location.search);
             
-            if (data.type === 'streamlit:component') {
-                if (data.action === 'changeTab') {
-                    const tabButton = document.querySelector('button[data-testid="baseButton-secondary"]:has(div[key="change-tab-button"])');
-                    if (tabButton) {
-                        const stateElement = document.createElement('div');
-                        stateElement.setAttribute('data-new-tab', data.args);
-                        document.body.appendChild(stateElement);
-                        tabButton.click();
-                    }
-                }
-                else if (data.action === 'changeViewMode') {
-                    const viewModeButton = document.querySelector('button[data-testid="baseButton-secondary"]:has(div[key="change-view-mode-button"])');
-                    if (viewModeButton) {
-                        const stateElement = document.createElement('div');
-                        stateElement.setAttribute('data-new-view-mode', data.args);
-                        document.body.appendChild(stateElement);
-                        viewModeButton.click();
-                    }
-                }
+            if (data.tab) {
+                searchParams.set('tab', data.tab);
             }
-        });
-    </script>
-    """, height=0)
-
-# Check if tab or view mode need to be changed
-if st.session_state.widget_was_triggered(trigger_value="change-tab-button"):
-    # Get the new tab from the HTML element
-    new_tab = components.html("""
-    <script>
-        const stateElement = document.querySelector('[data-new-tab]');
-        if (stateElement) {
-            const newTab = stateElement.getAttribute('data-new-tab');
-            stateElement.remove();
-            window.parent.postMessage({
-                type: 'streamlit:fromComponent',
-                value: newTab
-            }, '*');
+            
+            if (data.view_mode) {
+                searchParams.set('view_mode', data.view_mode);
+            }
+            
+            if (typeof data === 'string') {
+                searchParams.set('arg_id', data);
+            }
+            
+            // Replace URL
+            const newUrl = window.location.pathname + '?' + searchParams.toString();
+            window.history.replaceState({}, '', newUrl);
+            
+            // Reload to apply changes
+            window.location.reload();
         }
-    </script>
-    """, height=0, return_value=True)
-    
-    if new_tab:
-        st.session_state.active_tab = new_tab
-        st.experimental_rerun()
-
-if st.session_state.widget_was_triggered(trigger_value="change-view-mode-button"):
-    # Get the new view mode from the HTML element
-    new_view_mode = components.html("""
-    <script>
-        const stateElement = document.querySelector('[data-new-view-mode]');
-        if (stateElement) {
-            const newViewMode = stateElement.getAttribute('data-new-view-mode');
-            stateElement.remove();
-            window.parent.postMessage({
-                type: 'streamlit:fromComponent',
-                value: newViewMode
-            }, '*');
-        }
-    </script>
-    """, height=0, return_value=True)
-    
-    if new_view_mode:
-        st.session_state.view_mode = new_view_mode
-        st.experimental_rerun()
-
-if __name__ == "__main__":
-    main()
+    }
+});
+</script>
+""", unsafe_allow_html=True)

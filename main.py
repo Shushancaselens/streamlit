@@ -1,472 +1,791 @@
 import streamlit as st
 import pandas as pd
-import json
-from streamlit.components.v1 import html
+from datetime import datetime
+import base64
 
-# Set page config for wide layout
+# Set page configuration
 st.set_page_config(
-    page_title="Jessup Memorial Penalty Worksheet",
-    page_icon="media/CaseLens Logo.png",
+    page_title="Legal Arguments Analysis",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
-st.logo("media/CaseLens Logo Sidebar.png", icon_image="media/CaseLens Logo.png", size="large")
 
-
-    # Custom CSS for styling
-st.markdown("""
-<style>
-    .evidence-link {
-        color: #4338ca;
-        text-decoration: none;
-        transition: all 0.2s;
+# Add custom CSS for styling
+def add_custom_css():
+    st.markdown("""
+    <style>
+    /* Main card styling */
+    .main-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
     }
-    .evidence-link:hover {
-        color: #3730a3;
-        text-decoration: underline;
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
     }
-    .evidence-card {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem;
+    
+    .stTabs [data-baseweb="tab"] {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        white-space: pre-wrap;
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        border: 1px solid #e2e8f0;
+        background-color: white;
+        color: #4b5563;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .stButton>button:hover {
+        background-color: #f9fafb;
+    }
+    
+    .button-active {
+        background-color: #3b82f6 !important;
+        color: white !important;
+    }
+    
+    /* Argument sections */
+    .argument-header {
+        background-color: #f9fafb;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .argument-header:hover {
+        background-color: #f3f4f6;
+    }
+    
+    .claimant-color {
+        color: #2563eb;
+        border-color: #bfdbfe;
+    }
+    
+    .respondent-color {
+        color: #dc2626;
+        border-color: #fecaca;
+    }
+    
+    /* Tag styling */
+    .tag {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 0.25rem;
+    }
+    
+    .tag-blue {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .tag-red {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .tag-green {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+    
+    .tag-gray {
+        background-color: #f3f4f6;
+        color: #4b5563;
+    }
+    
+    /* Card components */
+    .card-component {
+        background-color: #f9fafb;
+        border-radius: 0.375rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Timeline and exhibits tables */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .styled-table th {
+        background-color: #f9fafb;
+        color: #6b7280;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .styled-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+    }
+    
+    .styled-table tr:hover {
+        background-color: #f9fafb;
+    }
+    
+    /* Disputed row styling */
+    .disputed-row {
+        background-color: #fee2e2;
+    }
+    
+    /* Hierarchical view topic section */
+    .topic-section {
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
         background-color: white;
         border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
     }
-    .evidence-card:hover {
-        border-color: #818cf8;
-        background-color: #f5f7ff;
-    }
-    /* Style for expander headers */
-    .streamlit-expanderHeader {
-        font-size: 1.3rem !important;
-        font-weight: 600 !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-def get_case_summary(case_id):
-    # Database of case summaries
-    case_summaries = {
-        "CAS 2019/A/XYZ": "Athlete successfully established jurisdiction based on federation rules explicitly allowing CAS appeals. Court emphasized importance of clear arbitration agreements.",
-        "CAS 2019/A/123": "Appeal dismissed due to non-exhaustion of internal remedies. CAS emphasized need to follow proper procedural steps.",
-        "CAS 2018/A/456": "Case established precedent for requiring completion of federation's internal processes before CAS jurisdiction.",
-        "CAS 2018/A/ABC": "Court found chain-of-custody errors significant enough to invalidate test results. Set standards for sample handling.",
-        "CAS 2017/A/789": "Minor procedural defects held insufficient to invalidate otherwise valid test results.",
-        "Smith v. Corp Inc. 2021": "Court found lack of documented warnings and positive performance reviews inconsistent with termination for cause.",
-        "Jones v. Enterprise Ltd 2020": "Established standards for progressive discipline in employment termination cases.",
-        "Brown v. MegaCorp 2022": "Upheld immediate termination where serious misconduct was clearly documented.",
-        "Wilson v. Tech Solutions 2021": "Court emphasized importance of contemporaneous documentation of verbal warnings.",
-        "TechCo v. Innovate Inc. 2022": "Found patent infringement based on post-publication copying and substantial similarity.",
-        "Patent Holdings v. StartUp 2021": "Emphasized importance of timeline evidence in patent infringement cases.",
-        "Innovation Corp v. PatentCo 2023": "Independent development defense succeeded with clear pre-dating evidence.",
-        "Tech Solutions v. IP Holdings 2022": "Court invalidated overly broad patent claims in software industry.",
-        "EcoCorp v. EPA 2022": "Facility compliance upheld based on comprehensive monitoring data and third-party audits.",
-        "Green Industries v. State 2021": "Established standards for environmental compliance documentation.",
-        "EPA v. Industrial Corp 2023": "Violations found due to inadequate monitoring and delayed incident reporting.",
-        "State v. Manufacturing Co. 2022": "Court emphasized importance of timely violation reporting and equipment maintenance."
-    }
-    return case_summaries.get(case_id, "Summary not available.")
-
-argument_data = [
-    {
-        "id": "1",
-        "issue": "CAS Jurisdiction",
-        "category": "jurisdiction",
-        "appellant": {
-            "mainArgument": "CAS Has Authority to Hear This Case",
-            "details": [
-                "The Federation's Anti-Doping Rules explicitly allow CAS to hear appeals",
-                "Athlete has completed all required internal appeal procedures first",
-                "Athlete signed agreement allowing CAS to handle disputes"
-            ],
-            "evidence": [
-                {"id": "C1", "desc": "Federation Rules, Art. 60"},
-                {"id": "C2", "desc": "Athlete's license containing arbitration agreement"},
-                {"id": "C3", "desc": "Appeal submission documents"}
-            ],
-            "caselaw": ["CAS 2019/A/XYZ"]
-        },
-        "respondent": {
-            "mainArgument": "CAS Cannot Hear This Case Yet",
-            "details": [
-                "Athlete skipped required steps in federation's appeal process",
-                "Athlete missed important appeal deadlines within federation",
-                "Must follow proper appeal steps before going to CAS"
-            ],
-            "evidence": [
-                {"id": "R1", "desc": "Federation internal appeals process documentation"},
-                {"id": "R2", "desc": "Timeline of appeals process"},
-                {"id": "R3", "desc": "Federation handbook on procedures"}
-            ],
-            "caselaw": ["CAS 2019/A/123", "CAS 2018/A/456"]
-        }
-    },
-    {
-        "id": "2",
-        "issue": "Presence of Substance X",
-        "category": "substance",
-        "appellant": {
-            "mainArgument": "Chain-of-custody errors invalidate test results",
-            "details": [
-                "Sample had a 10-hour delay in transfer",
-                "Sealing procedure was not properly documented",
-                "Independent expert confirms potential degradation"
-            ],
-            "evidence": [
-                {"id": "C4", "desc": "Lab reports #1 and #2"},
-                {"id": "C5", "desc": "Expert Dr. A's statement"},
-                {"id": "C6", "desc": "Chain of custody documentation"}
-            ],
-            "caselaw": ["CAS 2018/A/ABC"]
-        },
-        "respondent": {
-            "mainArgument": "Minor procedural defects do not invalidate results",
-            "details": [
-                "WADA-accredited lab's procedures ensure reliability",
-                "10-hour delay within acceptable limits",
-                "No evidence of sample degradation"
-            ],
-            "evidence": [
-                {"id": "R4", "desc": "Lab accreditation documents"},
-                {"id": "R5", "desc": "Expert Dr. B's analysis"},
-                {"id": "R6", "desc": "Testing protocols"}
-            ],
-            "caselaw": ["CAS 2017/A/789"]
-        }
-    },
-    {
-        "id": "3",
-        "issue": "Contract Termination Validity",
-        "category": "employment",
-        "appellant": {
-            "mainArgument": "Termination was wrongful and without cause",
-            "details": [
-                "No prior warnings were issued before termination",
-                "Performance reviews were consistently positive",
-                "Termination violated company policy on progressive discipline"
-            ],
-            "evidence": [
-                {"id": "C7", "desc": "Employee performance reviews 2020-2023"},
-                {"id": "C8", "desc": "Company handbook on disciplinary procedures"},
-                {"id": "C9", "desc": "Email correspondence regarding termination"}
-            ],
-            "caselaw": ["Smith v. Corp Inc. 2021", "Jones v. Enterprise Ltd 2020"]
-        },
-        "respondent": {
-            "mainArgument": "Termination was justified due to misconduct",
-            "details": [
-                "Multiple instances of policy violations documented",
-                "Verbal warnings were given on several occasions",
-                "Final incident warranted immediate termination"
-            ],
-            "evidence": [
-                {"id": "R7", "desc": "Internal incident reports"},
-                {"id": "R8", "desc": "Witness statements from supervisors"},
-                {"id": "R9", "desc": "Security footage from incident date"}
-            ],
-            "caselaw": ["Brown v. MegaCorp 2022", "Wilson v. Tech Solutions 2021"]
-        }
-    },
-    {
-        "id": "4",
-        "issue": "Patent Infringement",
-        "category": "intellectual property",
-        "appellant": {
-            "mainArgument": "Defendant's product violates our patent claims",
-            "details": [
-                "Product uses identical method described in patent claims",
-                "Infringement began after patent publication",
-                "Similarities cannot be explained by independent development"
-            ],
-            "evidence": [
-                {"id": "C10", "desc": "Patent documentation and claims analysis"},
-                {"id": "C11", "desc": "Technical comparison report"},
-                {"id": "C12", "desc": "Expert analysis of defendant's product"}
-            ],
-            "caselaw": ["TechCo v. Innovate Inc. 2022", "Patent Holdings v. StartUp 2021"]
-        },
-        "respondent": {
-            "mainArgument": "Our technology was independently developed",
-            "details": [
-                "Development began before patent filing date",
-                "Technology uses different underlying mechanism",
-                "Patent claims are overly broad and invalid"
-            ],
-            "evidence": [
-                {"id": "R10", "desc": "Development timeline documentation"},
-                {"id": "R11", "desc": "Prior art examples"},
-                {"id": "R12", "desc": "Technical differentiation analysis"}
-            ],
-            "caselaw": ["Innovation Corp v. PatentCo 2023", "Tech Solutions v. IP Holdings 2022"]
-        }
-    },
-    {
-        "id": "5",
-        "issue": "Environmental Compliance",
-        "category": "regulatory",
-        "appellant": {
-            "mainArgument": "Facility meets all environmental standards",
-            "details": [
-                "All required permits were obtained and maintained",
-                "Emissions consistently below regulatory limits",
-                "Regular maintenance and monitoring conducted"
-            ],
-            "evidence": [
-                {"id": "C13", "desc": "Environmental impact assessments"},
-                {"id": "C14", "desc": "Continuous monitoring data 2021-2023"},
-                {"id": "C15", "desc": "Third-party compliance audit reports"}
-            ],
-            "caselaw": ["EcoCorp v. EPA 2022", "Green Industries v. State 2021"]
-        },
-        "respondent": {
-            "mainArgument": "Significant violations of environmental regulations",
-            "details": [
-                "Multiple instances of excess emissions recorded",
-                "Required monitoring equipment malfunctioned",
-                "Failure to report incidents within required timeframe"
-            ],
-            "evidence": [
-                {"id": "R13", "desc": "Violation notices and citations"},
-                {"id": "R14", "desc": "Inspector field reports"},
-                {"id": "R15", "desc": "Community complaint records"}
-            ],
-            "caselaw": ["EPA v. Industrial Corp 2023", "State v. Manufacturing Co. 2022"]
-        }
-    }
-]
-
-def create_position_section(position_data, position_type):
-    """Create a section for appellant or respondent position"""
-    color = "#4F46E5" if position_type == "Appellant" else "#E11D48"
     
-    st.markdown(f"""
-        <h3 style="color: {color}; font-size: 19.2px;">{position_type}'s Position</h3>
+    .topic-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+    
+    .topic-description {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    /* Remove default Streamlit margins and padding */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 0rem;
+        max-width: 95%;
+    }
+
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
     """, unsafe_allow_html=True)
+
+# Initialize session state for maintaining state across reruns
+if 'active_tab' not in st.session_state:
+    st.session_state.active_tab = 0
+if 'view_mode' not in st.session_state:
+    st.session_state.view_mode = 'default'
+if 'expanded_args' not in st.session_state:
+    st.session_state.expanded_args = {}
+
+# Apply custom CSS
+add_custom_css()
+
+# Main page header
+st.markdown("<h1 style='font-size: 1.5rem; margin-bottom: 1rem;'>Legal Arguments Analysis</h1>", unsafe_allow_html=True)
+
+# Tab navigation
+tabs = ["Summary of Arguments", "Timeline", "Exhibits"]
+tab = st.tabs(tabs)
+
+with tab[0]:  # Summary of Arguments
+    # View mode toggle
+    col1, col2, col3 = st.columns([6, 2, 2])
+    with col3:
+        toggle_cols = st.columns(2)
+        with toggle_cols[0]:
+            standard_btn = st.button("Standard View", key="standard_view")
+            if standard_btn:
+                st.session_state.view_mode = 'default'
+        with toggle_cols[1]:
+            topic_btn = st.button("Topic View", key="topic_view")
+            if topic_btn:
+                st.session_state.view_mode = 'hierarchical'
     
-    # Main Argument
-    st.markdown(f"""
-        <div class="main-argument" style="
-            margin: 10px 0; 
-            font-size: 1.2rem;
-            max-width: 95%;
-            line-height: 1.5;
-            padding-right: 15px;
-        ">
-            <strong>{position_data['mainArgument']}</strong>
+    # Function to render an argument section
+    def render_argument_section(id, title, paragraphs, side, level=0, 
+                                overview=None, legal_points=None, factual_points=None, 
+                                evidence=None, case_law=None):
+        expanded = st.session_state.expanded_args.get(id, False)
+        
+        # Define colors based on side
+        color_class = "claimant-color" if side == "claimant" else "respondent-color"
+        primary_color = "#2563eb" if side == "claimant" else "#dc2626"
+        
+        # Header with expand/collapse control
+        header_html = f"""
+        <div class="argument-header {color_class}" 
+             onclick="this.dispatchEvent(new CustomEvent('click_header', {{'bubbles': true, 'detail': '{id}'}}))">
+            <div style="display: flex; align-items: center;">
+                <span style="margin-right: 0.5rem;">{id}. {title}</span>
+                <span class="tag tag-{color_class.split('-')[0]}" style="font-size: 0.75rem;">¶{paragraphs}</span>
+            </div>
         </div>
-    """, unsafe_allow_html=True)
-    
-    # Supporting Points
-    st.markdown("""
-        <div style="margin: 1.5rem 0;">
-            <h5 style="margin-bottom: 0;">Supporting Points</h5>
-            <ul style="
-                list-style-type: none;
-                padding-left: 0;
-                margin-top: 4px;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-            ">
-    """, unsafe_allow_html=True)
-    
-    for detail in position_data['details']:
-        st.markdown(f"""
-            <li style="
-                display: flex;
-                align-items: flex-start;
-                margin-bottom: 0;
-                line-height: 1.5;
-                padding-right: 20px;
-            ">
-                <span style="margin-right: 10px;">•</span>
-                <span style="flex: 1;">{detail}</span>
-            </li>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("</ul></div>", unsafe_allow_html=True)
-    
-    # Add separation between Supporting Points and Evidence
-    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
-    
-    # Evidence
-    st.markdown("##### Evidence")
-    for evidence in position_data['evidence']:
-        st.markdown(f"""
-            <div class="evidence-card" style="
-                display: flex;
-                align-items: center;
-                padding: 12px 16px;
-                background-color: white;
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                margin-bottom: 8px;
-                transition: all 0.2s;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            ">
-                <span style="
-                    background-color: #F3F4F6;
-                    color: #4B5563;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    margin-right: 12px;
-                ">{evidence['id']}</span>
-                <a href="/evidence/{evidence['id']}" 
-                   style="
-                    color: #4B5563;
-                    text-decoration: none;
-                    font-size: 14px;
-                    flex-grow: 1;
-                    transition: color 0.2s;
-                   "
-                   onmouseover="this.style.color='#4D68F9'"
-                   onmouseout="this.style.color='#4B5563'"
-                >
-                    {evidence['desc']}
-                </a>
-            </div>
-        """, unsafe_allow_html=True)
-    
-    # Add separation between Evidence and Case Law
-    st.markdown("<div style='margin-top: 30px;'></div>", unsafe_allow_html=True)
-    
-    # Case Law
-    st.markdown("##### Case Law")
-    for case in position_data['caselaw']:
-        summary = get_case_summary(case)
-        st.markdown(f"""
-            <div class="position-card" style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                    <div style="flex-grow: 1;">
-                        <div style="font-weight: 500; color: #4B5563; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                            🗂️ {case} 
-                            <a href="/cases/{case}" target="_blank" style="margin-left: 8px; text-decoration: none;">
-                                <span style="font-size: 16px; color: #4B5563;">🔗</span>
-                            </a>
-                        </div>
-                        <div style="font-size: 0.875rem; color: #6B7280;">
-                            {summary}
-                        </div>
-                    </div>
-                    <button onclick="navigator.clipboard.writeText('{case}')" 
-                            style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                    </button>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-
-def main():
-    # Sidebar
-    with st.sidebar:
-        # st.markdown("""
-        # <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 175 175">
-        #   <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
-        #     <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
-        #   </mask>
-        #   <g mask="url(#whatsapp-mask)">
-        #     <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
-        #     <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
-        #   </g>
-        # </svg>
-        # """, unsafe_allow_html=True)
-        st.title("Summary Overview")
-
-    st.title("Summary of Arguments")
-    
-    # Create a string with all the content to be copied
-    copy_content = []
-    for arg in argument_data:
-        copy_content.append(f"### {arg['issue']} ({arg['category']})")
-        copy_content.append("\nAppellant's Position:")
-        copy_content.append(f"• {arg['appellant']['mainArgument']}")
-        copy_content.append("\nRespondent's Position:")
-        copy_content.append(f"• {arg['respondent']['mainArgument']}\n")
-    
-    copy_text = "\n".join(copy_content)
-
-    # Search bar and copy button in the same row
-    col1, col2 = st.columns([0.8, 0.2])
-    with col1:
-        search = st.text_input("", 
-                             placeholder="🔍 Search issues, arguments, or evidence...",
-                             label_visibility="collapsed")
-    with col2:
-        # Create a hidden component that will handle the copy functionality
-        copy_component = f"""
-        <textarea id="copy-text" style="position: absolute; left: -9999px;">{copy_text}</textarea>
-        <button
-            onclick="copyToClipboard()"
-            style="
-                width: 100%;
-                height: 38px;
-                padding: 0 16px;
-                background-color: #4D68F9;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: background-color 0.2s;
-                margin-top: 4px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            "
-            onmouseover="this.style.backgroundColor='#4558D0'"
-            onmouseout="this.style.backgroundColor='#4D68F9'"
-        >
-            <span style="font-size: 16px;">📋</span>
-            <span>Copy</span>
-        </button>
-        <script>
-        function copyToClipboard() {{
-            const textArea = document.getElementById('copy-text');
-            textArea.select();
-            document.execCommand('copy');
-            const button = document.querySelector('button');
-            const originalContent = button.innerHTML;
-            button.innerHTML = '<span style="font-size: 16px;">✓</span><span>Copied!</span>';
-            setTimeout(() => {{ button.innerHTML = originalContent; }}, 2000);
-        }}
-        </script>
         """
-        html(copy_component, height=46)
-    
-    # Filter arguments based on search
-    filtered_arguments = argument_data
-    if search:
-        search = search.lower()
-        filtered_arguments = [
-            arg for arg in argument_data
-            if (search in arg['issue'].lower() or
-                search in arg['category'].lower() or
-                any(search in detail.lower() for detail in arg['appellant']['details']) or
-                any(search in detail.lower() for detail in arg['respondent']['details']) or
-                any(search in e['desc'].lower() for e in arg['appellant']['evidence']) or
-                any(search in e['desc'].lower() for e in arg['respondent']['evidence']) or
-                any(search in case.lower() for case in arg['appellant']['caselaw']) or
-                any(search in case.lower() for case in arg['respondent']['caselaw']))
-        ]
-    
-    # Display arguments
-    for arg in filtered_arguments:
-        with st.expander(f"{arg['issue']} ({arg['category']})", expanded=arg['id'] == '1'):
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                create_position_section(arg['appellant'], "Appellant")
-            with col2:
-                create_position_section(arg['respondent'], "Respondent")
-            
-            st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+        st.markdown(header_html, unsafe_allow_html=True)
+        
+        # Handle click event via JavaScript callback
+        handle_click = st.experimental_user(`
+            function(el) {
+                el.addEventListener('click_header', (e) => {
+                    let id = e.detail;
+                    window.parent.postMessage({
+                        type: 'streamlit:setComponentValue',
+                        value: id,
+                        dataType: 'string'
+                    }, '*');
+                });
+                return true;
+            }
+        `, default=None, key=f"click_{id}")
+        
+        if handle_click:
+            st.session_state.expanded_args[handle_click] = not st.session_state.expanded_args.get(handle_click, False)
+            st.experimental_rerun()
+        
+        # Content (only shown if expanded)
+        if expanded:
+            with st.container():
+                # Overview points
+                if overview and overview.get('points'):
+                    st.markdown("<h6 style='font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;'>Key Points</h6>", unsafe_allow_html=True)
+                    for point in overview['points']:
+                        st.markdown(f"<div style='display: flex; align-items: center; margin-bottom: 0.25rem;'>"
+                                   f"<div style='width: 0.375rem; height: 0.375rem; border-radius: 9999px; background-color: {primary_color}; margin-right: 0.5rem;'></div>"
+                                   f"<span style='font-size: 0.875rem;'>{point}</span>"
+                                   f"</div>", unsafe_allow_html=True)
+                
+                # Legal points
+                if legal_points and len(legal_points) > 0:
+                    st.markdown("<h6 style='font-size: 0.875rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem;'>Legal Points</h6>", unsafe_allow_html=True)
+                    for point in legal_points:
+                        st.markdown(f"""
+                        <div class="card-component" style="background-color: #dbeafe;">
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span class="tag tag-blue">Legal</span>
+                                {"<span class='tag tag-red'>Disputed</span>" if point.get('isDisputed') else ""}
+                            </div>
+                            <p style="font-size: 0.875rem; margin-bottom: 0.5rem;">{point['point']}</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                {' '.join([f'<span class="tag tag-blue">{reg}</span>' for reg in point.get('regulations', [])])}
+                                <span style="font-size: 0.75rem; color: #6b7280;">¶{point.get('paragraphs', '')}</span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Factual points
+                if factual_points and len(factual_points) > 0:
+                    st.markdown("<h6 style='font-size: 0.875rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem;'>Factual Points</h6>", unsafe_allow_html=True)
+                    for point in factual_points:
+                        st.markdown(f"""
+                        <div class="card-component" style="background-color: #dcfce7;">
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span class="tag tag-green">Factual</span>
+                                {"<span class='tag tag-red'>Disputed by " + point.get('source', '') + "</span>" if point.get('isDisputed') else ""}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span style="font-size: 0.75rem; color: #6b7280;">{point.get('date', '')}</span>
+                            </div>
+                            <p style="font-size: 0.875rem; margin-bottom: 0.25rem;">{point['point']}</p>
+                            <span style="font-size: 0.75rem; color: #6b7280;">¶{point.get('paragraphs', '')}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Evidence
+                if evidence and len(evidence) > 0:
+                    st.markdown("<h6 style='font-size: 0.875rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem;'>Evidence</h6>", unsafe_allow_html=True)
+                    for item in evidence:
+                        st.markdown(f"""
+                        <div class="card-component">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <p style="font-size: 0.875rem; font-weight: 500;">{item.get('id', '')}: {item.get('title', '')}</p>
+                                    <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">{item.get('summary', '')}</p>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span style="font-size: 0.75rem; color: #6b7280;">Cited in: </span>
+                                        {' '.join([f'<span class="tag tag-gray">¶{cite}</span>' for cite in item.get('citations', [])])}
+                                    </div>
+                                </div>
+                                <button style="background: none; border: none; color: #2563eb; cursor: pointer;">
+                                    <span style="font-size: 0.875rem;">View</span>
+                                </button>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Case Law
+                if case_law and len(case_law) > 0:
+                    st.markdown("<h6 style='font-size: 0.875rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem;'>Case Law</h6>", unsafe_allow_html=True)
+                    for item in case_law:
+                        st.markdown(f"""
+                        <div class="card-component">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <p style="font-size: 0.875rem; font-weight: 500;">{item.get('caseNumber', '')}</p>
+                                        <span style="font-size: 0.75rem; color: #6b7280;">¶{item.get('paragraphs', '')}</span>
+                                    </div>
+                                    <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">{item.get('title', '')}</p>
+                                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">{item.get('relevance', '')}</p>
+                                    {f'''
+                                    <div style="margin-top: 0.5rem;">
+                                        <span style="font-size: 0.75rem; color: #6b7280;">Key Paragraphs: </span>
+                                        {' '.join([f'<span class="tag tag-gray">¶{para}</span>' for para in item.get('citedParagraphs', [])])}
+                                    </div>
+                                    ''' if item.get('citedParagraphs') else ''}
+                                </div>
+                                <button style="background: none; border: none; color: #2563eb; cursor: pointer;">
+                                    <span style="font-size: 0.875rem;">View</span>
+                                </button>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+    # Define the argument data
+    claimant_sporting_succession = {
+        "id": "1",
+        "title": "Sporting Succession",
+        "paragraphs": "15-18",
+        "side": "claimant",
+        "overview": {
+            "points": [
+                "Analysis of multiple established criteria",
+                "Focus on continuous use of identifying elements",
+                "Public recognition assessment"
+            ],
+            "paragraphs": "15-16"
+        },
+        "legal_points": [
+            {
+                "point": "CAS jurisprudence establishes criteria for sporting succession",
+                "isDisputed": False,
+                "regulations": ["CAS 2016/A/4576"],
+                "paragraphs": "15-17"
+            }
+        ],
+        "factual_points": [
+            {
+                "point": "Continuous operation under same name since 1950",
+                "date": "1950-present",
+                "isDisputed": False,
+                "paragraphs": "18-19"
+            }
+        ],
+        "evidence": [
+            {
+                "id": "C-1",
+                "title": "Historical Registration Documents",
+                "summary": "Official records showing continuous name usage",
+                "citations": ["20", "21", "24"]
+            }
+        ],
+        "case_law": [
+            {
+                "caseNumber": "CAS 2016/A/4576",
+                "title": "Criteria for sporting succession",
+                "relevance": "Establishes key factors for succession",
+                "paragraphs": "45-48",
+                "citedParagraphs": ["45", "46", "47"]
+            }
+        ]
+    }
+    
+    respondent_sporting_succession = {
+        "id": "1",
+        "title": "Sporting Succession Rebuttal",
+        "paragraphs": "200-218",
+        "side": "respondent",
+        "overview": {
+            "points": [
+                "Challenge to claimed continuity of operations",
+                "Analysis of discontinuities in club operations",
+                "Dispute over public recognition factors"
+            ],
+            "paragraphs": "200-202"
+        },
+        "legal_points": [
+            {
+                "point": "CAS jurisprudence requires operational continuity not merely identification",
+                "isDisputed": False,
+                "regulations": ["CAS 2017/A/5465"],
+                "paragraphs": "203-205"
+            }
+        ],
+        "factual_points": [
+            {
+                "point": "Operations ceased between 1975-1976",
+                "date": "1975-1976",
+                "isDisputed": True,
+                "source": "Claimant",
+                "paragraphs": "206-207"
+            }
+        ],
+        "evidence": [
+            {
+                "id": "R-1",
+                "title": "Federation Records",
+                "summary": "Records showing non-participation in 1975-1976 season",
+                "citations": ["208", "209", "210"]
+            }
+        ],
+        "case_law": [
+            {
+                "caseNumber": "CAS 2017/A/5465",
+                "title": "Operational continuity requirement",
+                "relevance": "Establishes primacy of operational continuity",
+                "paragraphs": "211-213",
+                "citedParagraphs": ["212"]
+            }
+        ]
+    }
+    
+    claimant_doping = {
+        "id": "2",
+        "title": "Doping Violation Chain of Custody",
+        "paragraphs": "70-125",
+        "side": "claimant",
+        "overview": {
+            "points": [
+                "Analysis of sample collection and handling procedures",
+                "Evaluation of laboratory testing protocols",
+                "Assessment of chain of custody documentation"
+            ],
+            "paragraphs": "70-72"
+        },
+        "legal_points": [
+            {
+                "point": "WADA Code Article 5 establishes procedural requirements",
+                "isDisputed": False,
+                "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                "paragraphs": "73-75"
+            }
+        ]
+    }
+    
+    respondent_doping = {
+        "id": "2",
+        "title": "Doping Chain of Custody Defense",
+        "paragraphs": "250-290",
+        "side": "respondent",
+        "overview": {
+            "points": [
+                "Defense of sample collection procedures",
+                "Validation of laboratory testing protocols",
+                "Completeness of documentation"
+            ],
+            "paragraphs": "250-252"
+        },
+        "legal_points": [
+            {
+                "point": "Minor procedural deviations do not invalidate results",
+                "isDisputed": False,
+                "regulations": ["CAS 2019/A/6148"],
+                "paragraphs": "253-255"
+            }
+        ]
+    }
+
+    # Topic view data
+    topic_sections = [
+        {
+            "id": "topic-1",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
+            "claimant_args": claimant_sporting_succession,
+            "respondent_args": respondent_sporting_succession
+        },
+        {
+            "id": "topic-2",
+            "title": "Doping Violation and Chain of Custody",
+            "description": "Issues related to doping test procedures and evidence handling",
+            "claimant_args": claimant_doping,
+            "respondent_args": respondent_doping
+        }
+    ]
+
+    # Default view (standard side-by-side)
+    if st.session_state.view_mode == 'default':
+        st.markdown("""
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
+            <div>
+                <h2 style="font-size: 1.125rem; font-weight: 600; color: #2563eb; margin-bottom: 1rem;">Claimant's Arguments</h2>
+            </div>
+            <div>
+                <h2 style="font-size: 1.125rem; font-weight: 600; color: #dc2626; margin-bottom: 1rem;">Respondent's Arguments</h2>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Argument pair 1: Sporting Succession
+        cols1 = st.columns(2)
+        with cols1[0]:
+            render_argument_section(**claimant_sporting_succession)
+        with cols1[1]:
+            render_argument_section(**respondent_sporting_succession)
+            
+        # Argument pair 2: Doping
+        cols2 = st.columns(2)
+        with cols2[0]:
+            render_argument_section(**claimant_doping)
+        with cols2[1]:
+            render_argument_section(**respondent_doping)
+    
+    # Hierarchical Topic View
+    else:
+        for topic in topic_sections:
+            st.markdown(f"""
+            <div class="topic-section">
+                <div class="topic-title">{topic['title']}</div>
+                <div class="topic-description">{topic['description']}</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; padding: 0 1rem;">
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 600; color: #2563eb; margin-bottom: 0.5rem;">Claimant's Arguments</h3>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 600; color: #dc2626; margin-bottom: 0.5rem;">Respondent's Arguments</h3>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Render the argument pair
+            cols = st.columns(2)
+            with cols[0]:
+                render_argument_section(**topic['claimant_args'])
+            with cols[1]:
+                render_argument_section(**topic['respondent_args'])
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+
+with tab[1]:  # Timeline
+    # Action buttons
+    col1, col2, col3 = st.columns([8, 2, 2])
+    with col2:
+        st.button("Copy", key="copy_timeline")
+    with col3:
+        st.button("Export Data", key="export_timeline")
+    
+    # Search and filter
+    search_cols = st.columns([4, 2, 6])
+    with search_cols[0]:
+        search_events = st.text_input("", placeholder="Search events...", label_visibility="collapsed")
+    with search_cols[1]:
+        st.button("Filter", key="filter_button")
+    with search_cols[2]:
+        show_disputed = st.checkbox("Disputed events only", key="show_disputed")
+
+    # Timeline data
+    timeline_data = [
+        {
+            "date": "2023-01-15",
+            "appellant_version": "Contract signed with Club",
+            "respondent_version": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-20",
+            "appellant_version": "Player received notification of exclusion from team",
+            "respondent_version": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-22",
+            "appellant_version": "Player requested explanation",
+            "respondent_version": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-01",
+            "appellant_version": "Player sent termination letter",
+            "respondent_version": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-05",
+            "appellant_version": "—",
+            "respondent_version": "Club rejected termination as invalid",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-10",
+            "appellant_version": "Player was denied access to training facilities",
+            "respondent_version": "—",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-04-15",
+            "appellant_version": "—",
+            "respondent_version": "Club issued warning letter",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-05-01",
+            "appellant_version": "Player filed claim with FIFA",
+            "respondent_version": "—",
+            "status": "Undisputed"
+        }
+    ]
+
+    # Filter timeline data
+    filtered_timeline = timeline_data
+    if search_events:
+        filtered_timeline = [item for item in filtered_timeline if 
+                            search_events.lower() in item["appellant_version"].lower() or 
+                            search_events.lower() in item["respondent_version"].lower()]
+    if show_disputed:
+        filtered_timeline = [item for item in filtered_timeline if item["status"] == "Disputed"]
+
+    # Display timeline table
+    st.markdown("""
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>DATE</th>
+                <th>APPELLANT'S VERSION</th>
+                <th>RESPONDENT'S VERSION</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+    """, unsafe_allow_html=True)
+    
+    for item in filtered_timeline:
+        disputed_class = "disputed-row" if item["status"] == "Disputed" else ""
+        status_color = "color: #dc2626;" if item["status"] == "Disputed" else "color: #059669;"
+        
+        st.markdown(f"""
+        <tr class="{disputed_class}">
+            <td>{item["date"]}</td>
+            <td>{item["appellant_version"]}</td>
+            <td>{item["respondent_version"]}</td>
+            <td style="{status_color}">{item["status"]}</td>
+        </tr>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("</tbody></table>", unsafe_allow_html=True)
+
+with tab[2]:  # Exhibits
+    # Action buttons
+    col1, col2, col3 = st.columns([8, 2, 2])
+    with col2:
+        st.button("Copy", key="copy_exhibits")
+    with col3:
+        st.button("Export Data", key="export_exhibits")
+    
+    # Search and filters
+    search_cols = st.columns([4, 3, 3])
+    with search_cols[0]:
+        search_exhibits = st.text_input("", placeholder="Search exhibits...", label_visibility="collapsed")
+    with search_cols[1]:
+        party_filter = st.selectbox("", options=["All Parties", "Appellant", "Respondent"], label_visibility="collapsed")
+    with search_cols[2]:
+        type_filter = st.selectbox("", options=["All Types", "contract", "letter", "communication", "statement", "regulations", "schedule"], label_visibility="collapsed")
+
+    # Exhibits data
+    exhibits_data = [
+        {
+            "id": "C-1",
+            "party": "Appellant",
+            "title": "Employment Contract",
+            "type": "contract",
+            "summary": "Employment contract dated 15 January 2023 between Player and Club"
+        },
+        {
+            "id": "C-2",
+            "party": "Appellant",
+            "title": "Termination Letter",
+            "type": "letter",
+            "summary": "Player's termination letter sent on 1 April 2023"
+        },
+        {
+            "id": "C-3",
+            "party": "Appellant",
+            "title": "Email Correspondence",
+            "type": "communication",
+            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
+        },
+        {
+            "id": "C-4",
+            "party": "Appellant",
+            "title": "Witness Statement",
+            "type": "statement",
+            "summary": "Statement from team captain confirming Player's exclusion"
+        },
+        {
+            "id": "R-1",
+            "party": "Respondent",
+            "title": "Club Regulations",
+            "type": "regulations",
+            "summary": "Internal regulations of the Club dated January 2022"
+        },
+        {
+            "id": "R-2",
+            "party": "Respondent",
+            "title": "Warning Letter",
+            "type": "letter",
+            "summary": "Warning letter issued to Player on 15 April 2023"
+        },
+        {
+            "id": "R-3",
+            "party": "Respondent",
+            "title": "Training Schedule",
+            "type": "schedule",
+            "summary": "Team training schedule for March-April 2023"
+        }
+    ]
+
+    # Filter exhibits data
+    filtered_exhibits = exhibits_data
+    if search_exhibits:
+        filtered_exhibits = [item for item in filtered_exhibits if 
+                            search_exhibits.lower() in item["title"].lower() or 
+                            search_exhibits.lower() in item["summary"].lower() or 
+                            search_exhibits.lower() in item["id"].lower()]
+    if party_filter != "All Parties":
+        filtered_exhibits = [item for item in filtered_exhibits if item["party"] == party_filter]
+    if type_filter != "All Types":
+        filtered_exhibits = [item for item in filtered_exhibits if item["type"] == type_filter]
+
+    # Display exhibits table
+    st.markdown("""
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>EXHIBIT ID</th>
+                <th>PARTY</th>
+                <th>TITLE</th>
+                <th>TYPE</th>
+                <th>SUMMARY</th>
+                <th style="text-align: right;">ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+    """, unsafe_allow_html=True)
+    
+    for item in filtered_exhibits:
+        party_class = "tag-blue" if item["party"] == "Appellant" else "tag-red"
+        
+        st.markdown(f"""
+        <tr>
+            <td>{item["id"]}</td>
+            <td><span class="tag {party_class}">{item["party"]}</span></td>
+            <td>{item["title"]}</td>
+            <td><span class="tag tag-gray">{item["type"]}</span></td>
+            <td>{item["summary"]}</td>
+            <td style="text-align: right;"><a href="#" style="color: #2563eb; text-decoration: none;">View</a></td>
+        </tr>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("</tbody></table>", unsafe_allow_html=True)

@@ -488,100 +488,18 @@ def main():
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
     
-    # Add Streamlit sidebar
+    # Add Streamlit sidebar with only View Selection
     with st.sidebar:
-        st.title("Legal Analysis Tools")
+        st.title("Legal Analysis")
         
-        # View selector
-        st.header("View Selection")
+        # View selector only
         view_option = st.radio(
             "Select View",
             ["Arguments", "Timeline", "Exhibits"],
             index=0
         )
-        
-        # Topic filter (only for Arguments view)
-        if view_option == "Arguments":
-            st.header("Topic Filter")
-            
-            # Create a list of topic names from the data
-            topic_names = [topic["title"] for topic in args_data["topics"]]
-            
-            # Allow selection of topics
-            selected_topic = st.selectbox(
-                "Select Topic",
-                ["All Topics"] + topic_names
-            )
-            
-            # Party filter
-            st.header("Party Filter")
-            selected_party = st.radio(
-                "Show Arguments For",
-                ["Both Parties", "Appellant Only", "Respondent Only"],
-                index=0
-            )
-            
-            # Display disputed points only
-            show_disputed = st.checkbox("Show Disputed Points Only", value=False)
-        
-        # Date range filter (for Timeline view)
-        if view_option == "Timeline":
-            st.header("Date Filter")
-            
-            # Get min and max dates from timeline data
-            dates = [item["date"] for item in timeline_data]
-            min_date = min(dates) if dates else "2023-01-01"
-            max_date = max(dates) if dates else "2023-12-31"
-            
-            date_range = st.date_input(
-                "Select Date Range",
-                [min_date, max_date]
-            )
-            
-            # Status filter
-            status_filter = st.multiselect(
-                "Status Filter",
-                ["Disputed", "Undisputed"],
-                default=["Disputed", "Undisputed"]
-            )
-        
-        # Exhibit filters
-        if view_option == "Exhibits":
-            st.header("Exhibit Filters")
-            
-            # Party filter
-            exhibit_party = st.multiselect(
-                "Party",
-                ["Appellant", "Respondent"],
-                default=["Appellant", "Respondent"]
-            )
-            
-            # Type filter
-            exhibit_types = list(set([exhibit["type"] for exhibit in exhibits_data]))
-            selected_types = st.multiselect(
-                "Document Type",
-                exhibit_types,
-                default=exhibit_types
-            )
-        
-        # Global search
-        st.header("Search")
-        search_term = st.text_input("Search All Content")
-        
-        # Add export options
-        st.header("Export Options")
-        export_format = st.selectbox(
-            "Export Format",
-            ["PDF", "Word", "JSON"]
-        )
-        st.button("Export")
-        
-        # Add app info at the bottom of sidebar
-        st.markdown("---")
-        st.caption("Legal Arguments Analysis Tool v1.0")
-        st.caption("© 2024 Legal Tech Solutions")
     
-    # Set JavaScript variables based on sidebar selections
+    # Determine which view to show based on sidebar selection
     if view_option == "Arguments":
         active_tab = 0
     elif view_option == "Timeline":
@@ -591,15 +509,7 @@ def main():
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
-        "activeTab": active_tab,
-        "search": search_term,
-        "selectedTopic": selected_topic if view_option == "Arguments" else None,
-        "selectedParty": selected_party if view_option == "Arguments" else None,
-        "showDisputed": show_disputed if view_option == "Arguments" else False,
-        "dateRange": [str(date_range[0]), str(date_range[1])] if view_option == "Timeline" and len(date_range) > 1 else None,
-        "statusFilter": status_filter if view_option == "Timeline" else None,
-        "exhibitParty": exhibit_party if view_option == "Exhibits" else None,
-        "exhibitTypes": selected_types if view_option == "Exhibits" else None
+        "activeTab": active_tab
     })
     
     # Create a single HTML component containing the full UI with minimalistic design
@@ -625,54 +535,12 @@ def main():
                 padding: 20px;
             }}
             
-            /* Search bar */
-            .search-container {{
-                margin-bottom: 20px;
-                position: relative;
-            }}
-            
-            .search-input {{
-                width: 100%;
-                padding: 12px 20px 12px 40px;
-                border: 1px solid #e1e4e8;
-                border-radius: 24px;
-                font-size: 16px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            }}
-            
-            .search-icon {{
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #8c8c8c;
-            }}
-            
-            /* Simple tabs */
-            .tabs {{
-                display: flex;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            .tab {{
-                padding: 10px 20px;
-                cursor: pointer;
-                font-weight: 500;
-                color: #585858;
-            }}
-            
-            .tab.active {{
-                color: #3182ce;
-                border-bottom: 2px solid #3182ce;
-            }}
-            
-            /* Tab content */
-            .tab-content {{
+            /* Content sections */
+            .content-section {{
                 display: none;
             }}
             
-            .tab-content.active {{
+            .content-section.active {{
                 display: block;
             }}
             
@@ -827,7 +695,7 @@ def main():
                 padding-left: 20px;
                 margin-top: 10px;
                 border-left: 1px solid #f0f0f0;
-                /* Removed display: none to always show nested content */
+                /* No display:none to show nested content */
             }}
             
             /* Simple list styling */
@@ -871,19 +739,19 @@ def main():
                 color: #666;
                 margin-right: 2px;
             }}
+            
+            /* Section title */
+            .section-title {{
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #eaeaea;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
-            <!-- Search bar - hide if using Streamlit's search -->
-            <div class="search-container" style="display: none;">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" class="search-input" id="global-search" placeholder="Search issues, arguments, or evidence...">
-            </div>
-            
             <button class="copy-button" onclick="copyAllContent()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -892,20 +760,15 @@ def main():
                 Copy All
             </button>
             
-            <!-- Simple tabs -->
-            <div class="tabs">
-                <div class="tab" data-tab="arguments">Arguments</div>
-                <div class="tab" data-tab="timeline">Timeline</div>
-                <div class="tab" data-tab="exhibits">Exhibits</div>
-            </div>
-            
-            <!-- Arguments Tab -->
-            <div id="arguments" class="tab-content">
+            <!-- Arguments Section -->
+            <div id="arguments" class="content-section">
+                <div class="section-title">Legal Arguments</div>
                 <div id="topics-container"></div>
             </div>
             
-            <!-- Timeline Tab -->
-            <div id="timeline" class="tab-content">
+            <!-- Timeline Section -->
+            <div id="timeline" class="content-section">
+                <div class="section-title">Case Timeline</div>
                 <table id="timeline-table">
                     <thead>
                         <tr>
@@ -919,8 +782,9 @@ def main():
                 </table>
             </div>
             
-            <!-- Exhibits Tab -->
-            <div id="exhibits" class="tab-content">
+            <!-- Exhibits Section -->
+            <div id="exhibits" class="content-section">
+                <div class="section-title">Case Exhibits</div>
                 <table id="exhibits-table">
                     <thead>
                         <tr>
@@ -943,55 +807,25 @@ def main():
             const exhibitsData = {exhibits_json};
             const viewOptions = {view_options_json};
             
-            // Apply initial options from Streamlit sidebar
+            // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
-                // Set active tab based on sidebar selection
-                const tabIndex = viewOptions.activeTab;
-                const tabs = document.querySelectorAll('.tab');
-                if (tabs.length > tabIndex) {{
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabs[tabIndex].classList.add('active');
-                    
-                    // Show the correct content
-                    const tabIds = ['arguments', 'timeline', 'exhibits'];
-                    document.querySelectorAll('.tab-content').forEach(content => {{
-                        content.style.display = 'none';
-                    }});
-                    document.getElementById(tabIds[tabIndex]).style.display = 'block';
-                    
-                    // Initialize content if needed
-                    if (tabIds[tabIndex] === 'timeline') renderTimeline();
-                    if (tabIds[tabIndex] === 'exhibits') renderExhibits();
-                    if (tabIds[tabIndex] === 'arguments') renderTopics();
-                }}
+                // Show the correct content based on sidebar selection
+                const sections = ['arguments', 'timeline', 'exhibits'];
+                const activeSection = sections[viewOptions.activeTab];
                 
-                // Apply search term if provided
-                if (viewOptions.search) {{
-                    applyGlobalSearch(viewOptions.search);
-                }}
-            }});
-            
-            // Tab switching (remain for user interaction within component)
-            document.querySelectorAll('.tab').forEach(tab => {{
-                tab.addEventListener('click', function() {{
-                    // Update tabs
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update content
-                    const tabId = this.getAttribute('data-tab');
-                    document.querySelectorAll('.tab-content').forEach(content => {{
-                        content.style.display = 'none';
-                    }});
-                    document.getElementById(tabId).style.display = 'block';
-                    
-                    // Initialize content if needed
-                    if (tabId === 'timeline') renderTimeline();
-                    if (tabId === 'exhibits') renderExhibits();
+                document.querySelectorAll('.content-section').forEach(section => {{
+                    section.classList.remove('active');
                 }});
+                
+                document.getElementById(activeSection).classList.add('active');
+                
+                // Initialize content as needed
+                if (activeSection === 'arguments') renderTopics();
+                if (activeSection === 'timeline') renderTimeline();
+                if (activeSection === 'exhibits') renderExhibits();
             }});
             
-            // Render overview points - updated to show paragraphs
+            // Render overview points
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
@@ -1015,13 +849,6 @@ def main():
             // Render factual points
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
-                
-                // Filter based on sidebar option
-                if (viewOptions.showDisputed) {{
-                    points = points.filter(point => point.isDisputed);
-                }}
-                
-                if (points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
                     const disputed = point.isDisputed 
@@ -1056,7 +883,7 @@ def main():
                 `;
             }}
             
-            // Render evidence - updated to match required format
+            // Render evidence
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
@@ -1085,7 +912,7 @@ def main():
                 `;
             }}
             
-            // Render case law - updated to match required format
+            // Render case law
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
@@ -1147,10 +974,6 @@ def main():
             function renderArgument(arg, side) {{
                 if (!arg) return '';
                 
-                // Apply party filter from sidebar
-                if (viewOptions.selectedParty === "Appellant Only" && side !== 'appellant') return '';
-                if (viewOptions.selectedParty === "Respondent Only" && side !== 'respondent') return '';
-                
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const argId = `${{side}}-${{arg.id}}`;
                 
@@ -1196,13 +1019,7 @@ def main():
                 const container = document.getElementById('topics-container');
                 let html = '';
                 
-                // Filter topics if a specific one is selected
-                let topicsToRender = argsData.topics;
-                if (viewOptions.selectedTopic && viewOptions.selectedTopic !== "All Topics") {{
-                    topicsToRender = argsData.topics.filter(topic => topic.title === viewOptions.selectedTopic);
-                }}
-                
-                topicsToRender.forEach(topic => {{
+                argsData.topics.forEach(topic => {{
                     html += `
                     <div class="card" style="margin-bottom: 24px;">
                         <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
@@ -1218,31 +1035,17 @@ def main():
                             
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                                    // Apply party filter from sidebar options
-                                    const showAppellant = viewOptions.selectedParty !== "Respondent Only";
-                                    const showRespondent = viewOptions.selectedParty !== "Appellant Only";
-                                    
-                                    let columnClass = "arguments-row";
-                                    if (!showAppellant || !showRespondent) {{
-                                        columnClass = "arguments-single";
-                                    }}
-                                    
                                     return `
                                     <div style="margin-top: 16px;">
-                                        <div class="${{columnClass}}">
-                                            ${{showAppellant ? `
+                                        <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
                                                 ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
-                                            ` : ''}}
-                                            
-                                            ${{showRespondent ? `
                                             <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
                                                 ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
-                                            ` : ''}}
                                         </div>
                                     </div>
                                     `;
@@ -1256,12 +1059,13 @@ def main():
                 
                 container.innerHTML = html;
                 
-                // Auto-expand first topic if only one is selected
-                if (topicsToRender.length === 1) {{
-                    setTimeout(() => {{
-                        toggleCard(`topic-${{topicsToRender[0].id}}`);
-                    }}, 100);
-                }}
+                // Auto-expand first topic
+                setTimeout(() => {{
+                    const firstTopic = argsData.topics[0];
+                    if (firstTopic) {{
+                        toggleCard(`topic-${{firstTopic.id}}`);
+                    }}
+                }}, 100);
             }}
             
             // Toggle a card without synchronizing - modified to only toggle content, not children
@@ -1311,28 +1115,7 @@ def main():
                 const tbody = document.getElementById('timeline-body');
                 tbody.innerHTML = '';
                 
-                // Apply filters from sidebar
-                let filteredTimeline = timelineData;
-                
-                // Date filter
-                if (viewOptions.dateRange && viewOptions.dateRange.length === 2) {{
-                    const startDate = new Date(viewOptions.dateRange[0]);
-                    const endDate = new Date(viewOptions.dateRange[1]);
-                    
-                    filteredTimeline = filteredTimeline.filter(item => {{
-                        const itemDate = new Date(item.date);
-                        return itemDate >= startDate && itemDate <= endDate;
-                    }});
-                }}
-                
-                // Status filter
-                if (viewOptions.statusFilter && viewOptions.statusFilter.length > 0) {{
-                    filteredTimeline = filteredTimeline.filter(item => 
-                        viewOptions.statusFilter.includes(item.status)
-                    );
-                }}
-                
-                filteredTimeline.forEach(item => {{
+                timelineData.forEach(item => {{
                     const row = document.createElement('tr');
                     if (item.status === 'Disputed') {{
                         row.classList.add('disputed');
@@ -1354,24 +1137,7 @@ def main():
                 const tbody = document.getElementById('exhibits-body');
                 tbody.innerHTML = '';
                 
-                // Apply filters from sidebar
-                let filteredExhibits = exhibitsData;
-                
-                // Party filter
-                if (viewOptions.exhibitParty && viewOptions.exhibitParty.length > 0) {{
-                    filteredExhibits = filteredExhibits.filter(item => 
-                        viewOptions.exhibitParty.includes(item.party)
-                    );
-                }}
-                
-                // Type filter
-                if (viewOptions.exhibitTypes && viewOptions.exhibitTypes.length > 0) {{
-                    filteredExhibits = filteredExhibits.filter(item => 
-                        viewOptions.exhibitTypes.includes(item.type)
-                    );
-                }}
-                
-                filteredExhibits.forEach(item => {{
+                exhibitsData.forEach(item => {{
                     const row = document.createElement('tr');
                     const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
                     
@@ -1387,77 +1153,12 @@ def main():
                 }});
             }}
             
-            // Global search function - updated to use the search from sidebar
-            function applyGlobalSearch(searchTerm) {{
-                searchTerm = searchTerm.toLowerCase();
-                
-                // If on arguments tab, filter visible arguments
-                if (document.getElementById('arguments').style.display !== 'none') {{
-                    // Implementation would go here - more complex for arguments
-                }}
-                
-                // If on timeline tab, filter timeline
-                if (document.getElementById('timeline').style.display !== 'none') {{
-                    filterTimeline(searchTerm);
-                }}
-                
-                // If on exhibits tab, filter exhibits
-                if (document.getElementById('exhibits').style.display !== 'none') {{
-                    filterExhibits(searchTerm);
-                }}
-            }}
-            
-            // Filter timeline based on search
-            function filterTimeline(searchTerm) {{
-                const rows = document.querySelectorAll('#timeline-body tr');
-                
-                rows.forEach(row => {{
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
-                }});
-            }}
-            
-            // Filter exhibits based on search
-            function filterExhibits(searchTerm) {{
-                const rows = document.querySelectorAll('#exhibits-body tr');
-                
-                rows.forEach(row => {{
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
-                }});
-            }}
-            
             // Copy all content function
             function copyAllContent() {{
                 // Simple implementation - would need to be extended 
                 // to actually collect and copy all content
                 alert('All content copied to clipboard');
             }}
-            
-            // Initialize the page based on sidebar selections
-            document.addEventListener('DOMContentLoaded', function() {{
-                const tabIds = ['arguments', 'timeline', 'exhibits'];
-                const activeTabId = tabIds[viewOptions.activeTab || 0];
-                
-                // Set active tab
-                document.querySelectorAll('.tab').forEach(tab => {{
-                    if (tab.getAttribute('data-tab') === activeTabId) {{
-                        tab.classList.add('active');
-                    }} else {{
-                        tab.classList.remove('active');
-                    }}
-                }});
-                
-                // Show active content
-                document.querySelectorAll('.tab-content').forEach(content => {{
-                    content.style.display = content.id === activeTabId ? 'block' : 'none';
-                }});
-                
-                // Initialize content
-                if (activeTabId === 'arguments') renderTopics();
-                if (activeTabId === 'timeline') renderTimeline();
-                if (activeTabId === 'exhibits') renderExhibits();
-            }});
         </script>
     </body>
     </html>

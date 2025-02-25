@@ -147,7 +147,43 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57"
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Historical documents showing color usage",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -308,7 +344,44 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247"
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Historical brand guidelines showing color changes",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -523,9 +596,8 @@ def main():
             /* View toggle */
             .view-toggle {{
                 display: flex;
-                justify-content: space-between; /* Changed from flex-end to make room for Expand All */
+                justify-content: flex-end;
                 margin-bottom: 1rem;
-                align-items: center;
             }}
             .view-toggle-container {{
                 background-color: #f7fafc;
@@ -611,44 +683,8 @@ def main():
             /* Child arguments container */
             .argument-children {{
                 padding-left: 1.5rem;
+                display: none;
                 position: relative;
-            }}
-            
-            /* Subarguments preview (new) */
-            .subarguments-preview {{
-                margin-top: 0.5rem;
-                padding: 0.5rem 1rem;
-                background-color: rgba(247, 250, 252, 0.5);
-                border-top: 1px solid #e2e8f0;
-            }}
-            .preview-title {{
-                font-size: 0.8rem;
-                color: #718096;
-                font-weight: 500;
-                margin-bottom: 0.5rem;
-            }}
-            .preview-list {{
-                display: flex;
-                flex-direction: column;
-                gap: 0.25rem;
-            }}
-            .preview-item {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.25rem 0;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                font-size: 0.85rem;
-            }}
-            .preview-item:hover {{
-                background-color: rgba(237, 242, 247, 0.7);
-            }}
-            .preview-item-claimant:hover {{
-                color: #3182ce;
-            }}
-            .preview-item-respondent:hover {{
-                color: #e53e3e;
             }}
             
             /* Connector lines for tree structure */
@@ -918,19 +954,6 @@ def main():
             .disputed {{
                 color: #c53030;
             }}
-            
-            /* Expand All button */
-            .expand-all-btn {{
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                background-color: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                cursor: pointer;
-            }}
         </style>
     </head>
     <body>
@@ -944,13 +967,6 @@ def main():
         <!-- Arguments Tab -->
         <div id="arguments" class="tab-content active">
             <div class="view-toggle">
-                <button id="expand-all-btn" class="expand-all-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="7" y1="7" x2="17" y2="17"></line>
-                        <polyline points="17 7 17 17 7 17"></polyline>
-                    </svg>
-                    Expand All
-                </button>
                 <div class="view-toggle-container">
                     <button class="view-btn active" data-view="standard">Standard View</button>
                     <button class="view-btn" data-view="topic">Topic View</button>
@@ -1090,7 +1106,7 @@ def main():
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
             
-            // Keep track of expanded states
+            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
             const expandedStates = {{}};
             
             // Tab switching
@@ -1346,42 +1362,6 @@ def main():
                 return content;
             }}
             
-            // Render subarguments preview 
-            function renderSubargumentsPreview(arg, side, path = '') {{
-                if (!arg.children || Object.keys(arg.children).length === 0) return '';
-                
-                const childrenCount = Object.keys(arg.children).length;
-                const previewClass = side === 'claimant' ? 'preview-item-claimant' : 'preview-item-respondent';
-                
-                let previewListHtml = '';
-                
-                Object.keys(arg.children).forEach(childId => {{
-                    const child = arg.children[childId];
-                    const fullPath = path ? `${{path}}-${{child.id}}` : child.id;
-                    const fullId = `${{side}}-${{fullPath}}`;
-                    
-                    previewListHtml += `
-                    <div class="preview-item ${{previewClass}}" onclick="openSubargument('${{fullId}}', event)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        ${{child.id}}. ${{child.title}} <span style="color: #718096; font-size: 0.75rem; margin-left: 0.5rem;">¶${{child.paragraphs}}</span>
-                    </div>
-                    `;
-                }});
-                
-                return `
-                <div class="subarguments-preview">
-                    <div class="preview-title">Subarguments (${{childrenCount}})</div>
-                    <div class="preview-list">
-                        ${{previewListHtml}}
-                    </div>
-                </div>
-                `;
-            }}
-            
             // Render a single argument including its children
             function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
@@ -1419,18 +1399,16 @@ def main():
                 // Detailed content
                 const contentHtml = renderArgumentContent(arg);
                 
-                // Subarguments preview
-                const previewHtml = hasChildren ? renderSubargumentsPreview(arg, side, argId) : '';
-                
                 // Child arguments
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    const childrenArgs = Object.values(arg.children).map(child => {{
+                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
+                        // Pass the full path for this argument's children
                         return renderArgument(child, side, argId, level + 1);
                     }}).join('');
                     
                     childrenHtml = `
-                    <div id="children-${{fullId}}" class="argument-children" style="display: none;">
+                    <div id="children-${{fullId}}" class="argument-children">
                         <div class="connector-vertical ${{connectorClass}}"></div>
                         ${{childrenArgs}}
                     </div>
@@ -1441,13 +1419,12 @@ def main():
                 return `
                 <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
                     ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
                         ${{headerHtml}}
                     </div>
                     <div id="content-${{fullId}}" class="argument-content">
                         ${{contentHtml}}
                     </div>
-                    ${{previewHtml}}
                     ${{childrenHtml}}
                 </div>
                 `;
@@ -1519,115 +1496,48 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Get corresponding element for opposite side
-            function getCorrespondingElement(id, type) {{
-                // Parse the ID to extract side and path
-                const parts = id.split('-');
-                const side = parts[0]; // 'claimant' or 'respondent'
-                const path = parts.slice(1).join('-'); // The argument path (e.g., '1.1.1')
-                
-                // Generate the corresponding ID for the opposite side
-                const oppositeSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const oppositeId = `${{oppositeSide}}-${{path}}`;
-                
-                // Return the corresponding element
-                return document.getElementById(`${{type}}-${{oppositeId}}`);
-            }}
-            
-            // Open a specific subargument from the preview
-            function openSubargument(id, event) {{
-                // Prevent event bubbling
-                event.stopPropagation();
-                
-                // Get the argument path
-                const parts = id.split('-');
-                const side = parts[0]; // 'claimant' or 'respondent'
-                const path = parts.slice(1).join('-'); // The argument path (e.g., '1.1.1')
-                
-                // Split the path to navigate through parent arguments
-                const pathParts = path.split('-');
-                
-                // We need to make sure all parent arguments are expanded first
-                let currentPath = '';
-                for (let i = 0; i < pathParts.length - 1; i++) {{
-                    // Build parent path
-                    currentPath = currentPath ? `${{currentPath}}-${{pathParts[i]}}` : pathParts[i];
-                    
-                    // Expand parent argument
-                    const parentId = `${{side}}-${{currentPath}}`;
-                    toggleArgument(parentId, true);
-                }}
-                
-                // Finally, expand the subargument itself
-                toggleArgument(id, true);
-            }}
-            
-            // Toggle argument expansion with synchronized pairing
-            function toggleArgument(id, forceExpand = false) {{
-                // Get the argument elements
-                const contentEl = document.getElementById(`content-${{id}}`);
-                const childrenEl = document.getElementById(`children-${{id}}`);
-                const chevronEl = document.getElementById(`chevron-${{id}}`);
-                
-                // Check if elements exist
-                if (!contentEl) return;
+            // Toggle argument expansion - updated to handle nested paths
+            function toggleArgument(fullId, argPath) {{
+                // Determine the side (claimant or respondent)
+                const [side, ...rest] = fullId.split('-');
                 
                 // Toggle this argument
+                const contentEl = document.getElementById(`content-${{fullId}}`);
+                const childrenEl = document.getElementById(`children-${{fullId}}`);
+                const chevronEl = document.getElementById(`chevron-${{fullId}}`);
+                
                 const isExpanded = contentEl.style.display === 'block';
-                const newState = forceExpand ? true : !isExpanded;
-                
-                contentEl.style.display = newState ? 'block' : 'none';
-                
+                contentEl.style.display = isExpanded ? 'none' : 'block';
                 if (chevronEl) {{
-                    chevronEl.style.transform = newState ? 'rotate(90deg)' : '';
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
                 }}
-                
                 if (childrenEl) {{
-                    childrenEl.style.display = newState ? 'block' : 'none';
+                    childrenEl.style.display = isExpanded ? 'none' : 'block';
                 }}
                 
                 // Save expanded state
-                expandedStates[id] = newState;
+                expandedStates[fullId] = !isExpanded;
                 
-                // Get corresponding elements on the opposite side
-                const oppositeContentEl = getCorrespondingElement(id, 'content');
-                const oppositeChildrenEl = getCorrespondingElement(id, 'children');
-                const oppositeChevronEl = getCorrespondingElement(id, 'chevron');
+                // Find and toggle the paired argument based on the path
+                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
+                const pairedId = `${{otherSide}}-${{argPath}}`;
                 
-                // Synchronize with opposite side
-                if (oppositeContentEl) {{
-                    oppositeContentEl.style.display = contentEl.style.display;
-                    
-                    // Update the opposite side's state
-                    const oppositeId = oppositeContentEl.id.replace('content-', '');
-                    expandedStates[oppositeId] = expandedStates[id];
+                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
+                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
+                
+                if (pairedContentEl) {{
+                    pairedContentEl.style.display = contentEl.style.display;
+                    expandedStates[pairedId] = expandedStates[fullId];
                 }}
                 
-                if (oppositeChevronEl) {{
-                    oppositeChevronEl.style.transform = chevronEl.style.transform;
+                if (pairedChevronEl) {{
+                    pairedChevronEl.style.transform = chevronEl.style.transform;
                 }}
                 
-                if (oppositeChildrenEl) {{
-                    oppositeChildrenEl.style.display = childrenEl ? childrenEl.style.display : 'none';
+                if (pairedChildrenEl) {{
+                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
                 }}
-            }}
-            
-            // Expand all arguments
-            function expandAll() {{
-                // Get all argument headers
-                const headers = document.querySelectorAll('.argument-header');
-                
-                // For each header, expand its argument
-                headers.forEach(header => {{
-                    // Get the argument ID from the onclick attribute
-                    const onclickAttr = header.getAttribute('onclick');
-                    if (onclickAttr) {{
-                        const match = onclickAttr.match(/toggleArgument\\('([^']+)'\\)/);
-                        if (match && match[1]) {{
-                            toggleArgument(match[1], true);
-                        }}
-                    }}
-                }});
             }}
             
             // Render timeline
@@ -1735,9 +1645,6 @@ def main():
                     tbody.appendChild(row);
                 }});
             }}
-            
-            // Set up Expand All button
-            document.getElementById('expand-all-btn').addEventListener('click', expandAll);
             
             // Initialize the page
             renderStandardArguments();

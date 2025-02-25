@@ -501,9 +501,10 @@ def main():
             body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
-                color: #333;
+                color: #4a5568;
                 margin: 0;
                 padding: 0;
+                background-color: #fafafa;
             }}
             
             /* Tab navigation */
@@ -511,6 +512,7 @@ def main():
                 display: flex;
                 border-bottom: 1px solid #e2e8f0;
                 margin-bottom: 1.5rem;
+                background-color: white;
             }}
             .tab {{
                 padding: 1rem 1.5rem;
@@ -523,13 +525,17 @@ def main():
                 color: #4a5568;
             }}
             .tab.active {{
-                color: #3182ce;
-                border-bottom: 2px solid #3182ce;
+                color: #4a5568;
+                border-bottom: 2px solid #718096;
             }}
             
             /* Tab content sections */
             .tab-content {{
                 display: none;
+                background-color: white;
+                border-radius: 4px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                padding: 1rem;
             }}
             .tab-content.active {{
                 display: block;
@@ -570,10 +576,14 @@ def main():
                 margin-bottom: 1rem;
             }}
             .claimant-color {{
-                color: #3182ce;
+                color: #4a5568;
+                border-bottom: 2px solid #718096;
+                padding-bottom: 0.5rem;
             }}
             .respondent-color {{
-                color: #e53e3e;
+                color: #4a5568;
+                border-bottom: 2px solid #718096;
+                padding-bottom: 0.5rem;
             }}
             
             /* Argument container and pairs */
@@ -594,6 +604,7 @@ def main():
                 border-radius: 0.375rem;
                 overflow: hidden;
                 margin-bottom: 1rem;
+                background-color: white;
             }}
             .argument-header {{
                 padding: 0.75rem 1rem;
@@ -614,12 +625,12 @@ def main():
                 background-color: white;
             }}
             .claimant-header {{
-                background-color: #ebf8ff;
-                border-color: #bee3f8;
+                background-color: #f8fafc;
+                border-left: 3px solid #64748b;
             }}
             .respondent-header {{
-                background-color: #fff5f5;
-                border-color: #fed7d7;
+                background-color: #f8fafc;
+                border-left: 3px solid #64748b;
             }}
             
             /* Child arguments container */
@@ -647,10 +658,10 @@ def main():
                 background-color: #e2e8f0;
             }}
             .claimant-connector {{
-                background-color: rgba(59, 130, 246, 0.5);
+                background-color: #e2e8f0;
             }}
             .respondent-connector {{
-                background-color: rgba(239, 68, 68, 0.5);
+                background-color: #e2e8f0;
             }}
             
             /* Badge styling */
@@ -659,23 +670,27 @@ def main():
                 padding: 0.25rem 0.5rem;
                 border-radius: 0.25rem;
                 font-size: 0.75rem;
+                background-color: #f7fafc;
+                color: #4a5568;
+                border: 1px solid #e2e8f0;
             }}
             .claimant-badge {{
-                background-color: #ebf8ff;
-                color: #3182ce;
+                background-color: #f8fafc;
+                color: #4a5568;
             }}
             .respondent-badge {{
-                background-color: #fff5f5;
-                color: #e53e3e;
+                background-color: #f8fafc;
+                color: #4a5568;
             }}
             .exhibit-badge {{
-                background-color: #fef3c7;
-                color: #d97706;
+                background-color: #f9fafb;
+                color: #4a5568;
                 margin-right: 0.25rem;
             }}
             .disputed-badge {{
-                background-color: #fed7d7;
-                color: #c53030;
+                border-color: #cbd5e0;
+                background-color: #f8fafc;
+                color: #718096;
             }}
             .type-badge {{
                 background-color: #edf2f7;
@@ -690,12 +705,16 @@ def main():
                 font-size: 0.875rem;
                 font-weight: 500;
                 margin-bottom: 0.5rem;
+                color: #4a5568;
+                padding-bottom: 0.25rem;
+                border-bottom: 1px solid #e2e8f0;
             }}
             .point-block {{
-                background-color: #f7fafc;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 0.75rem;
                 margin-bottom: 0.5rem;
+                border: 1px solid #e2e8f0;
             }}
             .point-header {{
                 display: flex;
@@ -724,10 +743,11 @@ def main():
             
             /* Overview points */
             .overview-block {{
-                background-color: #f7fafc;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 1rem;
                 margin-bottom: 1rem;
+                border: 1px solid #e2e8f0;
             }}
             .overview-header {{
                 display: flex;
@@ -750,7 +770,7 @@ def main():
                 width: 6px;
                 height: 6px;
                 border-radius: 50%;
-                background-color: #3182ce;
+                background-color: #64748b;
                 margin-top: 0.5rem;
             }}
             .overview-point-container {{
@@ -766,10 +786,11 @@ def main():
             
             /* Evidence and Case Law */
             .reference-block {{
-                background-color: #f7fafc;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 0.75rem;
                 margin-bottom: 0.5rem;
+                border: 1px solid #e2e8f0;
             }}
             .reference-header {{
                 display: flex;
@@ -798,14 +819,16 @@ def main():
                 padding: 0.125rem 0.375rem;
                 border-radius: 0.25rem;
                 font-size: 0.75rem;
+                border: 1px solid #e2e8f0;
             }}
             
             /* Factual points styling */
             .factual-point {{
-                background-color: #f0fff4;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 0.75rem;
                 margin-bottom: 0.5rem;
+                border: 1px solid #e2e8f0;
             }}
             
             /* Topic view */
@@ -886,33 +909,35 @@ def main():
                 border-bottom: 1px solid #e2e8f0;
             }}
             .data-table tr.disputed {{
-                background-color: #fff5f5;
+                background-color: #f9fafb;
             }}
             
             /* Status indicators */
             .undisputed {{
-                color: #2f855a;
+                color: #4a5568;
             }}
             .disputed {{
-                color: #c53030;
+                color: #718096;
             }}
 
             /* Case law styling */
             .case-law-block {{
-                background-color: #e6f7ff;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 1rem;
                 margin-bottom: 1rem;
-                border-left: 4px solid #1890ff;
+                border: 1px solid #e2e8f0;
+                border-left: 2px solid #64748b;
             }}
 
             /* Documentary evidence styling */
             .documentary-block {{
-                background-color: #fff8e6;
+                background-color: #f9fafb;
                 border-radius: 0.5rem;
                 padding: 1rem;
                 margin-bottom: 1rem;
-                border-left: 4px solid #faad14;
+                border: 1px solid #e2e8f0;
+                border-left: 2px solid #64748b;
             }}
         </style>
     </head>
@@ -1203,7 +1228,7 @@ def main():
                         <div class="reference-header">
                             <span class="reference-title">${{item.id}}: ${{item.title}}</span>
                             <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d48806" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                 </svg>
@@ -1243,7 +1268,7 @@ def main():
                                 <span class="point-citation" style="margin-left: 0.5rem;">¶${{item.paragraphs}}</span>
                             </div>
                             <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1890ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#718096" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                 </svg>
@@ -1305,7 +1330,7 @@ def main():
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
                 // Style based on side
-                const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
+                const baseColor = '#4a5568';
                 const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
                 const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
                 const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
@@ -1571,7 +1596,7 @@ def main():
                         <td>${{item.title}}</td>
                         <td><span class="badge type-badge">${{item.type}}</span></td>
                         <td>${{item.summary}}</td>
-                        <td style="text-align: right;"><a href="#" style="color: #3182ce; text-decoration: none;">View</a></td>
+                        <td style="text-align: right;"><a href="#" style="color: #4a5568; text-decoration: none;">View</a></td>
                     `;
                     
                     tbody.appendChild(row);

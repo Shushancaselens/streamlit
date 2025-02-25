@@ -3,8 +3,6 @@ import pandas as pd
 from datetime import datetime
 import json
 import base64
-from streamlit_option_menu import option_menu
-import streamlit.components.v1 as components
 
 # Set page configuration
 st.set_page_config(
@@ -228,6 +226,28 @@ st.markdown("""
     .view-toggle-active {
         background-color: white;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Style the native Streamlit tabs */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        background-color: white;
+        padding: 0px !important;
+    }
+    
+    /* Make the selected tab stand out */
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: white !important;
+        border-bottom: 2px solid #3b82f6 !important;
+        color: #3b82f6 !important;
+    }
+    
+    button[data-baseweb="tab"] {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+    }
+    
+    div[role="tablist"] {
+        background-color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -520,75 +540,166 @@ timeline_data, exhibits_data, topic_sections = load_data()
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown('<div class="card-title">Legal Arguments Analysis</div>', unsafe_allow_html=True)
 
-# Tab navigation
-with st.container():
-    col1, col2, col3, col4 = st.columns([2, 2, 2, 6])
-    
-    with col1:
-        if st.button("Summary of Arguments", 
-                    key="summary_tab", 
-                    help="View legal arguments analysis",
-                    use_container_width=True,
-                    type="secondary" if st.session_state.active_tab != "arguments" else "primary"):
-            st.session_state.active_tab = "arguments"
-            st.rerun()
-    
+# Tab navigation using Streamlit's native tabs
+tabs = st.tabs(["Summary of Arguments", "Timeline", "Exhibits"])
+
+# Main content goes in each tab
+with tabs[0]:  # Arguments Tab
+    # View mode toggle
+    col1, col2 = st.columns([7, 3])
     with col2:
-        if st.button("Timeline", 
-                    key="timeline_tab", 
-                    help="View case timeline",
-                    use_container_width=True,
-                    type="secondary" if st.session_state.active_tab != "timeline" else "primary"):
-            st.session_state.active_tab = "timeline"
-            st.rerun()
+        view_mode = st.radio(
+            "View Mode:",
+            ["Standard View", "Topic View"],
+            horizontal=True,
+            label_visibility="collapsed",
+            index=0 if st.session_state.view_mode == "default" else 1
+        )
+        st.session_state.view_mode = "default" if view_mode == "Standard View" else "hierarchical"
     
-    with col3:
-        if st.button("Exhibits", 
-                    key="exhibits_tab", 
-                    help="View case exhibits",
-                    use_container_width=True,
-                    type="secondary" if st.session_state.active_tab != "exhibits" else "primary"):
-            st.session_state.active_tab = "exhibits"
-            st.rerun()
+    # Helper functions for argument rendering
+    def toggle_argument(arg_id):
+        if arg_id in st.session_state.expanded_arguments:
+            st.session_state.expanded_arguments.pop(arg_id)
+        else:
+            st.session_state.expanded_arguments[arg_id] = True
     
-    with col4:
-        if st.session_state.active_tab in ["timeline", "exhibits"]:
-            col_a, col_b = st.columns([5, 1])
-            with col_b:
-                st.download_button(
-                    "Export Data",
-                    data=json.dumps(timeline_data if st.session_state.active_tab == "timeline" else exhibits_data),
-                    file_name=f"{st.session_state.active_tab}_data.json",
-                    mime="application/json",
+    def render_overview_points(points, paragraphs):
+        st.markdown(f"""
+        <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <h6 style="font-size: 14px; font-weight: 500;">Key Points</h6>
+                <span style="font-size: 12px; background-color: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px;">¶{paragraphs}</span>
+            </div>
+            <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+                {"".join([f'<li style="display: flex; align-items: center; margin-bottom: 8px;"><div style="width: 6px; height: 6px; border-radius: 50%; background-color: #3b82f6; margin-right: 8px;"></div><span style="font-size: 14px; color: #4b5563;">{point}</span></li>' for point in points])}
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def render_legal_point(point, is_disputed, regulations, paragraphs):
+        st.markdown(f"""
+        <div style="background-color: #eff6ff; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 12px; padding: 2px 8px; background-color: #dbeafe; color: #1e40af; border-radius: 4px;">Legal</span>
+                {f'<span style="font-size: 12px; padding: 2px 8px; background-color: #fee2e2; color: #b91c1c; border-radius: 4px;">Disputed</span>' if is_disputed else ''}
+            </div>
+            <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{point}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {"".join([f'<span style="font-size: 12px; background-color: #dbeafe; padding: 4px 8px; border-radius: 4px;">{reg}</span>' for reg in regulations])}
+                <span style="font-size: 12px; color: #6b7280; margin-left: 4px;">¶{paragraphs}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def render_factual_point(point, date, is_disputed, source, paragraphs):
+        st.markdown(f"""
+        <div style="background-color: #f0fdf4; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 12px; padding: 2px 8px; background-color: #dcfce7; color: #166534; border-radius: 4px;">Factual</span>
+                {f'<span style="font-size: 12px; padding: 2px 8px; background-color: #fee2e2; color: #b91c1c; border-radius: 4px;">Disputed by {source}</span>' if is_disputed else ''}
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span style="font-size: 12px; color: #6b7280;">{date}</span>
+            </div>
+            <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{point}</p>
+            <span style="font-size: 12px; color: #6b7280; display: block;">¶{paragraphs}</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def render_evidence(id, title, summary, citations):
+        st.markdown(f"""
+        <div style="background-color: #f3f4f6; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <p style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">{id}: {title}</p>
+                    <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">{summary}</p>
+                    <div>
+                        <span style="font-size: 12px; color: #6b7280;">Cited in: </span>
+                        {"".join([f'<span style="font-size: 12px; background-color: #e5e7eb; border-radius: 4px; padding: 2px 8px; margin-left: 4px;">¶{cite}</span>' for cite in citations])}
+                    </div>
+                </div>
+                <button style="background: none; border: none; color: #6b7280; padding: 4px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def render_case_law(case_number, title, relevance, paragraphs, cited_paragraphs):
+        st.markdown(f"""
+        <div style="background-color: #f3f4f6; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <p style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">{case_number}</p>
+                        <span style="font-size: 12px; color: #6b7280;">¶{paragraphs}</span>
+                    </div>
+                    <p style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">{title}</p>
+                    <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{relevance}</p>
+                    {f'''
+                    <div>
+                        <span style="font-size: 12px; color: #6b7280;">Key Paragraphs: </span>
+                        {"".join([f'<span style="font-size: 12px; background-color: #e5e7eb; border-radius: 4px; padding: 2px 8px; margin-left: 4px;">¶{para}</span>' for para in cited_paragraphs])}
+                    </div>
+                    ''' if cited_paragraphs else ''}
+                </div>
+                <button style="background: none; border: none; color: #6b7280; padding: 4px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    def render_argument_content(argument, side):
+        if argument.get("overview") and argument["overview"].get("points"):
+            st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Key Points</h6>', unsafe_allow_html=True)
+            render_overview_points(argument["overview"]["points"], argument["overview"]["paragraphs"])
+        
+        if argument.get("legal_points") and len(argument["legal_points"]) > 0:
+            st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Legal Points</h6>', unsafe_allow_html=True)
+            for point in argument["legal_points"]:
+                render_legal_point(
+                    point["point"], 
+                    point.get("is_disputed", False), 
+                    point.get("regulations", []), 
+                    point.get("paragraphs", "")
                 )
-
-# Add horizontal line
-st.markdown('<hr style="margin-bottom: 20px; margin-top: 10px; border-color: #e5e7eb;">', unsafe_allow_html=True)
-
-# Arguments Tab
-if st.session_state.active_tab == "arguments":
-    # View toggle
-    col1, col2, col3 = st.columns([6, 3, 3])
-    with col3:
-        st.write('<div class="view-toggle">', unsafe_allow_html=True)
-        cols = st.columns(2)
-        with cols[0]:
-            if st.button("Standard View", 
-                        key="standard_view",
-                        type="secondary" if st.session_state.view_mode != "default" else "primary",
-                        use_container_width=True):
-                st.session_state.view_mode = "default"
-                st.rerun()
-        with cols[1]:
-            if st.button("Topic View", 
-                        key="topic_view",
-                        type="secondary" if st.session_state.view_mode != "hierarchical" else "primary",
-                        use_container_width=True):
-                st.session_state.view_mode = "hierarchical"
-                st.rerun()
-        st.write('</div>', unsafe_allow_html=True)
+        
+        if argument.get("factual_points") and len(argument["factual_points"]) > 0:
+            st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Factual Points</h6>', unsafe_allow_html=True)
+            for point in argument["factual_points"]:
+                render_factual_point(
+                    point["point"], 
+                    point.get("date", ""), 
+                    point.get("is_disputed", False), 
+                    point.get("source", ""), 
+                    point.get("paragraphs", "")
+                )
+        
+        if argument.get("evidence") and len(argument["evidence"]) > 0:
+            st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Evidence</h6>', unsafe_allow_html=True)
+            for item in argument["evidence"]:
+                render_evidence(
+                    item["id"], 
+                    item["title"], 
+                    item.get("summary", ""), 
+                    item.get("citations", [])
+                )
+        
+        if argument.get("case_law") and len(argument["case_law"]) > 0:
+            st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Case Law</h6>', unsafe_allow_html=True)
+            for item in argument["case_law"]:
+                render_case_law(
+                    item["case_number"], 
+                    item["title"], 
+                    item.get("relevance", ""), 
+                    item.get("paragraphs", ""), 
+                    item.get("cited_paragraphs", [])
+                )
     
-    # Default View (Standard)
+    # Standard View Layout
     if st.session_state.view_mode == "default":
         # Headers
         col1, col2 = st.columns(2)
@@ -597,155 +708,7 @@ if st.session_state.active_tab == "arguments":
         with col2:
             st.markdown('<h2 style="font-size: 18px; font-weight: 600; color: #b91c1c;">Respondent\'s Arguments</h2>', unsafe_allow_html=True)
         
-        # Handle argument expansion
-        def toggle_argument(arg_id):
-            if arg_id in st.session_state.expanded_arguments:
-                st.session_state.expanded_arguments.pop(arg_id)
-            else:
-                st.session_state.expanded_arguments[arg_id] = True
-        
-        # Render argument components
-        def render_overview_points(points, paragraphs):
-            with st.container():
-                st.markdown(f"""
-                <div style="background-color: #f3f4f6; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <h6 style="font-size: 14px; font-weight: 500;">Key Points</h6>
-                        <span style="font-size: 12px; background-color: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px;">¶{paragraphs}</span>
-                    </div>
-                    <ul style="list-style-type: none; padding-left: 0; margin: 0;">
-                        {"".join([f'<li style="display: flex; align-items: center; margin-bottom: 8px;"><div style="width: 6px; height: 6px; border-radius: 50%; background-color: #3b82f6; margin-right: 8px;"></div><span style="font-size: 14px; color: #4b5563;">{point}</span></li>' for point in points])}
-                    </ul>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        def render_legal_point(point, is_disputed, regulations, paragraphs):
-            with st.container():
-                st.markdown(f"""
-                <div style="background-color: #eff6ff; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                        <span style="font-size: 12px; padding: 2px 8px; background-color: #dbeafe; color: #1e40af; border-radius: 4px;">Legal</span>
-                        {f'<span style="font-size: 12px; padding: 2px 8px; background-color: #fee2e2; color: #b91c1c; border-radius: 4px;">Disputed</span>' if is_disputed else ''}
-                    </div>
-                    <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{point}</p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                        {"".join([f'<span style="font-size: 12px; background-color: #dbeafe; padding: 4px 8px; border-radius: 4px;">{reg}</span>' for reg in regulations])}
-                        <span style="font-size: 12px; color: #6b7280; margin-left: 4px;">¶{paragraphs}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        def render_factual_point(point, date, is_disputed, source, paragraphs):
-            with st.container():
-                st.markdown(f"""
-                <div style="background-color: #f0fdf4; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                        <span style="font-size: 12px; padding: 2px 8px; background-color: #dcfce7; color: #166534; border-radius: 4px;">Factual</span>
-                        {f'<span style="font-size: 12px; padding: 2px 8px; background-color: #fee2e2; color: #b91c1c; border-radius: 4px;">Disputed by {source}</span>' if is_disputed else ''}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        <span style="font-size: 12px; color: #6b7280;">{date}</span>
-                    </div>
-                    <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{point}</p>
-                    <span style="font-size: 12px; color: #6b7280; display: block;">¶{paragraphs}</span>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        def render_evidence(id, title, summary, citations):
-            with st.container():
-                st.markdown(f"""
-                <div style="background-color: #f3f4f6; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <p style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">{id}: {title}</p>
-                            <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">{summary}</p>
-                            <div>
-                                <span style="font-size: 12px; color: #6b7280;">Cited in: </span>
-                                {"".join([f'<span style="font-size: 12px; background-color: #e5e7eb; border-radius: 4px; padding: 2px 8px; margin-left: 4px;">¶{cite}</span>' for cite in citations])}
-                            </div>
-                        </div>
-                        <button style="background: none; border: none; color: #6b7280; padding: 4px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        </button>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        def render_case_law(case_number, title, relevance, paragraphs, cited_paragraphs):
-            with st.container():
-                st.markdown(f"""
-                <div style="background-color: #f3f4f6; border-radius: 8px; padding: 12px; margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <p style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">{case_number}</p>
-                                <span style="font-size: 12px; color: #6b7280;">¶{paragraphs}</span>
-                            </div>
-                            <p style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">{title}</p>
-                            <p style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">{relevance}</p>
-                            {f'''
-                            <div>
-                                <span style="font-size: 12px; color: #6b7280;">Key Paragraphs: </span>
-                                {"".join([f'<span style="font-size: 12px; background-color: #e5e7eb; border-radius: 4px; padding: 2px 8px; margin-left: 4px;">¶{para}</span>' for para in cited_paragraphs])}
-                            </div>
-                            ''' if cited_paragraphs else ''}
-                        </div>
-                        <button style="background: none; border: none; color: #6b7280; padding: 4px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        </button>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        def render_argument_content(argument, side):
-            if argument.get("overview") and argument["overview"].get("points"):
-                st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Key Points</h6>', unsafe_allow_html=True)
-                render_overview_points(argument["overview"]["points"], argument["overview"]["paragraphs"])
-            
-            if argument.get("legal_points") and len(argument["legal_points"]) > 0:
-                st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Legal Points</h6>', unsafe_allow_html=True)
-                for point in argument["legal_points"]:
-                    render_legal_point(
-                        point["point"], 
-                        point.get("is_disputed", False), 
-                        point.get("regulations", []), 
-                        point.get("paragraphs", "")
-                    )
-            
-            if argument.get("factual_points") and len(argument["factual_points"]) > 0:
-                st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Factual Points</h6>', unsafe_allow_html=True)
-                for point in argument["factual_points"]:
-                    render_factual_point(
-                        point["point"], 
-                        point.get("date", ""), 
-                        point.get("is_disputed", False), 
-                        point.get("source", ""), 
-                        point.get("paragraphs", "")
-                    )
-            
-            if argument.get("evidence") and len(argument["evidence"]) > 0:
-                st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Evidence</h6>', unsafe_allow_html=True)
-                for item in argument["evidence"]:
-                    render_evidence(
-                        item["id"], 
-                        item["title"], 
-                        item.get("summary", ""), 
-                        item.get("citations", [])
-                    )
-            
-            if argument.get("case_law") and len(argument["case_law"]) > 0:
-                st.markdown(f'<h6 style="font-size: 14px; font-weight: 500; margin-bottom: 8px;">Case Law</h6>', unsafe_allow_html=True)
-                for item in argument["case_law"]:
-                    render_case_law(
-                        item["case_number"], 
-                        item["title"], 
-                        item.get("relevance", ""), 
-                        item.get("paragraphs", ""), 
-                        item.get("cited_paragraphs", [])
-                    )
-        
-        # Render arguments for default view
+        # Render all topic arguments in standard view
         for topic in topic_sections:
             for argument_pair in topic["arguments"]:
                 arg_id = argument_pair["id"]
@@ -758,51 +721,41 @@ if st.session_state.active_tab == "arguments":
                 with cols[0]:
                     claimant_expanded = arg_id in st.session_state.expanded_arguments
                     
-                    # Argument header
-                    claimant_header = f"""
-                    <div class="argument-header claimant-header" id="claimant-{arg_id}">
-                        <span>{'▼' if claimant_expanded else '▶'}</span>
-                        <span class="argument-title">{arg_id}. {claimant_arg['title']}</span>
-                        <span style="margin-left: auto; font-size: 12px; background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 12px;">¶{claimant_arg['paragraphs']}</span>
-                    </div>
-                    """
-                    
-                    if st.markdown(claimant_header, unsafe_allow_html=True):
+                    # Create a clickable header
+                    if st.button(
+                        f"{'▼' if claimant_expanded else '▶'} {arg_id}. {claimant_arg['title']} (¶{claimant_arg['paragraphs']})",
+                        key=f"claimant-{arg_id}",
+                        use_container_width=True,
+                        type="primary"
+                    ):
                         toggle_argument(arg_id)
                         st.rerun()
                     
-                    # Expanded content
+                    # Show expanded content
                     if claimant_expanded:
                         with st.container():
-                            st.markdown('<div class="argument-content">', unsafe_allow_html=True)
                             render_argument_content(claimant_arg, "claimant")
-                            st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Respondent side
                 with cols[1]:
                     respondent_expanded = arg_id in st.session_state.expanded_arguments
                     
-                    # Argument header
-                    respondent_header = f"""
-                    <div class="argument-header respondent-header" id="respondent-{arg_id}">
-                        <span>{'▼' if respondent_expanded else '▶'}</span>
-                        <span class="argument-title">{arg_id}. {respondent_arg['title']}</span>
-                        <span style="margin-left: auto; font-size: 12px; background-color: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2px 8px; border-radius: 12px;">¶{respondent_arg['paragraphs']}</span>
-                    </div>
-                    """
-                    
-                    if st.markdown(respondent_header, unsafe_allow_html=True):
+                    # Create a clickable header
+                    if st.button(
+                        f"{'▼' if respondent_expanded else '▶'} {arg_id}. {respondent_arg['title']} (¶{respondent_arg['paragraphs']})",
+                        key=f"respondent-{arg_id}",
+                        use_container_width=True,
+                        type="secondary"
+                    ):
                         toggle_argument(arg_id)
                         st.rerun()
                     
-                    # Expanded content
+                    # Show expanded content
                     if respondent_expanded:
                         with st.container():
-                            st.markdown('<div class="argument-content">', unsafe_allow_html=True)
                             render_argument_content(respondent_arg, "respondent")
-                            st.markdown('</div>', unsafe_allow_html=True)
     
-    # Hierarchical View (Topic View)
+    # Topic View Layout
     else:
         for topic in topic_sections:
             # Topic header
@@ -832,55 +785,55 @@ if st.session_state.active_tab == "arguments":
                 with cols[0]:
                     claimant_expanded = arg_id in st.session_state.expanded_arguments
                     
-                    # Argument header
-                    claimant_header = f"""
-                    <div class="argument-header claimant-header" id="claimant-{arg_id}">
-                        <span>{'▼' if claimant_expanded else '▶'}</span>
-                        <span class="argument-title">{arg_id}. {claimant_arg['title']}</span>
-                        <span style="margin-left: auto; font-size: 12px; background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 2px 8px; border-radius: 12px;">¶{claimant_arg['paragraphs']}</span>
-                    </div>
-                    """
-                    
-                    if st.markdown(claimant_header, unsafe_allow_html=True):
+                    # Create a clickable header
+                    if st.button(
+                        f"{'▼' if claimant_expanded else '▶'} {arg_id}. {claimant_arg['title']} (¶{claimant_arg['paragraphs']})",
+                        key=f"claimant-topic-{arg_id}",
+                        use_container_width=True,
+                        type="primary"
+                    ):
                         toggle_argument(arg_id)
                         st.rerun()
                     
-                    # Expanded content
+                    # Show expanded content
                     if claimant_expanded:
                         with st.container():
-                            st.markdown('<div class="argument-content">', unsafe_allow_html=True)
                             render_argument_content(claimant_arg, "claimant")
-                            st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Respondent side
                 with cols[1]:
                     respondent_expanded = arg_id in st.session_state.expanded_arguments
                     
-                    # Argument header
-                    respondent_header = f"""
-                    <div class="argument-header respondent-header" id="respondent-{arg_id}">
-                        <span>{'▼' if respondent_expanded else '▶'}</span>
-                        <span class="argument-title">{arg_id}. {respondent_arg['title']}</span>
-                        <span style="margin-left: auto; font-size: 12px; background-color: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2px 8px; border-radius: 12px;">¶{respondent_arg['paragraphs']}</span>
-                    </div>
-                    """
-                    
-                    if st.markdown(respondent_header, unsafe_allow_html=True):
+                    # Create a clickable header
+                    if st.button(
+                        f"{'▼' if respondent_expanded else '▶'} {arg_id}. {respondent_arg['title']} (¶{respondent_arg['paragraphs']})",
+                        key=f"respondent-topic-{arg_id}",
+                        use_container_width=True,
+                        type="secondary"
+                    ):
                         toggle_argument(arg_id)
                         st.rerun()
                     
-                    # Expanded content
+                    # Show expanded content
                     if respondent_expanded:
                         with st.container():
-                            st.markdown('<div class="argument-content">', unsafe_allow_html=True)
                             render_argument_content(respondent_arg, "respondent")
-                            st.markdown('</div>', unsafe_allow_html=True)
             
             # Add spacing between topics
             st.markdown("<div style='height: 24px;'></div>", unsafe_allow_html=True)
 
-# Timeline Tab
-elif st.session_state.active_tab == "timeline":
+with tabs[1]:  # Timeline Tab
+    # Action buttons
+    col_right = st.columns([1])[0]
+    with col_right:
+        st.download_button(
+            "Export Data",
+            data=json.dumps(timeline_data),
+            file_name="timeline_data.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+    
     # Search and filter
     col1, col2, col3 = st.columns([3, 1, 2])
     
@@ -906,41 +859,55 @@ elif st.session_state.active_tab == "timeline":
         filtered_timeline = [item for item in filtered_timeline if item["status"] == "Disputed"]
     
     # Display the timeline table
-    st.markdown('<div style="background-color: white; border-radius: 8px; border: 1px solid #e5e7eb; overflow: hidden; margin-top: 16px;">', unsafe_allow_html=True)
+    df = pd.DataFrame(filtered_timeline)
     
-    # Table header
-    st.markdown("""
-    <div style="display: grid; grid-template-columns: 15% 35% 35% 15%; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">DATE</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">APPELLANT'S VERSION</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">RESPONDENT'S VERSION</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">STATUS</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Apply styling to the dataframe
+    def highlight_disputed(val):
+        if val == "Disputed":
+            return 'color: #dc2626;'
+        else:
+            return 'color: #16a34a;'
     
-    # Table rows
-    for item in filtered_timeline:
-        row_class = "timeline-row-disputed" if item["status"] == "Disputed" else ""
-        status_class = "status-disputed" if item["status"] == "Disputed" else "status-undisputed"
-        
-        st.markdown(f"""
-        <div style="display: grid; grid-template-columns: 15% 35% 35% 15%; border-bottom: 1px solid #e5e7eb;" class="{row_class}">
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["date"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["appellant_version"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["respondent_version"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px;" class="{status_class}">{item["status"]}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    def highlight_row(row):
+        if row["status"] == "Disputed":
+            return ['background-color: #fef2f2'] * len(row)
+        return [''] * len(row)
     
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Create a styled dataframe
+    styled_df = df.style
+    styled_df = styled_df.applymap(highlight_disputed, subset=['status'])
+    styled_df = styled_df.apply(highlight_row, axis=1)
+    
+    # Show the table
+    st.dataframe(
+        styled_df,
+        column_config={
+            "date": "DATE",
+            "appellant_version": "APPELLANT'S VERSION",
+            "respondent_version": "RESPONDENT'S VERSION",
+            "status": "STATUS"
+        },
+        hide_index=True,
+        use_container_width=True
+    )
 
-# Exhibits Tab
-elif st.session_state.active_tab == "exhibits":
+with tabs[2]:  # Exhibits Tab
+    # Action buttons
+    col_right = st.columns([1])[0]
+    with col_right:
+        st.download_button(
+            "Export Data",
+            data=json.dumps(exhibits_data),
+            file_name="exhibits_data.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+    
     # Search and filters
     col1, col2, col3 = st.columns([3, 1, 1])
     
     with col1:
-        search_term = st.text_input("", placeholder="Search exhibits...", label_visibility="collapsed")
+        search_term = st.text_input("", placeholder="Search exhibits...", label_visibility="collapsed", key="exhibit_search")
     
     with col2:
         party_filter = st.selectbox("", ["All Parties", "Appellant", "Respondent"], label_visibility="collapsed")
@@ -966,43 +933,38 @@ elif st.session_state.active_tab == "exhibits":
     if type_filter != "All Types":
         filtered_exhibits = [item for item in filtered_exhibits if item["type"] == type_filter]
     
-    # Display the exhibits table
-    st.markdown('<div style="background-color: white; border-radius: 8px; border: 1px solid #e5e7eb; overflow: hidden; margin-top: 16px;">', unsafe_allow_html=True)
+    # Function to style the party column
+    def style_party(val):
+        color = "#1e40af" if val == "Appellant" else "#b91c1c"
+        bg_color = "#eff6ff" if val == "Appellant" else "#fef2f2"
+        return f'background-color: {bg_color}; color: {color}; padding: 2px 8px; border-radius: 4px;'
     
-    # Table header
-    st.markdown("""
-    <div style="display: grid; grid-template-columns: 10% 15% 20% 10% 35% 10%; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">EXHIBIT ID</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">PARTY</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">TITLE</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">TYPE</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: left;">SUMMARY</div>
-        <div style="padding: 12px 16px; font-size: 14px; font-weight: 500; color: #6b7280; text-align: right;">ACTIONS</div>
-    </div>
-    """, unsafe_allow_html=True)
+    def style_type(val):
+        return 'background-color: #f3f4f6; color: #4b5563; padding: 2px 8px; border-radius: 4px;'
     
-    # Table rows
-    for item in filtered_exhibits:
-        party_class = "party-appellant" if item["party"] == "Appellant" else "party-respondent"
-        
-        st.markdown(f"""
-        <div style="display: grid; grid-template-columns: 10% 15% 20% 10% 35% 10%; border-bottom: 1px solid #e5e7eb;">
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["id"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px;">
-                <span class="{party_class}">{item["party"]}</span>
-            </div>
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["title"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px;">
-                <span style="font-size: 12px; background-color: #f3f4f6; color: #4b5563; padding: 2px 8px; border-radius: 4px;">{item["type"]}</span>
-            </div>
-            <div style="padding: 12px 16px; font-size: 14px; color: #4b5563;">{item["summary"]}</div>
-            <div style="padding: 12px 16px; font-size: 14px; text-align: right;">
-                <a href="#" style="color: #3b82f6; text-decoration: none; font-size: 14px;">View</a>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    # Add a "View" button column
+    df_exhibits = pd.DataFrame(filtered_exhibits)
+    df_exhibits["actions"] = "View"
     
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Apply styling
+    styled_exhibits = df_exhibits.style
+    styled_exhibits = styled_exhibits.applymap(style_party, subset=['party'])
+    styled_exhibits = styled_exhibits.applymap(style_type, subset=['type'])
+    
+    # Display table
+    st.dataframe(
+        styled_exhibits,
+        column_config={
+            "id": "EXHIBIT ID",
+            "party": "PARTY",
+            "title": "TITLE",
+            "type": "TYPE",
+            "summary": "SUMMARY",
+            "actions": st.column_config.LinkColumn("ACTIONS")
+        },
+        hide_index=True,
+        use_container_width=True
+    )
 
 # Close the card container
 st.markdown('</div>', unsafe_allow_html=True)

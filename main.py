@@ -107,7 +107,22 @@ def get_argument_data():
                                     "summary": "Official documentation of registration history",
                                     "citations": ["25", "26", "28"]
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.1.1.1": {
+                                    "id": "1.1.1.1",
+                                    "title": "Gap Analysis Details",
+                                    "paragraphs": "31-34",
+                                    "factualPoints": [
+                                        {
+                                            "point": "Administrative reasons for the gap",
+                                            "date": "1975",
+                                            "isDisputed": False,
+                                            "paragraphs": "31-32"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 },
@@ -147,7 +162,47 @@ def get_argument_data():
                             "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57"
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59"
+                                }
+                            ]
+                        },
+                        "1.2.2": {
+                            "id": "1.2.2",
+                            "title": "Color Association with Club Identity",
+                            "paragraphs": "61-65",
+                            "factualPoints": [
+                                {
+                                    "point": "Colors consistently associated with club in media",
+                                    "date": "1950-present",
+                                    "isDisputed": False,
+                                    "paragraphs": "61-62"
+                                },
+                                {
+                                    "point": "Fan merchandise uses consistent color scheme",
+                                    "date": "1960-present",
+                                    "isDisputed": False,
+                                    "paragraphs": "63-65"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },
@@ -268,7 +323,22 @@ def get_argument_data():
                                     "summary": "Official documentation of registration termination",
                                     "citations": ["226", "227"]
                                 }
-                            ]
+                            ],
+                            "children": {
+                                "1.1.1.1": {
+                                    "id": "1.1.1.1",
+                                    "title": "Legal Implications of Gap",
+                                    "paragraphs": "231-235",
+                                    "legalPoints": [
+                                        {
+                                            "point": "Gap creates new legal entity under statute",
+                                            "isDisputed": True,
+                                            "regulations": ["Company Law §15"],
+                                            "paragraphs": "231-233"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 },
@@ -308,7 +378,48 @@ def get_argument_data():
                             "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
-                    ]
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Significance",
+                            "paragraphs": "250-253",
+                            "factualPoints": [
+                                {
+                                    "point": "Major hue changes from 1975 to 1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "250-251"
+                                },
+                                {
+                                    "point": "Different supplier and material",
+                                    "date": "1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "252-253"
+                                }
+                            ]
+                        },
+                        "1.2.2": {
+                            "id": "1.2.2",
+                            "title": "Public Perception of Color Changes",
+                            "paragraphs": "254-257",
+                            "factualPoints": [
+                                {
+                                    "point": "Media noted 'new look' for club",
+                                    "date": "1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "254-255"
+                                },
+                                {
+                                    "point": "Fan forums discussed color change significance",
+                                    "date": "1976-1977",
+                                    "isDisputed": False,
+                                    "paragraphs": "256-257"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },
@@ -1289,12 +1400,21 @@ def main():
                 return content;
             }}
             
+            // Build a unique argument ID that includes the full path
+            function buildArgumentId(arg, side, parentPath = '') {{
+                const normalizedId = arg.id.toString();
+                return `${{side}}-${{parentPath ? parentPath + '-' : ''}}${{normalizedId}}`;
+            }}
+            
             // Render a single argument including its children
-            function renderArgument(arg, side, path = '', level = 0) {{
+            function renderArgument(arg, side, parentPath = '', level = 0) {{
                 if (!arg) return '';
                 
-                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
-                const fullId = `${{side}}-${{argId}}`;
+                // Create a unique ID that includes the full path for proper pairing
+                const fullId = buildArgumentId(arg, side, parentPath);
+                
+                // Get normalized argument number for pairing (e.g., "1.2.2")
+                const argNumber = parentPath ? `${{parentPath}}.${{arg.id}}` : arg.id.toString();
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const childCount = hasChildren ? Object.keys(arg.children).length : 0;
@@ -1326,11 +1446,13 @@ def main():
                 // Detailed content
                 const contentHtml = renderArgumentContent(arg);
                 
-                // Child arguments
+                // Child arguments with proper path tracking
                 let childrenHtml = '';
                 if (hasChildren) {{
+                    const nextPath = parentPath ? `${{parentPath}}.${{arg.id}}` : arg.id.toString();
+                    
                     const childrenArgs = Object.values(arg.children).map(child => {{
-                        return renderArgument(child, side, argId, level + 1);
+                        return renderArgument(child, side, nextPath, level + 1);
                     }}).join('');
                     
                     childrenHtml = `
@@ -1341,11 +1463,11 @@ def main():
                     `;
                 }}
                 
-                // Complete argument HTML
+                // Complete argument HTML with data attributes for pairing
                 return `
-                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}" data-arg-number="${{argNumber}}">
                     ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
-                    <div class="argument-header" onclick="toggleArgument('${{fullId}}')">
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argNumber}}', '${{side}}')">
                         ${{headerHtml}}
                     </div>
                     <div id="content-${{fullId}}" class="argument-content">
@@ -1422,8 +1544,9 @@ def main():
                 container.innerHTML = html;
             }}
             
-            // Toggle argument expansion
-            function toggleArgument(id) {{
+            // Toggle argument expansion with proper synchronization across matching pairs
+            function toggleArgument(id, argNumber, currentSide) {{
+                // Get argument elements
                 const contentEl = document.getElementById(`content-${{id}}`);
                 const childrenEl = document.getElementById(`children-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
@@ -1442,26 +1565,35 @@ def main():
                 expandedStates[id] = !isExpanded;
                 
                 // Find and toggle the paired argument
-                const [side, argId] = id.split('-');
-                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
-                const pairedId = `${{otherSide}}-${{argId}}`;
+                const otherSide = currentSide === 'claimant' ? 'respondent' : 'claimant';
                 
-                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
-                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
-                
-                if (pairedContentEl) {{
-                    pairedContentEl.style.display = contentEl.style.display;
-                    expandedStates[pairedId] = expandedStates[id];
-                }}
-                
-                if (pairedChevronEl) {{
-                    pairedChevronEl.style.transform = chevronEl.style.transform;
-                }}
-                
-                if (pairedChildrenEl) {{
-                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
-                }}
+                // Find all paired elements with the same argument number (e.g., "1.2.2")
+                const pairedElements = document.querySelectorAll(`[data-arg-number="${{argNumber}}"]`);
+                pairedElements.forEach(element => {{
+                    // Only process the element from the other side
+                    if (element.classList.contains(`${{otherSide}}-header`)) {{
+                        // Get the paired content and chevron elements
+                        const pairedId = `${{otherSide}}-${{argNumber.replace(/\\./g, '-')}}`;
+                        
+                        const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                        const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
+                        const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
+                        
+                        // Set to match the current element's state
+                        if (pairedContentEl) {{
+                            pairedContentEl.style.display = contentEl.style.display;
+                            expandedStates[pairedId] = expandedStates[id];
+                        }}
+                        
+                        if (pairedChevronEl) {{
+                            pairedChevronEl.style.transform = chevronEl.style.transform;
+                        }}
+                        
+                        if (pairedChildrenEl) {{
+                            pairedChildrenEl.style.display = contentEl.style.display;
+                        }}
+                    }}
+                }});
             }}
             
             // Render timeline

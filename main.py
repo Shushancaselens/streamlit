@@ -65,6 +65,124 @@ def get_argument_data():
                             "Public recognition of club name"
                         ],
                         "paragraphs": "20-21"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Name registration complies with regulations",
+                            "isDisputed": False,
+                            "regulations": ["Name Registration Act"],
+                            "paragraphs": "22-24"
+                        },
+                        {
+                            "point": "Trademark protection since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Law"],
+                            "paragraphs": "25-27"
+                        }
+                    ],
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26"
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Official documentation of registration history",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
+                        }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Visual evidence of consistent color usage",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57"
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Historical documents showing color usage",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -80,7 +198,15 @@ def get_argument_data():
                     "Assessment of chain of custody documentation"
                 ],
                 "paragraphs": "70-72"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "WADA Code Article 5 establishes procedural requirements",
+                    "isDisputed": False,
+                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                    "paragraphs": "73-75"
+                }
+            ]
         }
     }
     
@@ -105,6 +231,32 @@ def get_argument_data():
                     "paragraphs": "203-205"
                 }
             ],
+            "factualPoints": [
+                {
+                    "point": "Operations ceased between 1975-1976",
+                    "date": "1975-1976",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "206-207"
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-1",
+                    "title": "Federation Records",
+                    "summary": "Records showing non-participation in 1975-1976 season",
+                    "citations": ["208", "209", "210"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2017/A/5465",
+                    "title": "Operational continuity requirement",
+                    "relevance": "Establishes primacy of operational continuity",
+                    "paragraphs": "211-213",
+                    "citedParagraphs": ["212"]
+                }
+            ],
             "children": {
                 "1.1": {
                     "id": "1.1",
@@ -117,6 +269,118 @@ def get_argument_data():
                             "Analysis of public confusion"
                         ],
                         "paragraphs": "220-222"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Registration lapse voided legal continuity",
+                            "isDisputed": True,
+                            "regulations": ["Registration Act"],
+                            "paragraphs": "223-225"
+                        }
+                    ],
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration Gap Evidence",
+                            "paragraphs": "226-230",
+                            "factualPoints": [
+                                {
+                                    "point": "Registration formally terminated on April 30, 1975",
+                                    "date": "April 30, 1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "226-227"
+                                },
+                                {
+                                    "point": "New entity registered on September 15, 1976",
+                                    "date": "September 15, 1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "228-229"
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "R-2",
+                                    "title": "Termination Certificate",
+                                    "summary": "Official documentation of registration termination",
+                                    "citations": ["226", "227"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis Rebuttal",
+                    "paragraphs": "241-249",
+                    "overview": {
+                        "points": [
+                            "Significant color variations",
+                            "Trademark registration gaps",
+                            "Multiple competing color claims"
+                        ],
+                        "paragraphs": "241-242"
+                    },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
+                        }
+                    ],
+                    "factualPoints": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246"
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Visual evidence of color scheme changes",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247"
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249"
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Historical brand guidelines showing color changes",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -132,7 +396,15 @@ def get_argument_data():
                     "Completeness of documentation"
                 ],
                 "paragraphs": "250-252"
-            }
+            },
+            "legalPoints": [
+                {
+                    "point": "Minor procedural deviations do not invalidate results",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2019/A/6148"],
+                    "paragraphs": "253-255"
+                }
+            ]
         }
     }
     
@@ -159,210 +431,352 @@ def get_argument_data():
 
 # Main app
 def main():
-    # Get the data for JavaScript
-    args_data = get_argument_data()
-    
-    # Convert data to JSON for JavaScript use
-    args_json = json.dumps(args_data)
-    
     # Title
     st.title("Legal Arguments Analysis")
     
-    # Define the HTML/JS content separately to avoid f-string issues
-    html_head = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.5;
-                color: #333;
-                margin: 0;
-                padding: 0;
-            }
-            .view-toggle {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 1rem;
-            }
-            .view-toggle-container {
-                background-color: #f7fafc;
-                border-radius: 0.375rem;
-                padding: 0.25rem;
-            }
-            .view-btn {
-                padding: 0.5rem 1rem;
-                border-radius: 0.375rem;
-                border: none;
-                background: none;
-                font-size: 0.875rem;
-                font-weight: 500;
-                cursor: pointer;
-                color: #718096;
-            }
-            .view-btn.active {
-                background-color: white;
-                color: #4a5568;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            }
-            .arguments-header {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-            }
-            .claimant-color { color: #3182ce; }
-            .respondent-color { color: #e53e3e; }
-            .argument-pair {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-                position: relative;
-            }
-            .argument-side { position: relative; }
-            .argument {
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                overflow: hidden;
-                margin-bottom: 1rem;
-            }
-            .argument-header {
-                padding: 0.75rem 1rem;
-                cursor: pointer;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .argument-header-left {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-            .argument-content {
-                padding: 1rem;
-                border-top: 1px solid #e2e8f0;
-                display: none;
-                background-color: white;
-            }
-            .claimant-header {
-                background-color: #ebf8ff;
-                border-color: #bee3f8;
-            }
-            .respondent-header {
-                background-color: #fff5f5;
-                border-color: #fed7d7;
-            }
-            .argument-children {
-                padding-left: 1.5rem;
-                display: none;
-                position: relative;
-            }
-            .badge {
-                display: inline-block;
-                padding: 0.25rem 0.5rem;
-                border-radius: 0.25rem;
-                font-size: 0.75rem;
-            }
-            .claimant-badge {
-                background-color: #ebf8ff;
-                color: #3182ce;
-            }
-            .respondent-badge {
-                background-color: #fff5f5;
-                color: #e53e3e;
-            }
-            .legal-badge {
-                background-color: #ebf8ff;
-                color: #2c5282;
-                margin-right: 0.25rem;
-            }
-            .factual-badge {
-                background-color: #f0fff4;
-                color: #276749;
-                margin-right: 0.25rem;
-            }
-            .disputed-badge {
-                background-color: #fed7d7;
-                color: #c53030;
-            }
-            .content-section {
-                margin-bottom: 1.5rem;
-            }
-            .overview-block {
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-            .connector-vertical {
-                position: absolute;
-                left: 0.75rem;
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: #e2e8f0;
-            }
-            .connector-horizontal {
-                position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
-                height: 1px;
-                background-color: #e2e8f0;
-            }
-            .claimant-connector {
-                background-color: rgba(59, 130, 246, 0.5);
-            }
-            .respondent-connector {
-                background-color: rgba(239, 68, 68, 0.5);
-            }
-            .topic-section {
-                margin-bottom: 2rem;
-            }
-            .topic-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 0.25rem;
-            }
-        </style>
-    </head>
-    """
+    # Create tabs for navigation
+    tab1, tab2, tab3 = st.tabs(["Arguments", "Timeline", "Exhibits"])
     
-    html_body = """
-    <body>
-        <div id="arguments">
-            <div class="view-toggle">
-                <div class="view-toggle-container">
-                    <button class="view-btn active" data-view="standard">Standard View</button>
-                    <button class="view-btn" data-view="topic">Topic View</button>
+    with tab1:
+        # Get the data for JavaScript
+        args_data = get_argument_data()
+        args_json = json.dumps(args_data)
+        
+        # Create the HTML/CSS part (static content)
+        html_template = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.5;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                }
+                
+                /* View toggle */
+                .view-toggle {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 1rem;
+                }
+                .view-toggle-container {
+                    background-color: #f7fafc;
+                    border-radius: 0.375rem;
+                    padding: 0.25rem;
+                }
+                .view-btn {
+                    padding: 0.5rem 1rem;
+                    border-radius: 0.375rem;
+                    border: none;
+                    background: none;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    color: #718096;
+                }
+                .view-btn.active {
+                    background-color: white;
+                    color: #4a5568;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                }
+                
+                /* Arguments styling */
+                .arguments-header {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+                .claimant-color {
+                    color: #3182ce;
+                }
+                .respondent-color {
+                    color: #e53e3e;
+                }
+                
+                /* Argument container and pairs */
+                .argument-pair {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1.5rem;
+                    margin-bottom: 1rem;
+                    position: relative;
+                }
+                .argument-side {
+                    position: relative;
+                }
+                
+                /* Argument card and details */
+                .argument {
+                    border: 1px solid #e2e8f0;
+                    border-radius: 0.375rem;
+                    overflow: hidden;
+                    margin-bottom: 1rem;
+                }
+                .argument-header {
+                    padding: 0.75rem 1rem;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .argument-header-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+                .argument-content {
+                    padding: 1rem;
+                    border-top: 1px solid #e2e8f0;
+                    display: none;
+                    background-color: white;
+                }
+                .claimant-header {
+                    background-color: #ebf8ff;
+                    border-color: #bee3f8;
+                }
+                .respondent-header {
+                    background-color: #fff5f5;
+                    border-color: #fed7d7;
+                }
+                
+                /* Child arguments container */
+                .argument-children {
+                    padding-left: 1.5rem;
+                    display: none;
+                    position: relative;
+                }
+                
+                /* Connector lines for tree structure */
+                .connector-vertical {
+                    position: absolute;
+                    left: 0.75rem;
+                    top: 0;
+                    width: 1px;
+                    height: 100%;
+                    background-color: #e2e8f0;
+                }
+                .connector-horizontal {
+                    position: absolute;
+                    left: 0.75rem;
+                    top: 1.25rem;
+                    width: 0.75rem;
+                    height: 1px;
+                    background-color: #e2e8f0;
+                }
+                .claimant-connector {
+                    background-color: rgba(59, 130, 246, 0.5);
+                }
+                .respondent-connector {
+                    background-color: rgba(239, 68, 68, 0.5);
+                }
+                
+                /* Badge styling */
+                .badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 0.25rem;
+                    font-size: 0.75rem;
+                }
+                .claimant-badge {
+                    background-color: #ebf8ff;
+                    color: #3182ce;
+                }
+                .respondent-badge {
+                    background-color: #fff5f5;
+                    color: #e53e3e;
+                }
+                .legal-badge {
+                    background-color: #ebf8ff;
+                    color: #2c5282;
+                    margin-right: 0.25rem;
+                }
+                .factual-badge {
+                    background-color: #f0fff4;
+                    color: #276749;
+                    margin-right: 0.25rem;
+                }
+                .disputed-badge {
+                    background-color: #fed7d7;
+                    color: #c53030;
+                }
+                .type-badge {
+                    background-color: #edf2f7;
+                    color: #4a5568;
+                }
+                
+                /* Content components */
+                .content-section {
+                    margin-bottom: 1.5rem;
+                }
+                .content-section-title {
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    margin-bottom: 0.5rem;
+                }
+                .point-block {
+                    background-color: #f7fafc;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+                    margin-bottom: 0.5rem;
+                }
+                .point-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.25rem;
+                }
+                .point-date {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.25rem;
+                    font-size: 0.75rem;
+                    color: #718096;
+                }
+                .point-text {
+                    font-size: 0.875rem;
+                    color: #4a5568;
+                }
+                .point-citation {
+                    display: inline-block;
+                    margin-top: 0.5rem;
+                    font-size: 0.75rem;
+                    color: #718096;
+                }
+                
+                /* Overview points */
+                .overview-block {
+                    background-color: #f7fafc;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                }
+                .overview-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0.5rem;
+                }
+                .overview-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                .overview-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 0.5rem;
+                }
+                .overview-bullet {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background-color: #3182ce;
+                    margin-top: 0.5rem;
+                }
+                
+                /* Evidence and Case Law */
+                .reference-block {
+                    background-color: #f7fafc;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+                    margin-bottom: 0.5rem;
+                }
+                .reference-header {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 0.25rem;
+                }
+                .reference-title {
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                }
+                .reference-summary {
+                    font-size: 0.75rem;
+                    color: #718096;
+                    margin-top: 0.25rem;
+                    margin-bottom: 0.5rem;
+                }
+                .reference-citations {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.25rem;
+                    margin-top: 0.5rem;
+                }
+                .citation-tag {
+                    background-color: #edf2f7;
+                    color: #4a5568;
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-size: 0.75rem;
+                }
+                
+                /* Legal references styling */
+                .legal-point {
+                    background-color: #ebf8ff;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+                    margin-bottom: 0.5rem;
+                }
+                .factual-point {
+                    background-color: #f0fff4;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+                    margin-bottom: 0.5rem;
+                }
+                
+                /* Topic view */
+                .topic-section {
+                    margin-bottom: 2rem;
+                }
+                .topic-title {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #2d3748;
+                    margin-bottom: 0.25rem;
+                }
+                .topic-description {
+                    font-size: 0.875rem;
+                    color: #718096;
+                    margin-bottom: 1rem;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="arguments">
+                <div class="view-toggle">
+                    <div class="view-toggle-container">
+                        <button class="view-btn active" data-view="standard">Standard View</button>
+                        <button class="view-btn" data-view="topic">Topic View</button>
+                    </div>
+                </div>
+                
+                <div id="standard-view" class="view-content">
+                    <div class="arguments-header">
+                        <h3 class="claimant-color">Claimant's Arguments</h3>
+                        <h3 class="respondent-color">Respondent's Arguments</h3>
+                    </div>
+                    <div id="standard-arguments-container"></div>
+                </div>
+                
+                <div id="topic-view" class="view-content" style="display: none;">
+                    <div id="topics-container"></div>
                 </div>
             </div>
             
-            <div id="standard-view" class="view-content">
-                <div class="arguments-header">
-                    <h3 class="claimant-color">Claimant's Arguments</h3>
-                    <h3 class="respondent-color">Respondent's Arguments</h3>
-                </div>
-                <div id="standard-arguments-container"></div>
-            </div>
-            
-            <div id="topic-view" class="view-content" style="display: none;">
-                <div id="topics-container"></div>
-            </div>
-        </div>
-    """
-    
-    html_script_part1 = """
-        <script>
-            // Initialize data with the JSON
-            const argsData = 
-    """
-    
-    html_script_part2 = """
-            
+            <script>
+            // Data is loaded separately - see bottom of file
+            </script>
+        </body>
+        </html>
+        """
+        
+        # JavaScript that will handle the data and render the content
+        javascript = """
             // View switching
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -388,154 +802,80 @@ def main():
                 });
             });
             
-            // Render a single argument
-            function renderArgument(arg, side) {
-                if (!arg) return '';
+            // Render overview points
+            function renderOverviewPoints(overview) {
+                if (!overview || !overview.points || overview.points.length === 0) return '';
                 
-                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
-                const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
-                const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
+                const pointsHtml = overview.points.map(point => 
+                    `<div class="overview-item">
+                        <div class="overview-bullet"></div>
+                        <span class="point-text">${point}</span>
+                    </div>`
+                ).join('');
                 
-                let content = `
-                <div class="argument ${headerClass}">
-                    <div class="argument-header">
-                        <div class="argument-header-left">
-                            <h5 style="font-size: 0.875rem; font-weight: 500;">
-                                ${arg.id}. ${arg.title}
-                            </h5>
-                        </div>
-                        <span class="badge ${badgeClass}">¶${arg.paragraphs}</span>
+                return `
+                <div class="overview-block">
+                    <div class="overview-header">
+                        <h6 class="content-section-title">Key Points</h6>
+                        <span class="badge claimant-badge">¶${overview.paragraphs}</span>
                     </div>
-                    <div class="argument-content">
+                    <div class="overview-list">
+                        ${pointsHtml}
+                    </div>
+                </div>
                 `;
-                
-                // Display overview if available
-                if (arg.overview && arg.overview.points) {
-                    content += `<div class="content-section"><h6>Key Points:</h6>`;
-                    content += `<div class="overview-block"><ul>`;
-                    arg.overview.points.forEach(point => {
-                        content += `<li>${point}</li>`;
-                    });
-                    content += `</ul></div></div>`;
-                }
-                
-                // Display legal points if available
-                if (arg.legalPoints && arg.legalPoints.length > 0) {
-                    content += `<div class="content-section"><h6>Legal Points:</h6>`;
-                    arg.legalPoints.forEach(point => {
-                        content += `<div class="legal-badge">${point.point}</div>`;
-                    });
-                    content += `</div>`;
-                }
-                
-                content += `</div></div>`;
-                
-                // Add children if available
-                if (hasChildren) {
-                    content += `<div class="argument-children">`;
-                    Object.values(arg.children).forEach(child => {
-                        content += renderArgument(child, side);
-                    });
-                    content += `</div>`;
-                }
-                
-                return content;
             }
             
-            // Render arguments in pairs
-            function renderArgumentPairs() {
-                const container = document.getElementById('standard-arguments-container');
-                let html = '';
+            // Render legal points
+            function renderLegalPoints(points) {
+                if (!points || points.length === 0) return '';
                 
-                // For each top-level argument
-                Object.keys(argsData.claimantArgs).forEach(argId => {
-                    if (argsData.respondentArgs[argId]) {
-                        const claimantArg = argsData.claimantArgs[argId];
-                        const respondentArg = argsData.respondentArgs[argId];
-                        
-                        html += `
-                        <div class="argument-pair">
-                            <div class="argument-side">
-                                ${renderArgument(claimantArg, 'claimant')}
-                            </div>
-                            <div class="argument-side">
-                                ${renderArgument(respondentArg, 'respondent')}
-                            </div>
+                const pointsHtml = points.map(point => {
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    const regulations = point.regulations 
+                        ? point.regulations.map(reg => `<span class="badge legal-badge">${reg}</span>`).join('') 
+                        : '';
+                    
+                    return `
+                    <div class="legal-point">
+                        <div class="point-header">
+                            <span class="badge legal-badge">Legal</span>
+                            ${disputed}
                         </div>
-                        `;
-                    }
-                });
-                
-                container.innerHTML = html;
-            }
-            
-            // Render topic view
-            function renderTopicView() {
-                const container = document.getElementById('topics-container');
-                let html = '';
-                
-                argsData.topics.forEach(topic => {
-                    html += `
-                    <div class="topic-section">
-                        <h2 class="topic-title">${topic.title}</h2>
-                        <p>${topic.description}</p>
-                        
-                        <div class="arguments-header">
-                            <h3 class="claimant-color">Claimant's Arguments</h3>
-                            <h3 class="respondent-color">Respondent's Arguments</h3>
+                        <p class="point-text">${point.point}</p>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
+                            ${regulations}
+                            <span class="point-citation">¶${point.paragraphs}</span>
                         </div>
+                    </div>
                     `;
-                    
-                    // Add arguments for this topic
-                    topic.argumentIds.forEach(argId => {
-                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {
-                            const claimantArg = argsData.claimantArgs[argId];
-                            const respondentArg = argsData.respondentArgs[argId];
-                            
-                            html += `
-                            <div class="argument-pair">
-                                <div class="argument-side">
-                                    ${renderArgument(claimantArg, 'claimant')}
-                                </div>
-                                <div class="argument-side">
-                                    ${renderArgument(respondentArg, 'respondent')}
-                                </div>
-                            </div>
-                            `;
-                        }
-                    });
-                    
-                    html += `</div>`;
-                });
+                }).join('');
                 
-                container.innerHTML = html;
+                return `
+                <div class="content-section">
+                    <h6 class="content-section-title">Legal Points</h6>
+                    ${pointsHtml}
+                </div>
+                `;
             }
             
-            // Initialize the views
-            renderArgumentPairs();
-            renderTopicView();
-            
-            // Set initial active button style
-            document.querySelector('.view-btn.active').style.backgroundColor = 'white';
-            document.querySelector('.view-btn.active').style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
-            
-            // Add expansion functionality
-            document.querySelectorAll('.argument-header').forEach(header => {
-                header.addEventListener('click', function() {
-                    const content = this.nextElementSibling;
-                    content.style.display = content.style.display === 'block' ? 'none' : 'block';
-                });
-            });
-        </script>
-    </body>
-    </html>
-    """
-    
-    # Build the complete HTML
-    html_content = html_head + html_body + html_script_part1 + args_json + html_script_part2
-    
-    # Render the HTML in Streamlit
-    components.html(html_content, height=800, scrolling=True)
-
-if __name__ == "__main__":
-    main()
+            // Render factual points
+            function renderFactualPoints(points) {
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed by ${point.source || ''}</span>` 
+                        : '';
+                    
+                    return `
+                    <div class="factual-point">
+                        <div class="point-header">
+                            <span class="badge factual-badge">Factual</span>
+                            ${disputed}
+                        </div>
+                        <div class="point-date">
+                            <svg xmlns="http://www.w3

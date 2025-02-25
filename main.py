@@ -1,6 +1,3 @@
-Here's the reproduction of the Streamlit code:
-
-```python
 import streamlit as st
 import json
 import streamlit.components.v1 as components
@@ -1673,4 +1670,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```

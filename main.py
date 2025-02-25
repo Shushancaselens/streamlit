@@ -714,22 +714,22 @@ def main():
     const topics = argsData.topics;
     
     // Track expanded state
-    const expandedStates = {};
+    const expandedStates = {{}};
     
     // Toggle view mode
-    document.getElementById('default-view').addEventListener('click', () => {
+    document.getElementById('default-view').addEventListener('click', () => {{
         document.getElementById('default-view').classList.add('active');
         document.getElementById('topic-view').classList.remove('active');
         document.getElementById('standard-view-content').style.display = 'block';
         document.getElementById('topic-view-content').style.display = 'none';
-    });
+    }});
     
-    document.getElementById('topic-view').addEventListener('click', () => {
+    document.getElementById('topic-view').addEventListener('click', () => {{
         document.getElementById('topic-view').classList.add('active');
         document.getElementById('default-view').classList.remove('active');
         document.getElementById('standard-view-content').style.display = 'none';
         document.getElementById('topic-view-content').style.display = 'block';
-    });
+    }});
     
     // Function to toggle argument expansion
     function toggleArgument(id) {{
@@ -1092,7 +1092,7 @@ def main():
             </div>
             
             <div style="margin-top: 0.5rem; position: relative;">
-                ${{level === 0 && Object.keys(claimantArg.children || {}).length > 0 ? `
+                ${{level === 0 && Object.keys(claimantArg.children || {{}}).length > 0 ? `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; position: relative;">
                     <div style="position: relative;">
                         <div style="position: absolute; left: 10px; top: 0; width: 1px; height: 100%; background-color: rgba(59, 130, 246, 0.4);"></div>
@@ -1103,7 +1103,7 @@ def main():
                 </div>
                 ` : ''}}
                 
-                ${{Object.keys(claimantArg.children || {}).map((childId, index) => {{
+                ${{Object.keys(claimantArg.children || {{}}).map((childId, index) => {{
                     const claimantChild = claimantArg.children[childId];
                     const respondentChild = respondentArg.children[childId];
                     

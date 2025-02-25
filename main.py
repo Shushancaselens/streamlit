@@ -549,390 +549,519 @@ def main():
     # Title
     st.title("Legal Arguments Analysis")
     
-    # Create a single HTML component containing the full UI
-    html_content = f"""
+    # Create HTML content in parts to avoid issues with long f-strings
+    # CSS styles
+    css_styles = """
+        /* Base styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Tab navigation */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: #718096;
+            cursor: pointer;
+            position: relative;
+        }
+        .tab:hover {
+            color: #4a5568;
+        }
+        .tab.active {
+            color: #3182ce;
+            border-bottom: 2px solid #3182ce;
+        }
+        
+        /* Tab content sections */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .view-toggle-container {
+            background-color: #f7fafc;
+            border-radius: 0.375rem;
+            padding: 0.25rem;
+        }
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: #718096;
+        }
+        .view-btn.active {
+            background-color: white;
+            color: #4a5568;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        /* Arguments styling */
+        .arguments-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .claimant-color {
+            color: #3182ce;
+        }
+        .respondent-color {
+            color: #e53e3e;
+        }
+        
+        /* Argument container and pairs */
+        .argument-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .argument-side {
+            position: relative;
+        }
+        
+        /* Argument card and details */
+        .argument {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .argument-header {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .argument-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .argument-content {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+            background-color: white;
+        }
+        .claimant-header {
+            background-color: #ebf8ff;
+            border-color: #bee3f8;
+        }
+        .respondent-header {
+            background-color: #fff5f5;
+            border-color: #fed7d7;
+        }
+        
+        /* Child arguments container */
+        .argument-children {
+            padding-left: 1.5rem;
+            display: none;
+            position: relative;
+        }
+        
+        /* Connector lines for tree structure */
+        .connector-vertical {
+            position: absolute;
+            left: 0.75rem;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background-color: #e2e8f0;
+        }
+        .connector-horizontal {
+            position: absolute;
+            left: 0.75rem;
+            top: 1.25rem;
+            width: 0.75rem;
+            height: 1px;
+            background-color: #e2e8f0;
+        }
+        .claimant-connector {
+            background-color: rgba(59, 130, 246, 0.5);
+        }
+        .respondent-connector {
+            background-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        /* Badge styling */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+        .claimant-badge {
+            background-color: #ebf8ff;
+            color: #3182ce;
+        }
+        .respondent-badge {
+            background-color: #fff5f5;
+            color: #e53e3e;
+        }
+        .legal-badge {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            margin-right: 0.25rem;
+        }
+        .factual-badge {
+            background-color: #f0fff4;
+            color: #276749;
+            margin-right: 0.25rem;
+        }
+        .disputed-badge {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+        .type-badge {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+        
+        /* Content components */
+        .content-section {
+            margin-bottom: 1.5rem;
+        }
+        .content-section-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .point-block {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .point-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .point-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        .point-text {
+            font-size: 0.875rem;
+            color: #4a5568;
+        }
+        .point-citation {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        
+        /* Overview points */
+        .overview-block {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .overview-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .overview-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .overview-bullet {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #3182ce;
+            margin-top: 0.5rem;
+        }
+        
+        /* Evidence and Case Law */
+        .reference-block {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .reference-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+        .reference-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .reference-summary {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .reference-citations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        .citation-tag {
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Legal references styling */
+        .legal-point {
+            background-color: #ebf8ff;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .factual-point {
+            background-color: #f0fff4;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Topic view */
+        .topic-section {
+            margin-bottom: 2rem;
+        }
+        .topic-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+        .topic-description {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+        
+        /* Timeline & Exhibits */
+        .actions-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .search-input-container {
+            position: relative;
+        }
+        .search-input {
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            width: 16rem;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 11px;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .data-table th {
+            background-color: #f7fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        .data-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .data-table tr.disputed {
+            background-color: #fff5f5;
+        }
+        
+        /* Status indicators */
+        .undisputed {
+            color: #2f855a;
+        }
+        .disputed {
+            color: #c53030;
+        }
+    """
+    
+    # HTML structure - first part
+    html_part1 = """
     <!DOCTYPE html>
     <html>
     <head>
         <style>
-            /* Base styling */
-            body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.5;
-                color: #333;
-                margin: 0;
-                padding: 0;
-            }}
+    """
+    
+    # HTML structure - middle part
+    html_part2 = """
+        </style>
+    </head>
+    <body>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="arguments">Summary of Arguments</div>
+            <div class="tab" data-tab="timeline">Timeline</div>
+            <div class="tab" data-tab="exhibits">Exhibits</div>
+        </div>
+        
+        <!-- Arguments Tab -->
+        <div id="arguments" class="tab-content active">
+            <div class="view-toggle">
+                <div class="view-toggle-container">
+                    <button class="view-btn active" data-view="standard">Standard View</button>
+                    <button class="view-btn" data-view="topic">Topic View</button>
+                </div>
+            </div>
             
-            /* Tab navigation */
-            .tabs {{
-                display: flex;
-                border-bottom: 1px solid #e2e8f0;
-                margin-bottom: 1.5rem;
-            }}
-            .tab {{
-                padding: 1rem 1.5rem;
-                font-weight: 500;
-                color: #718096;
-                cursor: pointer;
-                position: relative;
-            }}
-            .tab:hover {{
-                color: #4a5568;
-            }}
-            .tab.active {{
-                color: #3182ce;
-                border-bottom: 2px solid #3182ce;
-            }}
+            <!-- Standard View -->
+            <div id="standard-view" class="view-content">
+                <div class="arguments-header">
+                    <h3 class="claimant-color">Claimant's Arguments</h3>
+                    <h3 class="respondent-color">Respondent's Arguments</h3>
+                </div>
+                <div id="standard-arguments-container"></div>
+            </div>
             
-            /* Tab content sections */
-            .tab-content {{
-                display: none;
-            }}
-            .tab-content.active {{
-                display: block;
-            }}
+            <!-- Topic View -->
+            <div id="topic-view" class="view-content" style="display: none;">
+                <div id="topics-container"></div>
+            </div>
+        </div>
+        
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <div class="actions-bar">
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </button>
+            </div>
             
-            /* View toggle */
-            .view-toggle {{
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 1rem;
-            }}
-            .view-toggle-container {{
-                background-color: #f7fafc;
-                border-radius: 0.375rem;
-                padding: 0.25rem;
-            }}
-            .view-btn {{
-                padding: 0.5rem 1rem;
-                border-radius: 0.375rem;
-                border: none;
-                background: none;
-                font-size: 0.875rem;
-                font-weight: 500;
-                cursor: pointer;
-                color: #718096;
-            }}
-            .view-btn.active {{
-                background-color: white;
-                color: #4a5568;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            }}
+            <div class="search-bar">
+                <div style="display: flex; gap: 0.5rem;">
+                    <div class="search-input-container">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="timeline-search" class="search-input" placeholder="Search events...">
+                    </div>
+                    <button class="action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Filter
+                    </button>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="disputed-only" style="width: 1rem; height: 1rem;">
+                        <span style="font-size: 0.875rem; color: #4a5568;">Disputed events only</span>
+                    </label>
+                </div>
+            </div>
             
-            /* Arguments styling */
-            .arguments-header {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-            }}
-            .claimant-color {{
-                color: #3182ce;
-            }}
-            .respondent-color {{
-                color: #e53e3e;
-            }}
-            
-            /* Argument container and pairs */
-            .argument-pair {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-                margin-bottom: 1rem;
-                position: relative;
-            }}
-            .argument-side {{
-                position: relative;
-            }}
-            
-            /* Argument card and details */
-            .argument {{
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                overflow: hidden;
-                margin-bottom: 1rem;
-            }}
-            .argument-header {{
-                padding: 0.75rem 1rem;
-                cursor: pointer;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }}
-            .argument-header-left {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }}
-            .argument-content {{
-                padding: 1rem;
-                border-top: 1px solid #e2e8f0;
-                display: none;
-                background-color: white;
-            }}
-            .claimant-header {{
-                background-color: #ebf8ff;
-                border-color: #bee3f8;
-            }}
-            .respondent-header {{
-                background-color: #fff5f5;
-                border-color: #fed7d7;
-            }}
-            
-            /* Child arguments container */
-            .argument-children {{
-                padding-left: 1.5rem;
-                display: none;
-                position: relative;
-            }}
-            
-            /* Connector lines for tree structure */
-            .connector-vertical {{
-                position: absolute;
-                left: 0.75rem;
-                top: 0;
-                width: 1px;
-                height: 100%;
-                background-color: #e2e8f0;
-            }}
-            .connector-horizontal {{
-                position: absolute;
-                left: 0.75rem;
-                top: 1.25rem;
-                width: 0.75rem;
-                height: 1px;
-                background-color: #e2e8f0;
-            }}
-            .claimant-connector {{
-                background-color: rgba(59, 130, 246, 0.5);
-            }}
-            .respondent-connector {{
-                background-color: rgba(239, 68, 68, 0.5);
-            }}
-            
-            /* Badge styling */
-            .badge {{
-                display: inline-block;
-                padding: 0.25rem 0.5rem;
-                border-radius: 0.25rem;
-                font-size: 0.75rem;
-            }}
-            .claimant-badge {{
-                background-color: #ebf8ff;
-                color: #3182ce;
-            }}
-            .respondent-badge {{
-                background-color: #fff5f5;
-                color: #e53e3e;
-            }}
-            .legal-badge {{
-                background-color: #ebf8ff;
-                color: #2c5282;
-                margin-right: 0.25rem;
-            }}
-            .factual-badge {{
-                background-color: #f0fff4;
-                color: #276749;
-                margin-right: 0.25rem;
-            }}
-            .disputed-badge {{
-                background-color: #fed7d7;
-                color: #c53030;
-            }}
-            .type-badge {{
-                background-color: #edf2f7;
-                color: #4a5568;
-            }}
-            
-            /* Content components */
-            .content-section {{
-                margin-bottom: 1.5rem;
-            }}
-            .content-section-title {{
-                font-size: 0.875rem;
-                font-weight: 500;
-                margin-bottom: 0.5rem;
-            }}
-            .point-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .point-header {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.25rem;
-            }}
-            .point-date {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.25rem;
-                font-size: 0.75rem;
-                color: #718096;
-            }}
-            .point-text {{
-                font-size: 0.875rem;
-                color: #4a5568;
-            }}
-            .point-citation {{
-                display: inline-block;
-                margin-top: 0.5rem;
-                font-size: 0.75rem;
-                color: #718096;
-            }}
-            
-            /* Overview points */
-            .overview-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }}
-            .overview-header {{
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 0.5rem;
-            }}
-            .overview-list {{
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }}
-            .overview-item {{
-                display: flex;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }}
-            .overview-bullet {{
-                width: 6px;
-                height: 6px;
-                border-radius: 50%;
-                background-color: #3182ce;
-                margin-top: 0.5rem;
-            }}
-            
-            /* Evidence and Case Law */
-            .reference-block {{
-                background-color: #f7fafc;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .reference-header {{
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 0.25rem;
-            }}
-            .reference-title {{
-                font-size: 0.875rem;
-                font-weight: 500;
-            }}
-            .reference-summary {{
-                font-size: 0.75rem;
-                color: #718096;
-                margin-top: 0.25rem;
-                margin-bottom: 0.5rem;
-            }}
-            .reference-citations {{
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.25rem;
-                margin-top: 0.5rem;
-            }}
-            .citation-tag {{
-                background-color: #edf2f7;
-                color: #4a5568;
-                padding: 0.125rem 0.375rem;
-                border-radius: 0.25rem;
-                font-size: 0.75rem;
-            }}
-            
-            /* Legal references styling */
-            .legal-point {{
-                background-color: #ebf8ff;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            .factual-point {{
-                background-color: #f0fff4;
-                border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
-            }}
-            
-            /* Topic view */
-            .topic-section {{
-                margin-bottom: 2rem;
-            }}
-            .topic-title {{
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 0.25rem;
-            }}
-            .topic-description {{
-                font-size: 0.875rem;
-                color: #718096;
-                margin-bottom: 1rem;
-            }}
-            
-            /* Timeline & Exhibits */
-            .actions-bar {{
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 1rem;
-            }}
-            .action-btn {{
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                background-color: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                margin-left: 0.5rem;
-                cursor: pointer;
-            }}
-            .search-bar {{
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 1rem;
-            }}
-            .search-input-container {{
-                position: relative;
-            }}
-            .search-input {{
-                padding: 0.625rem 1rem 0.625rem 2.5rem;
-                border: 1px solid #e2e8f0;
-                border-radius: 0.375rem;
-                width: 16rem;
-            }}
-            .search-icon {{
-                position: absolute;
-                left: 12px;
-                top: 11px;
-            }}
-            
-            /* Tables */
-            .data-table {{
-                width: 100%;
-                border-collapse: collapse;
-                background-color: white;
-                border-radius: 0.375rem;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
-            }}
-            .data-table th {{
-                background-color: #f7fafc;
-                padding: 0.75rem 1rem;
-                text-align: left;
-                font-size: 0.875rem;
-                font-weight: 500;
-                color: #4a5568;
+            <table id="timeline-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>APPELLANT'S VERSION</th>
+                        <th>RESPONDENT'S VERSION</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="timeline-body"></tbody>
+            </table>
+        </div>
+        
+        <!-- Exhibits Tab -->
+        <div id="exhibits" class="tab-content">
+            <div class="actions-bar">
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000

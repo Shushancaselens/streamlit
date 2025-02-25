@@ -20,113 +20,6 @@ st.markdown("""
     }
     
     /* Card styling */
-    .stCard {
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-        padding: 1rem;
-        background-color: white;
-        margin-bottom: 1rem;
-    }
-    
-    /* Tab styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
-        border-bottom: 1px solid #e0e0e0;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: transparent;
-        border-bottom: 2px solid #4f8bf9;
-        color: #4f8bf9;
-    }
-    
-    /* Claimant/Respondent styling */
-    .claimant-header {
-        color: #2563eb; /* Blue */
-        font-weight: 600;
-        font-size: 1.2rem;
-    }
-    
-    .respondent-header {
-        color: #dc2626; /* Red */
-        font-weight: 600;
-        font-size: 1.2rem;
-    }
-    
-    /* Status badges */
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .disputed {
-        background-color: #fee2e2;
-        color: #b91c1c;
-    }
-    
-    .undisputed {
-        background-color: #dcfce7;
-        color: #15803d;
-    }
-    
-    /* Argument section styling */
-    .argument-section {
-        border: 1px solid #e5e7eb;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .argument-header {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        cursor: pointer;
-        background-color: #f9fafb;
-    }
-    
-    .argument-header:hover {
-        background-color: #f3f4f6;
-    }
-    
-    .argument-content {
-        padding: 1rem;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    /* Exhibit and Timeline table styling */
-    .styled-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }
-    
-    .styled-table thead th {
-        background-color: #f9fafb;
-        padding: 0.75rem 1rem;
-        text-align: left;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #6b7280;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    
-    .styled-table tbody td {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        font-size: 0.875rem;
-    }
-    
-    /* Card with border */
     .card {
         border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
@@ -135,122 +28,80 @@ st.markdown("""
         background-color: white;
     }
     
-    /* Custom badges */
-    .party-badge {
+    /* Headers */
+    .claimant-header {
+        color: #2563eb; /* Blue */
+        font-weight: 600;
+    }
+    
+    .respondent-header {
+        color: #dc2626; /* Red */
+        font-weight: 600;
+    }
+    
+    /* Argument header */
+    .argument-header {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        background-color: #f9fafb;
+        cursor: pointer;
+    }
+    
+    .claimant-argument-header {
+        border-color: #93c5fd;
+    }
+    
+    .respondent-argument-header {
+        border-color: #fca5a5;
+    }
+    
+    /* Argument content */
+    .argument-content {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: white;
+    }
+    
+    /* Make the streamlit checkbox styling better */
+    .stCheckbox label {
+        font-weight: 500;
+    }
+    
+    /* Status indicators */
+    .status-badge {
+        display: inline-block;
         padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
+        border-radius: 9999px;
         font-size: 0.75rem;
         font-weight: 500;
     }
     
-    .appellant-badge {
-        background-color: #dbeafe;
-        color: #1e40af;
-    }
-    
-    .respondent-badge {
+    .status-disputed {
         background-color: #fee2e2;
         color: #b91c1c;
     }
     
-    .type-badge {
-        background-color: #f3f4f6;
-        color: #374151;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-    }
-    
-    /* Point boxes styling */
-    .point-box {
-        border-radius: 0.5rem;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .legal-point {
-        background-color: #dbeafe;
-    }
-    
-    .factual-point {
+    .status-undisputed {
         background-color: #dcfce7;
+        color: #15803d;
     }
     
-    .evidence-point {
-        background-color: #f3f4f6;
-    }
-    
-    /* Button styling */
-    .custom-button {
-        background-color: transparent;
-        border: 1px solid #e5e7eb;
-        padding: 0.375rem 0.75rem;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-        margin-right: 0.5rem;
-        cursor: pointer;
-    }
-    
-    .custom-button:hover {
-        background-color: #f3f4f6;
-    }
-    
-    /* Radio buttons as toggle */
-    div.row-widget.stRadio > div {
-        display: flex;
-        flex-direction: row;
-    }
-    
-    div.row-widget.stRadio > div[role="radiogroup"] > label {
-        padding: 0.375rem 0.75rem;
-        border: 1px solid #e5e7eb;
-        margin-right: 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.875rem;
-        cursor: pointer;
-    }
-    
-    div.row-widget.stRadio > div[role="radiogroup"] > label:hover {
-        background-color: #f3f4f6;
-    }
-    
-    div.row-widget.stRadio > div[role="radiogroup"] > label[data-baseweb="radio"] > div:first-child {
-        display: none;
-    }
-    
-    div.row-widget.stRadio > div[role="radiogroup"] > label[aria-checked="true"] {
-        background-color: #f3f4f6;
-        border-color: #d1d5db;
-    }
-    
-    /* Hide Streamlit branding */
+    /* Hide default Streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    
+    /* Button styling */
+    .stButton button {
+        font-size: 0.875rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state for tracking expanded arguments
-if 'expanded_args' not in st.session_state:
-    st.session_state.expanded_args = {}
-
-if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = 0
-
-if 'view_mode' not in st.session_state:
-    st.session_state.view_mode = "default"
-
-# Define manual HTML rendering function since we can't use external components
-def render_html(html_content):
-    st.markdown(html_content, unsafe_allow_html=True)
-
-# Create a card container
-def card(content_func):
-    with st.container():
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        content_func()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-# Define Timeline View Data
+# Define data for timeline view
 def get_timeline_data():
     return [
         {
@@ -303,7 +154,7 @@ def get_timeline_data():
         }
     ]
 
-# Define Exhibits Data
+# Define data for exhibits view
 def get_exhibits_data():
     return [
         {
@@ -357,7 +208,7 @@ def get_exhibits_data():
         }
     ]
 
-# Define Legal Argument Data
+# Argument data
 def get_claimant_args_1():
     return {
         'id': '1',
@@ -475,10 +326,7 @@ def get_claimant_args_2():
                 'regulations': ['WADA Code 2021', 'International Standard for Testing'],
                 'paragraphs': '73-75'
             }
-        ],
-        'factual_points': [],
-        'evidence': [],
-        'case_law': []
+        ]
     }
 
 def get_respondent_args_2():
@@ -501,121 +349,174 @@ def get_respondent_args_2():
                 'regulations': ['CAS 2019/A/6148'],
                 'paragraphs': '253-255'
             }
-        ],
-        'factual_points': [],
-        'evidence': [],
-        'case_law': []
+        ]
     }
 
-# Helper function to toggle argument expansion
-def toggle_argument(arg_id):
-    if arg_id in st.session_state.expanded_args:
-        st.session_state.expanded_args[arg_id] = not st.session_state.expanded_args[arg_id]
-    else:
-        st.session_state.expanded_args[arg_id] = True
+# Topic data for hierarchical view
+def get_topic_data():
+    return [
+        {
+            'title': 'Sporting Succession and Identity',
+            'description': 'Questions of club identity, continuity, and succession rights',
+            'claimant_arg': get_claimant_args_1(),
+            'respondent_arg': get_respondent_args_1()
+        },
+        {
+            'title': 'Doping Violation and Chain of Custody',
+            'description': 'Issues related to doping test procedures and evidence handling',
+            'claimant_arg': get_claimant_args_2(),
+            'respondent_arg': get_respondent_args_2()
+        }
+    ]
 
-# Render an argument section
-def render_argument_section(arg_data, side):
+# Render argument section
+def render_argument(arg_data, side, key_prefix=""):
     arg_id = arg_data['id']
     title = arg_data['title']
     paragraphs = arg_data.get('paragraphs', '')
     
-    # Get the expanded state
-    is_expanded = st.session_state.expanded_args.get(arg_id, False)
+    # Create a unique key for this argument
+    arg_key = f"{key_prefix}{side}-{arg_id}"
     
-    # Colors based on side
-    bg_color = "#dbeafe" if side == "claimant" else "#fee2e2"
-    text_color = "#1e40af" if side == "claimant" else "#b91c1c"
-    border_color = "#93c5fd" if side == "claimant" else "#fca5a5"
+    # Header styling based on side
+    header_class = "claimant-argument-header" if side == "claimant" else "respondent-argument-header"
     
-    # Create the header with an expander
-    header = st.expander(f"{arg_id}. {title}", expanded=is_expanded)
+    # Draw the header with a checkbox to control expansion
+    st.markdown(f"""
+        <div class="argument-header {header_class}">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span>{arg_id}. {title}</span>
+                    <span style="font-size: 0.8rem; margin-left: 0.5rem; color: #6b7280;">¶{paragraphs}</span>
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Update the session state when expanded/collapsed
-    if header.expanded != is_expanded:
-        st.session_state.expanded_args[arg_id] = header.expanded
+    # Use a checkbox to control visibility of the content
+    expanded = st.checkbox(f"Show details for {arg_id}", key=arg_key, value=False, label_visibility="collapsed")
     
     # If expanded, show the content
-    if header.expanded:
-        with header:
+    if expanded:
+        with st.container():
             # Overview points
             if 'overview' in arg_data and arg_data['overview'].get('points'):
-                with st.container():
-                    st.markdown("#### Key Points")
-                    for point in arg_data['overview']['points']:
-                        st.markdown(f"• {point}")
-                    st.caption(f"Paragraphs: {arg_data['overview'].get('paragraphs', '')}")
+                st.markdown("#### Key Points")
+                overview_points = arg_data['overview']['points']
+                for point in overview_points:
+                    st.markdown(f"- {point}")
+                st.caption(f"Paragraphs: {arg_data['overview'].get('paragraphs', '')}")
                 st.divider()
             
             # Legal points
             if 'legal_points' in arg_data and arg_data['legal_points']:
                 st.markdown("#### Legal Points")
                 for point in arg_data['legal_points']:
-                    with st.container():
-                        st.markdown(f"**{point['point']}**")
+                    st.markdown(f"**{point['point']}**")
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
                         st.caption(f"Regulations: {', '.join(point.get('regulations', []))}")
+                    with col2:
                         if point.get('isDisputed'):
                             st.warning("Disputed")
-                        st.caption(f"Paragraphs: {point.get('paragraphs', '')}")
-                st.divider()
+                    st.caption(f"Paragraphs: {point.get('paragraphs', '')}")
+                    st.markdown("---")
             
             # Factual points
             if 'factual_points' in arg_data and arg_data['factual_points']:
                 st.markdown("#### Factual Points")
                 for point in arg_data['factual_points']:
-                    with st.container():
-                        st.markdown(f"**{point['point']}**")
+                    st.markdown(f"**{point['point']}**")
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
                         st.caption(f"Date: {point.get('date', '')}")
+                    with col2:
                         if point.get('isDisputed'):
                             st.warning(f"Disputed by {point.get('source', '')}")
-                        st.caption(f"Paragraphs: {point.get('paragraphs', '')}")
-                st.divider()
+                    st.caption(f"Paragraphs: {point.get('paragraphs', '')}")
+                    st.markdown("---")
             
             # Evidence
             if 'evidence' in arg_data and arg_data['evidence']:
                 st.markdown("#### Evidence")
                 for item in arg_data['evidence']:
-                    with st.container():
-                        st.markdown(f"**{item['id']}: {item['title']}**")
-                        st.markdown(f"{item.get('summary', '')}")
-                        if 'citations' in item:
-                            st.caption(f"Cited in paragraphs: {', '.join(item['citations'])}")
-                st.divider()
+                    st.markdown(f"**{item['id']}: {item['title']}**")
+                    st.markdown(f"{item.get('summary', '')}")
+                    st.caption(f"Citations: {', '.join(item.get('citations', []))}")
+                    st.markdown("---")
             
             # Case law
             if 'case_law' in arg_data and arg_data['case_law']:
                 st.markdown("#### Case Law")
                 for item in arg_data['case_law']:
-                    with st.container():
-                        st.markdown(f"**{item['caseNumber']}**")
-                        st.markdown(f"{item['title']}")
-                        st.markdown(f"{item.get('relevance', '')}")
-                        if 'citedParagraphs' in item:
-                            st.caption(f"Key paragraphs: {', '.join(item['citedParagraphs'])}")
-                        st.caption(f"Paragraphs: {item.get('paragraphs', '')}")
+                    st.markdown(f"**{item['caseNumber']}**")
+                    st.markdown(f"{item['title']}")
+                    st.markdown(f"{item.get('relevance', '')}")
+                    if 'citedParagraphs' in item:
+                        st.caption(f"Key paragraphs: {', '.join(item['citedParagraphs'])}")
+                    st.caption(f"Paragraphs: {item.get('paragraphs', '')}")
+                    st.markdown("---")
 
-# Render the timeline view
-def render_timeline_view():
-    timeline_data = get_timeline_data()
-    df = pd.DataFrame(timeline_data)
+# Render standard view (side-by-side arguments)
+def render_standard_view():
+    col1, col2 = st.columns(2)
     
-    # Create action buttons and filters
-    col1, col2, col3 = st.columns([2, 1, 1])
+    with col1:
+        st.markdown("<h3 class='claimant-header'>Claimant's Arguments</h3>", unsafe_allow_html=True)
+        render_argument(get_claimant_args_1(), "claimant", "std-")
+        render_argument(get_claimant_args_2(), "claimant", "std-")
+    
+    with col2:
+        st.markdown("<h3 class='respondent-header'>Respondent's Arguments</h3>", unsafe_allow_html=True)
+        render_argument(get_respondent_args_1(), "respondent", "std-")
+        render_argument(get_respondent_args_2(), "respondent", "std-")
+
+# Render hierarchical view (topics with claimant-respondent pairs)
+def render_hierarchical_view():
+    topics = get_topic_data()
+    
+    for i, topic in enumerate(topics):
+        st.markdown(f"## {topic['title']}")
+        st.markdown(f"*{topic['description']}*")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("<h4 class='claimant-header'>Claimant's Arguments</h4>", unsafe_allow_html=True)
+            render_argument(topic['claimant_arg'], "claimant", f"hier-topic{i}-")
+        
+        with col2:
+            st.markdown("<h4 class='respondent-header'>Respondent's Arguments</h4>", unsafe_allow_html=True)
+            render_argument(topic['respondent_arg'], "respondent", f"hier-topic{i}-")
+        
+        st.divider()
+
+# Render timeline view
+def render_timeline_view():
+    # Get timeline data
+    timeline_data = get_timeline_data()
+    
+    # Add action buttons
+    col1, col2, col3 = st.columns([3, 1, 1])
+    
     with col3:
         st.button("📋 Copy", key="timeline_copy")
         st.button("📥 Export Data", key="timeline_export")
     
-    # Search and filter controls
-    search_col, filter_col, checkbox_col = st.columns([3, 1, 2])
+    # Add search and filter controls
+    col1, col2, col3 = st.columns([3, 1, 2])
     
-    with search_col:
+    with col1:
         search_term = st.text_input("", placeholder="Search events...", key="timeline_search")
     
-    with filter_col:
+    with col2:
         st.button("🔍 Filter", key="timeline_filter")
     
-    with checkbox_col:
+    with col3:
         disputed_only = st.checkbox("Disputed events only", key="timeline_disputed")
+    
+    # Convert to dataframe for easier filtering
+    df = pd.DataFrame(timeline_data)
     
     # Apply filters
     if search_term:
@@ -627,179 +528,150 @@ def render_timeline_view():
     if disputed_only:
         df = df[df['status'] == 'Disputed']
     
-    # Apply styling to the dataframe
-    def style_status(val):
-        color = '#dcfce7' if val == 'Undisputed' else '#fee2e2'
-        text_color = '#15803d' if val == 'Undisputed' else '#b91c1c'
-        return f'background-color: {color}; color: {text_color}; border-radius: 9999px; padding: 0.2rem 0.5rem;'
+    # Create a table
+    col_headers = ["DATE", "APPELLANT'S VERSION", "RESPONDENT'S VERSION", "STATUS"]
     
-    def highlight_disputed_rows(row):
-        if row['status'] == 'Disputed':
-            return ['background-color: #fef2f2'] * len(row)
-        return [''] * len(row)
+    # Create a basic table using streamlit's native table
+    st.write("")  # Add a little spacing
     
-    # Display the styled dataframe
-    st.dataframe(
-        df.style
-        .apply(highlight_disputed_rows, axis=1)
-        .applymap(style_status, subset=['status']),
-        use_container_width=True,
-        hide_index=True
-    )
+    # Display header
+    cols = st.columns([1, 2, 2, 1])
+    for i, header in enumerate(col_headers):
+        cols[i].markdown(f"**{header}**")
+    
+    # Display rows
+    for _, row in df.iterrows():
+        # Apply background color based on status
+        row_bg = "#fef2f2" if row['status'] == 'Disputed' else "white"
+        status_class = "status-disputed" if row['status'] == 'Disputed' else "status-undisputed"
+        
+        st.markdown(f"""
+        <div style="display: flex; width: 100%; background-color: {row_bg}; padding: 0.5rem; margin-bottom: 0.25rem; border-radius: 0.25rem;">
+            <div style="flex: 1;">{row['date']}</div>
+            <div style="flex: 2;">{row['appellant_version']}</div>
+            <div style="flex: 2;">{row['respondent_version']}</div>
+            <div style="flex: 1;"><span class="status-badge {status_class}">{row['status']}</span></div>
+        </div>
+        """, unsafe_allow_html=True)
 
-# Render the exhibits view
+# Render exhibits view
 def render_exhibits_view():
+    # Get exhibits data
     exhibits_data = get_exhibits_data()
-    df = pd.DataFrame(exhibits_data)
     
-    # Create action buttons
-    col1, col2, col3 = st.columns([2, 1, 1])
+    # Add action buttons
+    col1, col2, col3 = st.columns([3, 1, 1])
+    
     with col3:
         st.button("📋 Copy", key="exhibits_copy")
         st.button("📥 Export Data", key="exhibits_export")
     
-    # Search and filter controls
-    search_col, party_col, type_col = st.columns([3, 1, 1])
+    # Add search and filter controls
+    col1, col2, col3 = st.columns([3, 1, 1])
     
-    with search_col:
+    with col1:
         search_term = st.text_input("", placeholder="Search exhibits...", key="exhibits_search")
     
-    with party_col:
-        party_options = ["All Parties"] + sorted(df['party'].unique().tolist())
-        party_filter = st.selectbox("", party_options, key="party_filter")
+    with col2:
+        parties = ["All Parties", "Appellant", "Respondent"]
+        party_filter = st.selectbox("", parties, key="party_filter")
     
-    with type_col:
-        type_options = ["All Types"] + sorted(df['type'].unique().tolist())
-        type_filter = st.selectbox("", type_options, key="type_filter")
+    with col3:
+        # Get unique types from data
+        types = ["All Types"] + list(set([ex['type'] for ex in exhibits_data]))
+        type_filter = st.selectbox("", types, key="type_filter")
+    
+    # Convert to dataframe for easier filtering
+    df = pd.DataFrame(exhibits_data)
     
     # Apply filters
-    filtered_df = df.copy()
-    
     if search_term:
-        filtered_df = filtered_df[
-            filtered_df['id'].str.contains(search_term, case=False) |
-            filtered_df['title'].str.contains(search_term, case=False) |
-            filtered_df['summary'].str.contains(search_term, case=False)
+        df = df[
+            df['id'].str.contains(search_term, case=False) |
+            df['title'].str.contains(search_term, case=False) |
+            df['summary'].str.contains(search_term, case=False)
         ]
     
     if party_filter != "All Parties":
-        filtered_df = filtered_df[filtered_df['party'] == party_filter]
+        df = df[df['party'] == party_filter]
     
     if type_filter != "All Types":
-        filtered_df = filtered_df[filtered_df['type'] == type_filter]
+        df = df[df['type'] == type_filter]
     
-    # Add a view button column
-    filtered_df['actions'] = "View"
+    # Display table header
+    st.write("")  # Add spacing
     
-    # Apply styling to specific columns
-    def style_party(val):
-        if val == 'Appellant':
-            return 'background-color: #dbeafe; color: #1e40af; border-radius: 4px; padding: 0.2rem 0.5rem;'
-        else:
-            return 'background-color: #fee2e2; color: #b91c1c; border-radius: 4px; padding: 0.2rem 0.5rem;'
+    cols = st.columns([1, 1, 2, 1, 4, 1])
+    headers = ["EXHIBIT ID", "PARTY", "TITLE", "TYPE", "SUMMARY", "ACTIONS"]
     
-    def style_type(val):
-        return 'background-color: #f3f4f6; color: #374151; border-radius: 4px; padding: 0.2rem 0.5rem;'
+    for i, header in enumerate(headers):
+        cols[i].markdown(f"**{header}**")
     
-    def style_action(val):
-        return 'color: #2563eb; text-decoration: none; cursor: pointer;'
-    
-    # Display the styled dataframe
-    st.dataframe(
-        filtered_df.style
-        .applymap(style_party, subset=['party'])
-        .applymap(style_type, subset=['type'])
-        .applymap(style_action, subset=['actions']),
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "actions": st.column_config.LinkColumn("ACTIONS")
-        }
-    )
+    # Display rows
+    for _, row in df.iterrows():
+        # Style badge based on party
+        party_style = "background-color: #dbeafe; color: #1e40af;" if row['party'] == "Appellant" else "background-color: #fee2e2; color: #b91c1c;"
+        
+        st.markdown(f"""
+        <div style="display: flex; width: 100%; background-color: white; padding: 0.5rem; margin-bottom: 0.25rem; border-bottom: 1px solid #e5e7eb;">
+            <div style="flex: 1;">{row['id']}</div>
+            <div style="flex: 1;"><span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; {party_style}">{row['party']}</span></div>
+            <div style="flex: 2;">{row['title']}</div>
+            <div style="flex: 1;"><span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: #f3f4f6; color: #374151;">{row['type']}</span></div>
+            <div style="flex: 4;">{row['summary']}</div>
+            <div style="flex: 1;"><a href="#" style="color: #2563eb; text-decoration: none;">View</a></div>
+        </div>
+        """, unsafe_allow_html=True)
 
-# Render the hierarchical view
-def render_hierarchical_view():
-    topics = [
-        {
-            'title': 'Sporting Succession and Identity',
-            'description': 'Questions of club identity, continuity, and succession rights',
-            'claimant_args': get_claimant_args_1(),
-            'respondent_args': get_respondent_args_1()
-        },
-        {
-            'title': 'Doping Violation and Chain of Custody',
-            'description': 'Issues related to doping test procedures and evidence handling',
-            'claimant_args': get_claimant_args_2(),
-            'respondent_args': get_respondent_args_2()
-        }
-    ]
-    
-    for topic in topics:
-        st.markdown(f"## {topic['title']}")
-        st.markdown(f"*{topic['description']}*")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown('<h3 style="color: #2563eb;">Claimant\'s Arguments</h3>', unsafe_allow_html=True)
-            render_argument_section(topic['claimant_args'], "claimant")
-        
-        with col2:
-            st.markdown('<h3 style="color: #dc2626;">Respondent\'s Arguments</h3>', unsafe_allow_html=True)
-            render_argument_section(topic['respondent_args'], "respondent")
-        
-        st.divider()
+# Initialize session state for view mode
+if 'view_mode' not in st.session_state:
+    st.session_state.view_mode = "standard"
 
-# Render the standard view
-def render_standard_view():
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown('<h3 style="color: #2563eb;">Claimant\'s Arguments</h3>', unsafe_allow_html=True)
-        render_argument_section(get_claimant_args_1(), "claimant")
-        render_argument_section(get_claimant_args_2(), "claimant")
-    
-    with col2:
-        st.markdown('<h3 style="color: #dc2626;">Respondent\'s Arguments</h3>', unsafe_allow_html=True)
-        render_argument_section(get_respondent_args_1(), "respondent")
-        render_argument_section(get_respondent_args_2(), "respondent")
-
-# Main app
+# Main application layout
 st.title("Legal Arguments Analysis")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Summary of Arguments", "Timeline", "Exhibits"])
 
-# Arguments Tab
+# Tab 1: Summary of Arguments
 with tab1:
+    # View mode selection
     view_col1, view_col2 = st.columns([3, 1])
     with view_col2:
+        view_options = ["Standard View", "Topic View"]
+        view_index = 0 if st.session_state.view_mode == "standard" else 1
+        
+        # Use radio buttons for view mode selection
         view_mode = st.radio(
             "View Mode:",
-            options=["Standard View", "Topic View"],
+            options=view_options,
+            index=view_index,
             horizontal=True,
-            index=0 if st.session_state.view_mode == "default" else 1,
-            key="view_mode_selector"
+            key="view_mode_radio"
         )
-        st.session_state.view_mode = "default" if view_mode == "Standard View" else "hierarchical"
+        
+        # Update session state
+        st.session_state.view_mode = "standard" if view_mode == "Standard View" else "hierarchical"
     
-    if st.session_state.view_mode == "default":
+    # Render appropriate view
+    if st.session_state.view_mode == "standard":
         render_standard_view()
     else:
         render_hierarchical_view()
 
-# Timeline Tab
+# Tab 2: Timeline
 with tab2:
     render_timeline_view()
 
-# Exhibits Tab
+# Tab 3: Exhibits
 with tab3:
     render_exhibits_view()
 
-# Hide Streamlit branding in sidebar
-st.markdown("""
-<style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-</style>
-""", unsafe_allow_html=True)
+# Hide Streamlit branding
+hide_st_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)

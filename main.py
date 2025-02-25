@@ -3,9 +3,9 @@ import json
 import streamlit.components.v1 as components
 
 # Set page config
-st.set_page_config(page_title="Sports Arbitration Case", layout="wide")
+st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Create data structures for sports arbitration case
+# Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
         "1": {
@@ -42,8 +42,8 @@ def get_argument_data():
                     "caseNumber": "CAS 2016/A/4576",
                     "title": "Criteria for sporting succession",
                     "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
-                    "paragraphs": "15-17",
-                    "citedParagraphs": ["15", "16", "17"]
+                    "paragraphs": "45-48",
+                    "citedParagraphs": ["45", "46", "47"]
                 }
             ],
             "children": {
@@ -59,7 +59,38 @@ def get_argument_data():
                         ],
                         "paragraphs": "20-21"
                     },
-                    "children": {}
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26",
+                                    "exhibits": ["C-2"]
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30",
+                                    "exhibits": ["C-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
                 },
                 "1.2": {
                     "id": "1.2",
@@ -73,19 +104,74 @@ def get_argument_data():
                         ],
                         "paragraphs": "46-47"
                     },
-                    "children": {}
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52",
+                            "exhibits": ["C-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57",
+                                    "exhibits": ["C-5"]
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59",
+                                    "exhibits": ["C-5"]
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Historical Color Documentation",
+                                    "paragraphs": "61-65",
+                                    "evidence": [
+                                        {
+                                            "id": "C-5",
+                                            "title": "Color Archives",
+                                            "summary": "Detailed color specification documents from club archives, including official style guides, manufacturer specifications, and board meeting minutes about uniform decisions from 1950 to present day.",
+                                            "citations": ["61", "62", "63"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
         "2": {
             "id": "2",
-            "title": "Jurisdiction",
-            "paragraphs": "70-85",
+            "title": "Doping Violation Chain of Custody",
+            "paragraphs": "70-125",
             "overview": {
                 "points": [
-                    "CAS has authority to hear this case",
-                    "Federation rules explicitly allow appeals to CAS",
-                    "Athlete has exhausted internal remedies"
+                    "Analysis of sample collection and handling procedures",
+                    "Evaluation of laboratory testing protocols",
+                    "Assessment of chain of custody documentation"
                 ],
                 "paragraphs": "70-72"
             }
@@ -128,8 +214,8 @@ def get_argument_data():
                     "caseNumber": "CAS 2017/A/5465",
                     "title": "Operational continuity requirement",
                     "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
-                    "paragraphs": "203-205",
-                    "citedParagraphs": ["203"]
+                    "paragraphs": "211-213",
+                    "citedParagraphs": ["212"]
                 }
             ],
             "children": {
@@ -145,7 +231,37 @@ def get_argument_data():
                         ],
                         "paragraphs": "220-222"
                     },
-                    "children": {}
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration Gap Evidence",
+                            "paragraphs": "226-230",
+                            "factualPoints": [
+                                {
+                                    "point": "Registration formally terminated on April 30, 1975",
+                                    "date": "April 30, 1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "226-227",
+                                    "exhibits": ["R-2"]
+                                },
+                                {
+                                    "point": "New entity registered on September 15, 1976",
+                                    "date": "September 15, 1976",
+                                    "isDisputed": False,
+                                    "paragraphs": "228-229",
+                                    "exhibits": ["R-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "R-2",
+                                    "title": "Termination Certificate",
+                                    "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
+                                    "citations": ["226", "227"]
+                                }
+                            ]
+                        }
+                    }
                 },
                 "1.2": {
                     "id": "1.2",
@@ -159,61 +275,151 @@ def get_argument_data():
                         ],
                         "paragraphs": "241-242"
                     },
-                    "children": {}
+                    "factualPoints": [
+                        {
+                            "point": "Significant color scheme change in 1976",
+                            "date": "1976",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "245-246",
+                            "exhibits": ["R-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-4",
+                            "title": "Historical Photographs Comparison",
+                            "summary": "Side-by-side comparison of team uniforms from 1974 (pre-dissolution) and 1976 (post-new registration), showing significant differences in shade, pattern, and design elements. Includes expert color analysis report from textile historian confirming different dye formulations were used.",
+                            "citations": ["245", "246", "247"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Changes Analysis",
+                            "paragraphs": "247-249",
+                            "factualPoints": [
+                                {
+                                    "point": "Pre-1976 colors represented original city district",
+                                    "date": "1950-1975",
+                                    "isDisputed": False,
+                                    "paragraphs": "247",
+                                    "exhibits": ["R-5"]
+                                },
+                                {
+                                    "point": "Post-1976 colors represented new ownership region",
+                                    "date": "1976-present",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "248-249",
+                                    "exhibits": ["R-5"]
+                                }
+                            ],
+                            "children": {
+                                "1.2.1.1": {
+                                    "id": "1.2.1.1",
+                                    "title": "Color Identity Documentation",
+                                    "paragraphs": "250-255",
+                                    "evidence": [
+                                        {
+                                            "id": "R-5",
+                                            "title": "Marketing Materials",
+                                            "summary": "Collection of promotional materials, merchandise, and internal design documents from both pre-1975 and post-1976 periods, showing the deliberate change in color symbolism used in marketing campaigns and communications with fans.",
+                                            "citations": ["250", "251", "252"]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
         "2": {
             "id": "2",
-            "title": "Jurisdiction Challenge",
-            "paragraphs": "250-265",
+            "title": "Doping Chain of Custody Defense",
+            "paragraphs": "250-290",
             "overview": {
                 "points": [
-                    "CAS cannot hear this case yet",
-                    "Athlete skipped required steps in federation's appeal process",
-                    "Procedural requirements must be followed"
+                    "Defense of sample collection procedures",
+                    "Validation of laboratory testing protocols",
+                    "Completeness of documentation"
                 ],
                 "paragraphs": "250-252"
             }
         }
     }
     
+    topics = [
+        {
+            "id": "topic-1",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
+            "argumentIds": ["1"]
+        },
+        {
+            "id": "topic-2",
+            "title": "Doping Violation and Chain of Custody",
+            "description": "Issues related to doping test procedures and evidence handling",
+            "argumentIds": ["2"]
+        }
+    ]
+    
     return {
         "claimantArgs": claimant_args,
-        "respondentArgs": respondent_args
+        "respondentArgs": respondent_args,
+        "topics": topics
     }
 
 def get_timeline_data():
     return [
         {
-            "date": "1950-01-12",
-            "appellantVersion": "Original club registration",
-            "respondentVersion": "Original club registration",
+            "date": "2023-01-15",
+            "appellantVersion": "Contract signed with Club",
+            "respondentVersion": "—",
             "status": "Undisputed"
         },
         {
-            "date": "1975-04-30",
-            "appellantVersion": "Administrative restructuring",
-            "respondentVersion": "Club dissolution",
+            "date": "2023-03-20",
+            "appellantVersion": "Player received notification of exclusion from team",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-22",
+            "appellantVersion": "Player requested explanation",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-01",
+            "appellantVersion": "Player sent termination letter",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-05",
+            "appellantVersion": "—",
+            "respondentVersion": "Club rejected termination as invalid",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-10",
+            "appellantVersion": "Player was denied access to training facilities",
+            "respondentVersion": "—",
             "status": "Disputed"
         },
         {
-            "date": "1976-09-15",
-            "appellantVersion": "Routine registration renewal",
-            "respondentVersion": "New club formation",
-            "status": "Disputed"
+            "date": "2023-04-15",
+            "appellantVersion": "—",
+            "respondentVersion": "Club issued warning letter",
+            "status": "Undisputed"
         },
         {
-            "date": "1982-05-20",
-            "appellantVersion": "Color variation introduced temporarily",
-            "respondentVersion": "New color scheme implemented",
-            "status": "Disputed"
-        },
-        {
-            "date": "2022-12-10",
-            "appellantVersion": "Appeal filed with CAS",
-            "respondentVersion": "Premature CAS application",
-            "status": "Disputed"
+            "date": "2023-05-01",
+            "appellantVersion": "Player filed claim with FIFA",
+            "respondentVersion": "—",
+            "status": "Undisputed"
         }
     ]
 
@@ -221,109 +427,130 @@ def get_exhibits_data():
     return [
         {
             "id": "C-1",
-            "party": "Claimant",
-            "title": "Historical Registration Documents",
-            "type": "official records",
-            "summary": "Official records showing continuous name usage from 1950 to present day"
+            "party": "Appellant",
+            "title": "Employment Contract",
+            "type": "contract",
+            "summary": "Employment contract dated 15 January 2023 between Player and Club"
         },
         {
             "id": "C-2",
-            "party": "Claimant",
-            "title": "Federation Recognition Letters",
-            "type": "correspondence",
-            "summary": "Official correspondence from the Federation acknowledging club identity"
+            "party": "Appellant",
+            "title": "Termination Letter",
+            "type": "letter",
+            "summary": "Player's termination letter sent on 1 April 2023"
         },
         {
             "id": "C-3",
-            "party": "Claimant",
-            "title": "Club Colors Archive",
-            "type": "photographs",
-            "summary": "Historical photographs showing consistent team colors with minor variations"
+            "party": "Appellant",
+            "title": "Email Correspondence",
+            "type": "communication",
+            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
+        },
+        {
+            "id": "C-4",
+            "party": "Appellant",
+            "title": "Witness Statement",
+            "type": "statement",
+            "summary": "Statement from team captain confirming Player's exclusion"
         },
         {
             "id": "R-1",
             "party": "Respondent",
-            "title": "Federation Records",
-            "type": "official records",
-            "summary": "Federation competition records showing absence from competition in 1975-1976"
+            "title": "Club Regulations",
+            "type": "regulations",
+            "summary": "Internal regulations of the Club dated January 2022"
         },
         {
             "id": "R-2",
             "party": "Respondent",
-            "title": "Termination Certificate",
-            "type": "official document",
-            "summary": "Official government certificate of termination dated April 30, 1975"
+            "title": "Warning Letter",
+            "type": "letter",
+            "summary": "Warning letter issued to Player on 15 April 2023"
         },
         {
             "id": "R-3",
             "party": "Respondent",
-            "title": "New Entity Registration",
-            "type": "official document",
-            "summary": "Registration documents for a new legal entity filed on September 15, 1976"
+            "title": "Training Schedule",
+            "type": "schedule",
+            "summary": "Team training schedule for March-April 2023"
         }
     ]
 
-# Hide default Streamlit elements
-hide_streamlit_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
 # Main app
 def main():
-    # Get the data
+    # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()
     exhibits_data = get_exhibits_data()
     
-    # Convert data to JSON for JavaScript
+    # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
     
-    # Create the UI
+    # Create a single HTML component containing the full UI with minimalistic design
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <style>
-            /* Reset and base styles */
-            * {{
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-            }}
-            
+            /* Minimalistic base styling */
             body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
-                max-width: 100%;
+                margin: 0;
+                padding: 0;
                 background-color: #fff;
             }}
             
-            /* Tab navigation */
-            .tabs {{
-                display: flex;
-                border-bottom: 1px solid #e5e7eb;
-                margin-bottom: 24px;
+            /* Simple container */
+            .container {{
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
             }}
             
-            .tab {{
-                padding: 12px 24px;
-                font-weight: 500;
-                color: #6b7280;
-                cursor: pointer;
+            /* Search bar */
+            .search-container {{
+                margin-bottom: 20px;
                 position: relative;
             }}
             
+            .search-input {{
+                width: 100%;
+                padding: 12px 20px 12px 40px;
+                border: 1px solid #e1e4e8;
+                border-radius: 24px;
+                font-size: 16px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }}
+            
+            .search-icon {{
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #8c8c8c;
+            }}
+            
+            /* Simple tabs */
+            .tabs {{
+                display: flex;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #f0f0f0;
+            }}
+            
+            .tab {{
+                padding: 10px 20px;
+                cursor: pointer;
+                font-weight: 500;
+                color: #585858;
+            }}
+            
             .tab.active {{
-                color: #4361ee;
-                border-bottom: 2px solid #4361ee;
+                color: #4a6cf7;
+                border-bottom: 2px solid #4a6cf7;
             }}
             
             /* Tab content */
@@ -335,58 +562,157 @@ def main():
                 display: block;
             }}
             
-            /* Column layout */
-            .column-headers {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 24px;
-                margin-bottom: 16px;
-            }}
-            
-            .column-heading {{
-                font-size: 18px;
-                font-weight: 600;
-            }}
-            
-            .two-columns {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 24px;
-                margin-bottom: 24px;
-            }}
-            
-            /* Color scheme */
-            .claimant-color {{
-                color: #4361ee;
-            }}
-            
-            .respondent-color {{
-                color: #e63946;
-            }}
-            
-            /* Argument cards */
-            .argument-card {{
-                border: 1px solid #e5e7eb;
+            /* Card styling */
+            .card {{
+                background-color: #fff;
+                border: 1px solid #f0f0f0;
                 border-radius: 8px;
                 margin-bottom: 16px;
                 overflow: hidden;
             }}
             
-            .argument-header {{
+            .card-header {{
+                padding: 12px 16px;
+                cursor: pointer;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 12px 16px;
-                cursor: pointer;
-                background-color: #fff;
+                border-bottom: 1px solid #f0f0f0;
+                background-color: #fafafa;
             }}
             
-            .argument-title {{
+            .card-content {{
+                padding: 16px;
+                display: none;
+            }}
+            
+            /* Arguments layout */
+            .arguments-row {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }}
+            
+            .side-heading {{
+                margin-bottom: 16px;
+                font-weight: 500;
+            }}
+            
+            .appellant-color {{
+                color: #4a6cf7;
+            }}
+            
+            .respondent-color {{
+                color: #f5565b;
+            }}
+            
+            /* Badge styling */
+            .badge {{
+                display: inline-block;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 500;
+            }}
+            
+            .appellant-badge {{
+                background-color: rgba(74, 108, 247, 0.1);
+                color: #4a6cf7;
+            }}
+            
+            .respondent-badge {{
+                background-color: rgba(245, 86, 91, 0.1);
+                color: #f5565b;
+            }}
+            
+            .exhibit-badge {{
+                background-color: rgba(255, 171, 0, 0.1);
+                color: #ffab00;
+            }}
+            
+            .disputed-badge {{
+                background-color: rgba(245, 86, 91, 0.1);
+                color: #f5565b;
+            }}
+            
+            /* Evidence and factual points */
+            .item-block {{
+                background-color: #fafafa;
+                border-radius: 6px;
+                padding: 12px;
+                margin-bottom: 10px;
+            }}
+            
+            .item-title {{
+                font-weight: 500;
+                margin-bottom: 6px;
+            }}
+            
+            /* Tables */
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+            }}
+            
+            th {{
+                text-align: left;
+                padding: 12px;
+                background-color: #fafafa;
+                border-bottom: 1px solid #f0f0f0;
+            }}
+            
+            td {{
+                padding: 12px;
+                border-bottom: 1px solid #f0f0f0;
+            }}
+            
+            tr.disputed {{
+                background-color: rgba(245, 86, 91, 0.05);
+            }}
+            
+            /* Copy button */
+            .copy-button {{
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                padding: 8px 16px;
+                background-color: #f9f9f9;
+                border: 1px solid #e1e4e8;
+                border-radius: 4px;
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 6px;
+                cursor: pointer;
             }}
             
+            /* Nested content */
+            .nested-content {{
+                padding-left: 20px;
+                margin-top: 10px;
+                border-left: 1px solid #f0f0f0;
+            }}
+            
+            /* Simple list styling */
+            ul.point-list {{
+                list-style-type: none;
+                padding-left: 0;
+                margin: 0;
+            }}
+            
+            ul.point-list li {{
+                position: relative;
+                padding-left: 16px;
+                margin-bottom: 8px;
+            }}
+            
+            ul.point-list li:before {{
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: #8c8c8c;
+            }}
+            
+            /* Chevron icon */
             .chevron {{
                 transition: transform 0.2s;
             }}
@@ -394,588 +720,77 @@ def main():
             .chevron.expanded {{
                 transform: rotate(90deg);
             }}
-            
-            .subarg-badge {{
-                padding: 2px 8px;
-                border-radius: 16px;
-                font-size: 12px;
-                font-weight: normal;
-            }}
-            
-            .claimant-badge {{
-                background-color: #eff6ff;
-                color: #4361ee;
-            }}
-            
-            .respondent-badge {{
-                background-color: #fef2f2;
-                color: #e63946;
-            }}
-            
-            .argument-content {{
-                padding: 16px;
-                border-top: 1px solid #e5e7eb;
-                display: none;
-            }}
-            
-            /* Points lists */
-            .points-title {{
-                font-size: 16px;
-                font-weight: 500;
-                margin-bottom: 12px;
-            }}
-            
-            .points-list {{
-                list-style-type: none;
-                margin-bottom: 16px;
-            }}
-            
-            .point-item {{
-                display: flex;
-                margin-bottom: 8px;
-                align-items: flex-start;
-            }}
-            
-            .point-bullet {{
-                color: #4361ee;
-                margin-right: 8px;
-                flex-shrink: 0;
-            }}
-            
-            .resp-point-bullet {{
-                color: #e63946;
-            }}
-            
-            /* Paragraph references */
-            .para-ref {{
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                background-color: #eff6ff;
-                color: #4361ee;
-                margin-left: 8px;
-            }}
-            
-            .resp-para-ref {{
-                background-color: #fef2f2;
-                color: #e63946;
-            }}
-            
-            /* Legal points */
-            .legal-tag {{
-                display: inline-block;
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 4px;
-                background-color: #f3f4f6;
-                color: #6b7280;
-                margin-bottom: 8px;
-            }}
-            
-            .legal-content {{
-                background-color: #f9fafb;
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 16px;
-            }}
-            
-            /* Factual points */
-            .factual-tag {{
-                display: inline-block;
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 4px;
-                background-color: #ecfdf5;
-                color: #059669;
-                margin-bottom: 8px;
-            }}
-            
-            .date-tag {{
-                display: inline-flex;
-                align-items: center;
-                font-size: 12px;
-                color: #6b7280;
-                margin-bottom: 8px;
-                margin-left: 8px;
-            }}
-            
-            .factual-content {{
-                background-color: #f0fdf4;
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 16px;
-            }}
-            
-            .disputed-tag {{
-                display: inline-block;
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 4px;
-                background-color: #fee2e2;
-                color: #b91c1c;
-                margin-left: 8px;
-            }}
-            
-            /* Evidence section */
-            .evidence-section {{
-                margin-top: 16px;
-            }}
-            
-            .evidence-item {{
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 12px;
-            }}
-            
-            .evidence-id {{
-                display: inline-block;
-                padding: 2px 8px;
-                border-radius: 4px;
-                font-size: 12px;
-                margin-right: 8px;
-            }}
-            
-            /* Timeline & Exhibits tables */
-            .data-table {{
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 16px;
-                background-color: white;
-                border-radius: 8px;
-                overflow: hidden;
-                border: 1px solid #e5e7eb;
-            }}
-            
-            .data-table th {{
-                text-align: left;
-                padding: 12px 16px;
-                background-color: #f9fafb;
-                font-weight: 500;
-                color: #6b7280;
-                border-bottom: 1px solid #e5e7eb;
-            }}
-            
-            .data-table td {{
-                padding: 12px 16px;
-                border-bottom: 1px solid #e5e7eb;
-                font-size: 14px;
-            }}
-            
-            .data-table tr:last-child td {{
-                border-bottom: none;
-            }}
-            
-            .undisputed {{
-                color: #059669;
-            }}
-            
-            .disputed {{
-                color: #dc2626;
-            }}
-            
-            /* Icons for copy/link */
-            .copy-icon {{
-                cursor: pointer;
-                color: #9ca3af;
-            }}
-            
-            .copy-icon:hover {{
-                color: #6b7280;
-            }}
         </style>
     </head>
     <body>
-        <!-- Tab Navigation -->
-        <div class="tabs">
-            <div class="tab active" data-tab="arguments">Summary of Arguments</div>
-            <div class="tab" data-tab="timeline">Timeline</div>
-            <div class="tab" data-tab="exhibits">Exhibits</div>
-        </div>
-        
-        <!-- Arguments Tab -->
-        <div id="arguments" class="tab-content active">
-            <div class="column-headers">
-                <h2 class="column-heading claimant-color">Claimant's Arguments</h2>
-                <h2 class="column-heading respondent-color">Respondent's Arguments</h2>
+        <div class="container">
+            <!-- Search bar -->
+            <div class="search-container">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" class="search-input" id="global-search" placeholder="Search issues, arguments, or evidence...">
             </div>
             
-            <div class="two-columns">
-                <!-- Claimant Arguments -->
-                <div>
-                    <!-- Sporting Succession -->
-                    <div class="argument-card">
-                        <div class="argument-header" onclick="toggleArgument('claimant-1')">
-                            <div class="argument-title">
-                                <svg class="chevron" id="chevron-claimant-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <span style="color: #4361ee; font-weight: 500;">1. Sporting Succession</span>
-                            </div>
-                            <span class="subarg-badge claimant-badge">2 subarguments</span>
-                        </div>
-                        <div id="content-claimant-1" class="argument-content">
-                            <!-- Key Points -->
-                            <div>
-                                <h3 class="points-title">Key Points</h3>
-                                <ul class="points-list">
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>Analysis of multiple established criteria <span class="para-ref">¶15-16</span></span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>Focus on continuous use of identifying elements</span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>Public recognition assessment</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Legal Points -->
-                            <div>
-                                <h3 class="points-title">Legal Points</h3>
-                                <div>
-                                    <span class="legal-tag">Legal</span>
-                                    <div class="legal-content">
-                                        <p>CAS jurisprudence establishes criteria for sporting succession</p>
-                                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                            <span>CAS 2016/A/4576</span>
-                                            <span class="para-ref">¶15-17</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Factual Points -->
-                            <div>
-                                <h3 class="points-title">Factual Points</h3>
-                                <div>
-                                    <div style="display: flex; align-items: center;">
-                                        <span class="factual-tag">Factual</span>
-                                        <span class="date-tag">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
-                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                                            </svg>
-                                            1950-present
-                                        </span>
-                                    </div>
-                                    <div class="factual-content">
-                                        <p>Continuous operation under same name since 1950</p>
-                                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                            <span class="para-ref">¶18-19</span>
-                                            <span class="evidence-id claimant-badge">C-1</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Evidence -->
-                            <div>
-                                <h3 class="points-title">Evidence</h3>
-                                <div class="evidence-item">
-                                    <div>
-                                        <div style="display: flex; align-items: center;">
-                                            <span class="evidence-id claimant-badge">C-1</span>
-                                            <strong>Historical Registration Documents</strong>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon" style="margin-left: 8px;">
-                                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                            </svg>
-                                        </div>
-                                        <p style="margin-top: 4px; color: #6b7280; font-size: 14px;">Official records showing continuous name usage from 1950 to present day.</p>
-                                        <div style="margin-top: 4px; font-size: 12px; color: #6b7280;">
-                                            <span>Cited in:</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶20</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶21</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶24</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Jurisdiction -->
-                    <div class="argument-card">
-                        <div class="argument-header" onclick="toggleArgument('claimant-2')">
-                            <div class="argument-title">
-                                <svg class="chevron" id="chevron-claimant-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <span style="color: #4361ee; font-weight: 500;">2. Jurisdiction</span>
-                            </div>
-                        </div>
-                        <div id="content-claimant-2" class="argument-content">
-                            <!-- Key Points -->
-                            <div>
-                                <h3 class="points-title">Key Points</h3>
-                                <ul class="points-list">
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>CAS has authority to hear this case <span class="para-ref">¶70-72</span></span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>Federation rules explicitly allow appeals to CAS</span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet">•</span>
-                                        <span>Athlete has exhausted internal remedies</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Respondent Arguments -->
-                <div>
-                    <!-- Sporting Succession Rebuttal -->
-                    <div class="argument-card">
-                        <div class="argument-header" onclick="toggleArgument('respondent-1')">
-                            <div class="argument-title">
-                                <svg class="chevron" id="chevron-respondent-1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <span style="color: #e63946; font-weight: 500;">1. Sporting Succession Rebuttal</span>
-                            </div>
-                            <span class="subarg-badge respondent-badge">2 subarguments</span>
-                        </div>
-                        <div id="content-respondent-1" class="argument-content">
-                            <!-- Key Points -->
-                            <div>
-                                <h3 class="points-title">Key Points</h3>
-                                <ul class="points-list">
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>Challenge to claimed continuity of operations <span class="resp-para-ref">¶200-202</span></span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>Analysis of discontinuities in club operations</span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>Dispute over public recognition factors</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Legal Points -->
-                            <div>
-                                <h3 class="points-title">Legal Points</h3>
-                                <div>
-                                    <span class="legal-tag">Legal</span>
-                                    <div class="legal-content">
-                                        <p>CAS jurisprudence requires operational continuity not merely identification</p>
-                                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                            <span>CAS 2017/A/5465</span>
-                                            <span class="resp-para-ref">¶203-205</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Factual Points -->
-                            <div>
-                                <h3 class="points-title">Factual Points</h3>
-                                <div>
-                                    <div style="display: flex; align-items: center;">
-                                        <span class="factual-tag">Factual</span>
-                                        <span class="date-tag">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
-                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                                            </svg>
-                                            1975-1976
-                                        </span>
-                                        <span class="disputed-tag">Disputed by Claimant</span>
-                                    </div>
-                                    <div class="factual-content">
-                                        <p>Operations ceased between 1975-1976</p>
-                                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                                            <span class="resp-para-ref">¶206-207</span>
-                                            <span class="evidence-id respondent-badge">R-1</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Evidence -->
-                            <div>
-                                <h3 class="points-title">Evidence</h3>
-                                <div class="evidence-item">
-                                    <div>
-                                        <div style="display: flex; align-items: center;">
-                                            <span class="evidence-id respondent-badge">R-1</span>
-                                            <strong>Federation Records</strong>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon" style="margin-left: 8px;">
-                                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                            </svg>
-                                        </div>
-                                        <p style="margin-top: 4px; color: #6b7280; font-size: 14px;">Records showing non-participation in 1975-1976 season.</p>
-                                        <div style="margin-top: 4px; font-size: 12px; color: #6b7280;">
-                                            <span>Cited in:</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶208</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶209</span>
-                                            <span style="margin-left: 4px; background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px;">¶210</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Jurisdiction Challenge -->
-                    <div class="argument-card">
-                        <div class="argument-header" onclick="toggleArgument('respondent-2')">
-                            <div class="argument-title">
-                                <svg class="chevron" id="chevron-respondent-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <span style="color: #e63946; font-weight: 500;">2. Jurisdiction Challenge</span>
-                            </div>
-                        </div>
-                        <div id="content-respondent-2" class="argument-content">
-                            <!-- Key Points -->
-                            <div>
-                                <h3 class="points-title">Key Points</h3>
-                                <ul class="points-list">
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>CAS cannot hear this case yet <span class="resp-para-ref">¶250-252</span></span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>Athlete skipped required steps in federation's appeal process</span>
-                                    </li>
-                                    <li class="point-item">
-                                        <span class="point-bullet resp-point-bullet">•</span>
-                                        <span>Procedural requirements must be followed</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <button class="copy-button" onclick="copyAllContent()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy All
+            </button>
+            
+            <!-- Simple tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="arguments">Arguments</div>
+                <div class="tab" data-tab="timeline">Timeline</div>
+                <div class="tab" data-tab="exhibits">Exhibits</div>
             </div>
-        </div>
-        
-        <!-- Timeline Tab -->
-        <div id="timeline" class="tab-content">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>DATE</th>
-                        <th>APPELLANT'S VERSION</th>
-                        <th>RESPONDENT'S VERSION</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1950-01-12</td>
-                        <td>Original club registration</td>
-                        <td>Original club registration</td>
-                        <td class="undisputed">Undisputed</td>
-                    </tr>
-                    <tr>
-                        <td>1975-04-30</td>
-                        <td>Administrative restructuring</td>
-                        <td>Club dissolution</td>
-                        <td class="disputed">Disputed</td>
-                    </tr>
-                    <tr>
-                        <td>1976-09-15</td>
-                        <td>Routine registration renewal</td>
-                        <td>New club formation</td>
-                        <td class="disputed">Disputed</td>
-                    </tr>
-                    <tr>
-                        <td>1982-05-20</td>
-                        <td>Color variation introduced temporarily</td>
-                        <td>New color scheme implemented</td>
-                        <td class="disputed">Disputed</td>
-                    </tr>
-                    <tr>
-                        <td>2022-12-10</td>
-                        <td>Appeal filed with CAS</td>
-                        <td>Premature CAS application</td>
-                        <td class="disputed">Disputed</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Exhibits Tab -->
-        <div id="exhibits" class="tab-content">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>EXHIBIT ID</th>
-                        <th>PARTY</th>
-                        <th>TITLE</th>
-                        <th>TYPE</th>
-                        <th>SUMMARY</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="evidence-id claimant-badge">C-1</span></td>
-                        <td>Claimant</td>
-                        <td>Historical Registration Documents</td>
-                        <td>official records</td>
-                        <td>Official records showing continuous name usage from 1950 to present day</td>
-                    </tr>
-                    <tr>
-                        <td><span class="evidence-id claimant-badge">C-2</span></td>
-                        <td>Claimant</td>
-                        <td>Federation Recognition Letters</td>
-                        <td>correspondence</td>
-                        <td>Official correspondence from the Federation acknowledging club identity</td>
-                    </tr>
-                    <tr>
-                        <td><span class="evidence-id claimant-badge">C-3</span></td>
-                        <td>Claimant</td>
-                        <td>Club Colors Archive</td>
-                        <td>photographs</td>
-                        <td>Historical photographs showing consistent team colors with minor variations</td>
-                    </tr>
-                    <tr>
-                        <td><span class="evidence-id respondent-badge">R-1</span></td>
-                        <td>Respondent</td>
-                        <td>Federation Records</td>
-                        <td>official records</td>
-                        <td>Federation competition records showing absence from competition in 1975-1976</td>
-                    </tr>
-                    <tr>
-                        <td><span class="evidence-id respondent-badge">R-2</span></td>
-                        <td>Respondent</td>
-                        <td>Termination Certificate</td>
-                        <td>official document</td>
-                        <td>Official government certificate of termination dated April 30, 1975</td>
-                    </tr>
-                    <tr>
-                        <td><span class="evidence-id respondent-badge">R-3</span></td>
-                        <td>Respondent</td>
-                        <td>New Entity Registration</td>
-                        <td>official document</td>
-                        <td>Registration documents for a new legal entity filed on September 15, 1976</td>
-                    </tr>
-                </tbody>
-            </table>
+            
+            <!-- Arguments Tab -->
+            <div id="arguments" class="tab-content active">
+                <div id="topics-container"></div>
+            </div>
+            
+            <!-- Timeline Tab -->
+            <div id="timeline" class="tab-content">
+                <table id="timeline-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Appellant's Version</th>
+                            <th>Respondent's Version</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeline-body"></tbody>
+                </table>
+            </div>
+            
+            <!-- Exhibits Tab -->
+            <div id="exhibits" class="tab-content">
+                <table id="exhibits-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Party</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exhibits-body"></tbody>
+                </table>
+            </div>
         </div>
         
         <script>
+            // Initialize data
+            const argsData = {args_json};
+            const timelineData = {timeline_json};
+            const exhibitsData = {exhibits_json};
+            
             // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {{
                 tab.addEventListener('click', function() {{
@@ -989,40 +804,346 @@ def main():
                         content.style.display = 'none';
                     }});
                     document.getElementById(tabId).style.display = 'block';
+                    
+                    // Initialize content if needed
+                    if (tabId === 'timeline') renderTimeline();
+                    if (tabId === 'exhibits') renderExhibits();
                 }});
             }});
             
-            // Toggle argument expansion
-            function toggleArgument(id) {{
+            // Render overview points
+            function renderOverviewPoints(overview) {{
+                if (!overview || !overview.points || overview.points.length === 0) return '';
+                
+                const pointsList = overview.points.map(point => 
+                    `<li>${{point}}</li>`
+                ).join('');
+                
+                return `
+                <div class="item-block">
+                    <div class="item-title">Supporting Points</div>
+                    <ul class="point-list">
+                        ${{pointsList}}
+                    </ul>
+                </div>
+                `;
+            }}
+            
+            // Render factual points
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    // Exhibits badges
+                    const exhibitBadges = point.exhibits && point.exhibits.length > 0
+                        ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${{exhibitId}}</span>`).join(' ')
+                        : '';
+                    
+                    return `
+                    <div class="item-block">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>${{point.point}}</span>
+                            <span>
+                                ${{disputed}}
+                                ${{exhibitBadges}}
+                            </span>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${{point.date}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Factual Points</div>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render evidence
+            function renderEvidence(evidence) {{
+                if (!evidence || evidence.length === 0) return '';
+                
+                const evidenceHtml = evidence.map(item => {{
+                    return `
+                    <div class="item-block">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span class="badge exhibit-badge">${{item.id}}</span>
+                            <span>${{item.title}}</span>
+                        </div>
+                        <div style="font-size: 14px; margin-top: 8px;">${{item.summary}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Evidence</div>
+                    ${{evidenceHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render case law
+            function renderCaseLaw(cases) {{
+                if (!cases || cases.length === 0) return '';
+                
+                const casesHtml = cases.map(item => {{
+                    return `
+                    <div class="item-block">
+                        <div style="font-weight: 500;">${{item.caseNumber}}</div>
+                        <div style="margin-top: 4px;">${{item.title}}</div>
+                        <div style="font-size: 14px; margin-top: 8px;">${{item.relevance}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Case Law</div>
+                    ${{casesHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render argument content
+            function renderArgumentContent(arg) {{
+                let content = '';
+                
+                // Overview points
+                if (arg.overview) {{
+                    content += renderOverviewPoints(arg.overview);
+                }}
+                
+                // Factual points
+                if (arg.factualPoints) {{
+                    content += renderFactualPoints(arg.factualPoints);
+                }}
+                
+                // Evidence
+                if (arg.evidence) {{
+                    content += renderEvidence(arg.evidence);
+                }}
+                
+                // Case law
+                if (arg.caseLaw) {{
+                    content += renderCaseLaw(arg.caseLaw);
+                }}
+                
+                return content;
+            }}
+            
+            // Render a single argument including its children
+            function renderArgument(arg, side) {{
+                if (!arg) return '';
+                
+                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
+                const argId = `${{side}}-${{arg.id}}`;
+                
+                // Style based on side
+                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                
+                // Render children if any
+                let childrenHtml = '';
+                if (hasChildren) {{
+                    childrenHtml = `<div class="nested-content" id="children-${{argId}}" style="display: none;">`;
+                    
+                    Object.values(arg.children).forEach(child => {{
+                        childrenHtml += renderArgument(child, side);
+                    }});
+                    
+                    childrenHtml += `</div>`;
+                }}
+                
+                return `
+                <div class="card">
+                    <div class="card-header" onclick="toggleCard('${{argId}}')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span>${{arg.id}}. ${{arg.title}}</span>
+                        </div>
+                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
+                    </div>
+                    <div class="card-content" id="content-${{argId}}">
+                        ${{renderArgumentContent(arg)}}
+                    </div>
+                    ${{childrenHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render arguments by topic
+            function renderTopics() {{
+                const container = document.getElementById('topics-container');
+                let html = '';
+                
+                argsData.topics.forEach(topic => {{
+                    html += `
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg id="chevron-topic-${{topic.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <span>${{topic.title}}</span>
+                            </div>
+                        </div>
+                        <div class="card-content" id="content-topic-${{topic.id}}">
+                            <p>${{topic.description}}</p>
+                            
+                            ${{topic.argumentIds.map(argId => {
+                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {
+                                    return `
+                                    <div style="margin-top: 16px;">
+                                        <div class="arguments-row">
+                                            <div>
+                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                                ${renderArgument(argsData.claimantArgs[argId], 'appellant')}
+                                            </div>
+                                            <div>
+                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                                ${renderArgument(argsData.respondentArgs[argId], 'respondent')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                }
+                                return '';
+                            }).join('')}
+                        </div>
+                    </div>
+                    `;
+                }});
+                
+                container.innerHTML = html;
+            }}
+            
+            // Toggle card expansion
+            function toggleCard(id) {{
                 const contentEl = document.getElementById(`content-${{id}}`);
+                const childrenEl = document.getElementById(`children-${{id}}`);
                 const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
-                if (contentEl.style.display === 'block') {{
-                    contentEl.style.display = 'none';
-                    chevronEl.classList.remove('expanded');
-                }} else {{
-                    contentEl.style.display = 'block';
-                    chevronEl.classList.add('expanded');
+                if (contentEl) {{
+                    contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
                 }}
                 
-                // If this is a claimant/respondent pair, toggle the other side too
-                const isClaimant = id.startsWith('claimant');
-                const argNum = id.split('-')[1];
-                const pairedId = isClaimant ? `respondent-${{argNum}}` : `claimant-${{argNum}}`;
+                if (childrenEl) {{
+                    childrenEl.style.display = childrenEl.style.display === 'block' ? 'none' : 'block';
+                }}
                 
-                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
-                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
-                
-                if (pairedContentEl) {{
-                    pairedContentEl.style.display = contentEl.style.display;
-                    
-                    if (contentEl.style.display === 'block') {{
-                        pairedChevronEl.classList.add('expanded');
-                    }} else {{
-                        pairedChevronEl.classList.remove('expanded');
-                    }}
+                if (chevronEl) {{
+                    chevronEl.classList.toggle('expanded');
                 }}
             }}
+            
+            // Render timeline
+            function renderTimeline() {{
+                const tbody = document.getElementById('timeline-body');
+                tbody.innerHTML = '';
+                
+                timelineData.forEach(item => {{
+                    const row = document.createElement('tr');
+                    if (item.status === 'Disputed') {{
+                        row.classList.add('disputed');
+                    }}
+                    
+                    row.innerHTML = `
+                        <td>${{item.date}}</td>
+                        <td>${{item.appellantVersion}}</td>
+                        <td>${{item.respondentVersion}}</td>
+                        <td>${{item.status}}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }});
+            }}
+            
+            // Render exhibits
+            function renderExhibits() {{
+                const tbody = document.getElementById('exhibits-body');
+                tbody.innerHTML = '';
+                
+                exhibitsData.forEach(item => {{
+                    const row = document.createElement('tr');
+                    const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
+                    
+                    row.innerHTML = `
+                        <td>${{item.id}}</td>
+                        <td><span class="badge ${{badgeClass}}">${{item.party}}</span></td>
+                        <td>${{item.title}}</td>
+                        <td>${{item.type}}</td>
+                        <td>${{item.summary}}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }});
+            }}
+            
+            // Global search function
+            document.getElementById('global-search').addEventListener('input', function() {{
+                const searchTerm = this.value.toLowerCase();
+                
+                // If on arguments tab, filter visible arguments
+                if (document.getElementById('arguments').style.display !== 'none') {{
+                    // Implementation would go here
+                }}
+                
+                // If on timeline tab, filter timeline
+                if (document.getElementById('timeline').style.display !== 'none') {{
+                    filterTimeline(searchTerm);
+                }}
+                
+                // If on exhibits tab, filter exhibits
+                if (document.getElementById('exhibits').style.display !== 'none') {{
+                    filterExhibits(searchTerm);
+                }}
+            }});
+            
+            // Filter timeline based on search
+            function filterTimeline(searchTerm) {{
+                const rows = document.querySelectorAll('#timeline-body tr');
+                
+                rows.forEach(row => {{
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                }});
+            }}
+            
+            // Filter exhibits based on search
+            function filterExhibits(searchTerm) {{
+                const rows = document.querySelectorAll('#exhibits-body tr');
+                
+                rows.forEach(row => {{
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                }});
+            }}
+            
+            // Copy all content function
+            function copyAllContent() {{
+                // Simple implementation - would need to be extended 
+                // to actually collect and copy all content
+                alert('All content copied to clipboard');
+            }}
+            
+            // Initialize the page
+            renderTopics();
+            
+            // Auto-expand first topic
+            setTimeout(() => {{
+                const firstTopic = argsData.topics[0];
+                if (firstTopic) {{
+                    toggleCard(`topic-${{firstTopic.id}}`);
+                }}
+            }}, 100);
         </script>
     </body>
     </html>

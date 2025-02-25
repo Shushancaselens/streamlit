@@ -1,12 +1,7 @@
 import streamlit as st
 import pandas as pd
-from streamlit_extras.colored_header import colored_header
-from streamlit_extras.switch_page_button import switch_page
-from streamlit_extras.card import card
-import streamlit.components.v1 as components
 import json
 from datetime import datetime
-import re
 
 # Set page configuration
 st.set_page_config(
@@ -209,6 +204,55 @@ st.markdown("""
     .toggle-btn-inactive:hover {
         color: #374151;
     }
+    
+    /* Action button styling */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.25rem;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        color: #374151;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #f9fafb;
+    }
+    .btn-icon {
+        margin-right: 0.5rem;
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    /* Table styling */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .styled-table th {
+        background-color: #f9fafb;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #6b7280;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .styled-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+    }
+    .styled-table tr:hover {
+        background-color: #f9fafb;
+    }
+    .styled-table tr.disputed {
+        background-color: rgba(254, 226, 226, 0.2);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -221,12 +265,19 @@ if 'view_mode' not in st.session_state:
     st.session_state.view_mode = "default"
 
 # Function to toggle argument expansion
-def toggle_expand(arg_id):
+def toggle_argument(arg_id):
     if arg_id in st.session_state.expanded_args:
         st.session_state.expanded_args[arg_id] = not st.session_state.expanded_args[arg_id]
     else:
         st.session_state.expanded_args[arg_id] = True
-    st.experimental_rerun()
+
+# Function to switch tabs
+def switch_tab(tab_name):
+    st.session_state.active_tab = tab_name
+
+# Function to switch view mode
+def switch_view_mode(mode):
+    st.session_state.view_mode = mode
 
 # Function to render overview points
 def render_overview_points(points, paragraphs):
@@ -329,7 +380,7 @@ def render_case_law(items):
 # Function to render an argument section
 def render_argument_section(arg_id, title, paragraphs, side, level=0, overview=None, 
                            legal_points=None, factual_points=None, evidence=None, 
-                           case_law=None, children=None, is_aligned=False, connector=False):
+                           case_law=None, children=None, is_aligned=False):
     
     base_color = "blue" if side == "claimant" else "red"
     header_class = "claimant-header" if side == "claimant" else "respondent-header"
@@ -338,66 +389,46 @@ def render_argument_section(arg_id, title, paragraphs, side, level=0, overview=N
     # Check if this argument is expanded
     is_expanded = st.session_state.expanded_args.get(arg_id, False)
     
-    # Create the clickable header
-    header = f"""
-    <div class="argument-header {header_class}" onclick="handleArgClick('{arg_id}')" id="arg-header-{arg_id}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" 
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            {'<polyline points="6 9 12 15 18 9"></polyline>' if is_expanded else '<polyline points="9 18 15 12 9 6"></polyline>'}
-        </svg>
-        <span class="argument-title {title_class}">{arg_id}. {title}</span>
-        {f'<span class="badge badge-{base_color}">{len(children) if children else 0} subarguments</span>' if children else f'<span class="badge badge-gray">¶{paragraphs}</span>'}
-    </div>
-    """
+    # Create a unique key for this argument
+    key = f"{side}-{arg_id}-expander"
     
-    # Create a container for the argument
-    with st.container():
-        st.markdown(header, unsafe_allow_html=True)
+    # Create the clickable header
+    if st.button(
+        f"{arg_id}. {title}",
+        key=key,
+        help="Click to expand or collapse this argument",
+        use_container_width=True,
+        type="secondary"
+    ):
+        toggle_argument(arg_id)
+        st.experimental_rerun()
         
-        # If expanded, show the content
-        if is_expanded:
-            with st.container():
-                st.markdown('<div style="padding: 1rem; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 0.5rem 0.5rem;">', unsafe_allow_html=True)
-                
-                # Overview points
-                if overview and 'points' in overview:
-                    render_overview_points(overview['points'], overview['paragraphs'])
-                
-                # Legal points
-                if legal_points and len(legal_points) > 0:
-                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Legal Points</h6>', unsafe_allow_html=True)
-                    render_legal_points(legal_points)
-                
-                # Factual points
-                if factual_points and len(factual_points) > 0:
-                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Factual Points</h6>', unsafe_allow_html=True)
-                    render_factual_points(factual_points)
-                
-                # Evidence
-                if evidence and len(evidence) > 0:
-                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Evidence</h6>', unsafe_allow_html=True)
-                    render_evidence(evidence)
-                
-                # Case law
-                if case_law and len(case_law) > 0:
-                    st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Case Law</h6>', unsafe_allow_html=True)
-                    render_case_law(case_law)
-                
-                st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Add JavaScript to handle click events
-        st.markdown(f"""
-        <script>
-        function handleArgClick(id) {{
-            // Use Streamlit's messaging to send the ID back to Python
-            window.parent.postMessage({{
-                type: "streamlit:setComponentValue",
-                value: id,
-                dataType: "json"
-            }}, "*");
-        }}
-        </script>
-        """, unsafe_allow_html=True)
+    # If expanded, show the content
+    if is_expanded:
+        with st.container():
+            # Overview points
+            if overview and 'points' in overview:
+                render_overview_points(overview['points'], overview['paragraphs'])
+            
+            # Legal points
+            if legal_points and len(legal_points) > 0:
+                st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Legal Points</h6>', unsafe_allow_html=True)
+                render_legal_points(legal_points)
+            
+            # Factual points
+            if factual_points and len(factual_points) > 0:
+                st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Factual Points</h6>', unsafe_allow_html=True)
+                render_factual_points(factual_points)
+            
+            # Evidence
+            if evidence and len(evidence) > 0:
+                st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Evidence</h6>', unsafe_allow_html=True)
+                render_evidence(evidence)
+            
+            # Case law
+            if case_law and len(case_law) > 0:
+                st.markdown('<h6 style="font-size: 0.875rem; font-weight: 500; margin: 1rem 0 0.5rem 0;">Case Law</h6>', unsafe_allow_html=True)
+                render_case_law(case_law)
 
 # Function to render an argument pair
 def render_argument_pair(claimant_data, respondent_data, level=0, is_root=True):
@@ -822,65 +853,79 @@ def get_topic_data():
 def render_timeline_view():
     data = get_timeline_data()
     
-    search = st.text_input("", placeholder="Search events...", key="timeline_search")
-    col1, col2 = st.columns([4, 1])
+    # Search and filters
+    col1, col2, col3 = st.columns([3, 1, 1])
     
     with col1:
-        st.button("Filter", key="timeline_filter")
+        search = st.text_input("", placeholder="Search events...", key="timeline_search")
     
     with col2:
+        st.button("Filter", key="timeline_filter")
+    
+    with col3:
         show_disputed = st.checkbox("Disputed events only", key="timeline_disputed")
     
     # Filter data based on search and checkbox
     filtered_data = data
     if search:
-        filtered_data = [item for item in data if search.lower() in item['appellantVersion'].lower() or search.lower() in item['respondentVersion'].lower()]
+        filtered_data = [item for item in data if 
+                        search.lower() in item['appellantVersion'].lower() or 
+                        search.lower() in item['respondentVersion'].lower()]
     
     if show_disputed:
         filtered_data = [item for item in filtered_data if item['status'] == 'Disputed']
     
-    # Create DataFrame for display
-    df = pd.DataFrame(filtered_data)
-    
-    # Apply styling
-    def highlight_disputed(val):
-        return 'background-color: rgba(254, 226, 226, 0.5)' if val == 'Disputed' else ''
-    
-    def color_status(val):
-        return f'color: {"#dc2626" if val == "Disputed" else "#16a34a"}'
-    
-    styled_df = df.style.applymap(highlight_disputed, subset=['status'])
-    styled_df = styled_df.applymap(color_status, subset=['status'])
-    
-    st.dataframe(
-        styled_df,
-        column_config={
-            "date": "DATE",
-            "appellantVersion": "APPELLANT'S VERSION",
-            "respondentVersion": "RESPONDENT'S VERSION",
-            "status": "STATUS"
-        },
-        hide_index=True
+    # Render timeline table
+    st.markdown(
+        f"""
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>APPELLANT'S VERSION</th>
+                    <th>RESPONDENT'S VERSION</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {"".join([f"""
+                <tr class="{'disputed' if item['status'] == 'Disputed' else ''}">
+                    <td>{item['date']}</td>
+                    <td>{item['appellantVersion']}</td>
+                    <td>{item['respondentVersion']}</td>
+                    <td style="color: {'#dc2626' if item['status'] == 'Disputed' else '#16a34a'};">{item['status']}</td>
+                </tr>
+                """ for item in filtered_data])}
+            </tbody>
+        </table>
+        """, 
+        unsafe_allow_html=True
     )
 
 # Exhibits view component
 def render_exhibits_view():
     data = get_exhibits_data()
     
-    search = st.text_input("", placeholder="Search exhibits...", key="exhibits_search")
-    col1, col2 = st.columns([1, 1])
+    # Search and filters
+    col1, col2, col3 = st.columns([3, 1, 1])
     
     with col1:
-        party_filter = st.selectbox("", ["All Parties", "Appellant", "Respondent"], key="exhibits_party")
+        search = st.text_input("", placeholder="Search exhibits...", key="exhibits_search")
     
     with col2:
+        party_filter = st.selectbox("", ["All Parties", "Appellant", "Respondent"], key="exhibits_party")
+    
+    with col3:
         types = ["All Types"] + list(set([item['type'] for item in data]))
         type_filter = st.selectbox("", types, key="exhibits_type")
     
     # Filter data
     filtered_data = data
     if search:
-        filtered_data = [item for item in data if search.lower() in item['id'].lower() or search.lower() in item['title'].lower() or search.lower() in item['summary'].lower()]
+        filtered_data = [item for item in data if 
+                        search.lower() in item['id'].lower() or 
+                        search.lower() in item['title'].lower() or 
+                        search.lower() in item['summary'].lower()]
     
     if party_filter != "All Parties":
         filtered_data = [item for item in filtered_data if item['party'] == party_filter]
@@ -888,60 +933,45 @@ def render_exhibits_view():
     if type_filter != "All Types":
         filtered_data = [item for item in filtered_data if item['type'] == type_filter]
     
-    # Create DataFrame
-    df = pd.DataFrame(filtered_data)
-    
-    # Apply styling for party badges
-    def format_party(val):
-        color = "blue" if val == "Appellant" else "red"
-        return f'<span style="background-color: {color}15; color: {color}; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">{val}</span>'
-    
-    def format_type(val):
-        return f'<span style="background-color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">{val}</span>'
-    
-    def add_view_button(val):
-        return f'<a href="#" style="color: #2563eb; text-decoration: none;">View</a>'
-    
+    # Render exhibits table
     st.markdown(
-        """
-        <div style="height: 600px; overflow-y: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+        f"""
+        <table class="styled-table">
             <thead>
-                <tr style="background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">EXHIBIT ID</th>
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">PARTY</th>
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">TITLE</th>
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">TYPE</th>
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.8em; color: #6b7280;">SUMMARY</th>
-                    <th style="padding: 12px 16px; text-align: right; font-size: 0.8em; color: #6b7280;">ACTIONS</th>
+                <tr>
+                    <th>EXHIBIT ID</th>
+                    <th>PARTY</th>
+                    <th>TITLE</th>
+                    <th>TYPE</th>
+                    <th>SUMMARY</th>
+                    <th>ACTIONS</th>
                 </tr>
             </thead>
             <tbody>
-                {"".join([f'''
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['id']}</td>
-                    <td style="padding: 12px 16px;">
+                {"".join([f"""
+                <tr>
+                    <td>{item['id']}</td>
+                    <td>
                         <span style="background-color: {'rgba(219, 234, 254, 0.7)' if item['party'] == 'Appellant' else 'rgba(254, 226, 226, 0.7)'}; 
                                color: {'#1e40af' if item['party'] == 'Appellant' else '#b91c1c'}; 
                                padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">
                             {item['party']}
                         </span>
                     </td>
-                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['title']}</td>
-                    <td style="padding: 12px 16px;">
+                    <td>{item['title']}</td>
+                    <td>
                         <span style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;">
                             {item['type']}
                         </span>
                     </td>
-                    <td style="padding: 12px 16px; font-size: 0.9em;">{item['summary']}</td>
-                    <td style="padding: 12px 16px; text-align: right;">
+                    <td>{item['summary']}</td>
+                    <td style="text-align: center;">
                         <a href="#" style="color: #2563eb; text-decoration: none; font-size: 0.9em;">View</a>
                     </td>
                 </tr>
-                ''' for item in filtered_data])}
+                """ for item in filtered_data])}
             </tbody>
         </table>
-        </div>
         """, 
         unsafe_allow_html=True
     )
@@ -973,62 +1003,61 @@ def render_topic_view():
 st.markdown('<h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Legal Arguments Analysis</h1>', unsafe_allow_html=True)
 
 # Tab navigation
-tab_html = f"""
-<div class="tab-nav">
-    <div class="tab {'tab-active' if st.session_state.active_tab == 'arguments' else 'tab-inactive'}" 
-         onclick="handleTabClick('arguments')">Summary of Arguments</div>
-    <div class="tab {'tab-active' if st.session_state.active_tab == 'timeline' else 'tab-inactive'}" 
-         onclick="handleTabClick('timeline')">Timeline</div>
-    <div class="tab {'tab-active' if st.session_state.active_tab == 'exhibits' else 'tab-inactive'}" 
-         onclick="handleTabClick('exhibits')">Exhibits</div>
-</div>
-<script>
-function handleTabClick(tab) {{
-    window.parent.postMessage({{
-        type: "streamlit:setComponentValue",
-        value: {{"tab": tab}},
-        dataType: "json"
-    }}, "*");
-}}
-</script>
-"""
-components.html(tab_html, height=50)
+tab_cols = st.columns(3)
+with tab_cols[0]:
+    if st.button("Summary of Arguments", 
+                key="tab_arguments",
+                help="View legal argument summary",
+                type="secondary" if st.session_state.active_tab == "arguments" else "primary",
+                use_container_width=True):
+        switch_tab("arguments")
+        st.experimental_rerun()
+with tab_cols[1]:
+    if st.button("Timeline", 
+                key="tab_timeline",
+                help="View case timeline",
+                type="secondary" if st.session_state.active_tab == "timeline" else "primary",
+                use_container_width=True):
+        switch_tab("timeline")
+        st.experimental_rerun()
+with tab_cols[2]:
+    if st.button("Exhibits", 
+                key="tab_exhibits",
+                help="View case exhibits",
+                type="secondary" if st.session_state.active_tab == "exhibits" else "primary",
+                use_container_width=True):
+        switch_tab("exhibits")
+        st.experimental_rerun()
 
-# Handle the component's output
-component_value = st.experimental_get_query_params()
-if component_value:
-    if 'tab' in component_value:
-        st.session_state.active_tab = component_value['tab'][0]
-    if 'arg_id' in component_value:
-        toggle_expand(component_value['arg_id'][0])
+st.markdown("<hr/>", unsafe_allow_html=True)
 
 # Actions bar for Timeline and Exhibits views
 if st.session_state.active_tab in ['timeline', 'exhibits']:
-    col1, col2 = st.columns([5, 1])
-    with col2:
-        st.download_button("Export Data", "exported_data.csv", "Export")
-        st.button("Copy")
+    cols = st.columns([4, 1, 1])
+    with cols[1]:
+        st.button("Copy", key="btn_copy")
+    with cols[2]:
+        st.download_button("Export Data", 
+                          "data.csv", 
+                          file_name="legal_data.csv",
+                          mime="text/csv",
+                          key="btn_export")
 
 # Arguments View Mode Toggle
 if st.session_state.active_tab == 'arguments':
-    toggle_html = f"""
-    <div class="view-toggle">
-        <div class="toggle-btn {'toggle-btn-active' if st.session_state.view_mode == 'default' else 'toggle-btn-inactive'}" 
-             onclick="handleViewToggle('default')">Standard View</div>
-        <div class="toggle-btn {'toggle-btn-active' if st.session_state.view_mode == 'hierarchical' else 'toggle-btn-inactive'}" 
-             onclick="handleViewToggle('hierarchical')">Topic View</div>
-    </div>
-    <script>
-    function handleViewToggle(mode) {{
-        window.parent.postMessage({{
-            type: "streamlit:setComponentValue",
-            value: {{"view_mode": mode}},
-            dataType: "json"
-        }}, "*");
-    }}
-    </script>
-    """
-    components.html(toggle_html, height=50)
+    view_toggle_cols = st.columns([3, 1, 1])
+    with view_toggle_cols[1]:
+        if st.button("Standard View", 
+                    key="view_standard",
+                    type="secondary" if st.session_state.view_mode == "default" else "primary"):
+            switch_view_mode("default")
+            st.experimental_rerun()
+    with view_toggle_cols[2]:
+        if st.button("Topic View", 
+                    key="view_topic",
+                    type="secondary" if st.session_state.view_mode == "hierarchical" else "primary"):
+            switch_view_mode("hierarchical")
+            st.experimental_rerun()
     
     if st.session_state.view_mode == 'default':
         # Standard view with all arguments
@@ -1046,38 +1075,3 @@ elif st.session_state.active_tab == 'timeline':
 # Exhibits view
 elif st.session_state.active_tab == 'exhibits':
     render_exhibits_view()
-
-# JavaScript to handle component communication
-st.markdown("""
-<script>
-// Listen for messages from components
-window.addEventListener('message', function(e) {
-    if (e.data.type === 'streamlit:componentOutput') {
-        const data = e.data.value;
-        if (data) {
-            // Update URL parameters
-            const searchParams = new URLSearchParams(window.location.search);
-            
-            if (data.tab) {
-                searchParams.set('tab', data.tab);
-            }
-            
-            if (data.view_mode) {
-                searchParams.set('view_mode', data.view_mode);
-            }
-            
-            if (typeof data === 'string') {
-                searchParams.set('arg_id', data);
-            }
-            
-            // Replace URL
-            const newUrl = window.location.pathname + '?' + searchParams.toString();
-            window.history.replaceState({}, '', newUrl);
-            
-            // Reload to apply changes
-            window.location.reload();
-        }
-    }
-});
-</script>
-""", unsafe_allow_html=True)

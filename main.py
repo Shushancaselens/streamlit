@@ -744,6 +744,12 @@ def main():
                 background-color: #edf2f7;
                 color: #4a5568;
             }}
+            .exhibit-badge {{
+                background-color: #e9d8fd;
+                color: #6b46c1;
+                font-weight: 600;
+                margin-left: 0.5rem;
+            }}
             
             /* Content components */
             .content-section {{
@@ -785,90 +791,140 @@ def main():
                 color: #718096;
             }}
             
-            /* Overview points */
-            .overview-block {{
+            /* Supporting points */
+            .supporting-block {{
                 background-color: #f7fafc;
                 border-radius: 0.5rem;
                 padding: 1rem;
                 margin-bottom: 1rem;
             }}
-            .overview-header {{
+            .supporting-header {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 0.5rem;
             }}
-            .overview-list {{
+            .supporting-list {{
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
             }}
-            .overview-item {{
+            .supporting-item {{
                 display: flex;
                 align-items: flex-start;
                 gap: 0.5rem;
                 margin-bottom: 0.25rem;
             }}
-            .overview-bullet {{
+            .supporting-bullet {{
                 width: 6px;
                 height: 6px;
                 border-radius: 50%;
                 background-color: #3182ce;
                 margin-top: 0.5rem;
             }}
-            .overview-point-container {{
+            .supporting-point-container {{
                 display: flex;
                 flex-direction: column;
                 flex: 1;
             }}
-            .overview-point-row {{
+            .supporting-point-row {{
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
             }}
             
-            /* Evidence and Case Law */
+            /* Evidence and Case Law - Larger and more prominent */
             .reference-block {{
                 background-color: #f7fafc;
                 border-radius: 0.5rem;
-                padding: 0.75rem;
-                margin-bottom: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }}
             .reference-header {{
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 0.25rem;
+                margin-bottom: 0.5rem;
+                align-items: center;
             }}
             .reference-title {{
-                font-size: 0.875rem;
-                font-weight: 500;
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #2d3748;
             }}
             .reference-summary {{
-                font-size: 0.75rem;
-                color: #718096;
-                margin-top: 0.25rem;
-                margin-bottom: 0.5rem;
+                font-size: 0.875rem;
+                color: #4a5568;
+                margin-top: 0.5rem;
+                margin-bottom: 0.75rem;
+                line-height: 1.5;
             }}
             .reference-citations {{
                 display: flex;
                 flex-wrap: wrap;
-                gap: 0.25rem;
-                margin-top: 0.5rem;
+                gap: 0.375rem;
+                margin-top: 0.75rem;
             }}
             .citation-tag {{
-                background-color: #edf2f7;
-                color: #4a5568;
-                padding: 0.125rem 0.375rem;
+                background-color: #e9d8fd;
+                color: #6b46c1;
+                padding: 0.25rem 0.5rem;
                 border-radius: 0.25rem;
-                font-size: 0.75rem;
+                font-size: 0.875rem;
+                font-weight: 500;
             }}
             
-            /* Legal references styling */
-            .legal-point {{
+            /* Case Law styling - enhanced */
+            .case-law-section {{
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }}
+            .case-law-title {{
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #2d3748;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 2px solid #3182ce;
+            }}
+            .case-law-block {{
                 background-color: #ebf8ff;
                 border-radius: 0.5rem;
+                padding: 1.25rem;
+                margin-bottom: 1.25rem;
+                border-left: 4px solid #3182ce;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }}
+            
+            /* Documentary Exhibits styling - enhanced */
+            .exhibits-section {{
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }}
+            .exhibits-title {{
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #2d3748;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 2px solid #6b46c1;
+            }}
+            .exhibit-block {{
+                background-color: #f8f4ff;
+                border-radius: 0.5rem;
+                padding: 1.25rem;
+                margin-bottom: 1.25rem;
+                border-left: 4px solid #6b46c1;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }}
+            
+            /* Factual points styling */
+            .factual-point {{
+                background-color: #f0fff4;
+                border-radius: 0.5rem;
                 padding: 0.75rem;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.75rem;
+                border-left: 3px solid #38a169;
             }}
             
             /* Topic view */
@@ -1159,15 +1215,15 @@ def main():
                 }});
             }});
             
-            // Render overview points
-            function renderOverviewPoints(overview) {{
+            // Render supporting points (formerly Key Points)
+            function renderSupportingPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
                 const pointsHtml = overview.points.map(point => 
-                    `<div class="overview-item">
-                        <div class="overview-bullet"></div>
-                        <div class="overview-point-container">
-                            <div class="overview-point-row">
+                    `<div class="supporting-item">
+                        <div class="supporting-bullet"></div>
+                        <div class="supporting-point-container">
+                            <div class="supporting-point-row">
                                 <span class="point-text">${{point}}</span>
                                 <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
                             </div>
@@ -1176,42 +1232,58 @@ def main():
                 ).join('');
                 
                 return `
-                <div class="overview-block">
-                    <div class="overview-header">
-                        <h6 class="content-section-title">Key Points</h6>
+                <div class="supporting-block">
+                    <div class="supporting-header">
+                        <h6 class="content-section-title">Supporting Points</h6>
                     </div>
-                    <div class="overview-list">
+                    <div class="supporting-list">
                         ${{pointsHtml}}
                     </div>
                 </div>
                 `;
             }}
             
-            // Render legal points
-            function renderLegalPoints(points) {{
+            // Render factual points - Updated to show exhibit numbers instead of paragraphs
+            function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
                     const disputed = point.isDisputed 
-                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
                         : '';
                     
-                    const regulations = point.regulations 
-                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
-                        : '';
+                    // Get relevant exhibit ID based on point content or paragraph
+                    const getRelatedExhibit = (point) => {{
+                        // This is a simplified logic - in a real app we'd match exhibits more precisely
+                        // For now, we'll just use C-1 through C-4 or R-1 through R-3 based on the point's paragraphs
+                        const paragraphNum = parseInt(point.paragraphs.split('-')[0]);
+                        if (point.source === 'Respondent') {{
+                            return `R-${{(paragraphNum % 3) + 1}}`;
+                        }} else {{
+                            return `C-${{(paragraphNum % 4) + 1}}`;
+                        }}
+                    }};
+                    
+                    const exhibitId = getRelatedExhibit(point);
                     
                     return `
-                    <div class="legal-point">
+                    <div class="factual-point">
                         <div class="point-header">
-                            <span class="badge legal-badge">Legal</span>
+                            <span class="badge factual-badge">Factual</span>
                             ${{disputed}}
+                        </div>
+                        <div class="point-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            ${{point.date}}
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <p class="point-text">${{point.point}}</p>
-                            <span class="badge claimant-badge" style="margin-left: 8px;">¶${{point.paragraphs}}</span>
-                        </div>
-                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
-                            ${{regulations}}
+                            <span class="exhibit-badge">Exhibit ${{exhibitId}}</span>
                         </div>
                     </div>
                     `;
@@ -1219,61 +1291,13 @@ def main():
                 
                 return `
                 <div class="content-section">
-                    <h6 class="content-section-title">Legal Points</h6>
+                    <h6 class="content-section-title">Factual Points</h6>
                     ${{pointsHtml}}
                 </div>
                 `;
             }}
             
-            // Render factual points as exhibits
-            function renderFactualPoints(points, side) {{
-                if (!points || points.length === 0) return '';
-                
-                let exhibitCount = 0;
-                const itemsHtml = points.map(point => {{
-                    exhibitCount++;
-                    const prefix = side === 'claimant' ? 'C-F' : 'R-F';
-                    const exhibitId = `${{prefix}}${{exhibitCount}}`;
-                    
-                    // Create a "disputed" tag if needed
-                    const disputedTag = point.isDisputed 
-                        ? `<span class="badge disputed-badge" style="margin-left: 0.5rem;">Disputed by ${{point.source || ''}}</span>` 
-                        : '';
-                        
-                    // Format the date for display in the title
-                    const dateDisplay = point.date ? `(${{point.date}})` : '';
-                    
-                    return `
-                    <div class="reference-block">
-                        <div class="reference-header">
-                            <div>
-                                <span class="reference-title">${{exhibitId}}: ${{point.point}} ${{dateDisplay}}</span>
-                                ${{disputedTag}}
-                            </div>
-                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="reference-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Referenced in:</span>
-                            <span class="citation-tag">¶${{point.paragraphs}}</span>
-                        </div>
-                    </div>
-                    `;
-                }}).join('');
-                
-                return `
-                <div class="content-section">
-                    <h6 class="content-section-title">Factual Exhibits</h6>
-                    ${{itemsHtml}}
-                </div>
-                `;
-            }}
-            
-            // Render evidence
+            // Render evidence - Enhanced with larger/more prominent styling
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
@@ -1283,19 +1307,20 @@ def main():
                         : '';
                     
                     return `
-                    <div class="reference-block">
+                    <div class="exhibit-block">
                         <div class="reference-header">
-                            <span class="reference-title">${{item.id}}: ${{item.title}}</span>
-                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <h3 class="reference-title">${{item.id}}: ${{item.title}}</h3>
+                            <button class="action-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                 </svg>
+                                View Details
                             </button>
                         </div>
                         <p class="reference-summary">${{item.summary}}</p>
                         <div class="reference-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
+                            <span style="font-size: 0.875rem; color: #718096; margin-right: 0.5rem;">Referenced in:</span>
                             ${{citations}}
                         </div>
                     </div>
@@ -1303,14 +1328,14 @@ def main():
                 }}).join('');
                 
                 return `
-                <div class="content-section">
-                    <h6 class="content-section-title">Documentary Exhibits</h6>
+                <div class="exhibits-section">
+                    <h2 class="exhibits-title">Documentary Exhibits</h2>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render case law
+            // Render case law - Enhanced with larger/more prominent styling
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
@@ -1320,62 +1345,58 @@ def main():
                         : '';
                     
                     return `
-                    <div class="reference-block">
+                    <div class="case-law-block">
                         <div class="reference-header">
-                            <div>
-                                <span class="reference-title">${{item.caseNumber}}</span>
-                                <span class="point-citation" style="margin-left: 0.5rem;">¶${{item.paragraphs}}</span>
-                            </div>
-                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <h3 class="reference-title">${{item.caseNumber}}</h3>
+                            <button class="action-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                 </svg>
+                                View Full Case
                             </button>
                         </div>
-                        <p class="reference-summary">${{item.title}}</p>
-                        <p class="point-text">${{item.relevance}}</p>
+                        <h4 style="margin-top: 0.5rem; margin-bottom: 0.75rem; font-size: 1rem;">${{item.title}}</h4>
+                        <p class="reference-summary" style="font-weight: 500;">${{item.relevance}}</p>
                         <div class="reference-citations">
-                            <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
+                            <span style="font-size: 0.875rem; color: #718096; margin-right: 0.5rem;">Key Paragraphs:</span>
                             ${{citedParagraphs}}
+                        </div>
+                        <div style="margin-top: 0.75rem; font-style: italic; color: #718096;">
+                            Referenced in paragraphs ${{item.paragraphs}}
                         </div>
                     </div>
                     `;
                 }}).join('');
                 
                 return `
-                <div class="content-section">
-                    <h6 class="content-section-title">Case Law</h6>
+                <div class="case-law-section">
+                    <h2 class="case-law-title">Case Law</h2>
                     ${{itemsHtml}}
                 </div>
                 `;
             }}
             
-            // Render argument content
-            function renderArgumentContent(arg, side) {{
+            // Render argument content - Removed Legal Points
+            function renderArgumentContent(arg) {{
                 let content = '';
                 
-                // Overview points
+                // Supporting points (previously Overview/Key Points)
                 if (arg.overview) {{
-                    content += renderOverviewPoints(arg.overview);
+                    content += renderSupportingPoints(arg.overview);
                 }}
                 
-                // Legal points
-                if (arg.legalPoints) {{
-                    content += renderLegalPoints(arg.legalPoints);
-                }}
-                
-                // Factual points as exhibits
+                // Factual points
                 if (arg.factualPoints) {{
-                    content += renderFactualPoints(arg.factualPoints, side);
+                    content += renderFactualPoints(arg.factualPoints);
                 }}
                 
-                // Evidence
+                // Evidence - Now rendered as "Documentary Exhibits"
                 if (arg.evidence) {{
                     content += renderEvidence(arg.evidence);
                 }}
                 
-                // Case law
+                // Case law - Now more prominent
                 if (arg.caseLaw) {{
                     content += renderCaseLaw(arg.caseLaw);
                 }}
@@ -1418,7 +1439,7 @@ def main():
                 `;
                 
                 // Detailed content
-                const contentHtml = renderArgumentContent(arg, side);
+                const contentHtml = renderArgumentContent(arg);
                 
                 // Child arguments
                 let childrenHtml = '';

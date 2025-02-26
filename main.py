@@ -1107,6 +1107,29 @@ def main():
             // Global variable to track current party view
             let currentPartyView = 'both';
             
+            // Switch between party views
+            function switchPartyView(view) {
+                // Update global state
+                currentPartyView = view;
+                
+                // Update button styling
+                document.getElementById('both-parties-btn').classList.remove('active');
+                document.getElementById('appellant-btn').classList.remove('active');
+                document.getElementById('respondent-btn').classList.remove('active');
+                
+                document.getElementById(`${view}-parties-btn`).classList.add('active');
+                if (view === 'appellant') {
+                    document.getElementById('appellant-btn').classList.add('active');
+                } else if (view === 'respondent') {
+                    document.getElementById('respondent-btn').classList.add('active');
+                } else {
+                    document.getElementById('both-parties-btn').classList.add('active');
+                }
+                
+                // Re-render with the selected view
+                renderTopics();
+            }
+            
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
                 // Show the correct section based on sidebar selection

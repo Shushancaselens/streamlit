@@ -1108,7 +1108,7 @@ def main():
             let currentPartyView = 'both';
             
             // Switch between party views
-            function switchPartyView(view) {
+            function switchPartyView(view) {{
                 // Update global state
                 currentPartyView = view;
                 
@@ -1117,18 +1117,17 @@ def main():
                 document.getElementById('appellant-btn').classList.remove('active');
                 document.getElementById('respondent-btn').classList.remove('active');
                 
-                document.getElementById(`${view}-parties-btn`).classList.add('active');
-                if (view === 'appellant') {
+                if (view === 'appellant') {{
                     document.getElementById('appellant-btn').classList.add('active');
-                } else if (view === 'respondent') {
+                }} else if (view === 'respondent') {{
                     document.getElementById('respondent-btn').classList.add('active');
-                } else {
+                }} else {{
                     document.getElementById('both-parties-btn').classList.add('active');
-                }
+                }}
                 
                 // Re-render with the selected view
                 renderTopics();
-            }
+            }}
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{

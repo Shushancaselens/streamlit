@@ -1115,6 +1115,9 @@ def main():
             const factsData = {facts_json};
             const viewOptions = {view_options_json};
             
+            // Debug flag to help troubleshoot rendering
+            const DEBUG = true;
+            
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
                 // Show the correct section based on sidebar selection

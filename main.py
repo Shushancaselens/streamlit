@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import streamlit.components.v1 as components
+import pandas as pd
+import base64
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -8,6 +10,9 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
     st.session_state.view = "Arguments"
+
+if 'view_type' not in st.session_state:
+    st.session_state.view_type = "Detailed View"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -480,19 +485,77 @@ def get_exhibits_data():
         }
     ]
 
+# Get all facts from the data
+def get_all_facts():
+    args_data = get_argument_data()
+    facts = []
+    
+    # Helper function to extract facts from arguments
+    def extract_facts(arg, party):
+        if not arg:
+            return
+            
+        if 'factualPoints' in arg and arg['factualPoints']:
+            for point in arg['factualPoints']:
+                fact = {
+                    'point': point['point'],
+                    'date': point['date'],
+                    'isDisputed': point['isDisputed'],
+                    'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
+                    'exhibits': point.get('exhibits', []),
+                    'argId': arg['id'],
+                    'argTitle': arg['title']
+                }
+                facts.append(fact)
+                
+        # Process children
+        if 'children' in arg and arg['children']:
+            for child_id, child in arg['children'].items():
+                extract_facts(child, party)
+    
+    # Extract from claimant args
+    for arg_id, arg in args_data['claimantArgs'].items():
+        extract_facts(arg, 'Appellant')
+        
+    # Extract from respondent args
+    for arg_id, arg in args_data['respondentArgs'].items():
+        extract_facts(arg, 'Respondent')
+        
+    return facts
+
+# Function to create CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
+
 # Main app
 def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()
     exhibits_data = get_exhibits_data()
+    facts_data = get_all_facts()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
+    facts_json = json.dumps(facts_data)
     
-    # Add Streamlit sidebar with simplified button styling
+    # Initialize session state if not already done
+    if 'view' not in st.session_state:
+        st.session_state.view = "Arguments"
+    
+    if 'show_disputed_only' not in st.session_state:
+        st.session_state.show_disputed_only = False
+    
+    if 'search_term' not in st.session_state:
+        st.session_state.search_term = ""
+    
+    # Add Streamlit sidebar with expanded options
     with st.sidebar:
         st.title("Legal Analysis")
         
@@ -517,6 +580,9 @@ def main():
         def set_arguments_view():
             st.session_state.view = "Arguments"
             
+        def set_facts_view():
+            st.session_state.view = "Facts"
+            
         def set_timeline_view():
             st.session_state.view = "Timeline"
             
@@ -525,20 +591,64 @@ def main():
         
         # Create buttons with names
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-    
-    # Determine which view to show based on sidebar selection
-    if st.session_state.view == "Arguments":
-        active_tab = 0
-    elif st.session_state.view == "Timeline":
-        active_tab = 1
-    else:  # Exhibits
-        active_tab = 2
+        
+        # Add view options section
+        st.subheader("View Options")
+        view_type = st.radio(
+            "Display Style",
+            ["Detailed View", "Table View"],
+            key="view_type"
+        )
+        
+        # Add filter options
+        st.subheader("Filters")
+        show_disputed_only = st.checkbox("Show disputed points only", value=st.session_state.show_disputed_only)
+        if show_disputed_only != st.session_state.show_disputed_only:
+            st.session_state.show_disputed_only = show_disputed_only
+        
+        # Add search box
+        st.subheader("Search")
+        search_term = st.text_input("Search all content", value=st.session_state.search_term)
+        if search_term != st.session_state.search_term:
+            st.session_state.search_term = search_term
+        
+        # Add export options
+        st.subheader("Export")
+        export_format = st.selectbox("Export format", ["Copy to clipboard", "CSV", "PDF"])
+        
+        # Create download link for current view
+        if export_format == "CSV":
+            if st.session_state.view == "Arguments":
+                # Create a DataFrame for arguments
+                arg_data = []
+                # Logic to populate argument data for export would go here
+                arg_df = pd.DataFrame(arg_data)
+                st.markdown(get_csv_download_link(arg_df, "arguments.csv", "Download Arguments CSV"), unsafe_allow_html=True)
+            
+            elif st.session_state.view == "Facts":
+                # Create DataFrame for facts
+                facts_df = pd.DataFrame(facts_data)
+                st.markdown(get_csv_download_link(facts_df, "facts.csv", "Download Facts CSV"), unsafe_allow_html=True)
+                
+            elif st.session_state.view == "Timeline":
+                # Create DataFrame for timeline
+                timeline_df = pd.DataFrame(timeline_data)
+                st.markdown(get_csv_download_link(timeline_df, "timeline.csv", "Download Timeline CSV"), unsafe_allow_html=True)
+                
+            elif st.session_state.view == "Exhibits":
+                # Create DataFrame for exhibits
+                exhibits_df = pd.DataFrame(exhibits_data)
+                st.markdown(get_csv_download_link(exhibits_df, "exhibits.csv", "Download Exhibits CSV"), unsafe_allow_html=True)
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
-        "activeTab": active_tab
+        "activeTab": ["Arguments", "Facts", "Timeline", "Exhibits"].index(st.session_state.view),
+        "viewType": st.session_state.view_type,
+        "showDisputedOnly": st.session_state.show_disputed_only,
+        "searchTerm": st.session_state.search_term
     })
     
     # Create a single HTML component containing the full UI with minimalistic design
@@ -777,10 +887,123 @@ def main():
                 padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
             }}
+            
+            /* Table view */
+            .table-view {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }}
+            
+            .table-view th {{
+                padding: 12px;
+                text-align: left;
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+                position: sticky;
+                top: 0;
+                cursor: pointer;
+            }}
+            
+            .table-view th:hover {{
+                background-color: #e9ecef;
+            }}
+            
+            .table-view td {{
+                padding: 12px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .table-view tr:hover {{
+                background-color: #f8f9fa;
+            }}
+            
+            /* Facts styling */
+            .facts-container {{
+                margin-top: 20px;
+            }}
+            
+            .facts-header {{
+                display: flex;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .tab-button {{
+                padding: 10px 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }}
+            
+            .tab-button.active {{
+                border-bottom: 2px solid #4299e1;
+                color: #4299e1;
+                font-weight: 500;
+            }}
+            
+            .facts-content {{
+                margin-top: 20px;
+            }}
+            
+            /* Search highlighting */
+            .highlight {{
+                background-color: yellow;
+                padding: 2px;
+                border-radius: 2px;
+            }}
+            
+            /* View toggle */
+            .view-toggle {{
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 16px;
+            }}
+            
+            .view-toggle button {{
+                padding: 8px 16px;
+                border: 1px solid #e2e8f0;
+                background-color: #f7fafc;
+                cursor: pointer;
+            }}
+            
+            .view-toggle button.active {{
+                background-color: #4299e1;
+                color: white;
+                border-color: #4299e1;
+            }}
+            
+            .view-toggle button:first-child {{
+                border-radius: 4px 0 0 4px;
+            }}
+            
+            .view-toggle button:last-child {{
+                border-radius: 0 4px 4px 0;
+            }}
+            
+            /* Copy notification */
+            .copy-notification {{
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #2d3748;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }}
+            
+            .copy-notification.show {{
+                opacity: 1;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
+            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+            
             <button class="copy-button" onclick="copyAllContent()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -792,7 +1015,61 @@ def main():
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
                 <div class="section-title">Arguments Summary</div>
-                <div id="topics-container"></div>
+                
+                <!-- View toggle buttons -->
+                <div class="view-toggle">
+                    <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                    <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                </div>
+                
+                <!-- Detailed view content -->
+                <div id="detailed-view" class="view-content active">
+                    <div id="topics-container"></div>
+                </div>
+                
+                <!-- Table view content -->
+                <div id="table-view" class="view-content" style="display: none;">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('table-view-body', 0)">ID</th>
+                                <th onclick="sortTable('table-view-body', 1)">Argument</th>
+                                <th onclick="sortTable('table-view-body', 2)">Party</th>
+                                <th onclick="sortTable('table-view-body', 3)">Status</th>
+                                <th onclick="sortTable('table-view-body', 4)">Evidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-view-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Facts Section -->
+            <div id="facts" class="content-section">
+                <div class="section-title">Case Facts</div>
+                
+                <div class="facts-header">
+                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                </div>
+                
+                <div class="facts-content">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facts-table-body"></tbody>
+                    </table>
+                </div>
             </div>
             
             <!-- Timeline Section -->
@@ -834,12 +1111,13 @@ def main():
             const argsData = {args_json};
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
+            const factsData = {facts_json};
             const viewOptions = {view_options_json};
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
-                // Show the correct content based on sidebar selection
-                const sections = ['arguments', 'timeline', 'exhibits'];
+                // Show the correct section based on sidebar selection
+                const sections = ['arguments', 'facts', 'timeline', 'exhibits'];
                 const activeSection = sections[viewOptions.activeTab];
                 
                 document.querySelectorAll('.content-section').forEach(section => {{
@@ -848,11 +1126,519 @@ def main():
                 
                 document.getElementById(activeSection).classList.add('active');
                 
+                // Set the correct view type (detailed vs table)
+                if (viewOptions.viewType === "Table View") {{
+                    switchView('table');
+                }} else {{
+                    switchView('detailed');
+                }}
+                
                 // Initialize content as needed
-                if (activeSection === 'arguments') renderTopics();
+                if (activeSection === 'arguments') {{
+                    renderTopics();
+                    renderArgumentsTable();
+                }}
                 if (activeSection === 'timeline') renderTimeline();
                 if (activeSection === 'exhibits') renderExhibits();
+                if (activeSection === 'facts') renderFacts();
+                
+                // Apply search if needed
+                if (viewOptions.searchTerm) {{
+                    highlightSearchTerm(viewOptions.searchTerm);
+                }}
             }});
+            
+            // Switch view between detailed and table
+            function switchView(viewType) {{
+                const detailedBtn = document.getElementById('detailed-view-btn');
+                const tableBtn = document.getElementById('table-view-btn');
+                const detailedView = document.getElementById('detailed-view');
+                const tableView = document.getElementById('table-view');
+                
+                if (viewType === 'detailed') {{
+                    detailedBtn.classList.add('active');
+                    tableBtn.classList.remove('active');
+                    detailedView.style.display = 'block';
+                    tableView.style.display = 'none';
+                }} else {{
+                    detailedBtn.classList.remove('active');
+                    tableBtn.classList.add('active');
+                    detailedView.style.display = 'none';
+                    tableView.style.display = 'block';
+                }}
+            }}
+            
+            // Switch facts tab
+            function switchFactsTab(tabType) {{
+                const allBtn = document.getElementById('all-facts-btn');
+                const disputedBtn = document.getElementById('disputed-facts-btn');
+                const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                
+                // Remove active class from all
+                allBtn.classList.remove('active');
+                disputedBtn.classList.remove('active');
+                undisputedBtn.classList.remove('active');
+                
+                // Add active to selected
+                if (tabType === 'all') {{
+                    allBtn.classList.add('active');
+                    renderFacts('all');
+                }} else if (tabType === 'disputed') {{
+                    disputedBtn.classList.add('active');
+                    renderFacts('disputed');
+                }} else {{
+                    undisputedBtn.classList.add('active');
+                    renderFacts('undisputed');
+                }}
+            }}
+            
+            // Sort table function
+            function sortTable(tableId, columnIndex) {{
+                const table = document.getElementById(tableId);
+                const rows = Array.from(table.rows);
+                let dir = 1; // 1 for ascending, -1 for descending
+                
+                // Check if already sorted in this direction
+                if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                    table.getAttribute('data-sort-dir') === '1') {{
+                    dir = -1;
+                }}
+                
+                // Sort the rows
+                rows.sort((a, b) => {{
+                    const cellA = a.cells[columnIndex].textContent.trim();
+                    const cellB = b.cells[columnIndex].textContent.trim();
+                    
+                    // Handle date sorting
+                    if (columnIndex === 0 && tableId === 'facts-table-body') {{
+                        // Attempt to parse as dates
+                        const dateA = new Date(cellA);
+                        const dateB = new Date(cellB);
+                        
+                        if (!isNaN(dateA) && !isNaN(dateB)) {{
+                            return dir * (dateA - dateB);
+                        }}
+                    }}
+                    
+                    return dir * cellA.localeCompare(cellB);
+                }});
+                
+                // Remove existing rows and append in new order
+                rows.forEach(row => table.appendChild(row));
+                
+                // Store current sort direction and column
+                table.setAttribute('data-sort-column', columnIndex);
+                table.setAttribute('data-sort-dir', dir);
+            }}
+            
+            // Highlight search term in content
+            function highlightSearchTerm(term) {{
+                if (!term) return;
+                
+                const searchRegex = new RegExp(term, 'gi');
+                const textNodes = [];
+                
+                // Get all text nodes in the document
+                function getTextNodes(node) {{
+                    if (node.nodeType === 3) {{
+                        textNodes.push(node);
+                    }} else {{
+                        for (let i = 0; i < node.childNodes.length; i++) {{
+                            getTextNodes(node.childNodes[i]);
+                        }}
+                    }}
+                }}
+                
+                getTextNodes(document.body);
+                
+                // Highlight matching text
+                textNodes.forEach(node => {{
+                    const parent = node.parentNode;
+                    if (parent && parent.nodeName !== 'SCRIPT' && parent.nodeName !== 'STYLE') {{
+                        const content = node.textContent;
+                        if (searchRegex.test(content)) {{
+                            const fragment = document.createDocumentFragment();
+                            let lastIndex = 0;
+                            
+                            content.replace(searchRegex, (match, index) => {{
+                                // Add text before the match
+                                fragment.appendChild(document.createTextNode(content.substring(lastIndex, index)));
+                                
+                                // Create highlighted span
+                                const span = document.createElement('span');
+                                span.className = 'highlight';
+                                span.textContent = match;
+                                fragment.appendChild(span);
+                                
+                                lastIndex = index + match.length;
+                            }});
+                            
+                            // Add remaining text
+                            fragment.appendChild(document.createTextNode(content.substring(lastIndex)));
+                            
+                            // Replace the original node
+                            parent.replaceChild(fragment, node);
+                        }}
+                    }}
+                }});
+            }}
+            
+            // Copy all content function
+            function copyAllContent() {{
+                const activeSection = document.querySelector('.content-section.active');
+                if (!activeSection) return;
+                
+                let contentToCopy = '';
+                
+                // Extract content based on section
+                if (activeSection.id === 'arguments') {{
+                    if (document.getElementById('detailed-view').style.display !== 'none') {{
+                        contentToCopy = extractArgumentsDetailedText();
+                    }} else {{
+                        contentToCopy = extractArgumentsTableText();
+                    }}
+                }} else if (activeSection.id === 'timeline') {{
+                    contentToCopy = extractTimelineText();
+                }} else if (activeSection.id === 'exhibits') {{
+                    contentToCopy = extractExhibitsText();
+                }} else if (activeSection.id === 'facts') {{
+                    contentToCopy = extractFactsText();
+                }}
+                
+                // Create a temporary textarea to copy the content
+                const textarea = document.createElement('textarea');
+                textarea.value = contentToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Show notification
+                const notification = document.getElementById('copy-notification');
+                notification.classList.add('show');
+                
+                setTimeout(() => {{
+                    notification.classList.remove('show');
+                }}, 2000);
+            }}
+            
+            // Extract text from arguments detailed view
+            function extractArgumentsDetailedText() {{
+                const container = document.getElementById('topics-container');
+                return container.innerText;
+            }}
+            
+            // Extract text from arguments table
+            function extractArgumentsTableText() {{
+                const table = document.querySelector('#table-view table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .filter(header => header !== 'Actions')
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .filter((td, index) => index !== row.cells.length - 1) // Exclude Actions column
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from timeline
+            function extractTimelineText() {{
+                const table = document.getElementById('timeline-table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from exhibits
+            function extractExhibitsText() {{
+                const table = document.getElementById('exhibits-table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from facts
+            function extractFactsText() {{
+                const table = document.querySelector('.facts-content table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Render arguments in table format
+            function renderArgumentsTable() {{
+                const tableBody = document.getElementById('table-view-body');
+                tableBody.innerHTML = '';
+                
+                // Helper function to flatten arguments
+                function flattenArguments(args, party) {{
+                    let result = [];
+                    
+                    Object.values(args).forEach(arg => {{
+                        // Track if argument has disputed facts
+                        const hasDisputedFacts = arg.factualPoints && 
+                            arg.factualPoints.some(point => point.isDisputed);
+                        
+                        // Count pieces of evidence
+                        const evidenceCount = arg.evidence ? arg.evidence.length : 0;
+                        
+                        // Add this argument
+                        result.push({{
+                            id: arg.id,
+                            title: arg.title,
+                            party: party,
+                            hasDisputedFacts: hasDisputedFacts,
+                            evidenceCount: evidenceCount,
+                            paragraphs: arg.paragraphs
+                        }});
+                        
+                        // Process children recursively
+                        if (arg.children) {{
+                            Object.values(arg.children).forEach(child => {{
+                                result = result.concat(flattenArguments({{[child.id]: child}}, party));
+                            }});
+                        }}
+                    }});
+                    
+                    return result;
+                }}
+                
+                // Get flattened arguments
+                const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
+                const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
+                const allArgs = [...appellantArgs, ...respondentArgs];
+                
+                // Filter based on options
+                let filteredArgs = allArgs;
+                if (viewOptions.showDisputedOnly) {{
+                    filteredArgs = allArgs.filter(arg => arg.hasDisputedFacts);
+                }}
+                
+                // Search filter
+                if (viewOptions.searchTerm) {{
+                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
+                    filteredArgs = filteredArgs.filter(arg => 
+                        searchRegex.test(arg.id) || 
+                        searchRegex.test(arg.title) || 
+                        searchRegex.test(arg.party)
+                    );
+                }}
+                
+                // Render rows
+                filteredArgs.forEach(arg => {{
+                    const row = document.createElement('tr');
+                    
+                    // ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = arg.id;
+                    row.appendChild(idCell);
+                    
+                    // Title column
+                    const titleCell = document.createElement('td');
+                    titleCell.textContent = arg.title;
+                    row.appendChild(titleCell);
+                    
+                    // Party column
+                    const partyCell = document.createElement('td');
+                    const partyBadge = document.createElement('span');
+                    partyBadge.className = `badge ${{arg.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.textContent = arg.party;
+                    partyCell.appendChild(partyBadge);
+                    row.appendChild(partyCell);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    if (arg.hasDisputedFacts) {{
+                        const disputedBadge = document.createElement('span');
+                        disputedBadge.className = 'badge disputed-badge';
+                        disputedBadge.textContent = 'Disputed';
+                        statusCell.appendChild(disputedBadge);
+                    }} else {{
+                        statusCell.textContent = 'Undisputed';
+                    }}
+                    row.appendChild(statusCell);
+                    
+                    // Evidence column
+                    const evidenceCell = document.createElement('td');
+                    evidenceCell.textContent = arg.evidenceCount > 0 ? `${{arg.evidenceCount}} items` : 'None';
+                    row.appendChild(evidenceCell);
+                    
+                    // Actions column
+                    const actionsCell = document.createElement('td');
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View';
+                    viewBtn.style.padding = '4px 8px';
+                    viewBtn.style.marginRight = '8px';
+                    viewBtn.style.border = '1px solid #e2e8f0';
+                    viewBtn.style.borderRadius = '4px';
+                    viewBtn.style.backgroundColor = '#f7fafc';
+                    viewBtn.style.cursor = 'pointer';
+                    viewBtn.onclick = function() {{
+                        // Switch to detailed view and expand this argument
+                        switchView('detailed');
+                        // Logic to find and expand the argument would go here
+                    }};
+                    actionsCell.appendChild(viewBtn);
+                    row.appendChild(actionsCell);
+                    
+                    tableBody.appendChild(row);
+                }});
+            }}
+            
+            // Render facts table
+            function renderFacts(type = 'all') {{
+                const tableBody = document.getElementById('facts-table-body');
+                tableBody.innerHTML = '';
+                
+                // Filter by type and search
+                let filteredFacts = factsData;
+                
+                if (type === 'disputed') {{
+                    filteredFacts = factsData.filter(fact => fact.isDisputed);
+                }} else if (type === 'undisputed') {{
+                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                }}
+                
+                // Apply search filter
+                if (viewOptions.searchTerm) {{
+                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
+                    filteredFacts = filteredFacts.filter(fact => 
+                        searchRegex.test(fact.point) || 
+                        searchRegex.test(fact.date) || 
+                        searchRegex.test(fact.argTitle)
+                    );
+                }}
+                
+                // Sort by date
+                filteredFacts.sort((a, b) => {{
+                    // Handle date ranges like "1950-present"
+                    const dateA = a.date.split('-')[0];
+                    const dateB = b.date.split('-')[0];
+                    return new Date(dateA) - new Date(dateB);
+                }});
+                
+                // Render rows
+                filteredFacts.forEach(fact => {{
+                    const row = document.createElement('tr');
+                    
+                    // Date column
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = fact.date;
+                    row.appendChild(dateCell);
+                    
+                    // Event column
+                    const eventCell = document.createElement('td');
+                    eventCell.textContent = fact.point;
+                    row.appendChild(eventCell);
+                    
+                    // Party column
+                    const partyCell = document.createElement('td');
+                    const partyBadge = document.createElement('span');
+                    partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.textContent = fact.party;
+                    partyCell.appendChild(partyBadge);
+                    row.appendChild(partyCell);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    if (fact.isDisputed) {{
+                        const disputedBadge = document.createElement('span');
+                        disputedBadge.className = 'badge disputed-badge';
+                        disputedBadge.textContent = 'Disputed';
+                        statusCell.appendChild(disputedBadge);
+                    }} else {{
+                        statusCell.textContent = 'Undisputed';
+                    }}
+                    row.appendChild(statusCell);
+                    
+                    // Related argument
+                    const argCell = document.createElement('td');
+                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                    row.appendChild(argCell);
+                    
+                    // Evidence column
+                    const evidenceCell = document.createElement('td');
+                    if (fact.exhibits && fact.exhibits.length > 0) {{
+                        fact.exhibits.forEach(exhibitId => {{
+                            const exhibitBadge = document.createElement('span');
+                            exhibitBadge.className = 'badge exhibit-badge';
+                            exhibitBadge.textContent = exhibitId;
+                            exhibitBadge.style.marginRight = '4px';
+                            evidenceCell.appendChild(exhibitBadge);
+                        }});
+                    }} else {{
+                        evidenceCell.textContent = 'None';
+                    }}
+                    row.appendChild(evidenceCell);
+                    
+                    tableBody.appendChild(row);
+                }});
+            }}
             
             // Render overview points
             function renderOverviewPoints(overview) {{
@@ -879,7 +1665,15 @@ def main():
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
-                const pointsHtml = points.map(point => {{
+                // Apply disputed filter if needed
+                let filteredPoints = points;
+                if (viewOptions.showDisputedOnly) {{
+                    filteredPoints = points.filter(point => point.isDisputed);
+                }}
+                
+                if (filteredPoints.length === 0) return '';
+                
+                const pointsHtml = filteredPoints.map(point => {{
                     const disputed = point.isDisputed 
                         ? `<span class="badge disputed-badge">Disputed</span>` 
                         : '';
@@ -1001,6 +1795,42 @@ def main():
             // Render a single argument including its children
             function renderArgument(arg, side) {{
                 if (!arg) return '';
+                
+                // Apply search filter
+                if (viewOptions.searchTerm) {{
+                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
+                    let matchesSearch = false;
+                    
+                    // Check if argument matches search
+                    if (searchRegex.test(arg.id) || searchRegex.test(arg.title)) {{
+                        matchesSearch = true;
+                    }}
+                    
+                    // Check if factual points match search
+                    if (arg.factualPoints) {{
+                        for (const point of arg.factualPoints) {{
+                            if (searchRegex.test(point.point)) {{
+                                matchesSearch = true;
+                                break;
+                            }}
+                        }}
+                    }}
+                    
+                    // Check if evidence matches search
+                    if (arg.evidence) {{
+                        for (const item of arg.evidence) {{
+                            if (searchRegex.test(item.title) || searchRegex.test(item.summary)) {{
+                                matchesSearch = true;
+                                break;
+                            }}
+                        }}
+                    }}
+                    
+                    // If no match was found and argument has no children that might match, skip this argument
+                    if (!matchesSearch && (!arg.children || Object.keys(arg.children).length === 0)) {{
+                        return '';
+                    }}
+                }}
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const argId = `${{side}}-${{arg.id}}`;
@@ -1143,7 +1973,17 @@ def main():
                 const tbody = document.getElementById('timeline-body');
                 tbody.innerHTML = '';
                 
-                timelineData.forEach(item => {{
+                // Filter based on search
+                let filteredTimeline = timelineData;
+                if (viewOptions.searchTerm) {{
+                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
+                    filteredTimeline = filteredTimeline.filter(item => 
+                        searchRegex.test(item.appellantVersion) || 
+                        searchRegex.test(item.respondentVersion)
+                    );
+                }}
+                
+                filteredTimeline.forEach(item => {{
                     const row = document.createElement('tr');
                     if (item.status === 'Disputed') {{
                         row.classList.add('disputed');
@@ -1165,7 +2005,18 @@ def main():
                 const tbody = document.getElementById('exhibits-body');
                 tbody.innerHTML = '';
                 
-                exhibitsData.forEach(item => {{
+                // Filter based on search
+                let filteredExhibits = exhibitsData;
+                if (viewOptions.searchTerm) {{
+                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
+                    filteredExhibits = filteredExhibits.filter(item => 
+                        searchRegex.test(item.id) || 
+                        searchRegex.test(item.title) || 
+                        searchRegex.test(item.summary)
+                    );
+                }}
+                
+                filteredExhibits.forEach(item => {{
                     const row = document.createElement('tr');
                     const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
                     
@@ -1179,13 +2030,6 @@ def main():
                     
                     tbody.appendChild(row);
                 }});
-            }}
-            
-            // Copy all content function
-            function copyAllContent() {{
-                // Simple implementation - would need to be extended 
-                // to actually collect and copy all content
-                alert('All content copied to clipboard');
             }}
         </script>
     </body>

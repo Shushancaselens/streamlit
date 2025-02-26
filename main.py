@@ -498,6 +498,20 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Main app
 def main():
+    # Inject custom CSS for compact layout
+    st.markdown("""
+    <style>
+    .block-container {padding: 0 !important; max-width: 98% !important;}
+    section[data-testid="stSidebar"] {min-width: 10rem !important; width: 10rem !important;}
+    .main .block-container {margin-left: -20px !important; padding: 0 !important;}
+    .stApp {padding: 0 !important; margin: 0 !important;}
+    .stButton > button {margin-bottom: 5px !important; height: 40px !important;}
+    div.row-widget.stRadio > div {flex-direction: row; margin: 0 -10px;}
+    .reportview-container .main .block-container {padding: 0 !important;}
+    header {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()

@@ -18,6 +18,7 @@ def get_argument_data():
             "id": "1",
             "title": "Sporting Succession",
             "paragraphs": "15-18",
+            "supportingContent": "This argument is fundamental to the case as it establishes the continuity of the club's identity. The evidence supports a strong case for historical continuity despite the respondent's claims of discontinuity during 1975-1976.",
             "overview": {
                 "points": [
                     "Analysis of multiple established criteria",
@@ -189,6 +190,7 @@ def get_argument_data():
             "id": "1",
             "title": "Sporting Succession Rebuttal",
             "paragraphs": "200-218",
+            "supportingContent": "Our position firmly refutes the appellant's claim of continuous operation. The documentary evidence clearly shows a complete termination of the original entity, followed by creation of an entirely new legal entity with different founding members.",
             "overview": {
                 "points": [
                     "Challenge to claimed continuity of operations",

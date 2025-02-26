@@ -5,6 +5,10 @@ import streamlit.components.v1 as components
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
+# Initialize session state to track selected view
+if 'view' not in st.session_state:
+    st.session_state.view = "Arguments"
+
 # Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
@@ -488,21 +492,97 @@ def main():
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
     
-    # Add Streamlit sidebar with only View Selection
+    # Add Streamlit sidebar with styled buttons
     with st.sidebar:
         st.title("Legal Analysis")
         
-        # View selector only
-        view_option = st.radio(
-            "Select View",
-            ["Arguments", "Timeline", "Exhibits"],
-            index=0
-        )
+        # Custom CSS for button styling
+        st.markdown("""
+        <style>
+        .stButton > button {
+            width: 100%;
+            border-radius: 6px;
+            height: 50px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .stButton > button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .button-active {
+            background-color: #3182CE !important;
+            color: white !important;
+            border: none !important;
+        }
+        .button-inactive {
+            background-color: #f0f2f6;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # View selector with buttons
+        st.write("### Select View")
+        
+        # Create three columns for buttons
+        col1, col2, col3 = st.columns(3)
+        
+        # Define button click handlers
+        def set_arguments_view():
+            st.session_state.view = "Arguments"
+            
+        def set_timeline_view():
+            st.session_state.view = "Timeline"
+            
+        def set_exhibits_view():
+            st.session_state.view = "Exhibits"
+        
+        # Render buttons with active/inactive styling based on current view
+        with col1:
+            arguments_active = "button-active" if st.session_state.view == "Arguments" else "button-inactive"
+            st.markdown(f"""
+            <div class='stButton'>
+                <button class='{arguments_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:args_button'))">
+                    Arguments
+                </button>
+            </div>
+            """, unsafe_allow_html=True)
+            arguments_clicked = st.button("Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+            if arguments_clicked:
+                st.session_state.view = "Arguments"
+        
+        with col2:
+            timeline_active = "button-active" if st.session_state.view == "Timeline" else "button-inactive"
+            st.markdown(f"""
+            <div class='stButton'>
+                <button class='{timeline_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:timeline_button'))">
+                    Timeline
+                </button>
+            </div>
+            """, unsafe_allow_html=True)
+            timeline_clicked = st.button("Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
+            if timeline_clicked:
+                st.session_state.view = "Timeline"
+        
+        with col3:
+            exhibits_active = "button-active" if st.session_state.view == "Exhibits" else "button-inactive"
+            st.markdown(f"""
+            <div class='stButton'>
+                <button class='{exhibits_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:exhibits_button'))">
+                    Exhibits
+                </button>
+            </div>
+            """, unsafe_allow_html=True)
+            exhibits_clicked = st.button("Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+            if exhibits_clicked:
+                st.session_state.view = "Exhibits"
     
     # Determine which view to show based on sidebar selection
-    if view_option == "Arguments":
+    if st.session_state.view == "Arguments":
         active_tab = 0
-    elif view_option == "Timeline":
+    elif st.session_state.view == "Timeline":
         active_tab = 1
     else:  # Exhibits
         active_tab = 2

@@ -546,13 +546,7 @@ def main():
     if 'view' not in st.session_state:
         st.session_state.view = "Arguments"
     
-    if 'show_disputed_only' not in st.session_state:
-        st.session_state.show_disputed_only = False
-    
-    if 'search_term' not in st.session_state:
-        st.session_state.search_term = ""
-    
-    # Add Streamlit sidebar with expanded options
+    # Add Streamlit sidebar with navigation buttons only
     with st.sidebar:
         st.title("Legal Analysis")
         
@@ -591,52 +585,20 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-        
-        # Add filter options
-        st.subheader("Filters")
-        show_disputed_only = st.checkbox("Show disputed points only", value=st.session_state.show_disputed_only)
-        if show_disputed_only != st.session_state.show_disputed_only:
-            st.session_state.show_disputed_only = show_disputed_only
-        
-        # Add search box
-        st.subheader("Search")
-        search_term = st.text_input("Search all content", value=st.session_state.search_term)
-        if search_term != st.session_state.search_term:
-            st.session_state.search_term = search_term
-        
-        # Add export options
-        st.subheader("Export")
-        export_format = st.selectbox("Export format", ["Copy to clipboard", "CSV", "PDF"])
-        
-        # Create download link for current view
-        if export_format == "CSV":
-            if st.session_state.view == "Arguments":
-                # Create a DataFrame for arguments
-                arg_data = []
-                # Logic to populate argument data for export would go here
-                arg_df = pd.DataFrame(arg_data)
-                st.markdown(get_csv_download_link(arg_df, "arguments.csv", "Download Arguments CSV"), unsafe_allow_html=True)
-            
-            elif st.session_state.view == "Facts":
-                # Create DataFrame for facts
-                facts_df = pd.DataFrame(facts_data)
-                st.markdown(get_csv_download_link(facts_df, "facts.csv", "Download Facts CSV"), unsafe_allow_html=True)
-                
-            elif st.session_state.view == "Timeline":
-                # Create DataFrame for timeline
-                timeline_df = pd.DataFrame(timeline_data)
-                st.markdown(get_csv_download_link(timeline_df, "timeline.csv", "Download Timeline CSV"), unsafe_allow_html=True)
-                
-            elif st.session_state.view == "Exhibits":
-                # Create DataFrame for exhibits
-                exhibits_df = pd.DataFrame(exhibits_data)
-                st.markdown(get_csv_download_link(exhibits_df, "exhibits.csv", "Download Exhibits CSV"), unsafe_allow_html=True)
+    
+    # Determine which view to show based on sidebar selection
+    if st.session_state.view == "Arguments":
+        active_tab = 0
+    elif st.session_state.view == "Facts":
+        active_tab = 1
+    elif st.session_state.view == "Timeline":
+        active_tab = 2
+    else:  # Exhibits
+        active_tab = 3
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
-        "activeTab": ["Arguments", "Facts", "Timeline", "Exhibits"].index(st.session_state.view),
-        "showDisputedOnly": st.session_state.show_disputed_only,
-        "searchTerm": st.session_state.search_term
+        "activeTab": active_tab
     })
     
     # Create a single HTML component containing the full UI with minimalistic design
@@ -802,11 +764,16 @@ def main():
                 background-color: rgba(229, 62, 62, 0.05);
             }}
             
-            /* Copy button */
-            .copy-button {{
+            /* Action buttons */
+            .action-buttons {{
                 position: absolute;
                 top: 20px;
                 right: 20px;
+                display: flex;
+                gap: 10px;
+            }}
+            
+            .action-button {{
                 padding: 8px 16px;
                 background-color: #f9f9f9;
                 border: 1px solid #e1e4e8;
@@ -815,6 +782,42 @@ def main():
                 align-items: center;
                 gap: 6px;
                 cursor: pointer;
+            }}
+            
+            .action-button:hover {{
+                background-color: #f1f1f1;
+            }}
+            
+            .export-dropdown {{
+                position: relative;
+                display: inline-block;
+            }}
+            
+            .export-dropdown-content {{
+                display: none;
+                position: absolute;
+                right: 0;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+                border-radius: 4px;
+            }}
+            
+            .export-dropdown-content a {{
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                cursor: pointer;
+            }}
+            
+            .export-dropdown-content a:hover {{
+                background-color: #f1f1f1;
+            }}
+            
+            .export-dropdown:hover .export-dropdown-content {{
+                display: block;
             }}
             
             /* Nested content */
@@ -934,13 +937,6 @@ def main():
                 margin-top: 20px;
             }}
             
-            /* Search highlighting */
-            .highlight {{
-                background-color: yellow;
-                padding: 2px;
-                border-radius: 2px;
-            }}
-            
             /* View toggle */
             .view-toggle {{
                 display: flex;
@@ -992,13 +988,30 @@ def main():
         <div class="container">
             <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
             
-            <button class="copy-button" onclick="copyAllContent()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy All
-            </button>
+            <div class="action-buttons">
+                <button class="action-button" onclick="copyAllContent()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <div class="export-dropdown">
+                    <button class="action-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Export
+                    </button>
+                    <div class="export-dropdown-content">
+                        <a onclick="exportAsCsv()">CSV</a>
+                        <a onclick="exportAsPdf()">PDF</a>
+                        <a onclick="exportAsWord()">Word</a>
+                    </div>
+                </div>
+            </div>
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
@@ -1122,11 +1135,6 @@ def main():
                 if (activeSection === 'timeline') renderTimeline();
                 if (activeSection === 'exhibits') renderExhibits();
                 if (activeSection === 'facts') renderFacts();
-                
-                // Apply search if needed
-                if (viewOptions.searchTerm) {{
-                    highlightSearchTerm(viewOptions.searchTerm);
-                }}
             }});
             
             // Switch view between detailed and table
@@ -1212,58 +1220,6 @@ def main():
                 table.setAttribute('data-sort-dir', dir);
             }}
             
-            // Highlight search term in content
-            function highlightSearchTerm(term) {{
-                if (!term) return;
-                
-                const searchRegex = new RegExp(term, 'gi');
-                const textNodes = [];
-                
-                // Get all text nodes in the document
-                function getTextNodes(node) {{
-                    if (node.nodeType === 3) {{
-                        textNodes.push(node);
-                    }} else {{
-                        for (let i = 0; i < node.childNodes.length; i++) {{
-                            getTextNodes(node.childNodes[i]);
-                        }}
-                    }}
-                }}
-                
-                getTextNodes(document.body);
-                
-                // Highlight matching text
-                textNodes.forEach(node => {{
-                    const parent = node.parentNode;
-                    if (parent && parent.nodeName !== 'SCRIPT' && parent.nodeName !== 'STYLE') {{
-                        const content = node.textContent;
-                        if (searchRegex.test(content)) {{
-                            const fragment = document.createDocumentFragment();
-                            let lastIndex = 0;
-                            
-                            content.replace(searchRegex, (match, index) => {{
-                                // Add text before the match
-                                fragment.appendChild(document.createTextNode(content.substring(lastIndex, index)));
-                                
-                                // Create highlighted span
-                                const span = document.createElement('span');
-                                span.className = 'highlight';
-                                span.textContent = match;
-                                fragment.appendChild(span);
-                                
-                                lastIndex = index + match.length;
-                            }});
-                            
-                            // Add remaining text
-                            fragment.appendChild(document.createTextNode(content.substring(lastIndex)));
-                            
-                            // Replace the original node
-                            parent.replaceChild(fragment, node);
-                        }}
-                    }}
-                }});
-            }}
-            
             // Copy all content function
             function copyAllContent() {{
                 const activeSection = document.querySelector('.content-section.active');
@@ -1301,6 +1257,47 @@ def main():
                 setTimeout(() => {{
                     notification.classList.remove('show');
                 }}, 2000);
+            }}
+            
+            // Export functions
+            function exportAsCsv() {{
+                const activeSection = document.querySelector('.content-section.active');
+                if (!activeSection) return;
+                
+                let contentToCsv = '';
+                
+                // Extract content based on section
+                if (activeSection.id === 'arguments') {{
+                    if (document.getElementById('detailed-view').style.display !== 'none') {{
+                        contentToCsv = extractArgumentsDetailedText();
+                    }} else {{
+                        contentToCsv = extractArgumentsTableText();
+                    }}
+                }} else if (activeSection.id === 'timeline') {{
+                    contentToCsv = extractTimelineText();
+                }} else if (activeSection.id === 'exhibits') {{
+                    contentToCsv = extractExhibitsText();
+                }} else if (activeSection.id === 'facts') {{
+                    contentToCsv = extractFactsText();
+                }}
+                
+                // Create link for CSV download
+                const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
+                const encodedUri = csvContent;
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", activeSection.id + ".csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }}
+            
+            function exportAsPdf() {{
+                alert("PDF export functionality would be implemented here");
+            }}
+            
+            function exportAsWord() {{
+                alert("Word export functionality would be implemented here");
             }}
             
             // Extract text from arguments detailed view
@@ -1454,24 +1451,8 @@ def main():
                 const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
                 const allArgs = [...appellantArgs, ...respondentArgs];
                 
-                // Filter based on options
-                let filteredArgs = allArgs;
-                if (viewOptions.showDisputedOnly) {{
-                    filteredArgs = allArgs.filter(arg => arg.hasDisputedFacts);
-                }}
-                
-                // Search filter
-                if (viewOptions.searchTerm) {{
-                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
-                    filteredArgs = filteredArgs.filter(arg => 
-                        searchRegex.test(arg.id) || 
-                        searchRegex.test(arg.title) || 
-                        searchRegex.test(arg.party)
-                    );
-                }}
-                
                 // Render rows
-                filteredArgs.forEach(arg => {{
+                allArgs.forEach(arg => {{
                     const row = document.createElement('tr');
                     
                     // ID column
@@ -1536,23 +1517,13 @@ def main():
                 const tableBody = document.getElementById('facts-table-body');
                 tableBody.innerHTML = '';
                 
-                // Filter by type and search
+                // Filter by type
                 let filteredFacts = factsData;
                 
                 if (type === 'disputed') {{
                     filteredFacts = factsData.filter(fact => fact.isDisputed);
                 }} else if (type === 'undisputed') {{
                     filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                }}
-                
-                // Apply search filter
-                if (viewOptions.searchTerm) {{
-                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
-                    filteredFacts = filteredFacts.filter(fact => 
-                        searchRegex.test(fact.point) || 
-                        searchRegex.test(fact.date) || 
-                        searchRegex.test(fact.argTitle)
-                    );
                 }}
                 
                 // Sort by date
@@ -1646,15 +1617,7 @@ def main():
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
-                // Apply disputed filter if needed
-                let filteredPoints = points;
-                if (viewOptions.showDisputedOnly) {{
-                    filteredPoints = points.filter(point => point.isDisputed);
-                }}
-                
-                if (filteredPoints.length === 0) return '';
-                
-                const pointsHtml = filteredPoints.map(point => {{
+                const pointsHtml = points.map(point => {{
                     const disputed = point.isDisputed 
                         ? `<span class="badge disputed-badge">Disputed</span>` 
                         : '';
@@ -1776,42 +1739,6 @@ def main():
             // Render a single argument including its children
             function renderArgument(arg, side) {{
                 if (!arg) return '';
-                
-                // Apply search filter
-                if (viewOptions.searchTerm) {{
-                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
-                    let matchesSearch = false;
-                    
-                    // Check if argument matches search
-                    if (searchRegex.test(arg.id) || searchRegex.test(arg.title)) {{
-                        matchesSearch = true;
-                    }}
-                    
-                    // Check if factual points match search
-                    if (arg.factualPoints) {{
-                        for (const point of arg.factualPoints) {{
-                            if (searchRegex.test(point.point)) {{
-                                matchesSearch = true;
-                                break;
-                            }}
-                        }}
-                    }}
-                    
-                    // Check if evidence matches search
-                    if (arg.evidence) {{
-                        for (const item of arg.evidence) {{
-                            if (searchRegex.test(item.title) || searchRegex.test(item.summary)) {{
-                                matchesSearch = true;
-                                break;
-                            }}
-                        }}
-                    }}
-                    
-                    // If no match was found and argument has no children that might match, skip this argument
-                    if (!matchesSearch && (!arg.children || Object.keys(arg.children).length === 0)) {{
-                        return '';
-                    }}
-                }}
                 
                 const hasChildren = arg.children && Object.keys(arg.children).length > 0;
                 const argId = `${{side}}-${{arg.id}}`;
@@ -1954,17 +1881,7 @@ def main():
                 const tbody = document.getElementById('timeline-body');
                 tbody.innerHTML = '';
                 
-                // Filter based on search
-                let filteredTimeline = timelineData;
-                if (viewOptions.searchTerm) {{
-                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
-                    filteredTimeline = filteredTimeline.filter(item => 
-                        searchRegex.test(item.appellantVersion) || 
-                        searchRegex.test(item.respondentVersion)
-                    );
-                }}
-                
-                filteredTimeline.forEach(item => {{
+                timelineData.forEach(item => {{
                     const row = document.createElement('tr');
                     if (item.status === 'Disputed') {{
                         row.classList.add('disputed');
@@ -1986,18 +1903,7 @@ def main():
                 const tbody = document.getElementById('exhibits-body');
                 tbody.innerHTML = '';
                 
-                // Filter based on search
-                let filteredExhibits = exhibitsData;
-                if (viewOptions.searchTerm) {{
-                    const searchRegex = new RegExp(viewOptions.searchTerm, 'i');
-                    filteredExhibits = filteredExhibits.filter(item => 
-                        searchRegex.test(item.id) || 
-                        searchRegex.test(item.title) || 
-                        searchRegex.test(item.summary)
-                    );
-                }}
-                
-                filteredExhibits.forEach(item => {{
+                exhibitsData.forEach(item => {{
                     const row = document.createElement('tr');
                     const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
                     

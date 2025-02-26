@@ -598,8 +598,7 @@ def main():
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
-        "activeTab": active_tab,
-        "version": random.randint(1, 100000)  # Add a version to prevent caching
+        "activeTab": active_tab
     })
     
     # Create a single HTML component containing the full UI with minimalistic design
@@ -1116,16 +1115,8 @@ def main():
             const factsData = {facts_json};
             const viewOptions = {view_options_json};
             
-            // Debug logging
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log("UI Version: " + viewOptions.version);
-                console.log("DOM loaded with activeTab: " + viewOptions.activeTab);
-                
-                // Log component rendering status
-                setTimeout(() => {
-                    console.log("Topics container content: " + document.getElementById('topics-container').innerHTML.slice(0, 100) + "...");
-                }, 500);
-            });{
+            // Show the selected view based on sidebar selection
+            document.addEventListener('DOMContentLoaded', function() {{
                 // Show the correct section based on sidebar selection
                 const sections = ['arguments', 'facts', 'timeline', 'exhibits'];
                 const activeSection = sections[viewOptions.activeTab];
@@ -1932,13 +1923,9 @@ def main():
     </html>
     """
     
-    # Generate a random version number to prevent caching
-    import random
-    version = random.randint(1, 100000)
-    
     # Render the HTML in Streamlit
     st.title("Summary of Arguments")
-    components.html(html_content, height=800, scrolling=True, key=f"html_component_{version}")
+    components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()

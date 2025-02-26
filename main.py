@@ -1118,12 +1118,12 @@ def main():
             
             // Debug logging
             document.addEventListener('DOMContentLoaded', function() {
-                console.log("UI Version:", viewOptions.version);
-                console.log("DOM loaded with activeTab:", viewOptions.activeTab);
+                console.log("UI Version: " + viewOptions.version);
+                console.log("DOM loaded with activeTab: " + viewOptions.activeTab);
                 
                 // Log component rendering status
                 setTimeout(() => {
-                    console.log("Topics container content:", document.getElementById('topics-container').innerHTML.slice(0, 100) + "...");
+                    console.log("Topics container content: " + document.getElementById('topics-container').innerHTML.slice(0, 100) + "...");
                 }, 500);
             });{
                 // Show the correct section based on sidebar selection

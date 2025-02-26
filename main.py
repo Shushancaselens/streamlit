@@ -875,7 +875,7 @@ def main():
                 `;
             }}
             
-            // Render factual points
+            // Render factual points (now called Events)
             function renderFactualPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
@@ -896,7 +896,6 @@ def main():
                             <span>
                                 ${{disputed}}
                                 ${{exhibitBadges}}
-                                <span class="para-badge">¶${{point.paragraphs}}</span>
                             </span>
                         </div>
                         <div style="font-size: 12px; color: #666; margin-top: 4px;">${{point.date}}</div>
@@ -906,7 +905,7 @@ def main():
                 
                 return `
                 <div style="margin-top: 16px;">
-                    <div class="item-title">Factual Points</div>
+                    <div class="item-title">Events</div>
                     ${{pointsHtml}}
                 </div>
                 `;

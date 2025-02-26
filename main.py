@@ -532,29 +532,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
-    
-    # Ensure all arguments have overviews
-    def add_overviews_to_args(args_dict, party_name):
-        for arg_id, arg in args_dict.items():
-            # Add overview if missing
-            if 'overview' not in arg:
-                arg['overview'] = {
-                    "points": [
-                        f"Main point of {party_name}'s argument",
-                        f"Supporting analysis for {arg['title']}",
-                        "Contextual information"
-                    ],
-                    "paragraphs": arg.get('paragraphs', 'N/A')
-                }
-            
-            # Process children recursively
-            if 'children' in arg and arg['children']:
-                add_overviews_to_args(arg['children'], party_name)
-    
-    # Add overviews to both sides' arguments
-    add_overviews_to_args(args_data['claimantArgs'], "Appellant")
-    add_overviews_to_args(args_data['respondentArgs'], "Respondent")
-    
     timeline_data = get_timeline_data()
     exhibits_data = get_exhibits_data()
     facts_data = get_all_facts()

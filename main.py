@@ -646,6 +646,11 @@ def main():
                 gap: 20px;
             }}
             
+            /* Special handling for single-party view */
+            .arguments-row.single-party {{
+                grid-template-columns: 1fr;
+            }}
+            
             .side-heading {{
                 margin-bottom: 16px;
                 font-weight: 500;

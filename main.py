@@ -11,9 +11,6 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 if 'view' not in st.session_state:
     st.session_state.view = "Arguments"
 
-if 'view_type' not in st.session_state:
-    st.session_state.view_type = "Detailed View"
-
 # Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
@@ -595,14 +592,6 @@ def main():
         st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
         
-        # Add view options section
-        st.subheader("View Options")
-        view_type = st.radio(
-            "Display Style",
-            ["Detailed View", "Table View"],
-            key="view_type"
-        )
-        
         # Add filter options
         st.subheader("Filters")
         show_disputed_only = st.checkbox("Show disputed points only", value=st.session_state.show_disputed_only)
@@ -646,7 +635,6 @@ def main():
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
         "activeTab": ["Arguments", "Facts", "Timeline", "Exhibits"].index(st.session_state.view),
-        "viewType": st.session_state.view_type,
         "showDisputedOnly": st.session_state.show_disputed_only,
         "searchTerm": st.session_state.search_term
     })
@@ -1125,13 +1113,6 @@ def main():
                 }});
                 
                 document.getElementById(activeSection).classList.add('active');
-                
-                // Set the correct view type (detailed vs table)
-                if (viewOptions.viewType === "Table View") {{
-                    switchView('table');
-                }} else {{
-                    switchView('detailed');
-                }}
                 
                 // Initialize content as needed
                 if (activeSection === 'arguments') {{

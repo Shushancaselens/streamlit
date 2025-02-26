@@ -889,4 +889,4 @@ def main():
             .table-view th {{
                 padding: 12px;
                 text-align: left;
-                background-color: #f8f9
+                background-

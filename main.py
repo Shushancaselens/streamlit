@@ -1025,20 +1025,6 @@ def main():
                 
                 <!-- Detailed view content -->
                 <div id="detailed-view" class="view-content active">
-                    <div id="argument-selection" style="margin-bottom: 20px; display: flex; gap: 20px;">
-                        <div style="flex: 1;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500;" class="appellant-color">Appellant Arguments</label>
-                            <select id="appellant-dropdown" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                                <option value="">Select an argument...</option>
-                            </select>
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500;" class="respondent-color">Respondent Arguments</label>
-                            <select id="respondent-dropdown" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                                <option value="">Select an argument...</option>
-                            </select>
-                        </div>
-                    </div>
                     <div id="topics-container"></div>
                 </div>
                 

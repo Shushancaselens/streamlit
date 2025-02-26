@@ -1090,6 +1090,9 @@ def main():
             const factsData = {facts_json};
             const viewOptions = {view_options_json};
             
+            // Global variable to track current party view
+            let currentPartyView = 'both';
+            
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
                 // Show the correct section based on sidebar selection

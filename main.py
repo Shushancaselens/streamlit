@@ -523,10 +523,10 @@ def main():
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
-        # Create buttons with icons (as text) for simplicity
-        st.button("📑", key="args_button", on_click=set_arguments_view, use_container_width=True)
-        st.button("📅", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
-        st.button("📁", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+        # Create buttons with names
+        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":
@@ -791,7 +791,7 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
-                <div class="section-title">Legal Arguments</div>
+                <div class="section-title">Arguments Summary</div>
                 <div id="topics-container"></div>
             </div>
             
@@ -1194,7 +1194,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("Legal Arguments Analysis")
+    st.title("Legal Case Analysis")
     components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

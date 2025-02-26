@@ -644,6 +644,16 @@ def main():
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
+                align-items: start;
+            }}
+            
+            .arguments-side {{
+                display: flex;
+                flex-direction: column;
+            }}
+            
+            .argument-body {{
+                flex-grow: 1;
             }}
             
             .side-heading {{
@@ -802,12 +812,28 @@ def main():
                 display: block;
             }}
             
-            /* Nested content */
+            /* Nested content - MODIFIED FOR SUBARGUMENT ALIGNMENT */
             .nested-content {{
                 padding-left: 20px;
                 margin-top: 10px;
                 border-left: 1px solid #f0f0f0;
-                /* No display:none to show nested content */
+            }}
+            
+            /* Subarguments container styling */
+            .subarguments-level {{
+                padding-left: 20px;
+                margin-top: 10px;
+                border-left: 1px solid #f0f0f0;
+            }}
+            
+            /* Add this class to show subargument counts */
+            .subargument-count {{
+                font-size: 12px;
+                color: #666;
+                background-color: #f0f0f0;
+                padding: 2px 6px;
+                border-radius: 10px;
+                margin-left: 10px;
             }}
             
             /* Simple list styling */
@@ -1123,11 +1149,61 @@ def main():
                 if (activeSection === 'arguments') {{
                     renderTopics();
                     renderArgumentsTable();
+                    
+                    // Add event listener to ensure subarguments alignment
+                    setTimeout(alignSubarguments, 300);
+                    window.addEventListener('resize', alignSubarguments);
                 }}
                 if (activeSection === 'timeline') renderTimeline();
                 if (activeSection === 'exhibits') renderExhibits();
                 if (activeSection === 'facts') renderFacts();
             }});
+            
+            // Function to ensure subarguments are aligned at the same level
+            function alignSubarguments() {{
+                const rows = document.querySelectorAll('.arguments-row');
+                rows.forEach(row => {{
+                    // Reset any previous adjustments
+                    const leftSide = row.querySelector('.arguments-side:first-child');
+                    const rightSide = row.querySelector('.arguments-side:last-child');
+                    
+                    if (!leftSide || !rightSide) return;
+                    
+                    // Find the subargument containers
+                    const leftCards = leftSide.querySelectorAll('.card');
+                    const rightCards = rightSide.querySelectorAll('.card');
+                    
+                    // Process top-level cards
+                    for (let i = 0; i < Math.min(leftCards.length, rightCards.length); i++) {{
+                        if (leftCards[i] && rightCards[i]) {{
+                            const leftChildren = leftCards[i].querySelector('.subarguments-level');
+                            const rightChildren = rightCards[i].querySelector('.subarguments-level');
+                            
+                            if (leftChildren && rightChildren) {{
+                                // Get heights of cards excluding subarguments
+                                const leftHeight = leftCards[i].offsetHeight - leftChildren.offsetHeight;
+                                const rightHeight = rightCards[i].offsetHeight - rightChildren.offsetHeight;
+                                
+                                // Find the tallest card
+                                const maxHeight = Math.max(leftHeight, rightHeight);
+                                
+                                // Set the padding to align subarguments
+                                if (leftHeight < maxHeight) {{
+                                    leftChildren.style.marginTop = (maxHeight - leftHeight + 10) + 'px';
+                                }}
+                                if (rightHeight < maxHeight) {{
+                                    rightChildren.style.marginTop = (maxHeight - rightHeight + 10) + 'px';
+                                }}
+                            }}
+                        }}
+                    }}
+                }});
+            }}
+            
+            // Helper function to get the child count
+            function getChildCount(arg) {{
+                return arg && arg.children ? Object.keys(arg.children).length : 0;
+            }}
             
             // Switch view between detailed and table
             function switchView(viewType) {{
@@ -1147,6 +1223,34 @@ def main():
                     detailedView.style.display = 'none';
                     tableView.style.display = 'block';
                 }}
+            }}
+            
+            // Switch party view
+            function switchPartyView(partyView) {{
+                currentPartyView = partyView;
+                const bothBtn = document.getElementById('both-parties-btn');
+                const appellantBtn = document.getElementById('appellant-btn');
+                const respondentBtn = document.getElementById('respondent-btn');
+                
+                // Remove active class from all
+                bothBtn.classList.remove('active');
+                appellantBtn.classList.remove('active');
+                respondentBtn.classList.remove('active');
+                
+                // Add active to selected and rerender
+                if (partyView === 'both') {{
+                    bothBtn.classList.add('active');
+                }} else if (partyView === 'appellant') {{
+                    appellantBtn.classList.add('active');
+                }} else {{
+                    respondentBtn.classList.add('active');
+                }}
+                
+                // Rerender with the selected party view
+                renderTopics();
+                
+                // Realign subarguments after rendering
+                setTimeout(alignSubarguments, 300);
             }}
             
             // Switch facts tab
@@ -1441,7 +1545,16 @@ def main():
                 // Get flattened arguments
                 const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
                 const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
-                const allArgs = [...appellantArgs, ...respondentArgs];
+                
+                // Filter based on current view
+                let allArgs = [];
+                if (currentPartyView === 'both') {{
+                    allArgs = [...appellantArgs, ...respondentArgs];
+                }} else if (currentPartyView === 'appellant') {{
+                    allArgs = appellantArgs;
+                }} else {{
+                    allArgs = respondentArgs;
+                }}
                 
                 // Render rows
                 allArgs.forEach(arg => {{
@@ -1741,10 +1854,15 @@ def main():
                 // Style based on side
                 const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
                 
-                // Render children if any - removed style="display: none;"
+                // Get subargument count for display
+                const subargumentCount = getChildCount(arg);
+                const subargumentText = subargumentCount > 0 ? 
+                    `<span class="subargument-count">${{subargumentCount}} subargument${{subargumentCount > 1 ? 's' : ''}}</span>` : '';
+                
+                // Render children if any
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
+                    childrenHtml = `<div class="subarguments-level" id="children-${{argId}}">`;
                     
                     Object.values(arg.children).forEach(child => {{
                         childrenHtml += renderArgument(child, side);
@@ -1761,6 +1879,7 @@ def main():
                                 <polyline points="9 18 15 12 9 6"></polyline>
                             </svg>
                             <span>${{arg.id}}. ${{arg.title}}</span>
+                            ${{subargumentText}}
                         </div>
                         <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
                     </div>
@@ -1792,16 +1911,42 @@ def main():
                             <p>${{topic.description}}</p>
                             
                             ${{topic.argumentIds.map(argId => {{
-                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                                if (currentPartyView === 'both' && argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
                                     <div style="margin-top: 16px;">
                                         <div class="arguments-row">
-                                            <div>
+                                            <div class="arguments-side">
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                                <div class="argument-body">
+                                                    ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
+                                                </div>
+                                            </div>
+                                            <div class="arguments-side">
+                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                                <div class="argument-body">
+                                                    ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                }} else if (currentPartyView === 'appellant' && argsData.claimantArgs[argId]) {{
+                                    return `
+                                    <div style="margin-top: 16px;">
+                                        <div>
+                                            <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                            <div class="argument-body">
                                                 ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
-                                            <div>
-                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                        </div>
+                                    </div>
+                                    `;
+                                }} else if (currentPartyView === 'respondent' && argsData.respondentArgs[argId]) {{
+                                    return `
+                                    <div style="margin-top: 16px;">
+                                        <div>
+                                            <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                            <div class="argument-body">
                                                 ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
                                         </div>
@@ -1845,27 +1990,32 @@ def main():
                 // First, handle the clicked argument
                 toggleCard(argId);
                 
-                // Then, determine and handle the counterpart
-                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
-                const counterpartId = `${{otherSide}}-${{pairId}}`;
-                
-                // Toggle the counterpart (if it exists)
-                const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
-                if (counterpartContentEl) {{
-                    const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                // Then, determine and handle the counterpart if in 'both' view
+                if (currentPartyView === 'both') {{
+                    const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
+                    const counterpartId = `${{otherSide}}-${{pairId}}`;
                     
-                    // Make sure the counterpart's state matches the toggled argument
-                    const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
-                    counterpartContentEl.style.display = originalDisplay;
-                    
-                    if (counterpartChevronEl) {{
-                        if (originalDisplay === 'block') {{
-                            counterpartChevronEl.classList.add('expanded');
-                        }} else {{
-                            counterpartChevronEl.classList.remove('expanded');
+                    // Toggle the counterpart (if it exists)
+                    const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
+                    if (counterpartContentEl) {{
+                        const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                        
+                        // Make sure the counterpart's state matches the toggled argument
+                        const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
+                        counterpartContentEl.style.display = originalDisplay;
+                        
+                        if (counterpartChevronEl) {{
+                            if (originalDisplay === 'block') {{
+                                counterpartChevronEl.classList.add('expanded');
+                            }} else {{
+                                counterpartChevronEl.classList.remove('expanded');
+                            }}
                         }}
                     }}
                 }}
+                
+                // Realign subarguments after toggling
+                setTimeout(alignSubarguments, 100);
             }}
             
             // Render timeline

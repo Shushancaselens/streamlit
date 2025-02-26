@@ -498,31 +498,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Main app
 def main():
-    # Add CSS to reduce sidebar spacing
-    st.markdown("""
-    <style>
-        /* Reduce sidebar width and spacing */
-        [data-testid="stSidebar"] {
-            min-width: 10rem !important;
-            width: 12rem !important;
-            margin-right: -1rem !important;
-        }
-        
-        /* Reduce padding in main container */
-        .block-container {
-            padding-left: 2rem !important;
-            padding-right: 2rem !important;
-        }
-        
-        /* Reduce main content padding */
-        .main .block-container {
-            max-width: 90rem !important;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
     # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()

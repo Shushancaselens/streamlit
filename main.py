@@ -358,6 +358,12 @@ def get_argument_data():
     
     topics = [
         {
+            "id": "topic-1",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
+            "argumentIds": ["1"]
+        },
+        {
             "id": "topic-2",
             "title": "Doping Violation and Chain of Custody",
             "description": "Issues related to doping test procedures and evidence handling",

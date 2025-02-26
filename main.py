@@ -168,19 +168,6 @@ def get_argument_data():
                     }
                 }
             }
-        },
-        "2": {
-            "id": "2",
-            "title": "Doping Violation Chain of Custody",
-            "paragraphs": "70-125",
-            "overview": {
-                "points": [
-                    "Analysis of sample collection and handling procedures",
-                    "Evaluation of laboratory testing protocols",
-                    "Assessment of chain of custody documentation"
-                ],
-                "paragraphs": "70-72"
-            }
         }
     }
     
@@ -340,19 +327,6 @@ def get_argument_data():
                     }
                 }
             }
-        },
-        "2": {
-            "id": "2",
-            "title": "Doping Chain of Custody Defense",
-            "paragraphs": "250-290",
-            "overview": {
-                "points": [
-                    "Defense of sample collection procedures",
-                    "Validation of laboratory testing protocols",
-                    "Completeness of documentation"
-                ],
-                "paragraphs": "250-252"
-            }
         }
     }
     
@@ -362,12 +336,6 @@ def get_argument_data():
             "title": "Sporting Succession and Identity",
             "description": "Questions of club identity, continuity, and succession rights",
             "argumentIds": ["1"]
-        },
-        {
-            "id": "topic-2",
-            "title": "Doping Violation and Chain of Custody",
-            "description": "Issues related to doping test procedures and evidence handling",
-            "argumentIds": ["2"]
         }
     ]
     
@@ -1020,13 +988,13 @@ def main():
                 <!-- View toggle buttons -->
                 <div class="view-toggle" style="display: flex; justify-content: space-between;">
                     <div>
-                        <button type="button" id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
-                        <button type="button" id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
-                        <button type="button" id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
+                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
+                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
+                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
                     </div>
                     <div>
-                        <button type="button" id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
-                        <button type="button" id="table-view-btn" onclick="switchView('table')">Table View</button>
+                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
                     </div>
                 </div>
                 

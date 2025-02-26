@@ -519,7 +519,7 @@ def main():
         # Add the logo and CaseLens text
         st.markdown("""
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="50" height="50">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
               <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
                 <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
               </mask>

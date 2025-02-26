@@ -371,6 +371,9 @@ def get_argument_data():
         }
     ]
     
+    # Ensure Sporting Succession and Identity is always first
+    topics = sorted(topics, key=lambda x: 0 if x["title"] == "Sporting Succession and Identity" else 1)
+    
     return {
         "claimantArgs": claimant_args,
         "respondentArgs": respondent_args,

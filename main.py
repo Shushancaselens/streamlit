@@ -1020,13 +1020,13 @@ def main():
                 <!-- View toggle buttons -->
                 <div class="view-toggle" style="display: flex; justify-content: space-between;">
                     <div>
-                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
-                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
-                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
+                        <button type="button" id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
+                        <button type="button" id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
+                        <button type="button" id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
                     </div>
                     <div>
-                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
-                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                        <button type="button" id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                        <button type="button" id="table-view-btn" onclick="switchView('table')">Table View</button>
                     </div>
                 </div>
                 

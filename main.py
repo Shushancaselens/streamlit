@@ -492,7 +492,7 @@ def main():
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
     
-    # Add Streamlit sidebar with styled buttons
+    # Add Streamlit sidebar with styled buttons stacked vertically
     with st.sidebar:
         st.title("Legal Analysis")
         
@@ -523,12 +523,6 @@ def main():
         </style>
         """, unsafe_allow_html=True)
         
-        # View selector with buttons
-        st.write("### Select View")
-        
-        # Create three columns for buttons
-        col1, col2, col3 = st.columns(3)
-        
         # Define button click handlers
         def set_arguments_view():
             st.session_state.view = "Arguments"
@@ -539,45 +533,54 @@ def main():
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
-        # Render buttons with active/inactive styling based on current view
-        with col1:
-            arguments_active = "button-active" if st.session_state.view == "Arguments" else "button-inactive"
-            st.markdown(f"""
-            <div class='stButton'>
-                <button class='{arguments_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:args_button'))">
-                    Arguments
-                </button>
-            </div>
-            """, unsafe_allow_html=True)
-            arguments_clicked = st.button("Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
-            if arguments_clicked:
-                st.session_state.view = "Arguments"
+        # Vertical button layout - with icons instead of text
+        st.markdown("""
+        <div style="padding-top: 20px;"></div>
+        """, unsafe_allow_html=True)
         
-        with col2:
-            timeline_active = "button-active" if st.session_state.view == "Timeline" else "button-inactive"
-            st.markdown(f"""
-            <div class='stButton'>
-                <button class='{timeline_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:timeline_button'))">
-                    Timeline
-                </button>
-            </div>
-            """, unsafe_allow_html=True)
-            timeline_clicked = st.button("Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
-            if timeline_clicked:
-                st.session_state.view = "Timeline"
+        # Arguments button with document icon
+        arguments_active = "button-active" if st.session_state.view == "Arguments" else "button-inactive"
+        st.markdown(f"""
+        <div class='stButton'>
+            <button class='{arguments_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:args_button'))">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
+        arguments_clicked = st.button("Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True, label_visibility="collapsed")
         
-        with col3:
-            exhibits_active = "button-active" if st.session_state.view == "Exhibits" else "button-inactive"
-            st.markdown(f"""
-            <div class='stButton'>
-                <button class='{exhibits_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:exhibits_button'))">
-                    Exhibits
-                </button>
-            </div>
-            """, unsafe_allow_html=True)
-            exhibits_clicked = st.button("Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-            if exhibits_clicked:
-                st.session_state.view = "Exhibits"
+        # Timeline button with timeline icon
+        timeline_active = "button-active" if st.session_state.view == "Timeline" else "button-inactive"
+        st.markdown(f"""
+        <div class='stButton'>
+            <button class='{timeline_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:timeline_button'))">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="2" x2="12" y2="22"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
+        timeline_clicked = st.button("Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True, label_visibility="collapsed")
+        
+        # Exhibits button with folder icon
+        exhibits_active = "button-active" if st.session_state.view == "Exhibits" else "button-inactive"
+        st.markdown(f"""
+        <div class='stButton'>
+            <button class='{exhibits_active}' onclick="document.dispatchEvent(new CustomEvent('streamlit:exhibits_button'))">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
+        exhibits_clicked = st.button("Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True, label_visibility="collapsed")
     
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":

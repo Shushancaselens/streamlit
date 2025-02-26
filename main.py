@@ -542,16 +542,12 @@ def main():
         def set_facts_view():
             st.session_state.view = "Facts"
             
-        def set_timeline_view():
-            st.session_state.view = "Timeline"
-            
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
         # Create buttons with names
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
     # Determine which view to show based on sidebar selection

@@ -371,9 +371,6 @@ def get_argument_data():
         }
     ]
     
-    # Ensure Sporting Succession and Identity is always first
-    topics = sorted(topics, key=lambda x: 0 if x["title"] == "Sporting Succession and Identity" else 1)
-    
     return {
         "claimantArgs": claimant_args,
         "respondentArgs": respondent_args,
@@ -549,55 +546,55 @@ def main():
     if 'view' not in st.session_state:
         st.session_state.view = "Arguments"
     
-    # Add tabs at the top of the page instead of sidebar
-    st.title("Legal Arguments Analysis")
-    
-    # Custom CSS for tab styling
-    st.markdown("""
-    <style>
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 4px 4px 0 0;
-        padding: 10px 16px;
-        height: auto;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: rgba(13, 110, 253, 0.1);
-        border-bottom: 2px solid rgb(13, 110, 253);
-        font-weight: 500;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Define tab click handlers
-    def set_arguments_view():
-        st.session_state.view = "Arguments"
+    # Add Streamlit sidebar with navigation buttons only
+    with st.sidebar:
+        st.title("Summary of Arguments")
         
-    def set_timeline_view():
-        st.session_state.view = "Timeline"
+        # Custom CSS for button styling
+        st.markdown("""
+        <style>
+        .stButton > button {
+            width: 100%;
+            border-radius: 6px;
+            height: 50px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .stButton > button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
-    def set_exhibits_view():
-        st.session_state.view = "Exhibits"
+        # Define button click handlers
+        def set_arguments_view():
+            st.session_state.view = "Arguments"
+            
+        def set_facts_view():
+            st.session_state.view = "Facts"
+            
+        def set_timeline_view():
+            st.session_state.view = "Timeline"
+            
+        def set_exhibits_view():
+            st.session_state.view = "Exhibits"
+        
+        # Create buttons with names
+        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
+        st.button("📅 Timeline", key="timeline_button", on_click=set_timeline_view, use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create tabs
-    tab1, tab2, tab3 = st.tabs(["Summary of Arguments", "Timeline", "Exhibits"])
-    
-    with tab1:
-        set_arguments_view()
-    with tab2:
-        set_timeline_view()
-    with tab3:
-        set_exhibits_view()
-    
-    # Determine which view to show based on tab selection
+    # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":
         active_tab = 0
-    elif st.session_state.view == "Timeline":
+    elif st.session_state.view == "Facts":
         active_tab = 1
-    else:  # Exhibits
+    elif st.session_state.view == "Timeline":
         active_tab = 2
+    else:  # Exhibits
+        active_tab = 3
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
@@ -1018,19 +1015,34 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
-                <!-- Two-column layout for arguments -->
-                <div class="arguments-columns">
-                    <!-- Claimant's Arguments Column -->
-                    <div class="arguments-column">
-                        <h2 class="column-title">Claimant's Arguments</h2>
-                        <div id="claimant-arguments-container"></div>
-                    </div>
-                    
-                    <!-- Respondent's Arguments Column -->
-                    <div class="arguments-column">
-                        <h2 class="column-title respondent">Respondent's Arguments</h2>
-                        <div id="respondent-arguments-container"></div>
-                    </div>
+                <div class="section-title">Issues</div>
+                
+                <!-- View toggle buttons -->
+                <div class="view-toggle">
+                    <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                    <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                </div>
+                
+                <!-- Detailed view content -->
+                <div id="detailed-view" class="view-content active">
+                    <div id="topics-container"></div>
+                </div>
+                
+                <!-- Table view content -->
+                <div id="table-view" class="view-content" style="display: none;">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('table-view-body', 0)">ID</th>
+                                <th onclick="sortTable('table-view-body', 1)">Argument</th>
+                                <th onclick="sortTable('table-view-body', 2)">Party</th>
+                                <th onclick="sortTable('table-view-body', 3)">Status</th>
+                                <th onclick="sortTable('table-view-body', 4)">Evidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-view-body"></tbody>
+                    </table>
                 </div>
             </div>
             
@@ -1911,7 +1923,8 @@ def main():
     </html>
     """
     
-    # Render the HTML in Streamlit - without the title since we already have it
+    # Render the HTML in Streamlit
+    st.title("Summary of Arguments")
     components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

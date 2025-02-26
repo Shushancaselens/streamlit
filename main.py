@@ -1,15 +1,4 @@
-.side-heading {
-                margin-bottom: 16px;
-                font-weight: 500;
-            }
-            
-            .appellant-color {
-                color: #3182ce;
-            }
-            
-            .respondent-color {
-                color: #e53e3e;
-            }import streamlit as st
+import streamlit as st
 import json
 import streamlit.components.v1 as components
 import pandas as pd

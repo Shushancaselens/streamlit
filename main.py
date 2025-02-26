@@ -982,23 +982,8 @@ def main():
             .copy-notification.show {{
                 opacity: 1;
             }}
-            /* Copy notification */
-            .copy-notification {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background-color: #2d3748;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }
-            
-            .copy-notification.show {
-                opacity: 1;
-            }
+        </style>
+    </head>
     <body>
         <div class="container">
             <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
@@ -1033,19 +1018,18 @@ def main():
                 <div class="section-title">Issues</div>
                 
                 <!-- View toggle buttons -->
-                <div class="view-toggle">
-                    <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
-                    <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                <div class="view-toggle" style="display: flex; justify-content: space-between;">
+                    <div>
+                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
+                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
+                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
+                    </div>
+                    <div>
+                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                    </div>
                 </div>
                 
-                <!-- Party view toggle buttons -->
-                <div class="party-view-toggle">
-                    <button id="both-view-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
-                    <button id="appellant-view-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
-                    <button id="respondent-view-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
-                </div>
-                
-                <!-- Party view toggle buttons -->
                 <!-- Detailed view content -->
                 <div id="detailed-view" class="view-content active">
                     <div id="topics-container"></div>

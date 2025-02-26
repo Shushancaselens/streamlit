@@ -1015,7 +1015,7 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
-                <div class="section-title">Arguments Summary</div>
+                <div class="section-title">Issues</div>
                 
                 <!-- View toggle buttons -->
                 <div class="view-toggle">
@@ -1924,7 +1924,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("Legal Case Analysis")
+    st.title("Summary of arguments")
     components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

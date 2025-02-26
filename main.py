@@ -3,19 +3,9 @@ import json
 import streamlit.components.v1 as components
 import pandas as pd
 import base64
-import time
-import uuid
 
-# Set page config with new title
+# Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
-
-# Clear cache and session state
-st.cache_data.clear()
-st.cache_resource.clear()
-
-# Force new session ID to prevent caching
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
 
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
@@ -28,7 +18,6 @@ def get_argument_data():
             "id": "1",
             "title": "Sporting Succession",
             "paragraphs": "15-18",
-            "supportingContent": "This argument is fundamental to the case as it establishes the continuity of the club's identity. The evidence supports a strong case for historical continuity despite the respondent's claims of discontinuity during 1975-1976.",
             "overview": {
                 "points": [
                     "Analysis of multiple established criteria",
@@ -200,7 +189,6 @@ def get_argument_data():
             "id": "1",
             "title": "Sporting Succession Rebuttal",
             "paragraphs": "200-218",
-            "supportingContent": "Our position firmly refutes the appellant's claim of continuous operation. The documentary evidence clearly shows a complete termination of the original entity, followed by creation of an entirely new legal entity with different founding members.",
             "overview": {
                 "points": [
                     "Challenge to claimed continuity of operations",
@@ -542,17 +530,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Main app
 def main():
-    if st.button("Force Refresh"):
-        st.experimental_rerun()
-    
-    # Display supporting content directly in Streamlit
-    st.subheader("Direct Supporting Content")
-    with st.expander("Sporting Succession - Supporting Analysis", expanded=True):
-        st.info("This argument is fundamental to the case as it establishes the continuity of the club's identity. The evidence supports a strong case for historical continuity despite the respondent's claims of discontinuity during 1975-1976.")
-    
-    with st.expander("Sporting Succession Rebuttal - Supporting Analysis", expanded=True):
-        st.error("Our position firmly refutes the appellant's claim of continuous operation. The documentary evidence clearly shows a complete termination of the original entity, followed by creation of an entirely new legal entity with different founding members.")
-        
     # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()
@@ -1137,9 +1114,6 @@ def main():
             const exhibitsData = {exhibits_json};
             const factsData = {facts_json};
             const viewOptions = {view_options_json};
-            
-            // Debug flag to help troubleshoot rendering
-            const DEBUG = true;
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{

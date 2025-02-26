@@ -1,3 +1,8 @@
+import streamlit as st
+import json
+import streamlit.components.v1 as components
+import base64
+
 # Get data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
@@ -332,435 +337,529 @@ def get_argument_data():
         "topics": topics
     }
 
-# Arguments section HTML template for the component
-def arguments_section_html(args_data):
-    arguments_html = """
-    <div id="arguments" class="content-section active">
-        <div class="section-title">Issues</div>
-        
-        <!-- View toggle buttons -->
-        <div class="view-toggle" style="display: flex; justify-content: space-between;">
-            <div>
-                <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
-                <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
-                <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
-            </div>
-            <div>
-                <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
-                <button id="table-view-btn" onclick="switchView('table')">Table View</button>
-            </div>
-        </div>
-        
-        <!-- Detailed view content -->
-        <div id="detailed-view" class="view-content active">
-            <div id="topics-container"></div>
-        </div>
-        
-        <!-- Table view content -->
-        <div id="table-view" class="view-content" style="display: none;">
-            <table class="table-view">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('table-view-body', 0)">ID</th>
-                        <th onclick="sortTable('table-view-body', 1)">Argument</th>
-                        <th onclick="sortTable('table-view-body', 2)">Party</th>
-                        <th onclick="sortTable('table-view-body', 3)">Status</th>
-                        <th onclick="sortTable('table-view-body', 4)">Evidence</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-view-body"></tbody>
-            </table>
-        </div>
-    </div>
+# Get all facts from the data
+def get_all_facts():
+    args_data = get_argument_data()
+    facts = []
     
-    <script>
-        // Initialize data
-        const argsData = {args_json};
-        
-        // Global variable to track current party view
-        let currentPartyView = 'both';
-        
-        // Switch view between detailed and table
-        function switchView(viewType) {
-            const detailedBtn = document.getElementById('detailed-view-btn');
-            const tableBtn = document.getElementById('table-view-btn');
-            const detailedView = document.getElementById('detailed-view');
-            const tableView = document.getElementById('table-view');
+    # Helper function to extract facts from arguments
+    def extract_facts(arg, party):
+        if not arg:
+            return
             
-            if (viewType === 'detailed') {
-                detailedBtn.classList.add('active');
-                tableBtn.classList.remove('active');
-                detailedView.style.display = 'block';
-                tableView.style.display = 'none';
-            } else {
-                detailedBtn.classList.remove('active');
-                tableBtn.classList.add('active');
-                detailedView.style.display = 'none';
-                tableView.style.display = 'block';
-            }
-        }
-        
-        // Switch party view
-        function switchPartyView(partyType) {
-            currentPartyView = partyType;
-            const bothBtn = document.getElementById('both-parties-btn');
-            const appellantBtn = document.getElementById('appellant-btn');
-            const respondentBtn = document.getElementById('respondent-btn');
-            
-            // Remove active class from all
-            bothBtn.classList.remove('active');
-            appellantBtn.classList.remove('active');
-            respondentBtn.classList.remove('active');
-            
-            // Add active to selected
-            if (partyType === 'both') {
-                bothBtn.classList.add('active');
-            } else if (partyType === 'appellant') {
-                appellantBtn.classList.add('active');
-            } else {
-                respondentBtn.classList.add('active');
-            }
-            
-            // Re-render topics with selected view
-            renderTopics();
-        }
-        
-        // Render arguments in table format
-        function renderArgumentsTable() {
-            const tableBody = document.getElementById('table-view-body');
-            tableBody.innerHTML = '';
-            
-            // Helper function to flatten arguments
-            function flattenArguments(args, party) {
-                let result = [];
-                
-                Object.values(args).forEach(arg => {
-                    // Track if argument has disputed facts
-                    const hasDisputedFacts = arg.factualPoints && 
-                        arg.factualPoints.some(point => point.isDisputed);
-                    
-                    // Count pieces of evidence
-                    const evidenceCount = arg.evidence ? arg.evidence.length : 0;
-                    
-                    // Add this argument
-                    result.push({
-                        id: arg.id,
-                        title: arg.title,
-                        party: party,
-                        hasDisputedFacts: hasDisputedFacts,
-                        evidenceCount: evidenceCount,
-                        paragraphs: arg.paragraphs
-                    });
-                    
-                    // Process children recursively
-                    if (arg.children) {
-                        Object.values(arg.children).forEach(child => {
-                            result = result.concat(flattenArguments({[child.id]: child}, party));
-                        });
-                    }
-                });
-                
-                return result;
-            }
-            
-            // Get flattened arguments
-            const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
-            const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
-            
-            // Filter based on current party view
-            let allArgs = [];
-            if (currentPartyView === 'both') {
-                allArgs = [...appellantArgs, ...respondentArgs];
-            } else if (currentPartyView === 'appellant') {
-                allArgs = appellantArgs;
-            } else {
-                allArgs = respondentArgs;
-            }
-            
-            // Render rows
-            allArgs.forEach(arg => {
-                const row = document.createElement('tr');
-                
-                // ID column
-                const idCell = document.createElement('td');
-                idCell.textContent = arg.id;
-                row.appendChild(idCell);
-                
-                // Title column
-                const titleCell = document.createElement('td');
-                titleCell.textContent = arg.title;
-                row.appendChild(titleCell);
-                
-                // Party column
-                const partyCell = document.createElement('td');
-                const partyBadge = document.createElement('span');
-                partyBadge.className = `badge ${arg.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}`;
-                partyBadge.textContent = arg.party;
-                partyCell.appendChild(partyBadge);
-                row.appendChild(partyCell);
-                
-                // Status column
-                const statusCell = document.createElement('td');
-                if (arg.hasDisputedFacts) {
-                    const disputedBadge = document.createElement('span');
-                    disputedBadge.className = 'badge disputed-badge';
-                    disputedBadge.textContent = 'Disputed';
-                    statusCell.appendChild(disputedBadge);
-                } else {
-                    statusCell.textContent = 'Undisputed';
+        if 'factualPoints' in arg and arg['factualPoints']:
+            for point in arg['factualPoints']:
+                fact = {
+                    'point': point['point'],
+                    'date': point['date'],
+                    'isDisputed': point['isDisputed'],
+                    'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
+                    'exhibits': point.get('exhibits', []),
+                    'argId': arg['id'],
+                    'argTitle': arg['title']
                 }
-                row.appendChild(statusCell);
+                facts.append(fact)
                 
-                // Evidence column
-                const evidenceCell = document.createElement('td');
-                evidenceCell.textContent = arg.evidenceCount > 0 ? `${arg.evidenceCount} items` : 'None';
-                row.appendChild(evidenceCell);
-                
-                // Actions column
-                const actionsCell = document.createElement('td');
-                const viewBtn = document.createElement('button');
-                viewBtn.textContent = 'View';
-                viewBtn.style.padding = '4px 8px';
-                viewBtn.style.marginRight = '8px';
-                viewBtn.style.border = '1px solid #e2e8f0';
-                viewBtn.style.borderRadius = '4px';
-                viewBtn.style.backgroundColor = '#f7fafc';
-                viewBtn.style.cursor = 'pointer';
-                viewBtn.onclick = function() {
-                    // Switch to detailed view and expand this argument
-                    switchView('detailed');
-                    // Logic to find and expand the argument would go here
-                };
-                actionsCell.appendChild(viewBtn);
-                row.appendChild(actionsCell);
-                
-                tableBody.appendChild(row);
-            });
+        # Process children
+        if 'children' in arg and arg['children']:
+            for child_id, child in arg['children'].items():
+                extract_facts(child, party)
+    
+    # Extract from claimant args
+    for arg_id, arg in args_data['claimantArgs'].items():
+        extract_facts(arg, 'Appellant')
+        
+    # Extract from respondent args
+    for arg_id, arg in args_data['respondentArgs'].items():
+        extract_facts(arg, 'Respondent')
+        
+    return facts
+
+# Function to create CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
+
+# Arguments section implementation
+def display_arguments_section():
+    args_data = get_argument_data()
+    facts_data = get_all_facts()
+    
+    # Convert data to JSON for JavaScript use
+    args_json = json.dumps(args_data)
+    facts_json = json.dumps(facts_data)
+    
+    # Define CSS for the arguments section
+    css = """
+    <style>
+        /* Minimalistic base styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
         }
         
-        // Render overview points
-        function renderOverviewPoints(overview) {
-            if (!overview || !overview.points || overview.points.length === 0) return '';
-            
-            const pointsList = overview.points.map(point => 
-                `<li>
-                    <span>${point}</span>
-                    <span class="para-badge">¶${overview.paragraphs}</span>
-                </li>`
-            ).join('');
-            
-            return `
-            <div class="item-block">
-                <div class="item-title">Supporting Points</div>
-                <ul class="point-list">
-                    ${pointsList}
-                </ul>
-            </div>
-            `;
+        /* Simple container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        // Render factual points (now called Events)
-        function renderFactualPoints(points) {
-            if (!points || points.length === 0) return '';
-            
-            const pointsHtml = points.map(point => {
-                const disputed = point.isDisputed 
-                    ? `<span class="badge disputed-badge">Disputed</span>` 
-                    : '';
+        /* Card styling */
+        .card {
+            background-color: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #fafafa;
+        }
+        
+        .card-content {
+            padding: 16px;
+            display: none;
+        }
+        
+        /* Arguments layout */
+        .arguments-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .side-heading {
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .appellant-color {
+            color: #3182ce;
+        }
+        
+        .respondent-color {
+            color: #e53e3e;
+        }
+        
+        /* Badge styling */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .appellant-badge {
+            background-color: rgba(49, 130, 206, 0.1);
+            color: #3182ce;
+        }
+        
+        .respondent-badge {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: #e53e3e;
+        }
+        
+        .exhibit-badge {
+            background-color: rgba(221, 107, 32, 0.1);
+            color: #dd6b20;
+        }
+        
+        .disputed-badge {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: #e53e3e;
+        }
+        
+        .para-badge {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #666;
+            margin-left: 5px;
+        }
+        
+        /* Evidence and factual points */
+        .item-block {
+            background-color: #fafafa;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        
+        .evidence-block {
+            background-color: #fff8f0;
+            border-left: 3px solid #dd6b20;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .caselaw-block {
+            background-color: #ebf8ff;
+            border-left: 3px solid #3182ce;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 12px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tr.disputed {
+            background-color: rgba(229, 62, 62, 0.05);
+        }
+        
+        /* Nested content */
+        .nested-content {
+            padding-left: 20px;
+            margin-top: 10px;
+            border-left: 1px solid #f0f0f0;
+        }
+        
+        /* Simple list styling */
+        ul.point-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        ul.point-list li {
+            position: relative;
+            padding-left: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        ul.point-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #8c8c8c;
+        }
+        
+        /* Chevron icon */
+        .chevron {
+            transition: transform 0.2s;
+        }
+        
+        .chevron.expanded {
+            transform: rotate(90deg);
+        }
+        
+        /* Citation tags */
+        .citation-tag {
+            padding: 2px 5px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+            font-size: 11px;
+            color: #666;
+            margin-right: 2px;
+        }
+        
+        /* Section title */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        /* Table view */
+        .table-view {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table-view th {
+            padding: 12px;
+            text-align: left;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+        }
+        
+        .table-view th:hover {
+            background-color: #e9ecef;
+        }
+        
+        .table-view td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table-view tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+        
+        .view-toggle button {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background-color: #f7fafc;
+            cursor: pointer;
+        }
+        
+        .view-toggle button.active {
+            background-color: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+        
+        .view-toggle button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .view-toggle button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+    """
+    
+    # Create the HTML content for the arguments section
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        {css}
+    </head>
+    <body>
+        <div class="container">
+            <div id="arguments" class="content-section active">
+                <div class="section-title">Legal Arguments</div>
                 
-                // Exhibits badges
-                const exhibitBadges = point.exhibits && point.exhibits.length > 0
-                    ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${exhibitId}</span>`).join(' ')
-                    : '';
-                
-                return `
-                <div class="item-block">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>${point.point}</span>
-                        <span>
-                            ${disputed}
-                            ${exhibitBadges}
-                        </span>
+                <!-- View toggle buttons -->
+                <div class="view-toggle" style="display: flex; justify-content: space-between;">
+                    <div>
+                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
+                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
+                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
                     </div>
-                    <div style="font-size: 12px; color: #666; margin-top: 4px;">${point.date}</div>
-                </div>
-                `;
-            }).join('');
-            
-            return `
-            <div style="margin-top: 16px;">
-                <div class="item-title">Events</div>
-                ${pointsHtml}
-            </div>
-            `;
-        }
-        
-        // Render evidence
-        function renderEvidence(evidence) {
-            if (!evidence || evidence.length === 0) return '';
-            
-            const evidenceHtml = evidence.map(item => {
-                const citations = item.citations && item.citations.length > 0
-                    ? item.citations.map(cite => `<span class="citation-tag">¶${cite}</span>`).join('')
-                    : '';
-                
-                return `
-                <div class="evidence-block">
-                    <div class="item-title">${item.id}: ${item.title}</div>
-                    <div style="margin: 6px 0;">${item.summary}</div>
-                    <div style="margin-top: 8px; font-size: 12px;">
-                        <span style="color: #666; margin-right: 5px;">Cited in:</span>
-                        ${citations}
+                    <div>
+                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
                     </div>
                 </div>
-                `;
-            }).join('');
-            
-            return `
-            <div style="margin-top: 16px;">
-                <div class="item-title">Evidence</div>
-                ${evidenceHtml}
-            </div>
-            `;
-        }
-        
-        // Render case law
-        function renderCaseLaw(cases) {
-            if (!cases || cases.length === 0) return '';
-            
-            const casesHtml = cases.map(item => {
-                const citedParagraphs = item.citedParagraphs && item.citedParagraphs.length > 0
-                    ? item.citedParagraphs.map(cite => `<span class="citation-tag">¶${cite}</span>`).join('')
-                    : '';
                 
-                return `
-                <div class="caselaw-block">
-                    <div class="item-title">${item.caseNumber}</div>
-                    <div style="font-size: 12px; margin: 2px 0 8px 0;">¶${item.paragraphs}</div>
-                    <div style="font-weight: 500; margin-bottom: 4px;">${item.title}</div>
-                    <div style="margin: 6px 0;">${item.relevance}</div>
-                    <div style="margin-top: 8px; font-size: 12px;">
-                        <span style="color: #666; margin-right: 5px;">Key Paragraphs:</span>
-                        ${citedParagraphs}
-                    </div>
+                <!-- Detailed view content -->
+                <div id="detailed-view" class="view-content active">
+                    <div id="topics-container"></div>
                 </div>
-                `;
-            }).join('');
-            
-            return `
-            <div style="margin-top: 16px;">
-                <div class="item-title">Case Law</div>
-                ${casesHtml}
-            </div>
-            `;
-        }
-        
-        // Render argument content
-        function renderArgumentContent(arg) {
-            let content = '';
-            
-            // Overview points
-            if (arg.overview) {
-                content += renderOverviewPoints(arg.overview);
-            }
-            
-            // Factual points
-            if (arg.factualPoints) {
-                content += renderFactualPoints(arg.factualPoints);
-            }
-            
-            // Evidence
-            if (arg.evidence) {
-                content += renderEvidence(arg.evidence);
-            }
-            
-            // Case law
-            if (arg.caseLaw) {
-                content += renderCaseLaw(arg.caseLaw);
-            }
-            
-            return content;
-        }
-        
-        // Render a single argument including its children
-        function renderArgument(arg, side) {
-            if (!arg) return '';
-            
-            const hasChildren = arg.children && Object.keys(arg.children).length > 0;
-            const argId = `${side}-${arg.id}`;
-            
-            // Store corresponding pair ID for synchronization
-            const pairId = arg.id;
-            
-            // Style based on side
-            const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
-            
-            // Render children if any - removed style="display: none;"
-            let childrenHtml = '';
-            if (hasChildren) {
-                childrenHtml = `<div class="nested-content" id="children-${argId}">`;
                 
-                Object.values(arg.children).forEach(child => {
-                    childrenHtml += renderArgument(child, side);
-                });
-                
-                childrenHtml += `</div>`;
-            }
-            
-            return `
-            <div class="card">
-                <div class="card-header" onclick="toggleArgument('${argId}', '${pairId}', '${side}')">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg id="chevron-${argId}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                        <span>${arg.id}. ${arg.title}</span>
-                    </div>
-                    <span class="badge ${badgeClass}">¶${arg.paragraphs}</span>
+                <!-- Table view content -->
+                <div id="table-view" class="view-content" style="display: none;">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('table-view-body', 0)">ID</th>
+                                <th onclick="sortTable('table-view-body', 1)">Argument</th>
+                                <th onclick="sortTable('table-view-body', 2)">Party</th>
+                                <th onclick="sortTable('table-view-body', 3)">Status</th>
+                                <th onclick="sortTable('table-view-body', 4)">Evidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-view-body"></tbody>
+                    </table>
                 </div>
-                <div class="card-content" id="content-${argId}">
-                    ${renderArgumentContent(arg)}
-                </div>
-                ${childrenHtml}
             </div>
-            `;
-        }
+        </div>
         
-        // Render arguments by topic
-        function renderTopics() {
-            const container = document.getElementById('topics-container');
-            let html = '';
+        <script>
+            // Initialize data
+            const argsData = {args_json};
+            const factsData = {facts_json};
             
-            argsData.topics.forEach(topic => {
-                html += `
-                <div class="card" style="margin-bottom: 24px;">
-                    <div class="card-header" onclick="toggleCard('topic-${topic.id}')">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <svg id="chevron-topic-${topic.id}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                            <span>${topic.title}</span>
-                        </div>
-                    </div>
-                    <div class="card-content" id="content-topic-${topic.id}">
-                        <p>${topic.description}</p>
+            // Global variable to track current party view
+            let currentPartyView = 'both';
+            
+            // Document ready
+            document.addEventListener('DOMContentLoaded', function() {{
+                renderTopics();
+                renderArgumentsTable();
+            }});
+            
+            // Switch view between detailed and table
+            function switchView(viewType) {{
+                const detailedBtn = document.getElementById('detailed-view-btn');
+                const tableBtn = document.getElementById('table-view-btn');
+                const detailedView = document.getElementById('detailed-view');
+                const tableView = document.getElementById('table-view');
+                
+                if (viewType === 'detailed') {{
+                    detailedBtn.classList.add('active');
+                    tableBtn.classList.remove('active');
+                    detailedView.style.display = 'block';
+                    tableView.style.display = 'none';
+                }} else {{
+                    detailedBtn.classList.remove('active');
+                    tableBtn.classList.add('active');
+                    detailedView.style.display = 'none';
+                    tableView.style.display = 'block';
+                }}
+            }}
+            
+            // Switch party view
+            function switchPartyView(partyType) {{
+                currentPartyView = partyType;
+                const bothBtn = document.getElementById('both-parties-btn');
+                const appellantBtn = document.getElementById('appellant-btn');
+                const respondentBtn = document.getElementById('respondent-btn');
+                
+                // Remove active class from all
+                bothBtn.classList.remove('active');
+                appellantBtn.classList.remove('active');
+                respondentBtn.classList.remove('active');
+                
+                // Add active to selected
+                if (partyType === 'both') {{
+                    bothBtn.classList.add('active');
+                }} else if (partyType === 'appellant') {{
+                    appellantBtn.classList.add('active');
+                }} else {{
+                    respondentBtn.classList.add('active');
+                }}
+                
+                // Re-render views with selected party filter
+                renderTopics();
+                renderArgumentsTable();
+            }}
+            
+            // Sort table function
+            function sortTable(tableId, columnIndex) {{
+                const table = document.getElementById(tableId);
+                const rows = Array.from(table.rows);
+                let dir = 1; // 1 for ascending, -1 for descending
+                
+                // Check if already sorted in this direction
+                if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                    table.getAttribute('data-sort-dir') === '1') {{
+                    dir = -1;
+                }}
+                
+                // Sort the rows
+                rows.sort((a, b) => {{
+                    const cellA = a.cells[columnIndex].textContent.trim();
+                    const cellB = b.cells[columnIndex].textContent.trim();
+                    
+                    return dir * cellA.localeCompare(cellB);
+                }});
+                
+                // Remove existing rows and append in new order
+                rows.forEach(row => table.appendChild(row));
+                
+                // Store current sort direction and column
+                table.setAttribute('data-sort-column', columnIndex);
+                table.setAttribute('data-sort-dir', dir);
+            }}
+            
+            // Render arguments in table format
+            function renderArgumentsTable() {{
+                const tableBody = document.getElementById('table-view-body');
+                tableBody.innerHTML = '';
+                
+                // Helper function to flatten arguments
+                function flattenArguments(args, party) {{
+                    let result = [];
+                    
+                    Object.values(args).forEach(arg => {{
+                        // Track if argument has disputed facts
+                        const hasDisputedFacts = arg.factualPoints && 
+                            arg.factualPoints.some(point => point.isDisputed);
                         
-                        ${topic.argumentIds.map(argId => {
-                            let html = '';
-                            const showAppellant = currentPartyView === 'both' || currentPartyView === 'appellant';
-                            const showRespondent = currentPartyView === 'both' || currentPartyView === 'respondent';
-                            
-                            if (currentPartyView === 'both') {
-                                // Two-column layout for both parties
-                                html = `
-                                <div style="margin-top: 16px;">
-                                    <div class="arguments-row">
-                                        ${showAppellant ? `
-                                        <div>
-                                            <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                            ${renderArgument(argsData.claimantArgs[argId], 'appellant')}
-                                        </div>` : ''}
-                                        ${showRespondent ? `
-                                        <div>
-                                            <h3 class="side-heading respondent
+                        // Count pieces of evidence
+                        const evidenceCount = arg.evidence ? arg.evidence.length : 0;
+                        
+                        // Add this argument
+                        result.push({{
+                            id: arg.id,
+                            title: arg.title,
+                            party: party,
+                            hasDisputedFacts: hasDisputedFacts,
+                            evidenceCount: evidenceCount,
+                            paragraphs: arg.paragraphs
+                        }});
+                        
+                        // Process children recursively
+                        if (arg.children) {{
+                            Object.values(arg.children).forEach(child => {{
+                                result = result.concat(flattenArguments({{[child.id]: child}}, party));
+                            }});
+                        }}
+                    }});
+                    
+                    return result;
+                }}
+                
+                // Get flattened arguments
+                const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
+                const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
+                
+                // Filter based on current party view
+                let allArgs = [];
+                if (currentPartyView === 'both') {{
+                    allArgs = [...appellantArgs, ...respondentArgs];
+                }} else if (currentPartyView === 'appellant') {{
+                    allArgs = appellantArgs;
+                }} else {{
+                    allArgs = respondentArgs;
+                }}
+                
+                // Render rows
+                allArgs.forEach(arg => {{
+                    const row = document.createElement('tr');
+                    
+                    // ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = arg.id;
+                    row.appendChild(idCell);
+                    
+                    // Title column
+                    const titleCell = document.createElement('td');
+                    titleCell.textContent = arg.title;
+                    row.appendChild(titleCell);

@@ -1710,16 +1710,16 @@ def main():
             }}
             
             // Render main arguments section
-            function renderMainArguments(appellantArg, respondentArg) {
+            function renderMainArguments(appellantArg, respondentArg) {{
                 if (!appellantArg || !respondentArg) return '';
                 
                 // Get overview points for both sides
                 const appellantPoints = appellantArg.overview && appellantArg.overview.points 
-                    ? appellantArg.overview.points.map(point => `<div class="main-argument-point">${point}</div>`).join('')
+                    ? appellantArg.overview.points.map(point => `<div class="main-argument-point">${{point}}</div>`).join('')
                     : '<div class="main-argument-point">No main arguments provided</div>';
                     
                 const respondentPoints = respondentArg.overview && respondentArg.overview.points 
-                    ? respondentArg.overview.points.map(point => `<div class="main-argument-point">${point}</div>`).join('')
+                    ? respondentArg.overview.points.map(point => `<div class="main-argument-point">${{point}}</div>`).join('')
                     : '<div class="main-argument-point">No main arguments provided</div>';
                 
                 return `
@@ -1728,16 +1728,16 @@ def main():
                     <div class="arguments-row">
                         <div>
                             <h4 class="appellant-color">Appellant's Main Arguments:</h4>
-                            ${appellantPoints}
+                            ${{appellantPoints}}
                         </div>
                         <div>
                             <h4 class="respondent-color">Respondent's Main Arguments:</h4>
-                            ${respondentPoints}
+                            ${{respondentPoints}}
                         </div>
                     </div>
                 </div>
                 `;
-            }
+            }}
             
             // Render argument content
             function renderArgumentContent(arg) {{

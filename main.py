@@ -889,4 +889,1043 @@ def main():
             .table-view th {{
                 padding: 12px;
                 text-align: left;
-                background-
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+                position: sticky;
+                top: 0;
+                cursor: pointer;
+            }}
+            
+            .table-view th:hover {{
+                background-color: #e9ecef;
+            }}
+            
+            .table-view td {{
+                padding: 12px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .table-view tr:hover {{
+                background-color: #f8f9fa;
+            }}
+            
+            /* Facts styling */
+            .facts-container {{
+                margin-top: 20px;
+            }}
+            
+            .facts-header {{
+                display: flex;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .tab-button {{
+                padding: 10px 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }}
+            
+            .tab-button.active {{
+                border-bottom: 2px solid #4299e1;
+                color: #4299e1;
+                font-weight: 500;
+            }}
+            
+            .facts-content {{
+                margin-top: 20px;
+            }}
+            
+            /* View toggle */
+            .view-toggle {{
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 16px;
+            }}
+            
+            .view-toggle button {{
+                padding: 8px 16px;
+                border: 1px solid #e2e8f0;
+                background-color: #f7fafc;
+                cursor: pointer;
+            }}
+            
+            .view-toggle button.active {{
+                background-color: #4299e1;
+                color: white;
+                border-color: #4299e1;
+            }}
+            
+            .view-toggle button:first-child {{
+                border-radius: 4px 0 0 4px;
+            }}
+            
+            .view-toggle button:last-child {{
+                border-radius: 0 4px 4px 0;
+            }}
+            
+            /* Copy notification */
+            .copy-notification {{
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #2d3748;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }}
+            
+            .copy-notification.show {{
+                opacity: 1;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+            
+            <div class="action-buttons">
+                <button class="action-button" onclick="copyAllContent()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <div class="export-dropdown">
+                    <button class="action-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Export
+                    </button>
+                    <div class="export-dropdown-content">
+                        <a onclick="exportAsCsv()">CSV</a>
+                        <a onclick="exportAsPdf()">PDF</a>
+                        <a onclick="exportAsWord()">Word</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Arguments Section -->
+            <div id="arguments" class="content-section">
+                <div class="section-title">Arguments Summary</div>
+                
+                <!-- View toggle buttons -->
+                <div class="view-toggle">
+                    <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                    <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                </div>
+                
+                <!-- Detailed view content -->
+                <div id="detailed-view" class="view-content active">
+                    <div id="topics-container"></div>
+                </div>
+                
+                <!-- Table view content -->
+                <div id="table-view" class="view-content" style="display: none;">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('table-view-body', 0)">ID</th>
+                                <th onclick="sortTable('table-view-body', 1)">Argument</th>
+                                <th onclick="sortTable('table-view-body', 2)">Party</th>
+                                <th onclick="sortTable('table-view-body', 3)">Status</th>
+                                <th onclick="sortTable('table-view-body', 4)">Evidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-view-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Facts Section -->
+            <div id="facts" class="content-section">
+                <div class="section-title">Case Facts</div>
+                
+                <div class="facts-header">
+                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                </div>
+                
+                <div class="facts-content">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facts-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Timeline Section -->
+            <div id="timeline" class="content-section">
+                <div class="section-title">Case Timeline</div>
+                <table id="timeline-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Appellant's Version</th>
+                            <th>Respondent's Version</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeline-body"></tbody>
+                </table>
+            </div>
+            
+            <!-- Exhibits Section -->
+            <div id="exhibits" class="content-section">
+                <div class="section-title">Case Exhibits</div>
+                <table id="exhibits-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Party</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exhibits-body"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <script>
+            // Initialize data
+            const argsData = {args_json};
+            const timelineData = {timeline_json};
+            const exhibitsData = {exhibits_json};
+            const factsData = {facts_json};
+            const viewOptions = {view_options_json};
+            
+            // Show the selected view based on sidebar selection
+            document.addEventListener('DOMContentLoaded', function() {{
+                // Show the correct section based on sidebar selection
+                const sections = ['arguments', 'facts', 'timeline', 'exhibits'];
+                const activeSection = sections[viewOptions.activeTab];
+                
+                document.querySelectorAll('.content-section').forEach(section => {{
+                    section.classList.remove('active');
+                }});
+                
+                document.getElementById(activeSection).classList.add('active');
+                
+                // Initialize content as needed
+                if (activeSection === 'arguments') {{
+                    renderTopics();
+                    renderArgumentsTable();
+                }}
+                if (activeSection === 'timeline') renderTimeline();
+                if (activeSection === 'exhibits') renderExhibits();
+                if (activeSection === 'facts') renderFacts();
+            }});
+            
+            // Switch view between detailed and table
+            function switchView(viewType) {{
+                const detailedBtn = document.getElementById('detailed-view-btn');
+                const tableBtn = document.getElementById('table-view-btn');
+                const detailedView = document.getElementById('detailed-view');
+                const tableView = document.getElementById('table-view');
+                
+                if (viewType === 'detailed') {{
+                    detailedBtn.classList.add('active');
+                    tableBtn.classList.remove('active');
+                    detailedView.style.display = 'block';
+                    tableView.style.display = 'none';
+                }} else {{
+                    detailedBtn.classList.remove('active');
+                    tableBtn.classList.add('active');
+                    detailedView.style.display = 'none';
+                    tableView.style.display = 'block';
+                }}
+            }}
+            
+            // Switch facts tab
+            function switchFactsTab(tabType) {{
+                const allBtn = document.getElementById('all-facts-btn');
+                const disputedBtn = document.getElementById('disputed-facts-btn');
+                const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                
+                // Remove active class from all
+                allBtn.classList.remove('active');
+                disputedBtn.classList.remove('active');
+                undisputedBtn.classList.remove('active');
+                
+                // Add active to selected
+                if (tabType === 'all') {{
+                    allBtn.classList.add('active');
+                    renderFacts('all');
+                }} else if (tabType === 'disputed') {{
+                    disputedBtn.classList.add('active');
+                    renderFacts('disputed');
+                }} else {{
+                    undisputedBtn.classList.add('active');
+                    renderFacts('undisputed');
+                }}
+            }}
+            
+            // Sort table function
+            function sortTable(tableId, columnIndex) {{
+                const table = document.getElementById(tableId);
+                const rows = Array.from(table.rows);
+                let dir = 1; // 1 for ascending, -1 for descending
+                
+                // Check if already sorted in this direction
+                if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                    table.getAttribute('data-sort-dir') === '1') {{
+                    dir = -1;
+                }}
+                
+                // Sort the rows
+                rows.sort((a, b) => {{
+                    const cellA = a.cells[columnIndex].textContent.trim();
+                    const cellB = b.cells[columnIndex].textContent.trim();
+                    
+                    // Handle date sorting
+                    if (columnIndex === 0 && tableId === 'facts-table-body') {{
+                        // Attempt to parse as dates
+                        const dateA = new Date(cellA);
+                        const dateB = new Date(cellB);
+                        
+                        if (!isNaN(dateA) && !isNaN(dateB)) {{
+                            return dir * (dateA - dateB);
+                        }}
+                    }}
+                    
+                    return dir * cellA.localeCompare(cellB);
+                }});
+                
+                // Remove existing rows and append in new order
+                rows.forEach(row => table.appendChild(row));
+                
+                // Store current sort direction and column
+                table.setAttribute('data-sort-column', columnIndex);
+                table.setAttribute('data-sort-dir', dir);
+            }}
+            
+            // Copy all content function
+            function copyAllContent() {{
+                const activeSection = document.querySelector('.content-section.active');
+                if (!activeSection) return;
+                
+                let contentToCopy = '';
+                
+                // Extract content based on section
+                if (activeSection.id === 'arguments') {{
+                    if (document.getElementById('detailed-view').style.display !== 'none') {{
+                        contentToCopy = extractArgumentsDetailedText();
+                    }} else {{
+                        contentToCopy = extractArgumentsTableText();
+                    }}
+                }} else if (activeSection.id === 'timeline') {{
+                    contentToCopy = extractTimelineText();
+                }} else if (activeSection.id === 'exhibits') {{
+                    contentToCopy = extractExhibitsText();
+                }} else if (activeSection.id === 'facts') {{
+                    contentToCopy = extractFactsText();
+                }}
+                
+                // Create a temporary textarea to copy the content
+                const textarea = document.createElement('textarea');
+                textarea.value = contentToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Show notification
+                const notification = document.getElementById('copy-notification');
+                notification.classList.add('show');
+                
+                setTimeout(() => {{
+                    notification.classList.remove('show');
+                }}, 2000);
+            }}
+            
+            // Export functions
+            function exportAsCsv() {{
+                const activeSection = document.querySelector('.content-section.active');
+                if (!activeSection) return;
+                
+                let contentToCsv = '';
+                
+                // Extract content based on section
+                if (activeSection.id === 'arguments') {{
+                    if (document.getElementById('detailed-view').style.display !== 'none') {{
+                        contentToCsv = extractArgumentsDetailedText();
+                    }} else {{
+                        contentToCsv = extractArgumentsTableText();
+                    }}
+                }} else if (activeSection.id === 'timeline') {{
+                    contentToCsv = extractTimelineText();
+                }} else if (activeSection.id === 'exhibits') {{
+                    contentToCsv = extractExhibitsText();
+                }} else if (activeSection.id === 'facts') {{
+                    contentToCsv = extractFactsText();
+                }}
+                
+                // Create link for CSV download
+                const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
+                const encodedUri = csvContent;
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", activeSection.id + ".csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }}
+            
+            function exportAsPdf() {{
+                alert("PDF export functionality would be implemented here");
+            }}
+            
+            function exportAsWord() {{
+                alert("Word export functionality would be implemented here");
+            }}
+            
+            // Extract text from arguments detailed view
+            function extractArgumentsDetailedText() {{
+                const container = document.getElementById('topics-container');
+                return container.innerText;
+            }}
+            
+            // Extract text from arguments table
+            function extractArgumentsTableText() {{
+                const table = document.querySelector('#table-view table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .filter(header => header !== 'Actions')
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .filter((td, index) => index !== row.cells.length - 1) // Exclude Actions column
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from timeline
+            function extractTimelineText() {{
+                const table = document.getElementById('timeline-table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from exhibits
+            function extractExhibitsText() {{
+                const table = document.getElementById('exhibits-table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Extract text from facts
+            function extractFactsText() {{
+                const table = document.querySelector('.facts-content table');
+                let text = '';
+                
+                // Get headers
+                const headers = Array.from(table.querySelectorAll('th'))
+                    .map(th => th.textContent.trim())
+                    .join('\\t');
+                
+                text += headers + '\\n';
+                
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {{
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                        .join('\\t');
+                    
+                    text += rowText + '\\n';
+                }});
+                
+                return text;
+            }}
+            
+            // Render arguments in table format
+            function renderArgumentsTable() {{
+                const tableBody = document.getElementById('table-view-body');
+                tableBody.innerHTML = '';
+                
+                // Helper function to flatten arguments
+                function flattenArguments(args, party) {{
+                    let result = [];
+                    
+                    Object.values(args).forEach(arg => {{
+                        // Track if argument has disputed facts
+                        const hasDisputedFacts = arg.factualPoints && 
+                            arg.factualPoints.some(point => point.isDisputed);
+                        
+                        // Count pieces of evidence
+                        const evidenceCount = arg.evidence ? arg.evidence.length : 0;
+                        
+                        // Add this argument
+                        result.push({{
+                            id: arg.id,
+                            title: arg.title,
+                            party: party,
+                            hasDisputedFacts: hasDisputedFacts,
+                            evidenceCount: evidenceCount,
+                            paragraphs: arg.paragraphs
+                        }});
+                        
+                        // Process children recursively
+                        if (arg.children) {{
+                            Object.values(arg.children).forEach(child => {{
+                                result = result.concat(flattenArguments({{[child.id]: child}}, party));
+                            }});
+                        }}
+                    }});
+                    
+                    return result;
+                }}
+                
+                // Get flattened arguments
+                const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
+                const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
+                const allArgs = [...appellantArgs, ...respondentArgs];
+                
+                // Render rows
+                allArgs.forEach(arg => {{
+                    const row = document.createElement('tr');
+                    
+                    // ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = arg.id;
+                    row.appendChild(idCell);
+                    
+                    // Title column
+                    const titleCell = document.createElement('td');
+                    titleCell.textContent = arg.title;
+                    row.appendChild(titleCell);
+                    
+                    // Party column
+                    const partyCell = document.createElement('td');
+                    const partyBadge = document.createElement('span');
+                    partyBadge.className = `badge ${{arg.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.textContent = arg.party;
+                    partyCell.appendChild(partyBadge);
+                    row.appendChild(partyCell);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    if (arg.hasDisputedFacts) {{
+                        const disputedBadge = document.createElement('span');
+                        disputedBadge.className = 'badge disputed-badge';
+                        disputedBadge.textContent = 'Disputed';
+                        statusCell.appendChild(disputedBadge);
+                    }} else {{
+                        statusCell.textContent = 'Undisputed';
+                    }}
+                    row.appendChild(statusCell);
+                    
+                    // Evidence column
+                    const evidenceCell = document.createElement('td');
+                    evidenceCell.textContent = arg.evidenceCount > 0 ? `${{arg.evidenceCount}} items` : 'None';
+                    row.appendChild(evidenceCell);
+                    
+                    // Actions column
+                    const actionsCell = document.createElement('td');
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View';
+                    viewBtn.style.padding = '4px 8px';
+                    viewBtn.style.marginRight = '8px';
+                    viewBtn.style.border = '1px solid #e2e8f0';
+                    viewBtn.style.borderRadius = '4px';
+                    viewBtn.style.backgroundColor = '#f7fafc';
+                    viewBtn.style.cursor = 'pointer';
+                    viewBtn.onclick = function() {{
+                        // Switch to detailed view and expand this argument
+                        switchView('detailed');
+                        // Logic to find and expand the argument would go here
+                    }};
+                    actionsCell.appendChild(viewBtn);
+                    row.appendChild(actionsCell);
+                    
+                    tableBody.appendChild(row);
+                }});
+            }}
+            
+            // Render facts table
+            function renderFacts(type = 'all') {{
+                const tableBody = document.getElementById('facts-table-body');
+                tableBody.innerHTML = '';
+                
+                // Filter by type
+                let filteredFacts = factsData;
+                
+                if (type === 'disputed') {{
+                    filteredFacts = factsData.filter(fact => fact.isDisputed);
+                }} else if (type === 'undisputed') {{
+                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                }}
+                
+                // Sort by date
+                filteredFacts.sort((a, b) => {{
+                    // Handle date ranges like "1950-present"
+                    const dateA = a.date.split('-')[0];
+                    const dateB = b.date.split('-')[0];
+                    return new Date(dateA) - new Date(dateB);
+                }});
+                
+                // Render rows
+                filteredFacts.forEach(fact => {{
+                    const row = document.createElement('tr');
+                    
+                    // Date column
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = fact.date;
+                    row.appendChild(dateCell);
+                    
+                    // Event column
+                    const eventCell = document.createElement('td');
+                    eventCell.textContent = fact.point;
+                    row.appendChild(eventCell);
+                    
+                    // Party column
+                    const partyCell = document.createElement('td');
+                    const partyBadge = document.createElement('span');
+                    partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.textContent = fact.party;
+                    partyCell.appendChild(partyBadge);
+                    row.appendChild(partyCell);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    if (fact.isDisputed) {{
+                        const disputedBadge = document.createElement('span');
+                        disputedBadge.className = 'badge disputed-badge';
+                        disputedBadge.textContent = 'Disputed';
+                        statusCell.appendChild(disputedBadge);
+                    }} else {{
+                        statusCell.textContent = 'Undisputed';
+                    }}
+                    row.appendChild(statusCell);
+                    
+                    // Related argument
+                    const argCell = document.createElement('td');
+                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                    row.appendChild(argCell);
+                    
+                    // Evidence column
+                    const evidenceCell = document.createElement('td');
+                    if (fact.exhibits && fact.exhibits.length > 0) {{
+                        fact.exhibits.forEach(exhibitId => {{
+                            const exhibitBadge = document.createElement('span');
+                            exhibitBadge.className = 'badge exhibit-badge';
+                            exhibitBadge.textContent = exhibitId;
+                            exhibitBadge.style.marginRight = '4px';
+                            evidenceCell.appendChild(exhibitBadge);
+                        }});
+                    }} else {{
+                        evidenceCell.textContent = 'None';
+                    }}
+                    row.appendChild(evidenceCell);
+                    
+                    tableBody.appendChild(row);
+                }});
+            }}
+            
+            // Render overview points
+            function renderOverviewPoints(overview) {{
+                if (!overview || !overview.points || overview.points.length === 0) return '';
+                
+                const pointsList = overview.points.map(point => 
+                    `<li>
+                        <span>${{point}}</span>
+                        <span class="para-badge">¶${{overview.paragraphs}}</span>
+                    </li>`
+                ).join('');
+                
+                return `
+                <div class="item-block">
+                    <div class="item-title">Supporting Points</div>
+                    <ul class="point-list">
+                        ${{pointsList}}
+                    </ul>
+                </div>
+                `;
+            }}
+            
+            // Render factual points (now called Events)
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed</span>` 
+                        : '';
+                    
+                    // Exhibits badges
+                    const exhibitBadges = point.exhibits && point.exhibits.length > 0
+                        ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${{exhibitId}}</span>`).join(' ')
+                        : '';
+                    
+                    return `
+                    <div class="item-block">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>${{point.point}}</span>
+                            <span>
+                                ${{disputed}}
+                                ${{exhibitBadges}}
+                            </span>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${{point.date}}</div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Events</div>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render evidence
+            function renderEvidence(evidence) {{
+                if (!evidence || evidence.length === 0) return '';
+                
+                const evidenceHtml = evidence.map(item => {{
+                    const citations = item.citations && item.citations.length > 0
+                        ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                        : '';
+                    
+                    return `
+                    <div class="evidence-block">
+                        <div class="item-title">${{item.id}}: ${{item.title}}</div>
+                        <div style="margin: 6px 0;">${{item.summary}}</div>
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <span style="color: #666; margin-right: 5px;">Cited in:</span>
+                            ${{citations}}
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Evidence</div>
+                    ${{evidenceHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render case law
+            function renderCaseLaw(cases) {{
+                if (!cases || cases.length === 0) return '';
+                
+                const casesHtml = cases.map(item => {{
+                    const citedParagraphs = item.citedParagraphs && item.citedParagraphs.length > 0
+                        ? item.citedParagraphs.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                        : '';
+                    
+                    return `
+                    <div class="caselaw-block">
+                        <div class="item-title">${{item.caseNumber}}</div>
+                        <div style="font-size: 12px; margin: 2px 0 8px 0;">¶${{item.paragraphs}}</div>
+                        <div style="font-weight: 500; margin-bottom: 4px;">${{item.title}}</div>
+                        <div style="margin: 6px 0;">${{item.relevance}}</div>
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <span style="color: #666; margin-right: 5px;">Key Paragraphs:</span>
+                            ${{citedParagraphs}}
+                        </div>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div style="margin-top: 16px;">
+                    <div class="item-title">Case Law</div>
+                    ${{casesHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render argument content
+            function renderArgumentContent(arg) {{
+                let content = '';
+                
+                // Overview points
+                if (arg.overview) {{
+                    content += renderOverviewPoints(arg.overview);
+                }}
+                
+                // Factual points
+                if (arg.factualPoints) {{
+                    content += renderFactualPoints(arg.factualPoints);
+                }}
+                
+                // Evidence
+                if (arg.evidence) {{
+                    content += renderEvidence(arg.evidence);
+                }}
+                
+                // Case law
+                if (arg.caseLaw) {{
+                    content += renderCaseLaw(arg.caseLaw);
+                }}
+                
+                return content;
+            }}
+            
+            // Render a single argument including its children
+            function renderArgument(arg, side) {{
+                if (!arg) return '';
+                
+                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
+                const argId = `${{side}}-${{arg.id}}`;
+                
+                // Store corresponding pair ID for synchronization
+                const pairId = arg.id;
+                
+                // Style based on side
+                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                
+                // Render children if any - removed style="display: none;"
+                let childrenHtml = '';
+                if (hasChildren) {{
+                    childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
+                    
+                    Object.values(arg.children).forEach(child => {{
+                        childrenHtml += renderArgument(child, side);
+                    }});
+                    
+                    childrenHtml += `</div>`;
+                }}
+                
+                return `
+                <div class="card">
+                    <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span>${{arg.id}}. ${{arg.title}}</span>
+                        </div>
+                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
+                    </div>
+                    <div class="card-content" id="content-${{argId}}">
+                        ${{renderArgumentContent(arg)}}
+                    </div>
+                    ${{childrenHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render arguments by topic
+            function renderTopics() {{
+                const container = document.getElementById('topics-container');
+                let html = '';
+                
+                argsData.topics.forEach(topic => {{
+                    html += `
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg id="chevron-topic-${{topic.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <span>${{topic.title}}</span>
+                            </div>
+                        </div>
+                        <div class="card-content" id="content-topic-${{topic.id}}">
+                            <p>${{topic.description}}</p>
+                            
+                            ${{topic.argumentIds.map(argId => {{
+                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                                    return `
+                                    <div style="margin-top: 16px;">
+                                        <div class="arguments-row">
+                                            <div>
+                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
+                                            </div>
+                                            <div>
+                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                }}
+                                return '';
+                            }}).join('')}}
+                        </div>
+                    </div>
+                    `;
+                }});
+                
+                container.innerHTML = html;
+                
+                // Auto-expand first topic
+                setTimeout(() => {{
+                    const firstTopic = argsData.topics[0];
+                    if (firstTopic) {{
+                        toggleCard(`topic-${{firstTopic.id}}`);
+                    }}
+                }}, 100);
+            }}
+            
+            // Toggle a card without synchronizing - modified to only toggle content, not children
+            function toggleCard(id) {{
+                const contentEl = document.getElementById(`content-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-${{id}}`);
+                
+                if (contentEl) {{
+                    contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
+                }}
+                
+                if (chevronEl) {{
+                    chevronEl.classList.toggle('expanded');
+                }}
+            }}
+            
+            // Toggle an argument and its counterpart - modified to only toggle content
+            function toggleArgument(argId, pairId, side) {{
+                // First, handle the clicked argument
+                toggleCard(argId);
+                
+                // Then, determine and handle the counterpart
+                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
+                const counterpartId = `${{otherSide}}-${{pairId}}`;
+                
+                // Toggle the counterpart (if it exists)
+                const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
+                if (counterpartContentEl) {{
+                    const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                    
+                    // Make sure the counterpart's state matches the toggled argument
+                    const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
+                    counterpartContentEl.style.display = originalDisplay;
+                    
+                    if (counterpartChevronEl) {{
+                        if (originalDisplay === 'block') {{
+                            counterpartChevronEl.classList.add('expanded');
+                        }} else {{
+                            counterpartChevronEl.classList.remove('expanded');
+                        }}
+                    }}
+                }}
+            }}
+            
+            // Render timeline
+            function renderTimeline() {{
+                const tbody = document.getElementById('timeline-body');
+                tbody.innerHTML = '';
+                
+                timelineData.forEach(item => {{
+                    const row = document.createElement('tr');
+                    if (item.status === 'Disputed') {{
+                        row.classList.add('disputed');
+                    }}
+                    
+                    row.innerHTML = `
+                        <td>${{item.date}}</td>
+                        <td>${{item.appellantVersion}}</td>
+                        <td>${{item.respondentVersion}}</td>
+                        <td>${{item.status}}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }});
+            }}
+            
+            // Render exhibits
+            function renderExhibits() {{
+                const tbody = document.getElementById('exhibits-body');
+                tbody.innerHTML = '';
+                
+                exhibitsData.forEach(item => {{
+                    const row = document.createElement('tr');
+                    const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
+                    
+                    row.innerHTML = `
+                        <td>${{item.id}}</td>
+                        <td><span class="badge ${{badgeClass}}">${{item.party}}</span></td>
+                        <td>${{item.title}}</td>
+                        <td>${{item.type}}</td>
+                        <td>${{item.summary}}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }});
+            }}
+        </script>
+    </body>
+    </html>
+    """
+    
+    # Render the HTML in Streamlit
+    st.title("Legal Case Analysis")
+    components.html(html_content, height=800, scrolling=True)
+
+if __name__ == "__main__":
+    main()

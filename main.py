@@ -1010,49 +1010,49 @@ def main():
                 <div class="section-title">Issues</div>
                 
                 <!-- Direct inline buttons for view toggling -->
-                <!-- Search and filter bar - Improved layout -->
-                <div style="margin-bottom: 20px; background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
-                    <!-- Search input with better styling -->
-                    <div style="position: relative; margin-bottom: 16px;">
+                <!-- Clean, minimal search and filter interface -->
+                <div style="margin-bottom: 24px; background-color: #f9fafb; border-radius: 8px; padding: 24px; border: 1px solid #e5e7eb;">
+                    <!-- Clean search input -->
+                    <div style="position: relative; margin-bottom: 24px;">
                         <input type="text" id="search-input" placeholder="Search arguments, facts, or evidence..." 
-                            style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                        <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: #fff;">
+                        <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </div>
                     
-                    <!-- Filter section with better visual grouping -->
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 16px;">
-                        <div style="font-size: 14px; font-weight: 500; color: #4a5568; margin-bottom: 12px;">Filter options</div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-                            <!-- Status filter group -->
-                            <div style="min-width: 200px; flex: 1;">
-                                <label for="filter-status" style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 6px;">Status</label>
+                    <!-- Simple filter options section -->
+                    <div>
+                        <div style="font-size: 14px; font-weight: 500; color: #4b5563; margin-bottom: 14px;">Filter options</div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <!-- Status filter -->
+                            <div style="flex: 1; min-width: 200px;">
+                                <label for="filter-status" style="display: block; font-size: 14px; color: #4b5563; margin-bottom: 8px;">Status</label>
                                 <select id="filter-status" onchange="applyFilters()" 
-                                    style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: white; color: #111827; appearance: menulist;">
                                     <option value="all">All Status</option>
                                     <option value="disputed">Disputed Only</option>
                                     <option value="undisputed">Undisputed Only</option>
                                 </select>
                             </div>
                             
-                            <!-- Evidence filter group -->
-                            <div style="min-width: 200px; flex: 1;">
-                                <label for="filter-evidence" style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 6px;">Evidence</label>
+                            <!-- Evidence filter -->
+                            <div style="flex: 1; min-width: 200px;">
+                                <label for="filter-evidence" style="display: block; font-size: 14px; color: #4b5563; margin-bottom: 8px;">Evidence</label>
                                 <select id="filter-evidence" onchange="applyFilters()" 
-                                    style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: white; color: #111827; appearance: menulist;">
                                     <option value="all">All Evidence</option>
                                     <option value="with-evidence">With Evidence</option>
                                     <option value="without-evidence">Without Evidence</option>
                                 </select>
                             </div>
                             
-                            <!-- Party filter group -->
-                            <div style="min-width: 200px; flex: 1;">
-                                <label for="filter-party" style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 6px;">Party</label>
+                            <!-- Party filter -->
+                            <div style="flex: 1; min-width: 200px;">
+                                <label for="filter-party" style="display: block; font-size: 14px; color: #4b5563; margin-bottom: 8px;">Party</label>
                                 <select id="filter-party" onchange="applyPartyFilter()" 
-                                    style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    style="width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: white; color: #111827; appearance: menulist;">
                                     <option value="both">Both Parties</option>
                                     <option value="appellant">Appellant Only</option>
                                     <option value="respondent">Respondent Only</option>
@@ -1061,24 +1061,10 @@ def main():
                         </div>
                     </div>
                     
-                    <!-- Better styled search results indicator -->
-                    <div id="search-results" style="display: none; margin-top: 16px; padding: 10px 12px; background-color: #ebf8ff; border-left: 3px solid #4299e1; border-radius: 4px; font-size: 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <svg style="display: inline-block; margin-right: 8px; vertical-align: -4px;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4299e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 11 12 14 22 4"></polyline>
-                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                                </svg>
-                                <span id="search-count" style="font-weight: 500; color: #2c5282;">0 results found</span>
-                            </div>
-                            <button onclick="clearSearch()" style="background: none; border: none; color: #3182ce; cursor: pointer; font-size: 14px; display: flex; align-items: center;">
-                                <svg style="margin-right: 4px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                                Clear filters
-                            </button>
-                        </div>
+                    <!-- Search results (hidden by default) -->
+                    <div id="search-results" style="display: none; margin-top: 20px; font-size: 14px; color: #4b5563;">
+                        <span id="search-count">0 results found</span>
+                        <button onclick="clearSearch()" style="background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 14px; margin-left: 16px;">Clear filters</button>
                     </div>
                 </div>
                 

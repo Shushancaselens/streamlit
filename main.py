@@ -656,22 +656,17 @@ def main():
                 gap: 20px;
             }}
             
-            /* Argument alignment system for nesting */
-            .argument-pair {{
-                display: contents; /* This makes children respect the parent grid */
-            }}
-            
-            .argument-container {{
+            .side-heading {{
                 margin-bottom: 16px;
+                font-weight: 500;
             }}
             
-            /* Ensure nested content aligns correctly */
-            .nested-content {{
-                padding-left: 20px;
-                margin-top: 10px;
-                border-left: 1px solid #f0f0f0;
-                display: grid;
-                grid-template-columns: 1fr;
+            .appellant-color {{
+                color: #3182ce;
+            }}
+            
+            .respondent-color {{
+                color: #e53e3e;
             }}
             
             /* Badge styling */
@@ -1184,37 +1179,43 @@ def main():
                     respBtn.style.color = 'white';
                 }}
                 
-                // Find all argument grid rows
-                const argumentRows = document.querySelectorAll('.arguments-row');
+                // Get all arguments rows
+                const argumentsRows = document.querySelectorAll('.arguments-row');
                 
-                argumentRows.forEach(row => {{
-                    // Set grid template based on view
-                    if (view === 'both') {{
-                        row.style.gridTemplateColumns = '1fr 1fr';
-                    }} else if (view === 'appellant') {{
-                        row.style.gridTemplateColumns = '1fr';
-                    }} else if (view === 'respondent') {{
-                        row.style.gridTemplateColumns = '1fr';
-                    }}
+                argumentsRows.forEach(row => {{
+                    // Reset to default state first to avoid lingering styles
+                    row.style.gridTemplateColumns = '1fr 1fr';
                     
-                    // Handle children visibility based on the selected side
+                    // Get the appellant and respondent columns
                     if (row.children.length === 2) {{
-                        const appellantSide = row.children[0];
-                        const respondentSide = row.children[1];
+                        const appellantCol = row.children[0];
+                        const respondentCol = row.children[1];
                         
-                        // Reset display first
-                        appellantSide.style.display = '';
-                        respondentSide.style.display = '';
+                        // Reset styles first
+                        appellantCol.style.display = '';
+                        respondentCol.style.display = '';
+                        appellantCol.style.width = '';
+                        respondentCol.style.width = '';
                         
-                        if (view === 'appellant') {{
-                            respondentSide.style.display = 'none';
+                        if (view === 'both') {{
+                            // Show both columns side by side
+                            appellantCol.style.display = 'block';
+                            respondentCol.style.display = 'block';
+                        }} else if (view === 'appellant') {{
+                            // Show only appellant column
+                            appellantCol.style.display = 'block';
+                            respondentCol.style.display = 'none';
+                            row.style.gridTemplateColumns = '1fr';
                         }} else if (view === 'respondent') {{
-                            appellantSide.style.display = 'none';
+                            // Show only respondent column
+                            appellantCol.style.display = 'none';
+                            respondentCol.style.display = 'block';
+                            row.style.gridTemplateColumns = '1fr';
                         }}
                     }}
                 }});
                 
-                // Update current view state
+                // Update current view
                 currentPartyView = view;
             }}
             
@@ -2037,7 +2038,51 @@ def main():
                 return content;
             }}
             
-            // Render arguments by topic - updated with alignment system
+            // Render a single argument including its children
+            function renderArgument(arg, side) {{
+                if (!arg) return '';
+                
+                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
+                const argId = `${{side}}-${{arg.id}}`;
+                
+                // Store corresponding pair ID for synchronization
+                const pairId = arg.id;
+                
+                // Style based on side
+                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                
+                // Render children if any - removed style="display: none;"
+                let childrenHtml = '';
+                if (hasChildren) {{
+                    childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
+                    
+                    Object.values(arg.children).forEach(child => {{
+                        childrenHtml += renderArgument(child, side);
+                    }});
+                    
+                    childrenHtml += `</div>`;
+                }}
+                
+                return `
+                <div class="card">
+                    <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            <span>${{arg.id}}. ${{arg.title}}</span>
+                        </div>
+                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
+                    </div>
+                    <div class="card-content" id="content-${{argId}}">
+                        ${{renderArgumentContent(arg)}}
+                    </div>
+                    ${{childrenHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render arguments by topic
             function renderTopics() {{
                 const container = document.getElementById('topics-container');
                 let html = '';
@@ -2061,12 +2106,13 @@ def main():
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
                                             </div>
                                             <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
+                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
                                             </div>
                                         </div>
-                                        ${{renderArgumentPairs(argsData.claimantArgs[argId], argsData.respondentArgs[argId])}}
                                     </div>
                                     `;
                                 }}
@@ -2088,166 +2134,10 @@ def main():
                 }}, 100);
             }}
             
-            // New function to render argument pairs side by side with alignment
-            function renderArgumentPairs(appellantArg, respondentArg) {{
-                let html = '';
-                
-                // Start with the main arguments
-                html += `
-                <div class="arguments-row">
-                    <div class="argument-container">
-                        ${{renderSingleArgument(appellantArg, 'appellant')}}
-                    </div>
-                    <div class="argument-container">
-                        ${{renderSingleArgument(respondentArg, 'respondent')}}
-                    </div>
-                </div>
-                `;
-                
-                // Collect all unique child IDs to ensure they align
-                const allChildIds = new Set();
-                
-                // Get appellant child IDs
-                if (appellantArg.children) {{
-                    Object.keys(appellantArg.children).forEach(childId => {{
-                        allChildIds.add(childId);
-                    }});
-                }}
-                
-                // Get respondent child IDs
-                if (respondentArg.children) {{
-                    Object.keys(respondentArg.children).forEach(childId => {{
-                        allChildIds.add(childId);
-                    }});
-                }}
-                
-                // If we have any children, render them with alignment
-                if (allChildIds.size > 0) {{
-                    html += `<div class="nested-content">`;
-                    
-                    // Sort the IDs to ensure consistent ordering
-                    const sortedIds = Array.from(allChildIds).sort();
-                    
-                    sortedIds.forEach(childId => {{
-                        const appellantChild = appellantArg.children && appellantArg.children[childId];
-                        const respondentChild = respondentArg.children && respondentArg.children[childId];
-                        
-                        if (appellantChild || respondentChild) {{
-                            html += `
-                            <div class="argument-pair">
-                                <div class="arguments-row">
-                                    <div class="argument-container">
-                                        ${{appellantChild ? renderSingleArgument(appellantChild, 'appellant') : ''}}
-                                    </div>
-                                    <div class="argument-container">
-                                        ${{respondentChild ? renderSingleArgument(respondentChild, 'respondent') : ''}}
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                            
-                            // Check for deeper nesting
-                            if ((appellantChild && appellantChild.children) || 
-                                (respondentChild && respondentChild.children)) {{
-                                html += renderNestedChildren(appellantChild, respondentChild);
-                            }}
-                        }}
-                    }});
-                    
-                    html += `</div>`;
-                }}
-                
-                return html;
-            }}
-            
-            // Render nested children recursively
-            function renderNestedChildren(appellantParent, respondentParent) {{
-                let html = '';
-                const allChildIds = new Set();
-                
-                // Get appellant child IDs
-                if (appellantParent && appellantParent.children) {{
-                    Object.keys(appellantParent.children).forEach(childId => {{
-                        allChildIds.add(childId);
-                    }});
-                }}
-                
-                // Get respondent child IDs
-                if (respondentParent && respondentParent.children) {{
-                    Object.keys(respondentParent.children).forEach(childId => {{
-                        allChildIds.add(childId);
-                    }});
-                }}
-                
-                if (allChildIds.size > 0) {{
-                    html += `<div class="nested-content">`;
-                    
-                    // Sort the IDs to ensure consistent ordering
-                    const sortedIds = Array.from(allChildIds).sort();
-                    
-                    sortedIds.forEach(childId => {{
-                        const appellantChild = appellantParent && appellantParent.children && 
-                                               appellantParent.children[childId];
-                        const respondentChild = respondentParent && respondentParent.children && 
-                                               respondentParent.children[childId];
-                        
-                        if (appellantChild || respondentChild) {{
-                            html += `
-                            <div class="argument-pair">
-                                <div class="arguments-row">
-                                    <div class="argument-container">
-                                        ${{appellantChild ? renderSingleArgument(appellantChild, 'appellant') : ''}}
-                                    </div>
-                                    <div class="argument-container">
-                                        ${{respondentChild ? renderSingleArgument(respondentChild, 'respondent') : ''}}
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                            
-                            // Recurse for deeper nesting
-                            if ((appellantChild && appellantChild.children) || 
-                                (respondentChild && respondentChild.children)) {{
-                                html += renderNestedChildren(appellantChild, respondentChild);
-                            }}
-                        }}
-                    }});
-                    
-                    html += `</div>`;
-                }}
-                
-                return html;
-            }}
-            
-            // Render a single argument card
-            function renderSingleArgument(arg, side) {{
-                if (!arg) return '';
-                
-                const argId = `${{side}}-${{arg.id}}`;
-                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
-                
-                return `
-                <div class="card">
-                    <div class="card-header" onclick="toggleArgumentContent('${{argId}}')">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                            <span>${{arg.id}}. ${{arg.title}}</span>
-                        </div>
-                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
-                    </div>
-                    <div class="card-content" id="content-${{argId}}">
-                        ${{renderArgumentContent(arg)}}
-                    </div>
-                </div>
-                `;
-            }}
-            
-            // Toggle argument content without affecting children
-            function toggleArgumentContent(argId) {{
-                const contentEl = document.getElementById(`content-${{argId}}`);
-                const chevronEl = document.getElementById(`chevron-${{argId}}`);
+            // Toggle a card without synchronizing - modified to only toggle content, not children
+            function toggleCard(id) {{
+                const contentEl = document.getElementById(`content-${{id}}`);
+                const chevronEl = document.getElementById(`chevron-${{id}}`);
                 
                 if (contentEl) {{
                     contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
@@ -2255,6 +2145,34 @@ def main():
                 
                 if (chevronEl) {{
                     chevronEl.classList.toggle('expanded');
+                }}
+            }}
+            
+            // Toggle an argument and its counterpart - modified to only toggle content
+            function toggleArgument(argId, pairId, side) {{
+                // First, handle the clicked argument
+                toggleCard(argId);
+                
+                // Then, determine and handle the counterpart
+                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
+                const counterpartId = `${{otherSide}}-${{pairId}}`;
+                
+                // Toggle the counterpart (if it exists)
+                const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
+                if (counterpartContentEl) {{
+                    const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                    
+                    // Make sure the counterpart's state matches the toggled argument
+                    const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
+                    counterpartContentEl.style.display = originalDisplay;
+                    
+                    if (counterpartChevronEl) {{
+                        if (originalDisplay === 'block') {{
+                            counterpartChevronEl.classList.add('expanded');
+                        }} else {{
+                            counterpartChevronEl.classList.remove('expanded');
+                        }}
+                    }}
                 }}
             }}
             

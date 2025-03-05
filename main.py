@@ -1002,11 +1002,11 @@ def main():
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
                     <div>
-                        <button onclick="togglePartyView('both')" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
+                        <button onclick="showBothParties()" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
                         
-                        <button onclick="togglePartyView('appellant')" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
+                        <button onclick="showAppellantOnly()" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
                         
-                        <button onclick="togglePartyView('respondent')" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
+                        <button onclick="showRespondentOnly()" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
                     <div>
                         <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>

@@ -2099,8 +2099,6 @@ def main():
                             </div>
                         </div>
                         <div class="card-content" id="content-topic-${{topic.id}}">
-                            <p>${{topic.description}}</p>
-                            
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `

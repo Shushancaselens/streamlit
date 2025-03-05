@@ -599,16 +599,6 @@ def main():
                 background-color: #fff;
             }}
             
-            /* Search highlighting */
-            .search-match {{
-                animation: highlight-fade 2s;
-            }}
-            
-            @keyframes highlight-fade {{
-                0% {{ background-color: rgba(66, 153, 225, 0.2); }}
-                100% {{ background-color: transparent; }}
-            }}
-            
             /* Simple container */
             .container {{
                 max-width: 1200px;
@@ -1009,51 +999,16 @@ def main():
             <div id="arguments" class="content-section">
                 <div class="section-title">Issues</div>
                 
-                <!-- Direct inline buttons for view toggling -->
-                <!-- Search and filter bar -->
-                <div style="margin-bottom: 20px; max-width: 100%;">
-                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <div style="position: relative; flex: 1; min-width: 250px;">
-                            <input type="text" id="search-input" placeholder="Search arguments, facts, or evidence..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
-                            <svg style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                        </div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            <select id="filter-status" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; max-width: 150px;">
-                                <option value="all">All Status</option>
-                                <option value="disputed">Disputed Only</option>
-                                <option value="undisputed">Undisputed Only</option>
-                            </select>
-                            <select id="filter-evidence" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; max-width: 150px;">
-                                <option value="all">All Evidence</option>
-                                <option value="with-evidence">With Evidence</option>
-                                <option value="without-evidence">Without Evidence</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="search-results" style="display: none; margin-bottom: 15px; padding: 10px 15px; background-color: #f7fafc; border-radius: 6px; font-size: 14px; max-width: 100%; box-sizing: border-box;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span id="search-count">0 results found</span>
-                            <button onclick="clearSearch()" style="background: none; border: none; color: #4299e1; cursor: pointer; font-size: 14px;">Clear</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- View selection controls -->
-                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                <!-- View toggle buttons -->
+                <div class="view-toggle" style="display: flex; justify-content: space-between;">
                     <div>
-                        <button onclick="togglePartyView('both')" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
-                        
-                        <button onclick="togglePartyView('appellant')" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
-                        
-                        <button onclick="togglePartyView('respondent')" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
+                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
+                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
+                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
                     </div>
                     <div>
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
-                        
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
                     </div>
                 </div>
                 
@@ -1151,271 +1106,6 @@ def main():
             
             // Global variable to track current party view
             let currentPartyView = 'both';
-            
-            // Function to toggle between party views
-            function togglePartyView(view) {{
-                // Update button styling
-                const bothBtn = document.getElementById('both-btn');
-                const appBtn = document.getElementById('app-btn');
-                const respBtn = document.getElementById('resp-btn');
-                
-                // Reset all buttons
-                bothBtn.style.backgroundColor = '#f7fafc';
-                bothBtn.style.color = 'black';
-                appBtn.style.backgroundColor = '#f7fafc';
-                appBtn.style.color = 'black';
-                respBtn.style.backgroundColor = '#f7fafc';
-                respBtn.style.color = 'black';
-                
-                // Set active button
-                if (view === 'both') {{
-                    bothBtn.style.backgroundColor = '#4299e1';
-                    bothBtn.style.color = 'white';
-                }} else if (view === 'appellant') {{
-                    appBtn.style.backgroundColor = '#4299e1';
-                    appBtn.style.color = 'white';
-                }} else if (view === 'respondent') {{
-                    respBtn.style.backgroundColor = '#4299e1';
-                    respBtn.style.color = 'white';
-                }}
-                
-                // Get all arguments rows
-                const argumentsRows = document.querySelectorAll('.arguments-row');
-                
-                argumentsRows.forEach(row => {{
-                    // Reset to default state first to avoid lingering styles
-                    row.style.gridTemplateColumns = '1fr 1fr';
-                    
-                    // Get the appellant and respondent columns
-                    if (row.children.length === 2) {{
-                        const appellantCol = row.children[0];
-                        const respondentCol = row.children[1];
-                        
-                        // Reset styles first
-                        appellantCol.style.display = '';
-                        respondentCol.style.display = '';
-                        appellantCol.style.width = '';
-                        respondentCol.style.width = '';
-                        
-                        if (view === 'both') {{
-                            // Show both columns side by side
-                            appellantCol.style.display = 'block';
-                            respondentCol.style.display = 'block';
-                        }} else if (view === 'appellant') {{
-                            // Show only appellant column
-                            appellantCol.style.display = 'block';
-                            respondentCol.style.display = 'none';
-                            row.style.gridTemplateColumns = '1fr';
-                        }} else if (view === 'respondent') {{
-                            // Show only respondent column
-                            appellantCol.style.display = 'none';
-                            respondentCol.style.display = 'block';
-                            row.style.gridTemplateColumns = '1fr';
-                        }}
-                    }}
-                }});
-                
-                // Update current view
-                currentPartyView = view;
-            }}
-            
-            // For backward compatibility, keep the old function
-            window.switchPartyView = function(view) {{
-                togglePartyView(view);
-            }};
-            
-            // Search and filtering functionality
-            let searchTimeout;
-            
-            // Set up search input event listener
-            document.addEventListener('DOMContentLoaded', function() {{
-                const searchInput = document.getElementById('search-input');
-                
-                if (searchInput) {{
-                    searchInput.addEventListener('input', function() {{
-                        clearTimeout(searchTimeout);
-                        searchTimeout = setTimeout(() => {{
-                            performSearch(this.value);
-                        }}, 300); // Debounce for 300ms
-                    }});
-                }}
-            }});
-            
-            // Perform search across all arguments
-            function performSearch(query) {{
-                if (!query || query.trim() === '') {{
-                    clearSearch();
-                    return;
-                }}
-                
-                query = query.toLowerCase().trim();
-                let matchCount = 0;
-                const cards = document.querySelectorAll('.card');
-                const searchResults = document.getElementById('search-results');
-                
-                // Reset all cards first
-                cards.forEach(card => {{
-                    card.style.display = '';
-                    card.classList.remove('search-match');
-                }});
-                
-                if (query === '') {{
-                    searchResults.style.display = 'none';
-                    return;
-                }}
-                
-                // Search within cards
-                cards.forEach(card => {{
-                    const cardText = card.textContent.toLowerCase();
-                    const cardHeader = card.querySelector('.card-header');
-                    const cardContent = card.querySelector('.card-content');
-                    
-                    if (cardText.includes(query)) {{
-                        card.classList.add('search-match');
-                        
-                        // If the match is in the content, expand the card
-                        if (cardContent && cardContent.textContent.toLowerCase().includes(query)) {{
-                            cardContent.style.display = 'block';
-                            if (cardHeader) {{
-                                const chevron = cardHeader.querySelector('.chevron');
-                                if (chevron) {{
-                                    chevron.classList.add('expanded');
-                                }}
-                            }}
-                        }}
-                        
-                        matchCount++;
-                    }} else {{
-                        // If we're in search mode, hide non-matching cards
-                        card.style.display = 'none';
-                    }}
-                }});
-                
-                // Update search results count and show the results bar
-                if (searchResults) {{
-                    const searchCount = document.getElementById('search-count');
-                    if (searchCount) {{
-                        searchCount.textContent = `${{matchCount}} result${{matchCount !== 1 ? 's' : ''}} found`;
-                    }}
-                    searchResults.style.display = 'block';
-                }}
-                
-                // Apply any active filters after search
-                applyFilters(true);
-            }}
-            
-            // Clear search results
-            function clearSearch() {{
-                const searchInput = document.getElementById('search-input');
-                const searchResults = document.getElementById('search-results');
-                
-                if (searchInput) {{
-                    searchInput.value = '';
-                }}
-                
-                if (searchResults) {{
-                    searchResults.style.display = 'none';
-                }}
-                
-                // Reset all cards
-                const cards = document.querySelectorAll('.card');
-                cards.forEach(card => {{
-                    card.style.display = '';
-                    card.classList.remove('search-match');
-                }});
-                
-                // Reset filters
-                const statusFilter = document.getElementById('filter-status');
-                const evidenceFilter = document.getElementById('filter-evidence');
-                
-                if (statusFilter) {{
-                    statusFilter.value = 'all';
-                }}
-                
-                if (evidenceFilter) {{
-                    evidenceFilter.value = 'all';
-                }}
-            }}
-            
-            // Apply filters to the cards
-            function applyFilters(isSearchActive = false) {{
-                const statusFilter = document.getElementById('filter-status').value;
-                const evidenceFilter = document.getElementById('filter-evidence').value;
-                const cards = document.querySelectorAll('.card');
-                
-                cards.forEach(card => {{
-                    // Skip if we're in search mode and this card is not a match
-                    if (isSearchActive && !card.classList.contains('search-match')) {{
-                        return;
-                    }}
-                    
-                    let showCard = true;
-                    
-                    // Status filter
-                    if (statusFilter !== 'all') {{
-                        const isDisputed = card.textContent.includes('Disputed');
-                        if ((statusFilter === 'disputed' && !isDisputed) || 
-                            (statusFilter === 'undisputed' && isDisputed)) {{
-                            showCard = false;
-                        }}
-                    }}
-                    
-                    // Evidence filter
-                    if (evidenceFilter !== 'all' && showCard) {{
-                        const hasEvidence = card.querySelector('.evidence-block') !== null;
-                        if ((evidenceFilter === 'with-evidence' && !hasEvidence) || 
-                            (evidenceFilter === 'without-evidence' && hasEvidence)) {{
-                            showCard = false;
-                        }}
-                    }}
-                    
-                    // Apply visibility
-                    if (!showCard) {{
-                        card.style.display = 'none';
-                    }} else if (!isSearchActive || (isSearchActive && card.classList.contains('search-match'))) {{
-                        card.style.display = '';
-                    }}
-                }});
-                
-                // If we're filtering and not in search mode, show the search results bar with filter count
-                if (!isSearchActive && (statusFilter !== 'all' || evidenceFilter !== 'all')) {{
-                    const searchResults = document.getElementById('search-results');
-                    const searchCount = document.getElementById('search-count');
-                    
-                    if (searchResults && searchCount) {{
-                        // Count visible cards
-                        const visibleCount = Array.from(cards).filter(card => card.style.display !== 'none').length;
-                        searchCount.textContent = `${{visibleCount}} result${{visibleCount !== 1 ? 's' : ''}} found (filtered)`;
-                        searchResults.style.display = 'block';
-                    }}
-                }} else if (!isSearchActive) {{
-                    // If no filters or search active, hide the results bar
-                    const searchResults = document.getElementById('search-results');
-                    if (searchResults) {{
-                        searchResults.style.display = 'none';
-                    }}
-                }}
-            }}
-            
-            // Switch view between detailed and table
-            window.switchView = function(viewType) {{
-                const detailedBtn = document.getElementById('detailed-view-btn');
-                const tableBtn = document.getElementById('table-view-btn');
-                const detailedView = document.getElementById('detailed-view');
-                const tableView = document.getElementById('table-view');
-                
-                if (viewType === 'detailed') {{
-                    detailedBtn.classList.add('active');
-                    tableBtn.classList.remove('active');
-                    detailedView.style.display = 'block';
-                    tableView.style.display = 'none';
-                }} else {{
-                    detailedBtn.classList.remove('active');
-                    tableBtn.classList.add('active');
-                    detailedView.style.display = 'none';
-                    tableView.style.display = 'block';
-                }}
-            }};
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
@@ -2099,10 +1789,12 @@ def main():
                             </div>
                         </div>
                         <div class="card-content" id="content-topic-${{topic.id}}">
+                            <p>${{topic.description}}</p>
+                            
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
-                                    <div style="margin-top: 10px;">
+                                    <div style="margin-top: 16px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>
@@ -2223,9 +1915,9 @@ def main():
     </html>
     """
     
-    # Render the HTML in Streamlit
+            // Render the HTML in Streamlit
     st.title("Summary of arguments")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=850, scrolling=True)
 
 if __name__ == "__main__":
     main()

@@ -1915,9 +1915,9 @@ def main():
     </html>
     """
     
-    # Render the HTML in Streamlit
+            // Render the HTML in Streamlit
     st.title("Summary of arguments")
-    components.html(html_content, height=800, scrolling=True)
+    components.html(html_content, height=850, scrolling=True)
 
 if __name__ == "__main__":
     main()

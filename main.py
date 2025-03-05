@@ -999,16 +999,19 @@ def main():
             <div id="arguments" class="content-section">
                 <div class="section-title">Issues</div>
                 
-                <!-- View toggle buttons -->
-                <div class="view-toggle" style="display: flex; justify-content: space-between;">
+                <!-- Direct inline buttons for view toggling -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
                     <div>
-                        <button id="both-parties-btn" class="active" onclick="window.switchPartyView('both')">Both Parties</button>
-                        <button id="appellant-btn" onclick="window.switchPartyView('appellant')">Appellant Only</button>
-                        <button id="respondent-btn" onclick="window.switchPartyView('respondent')">Respondent Only</button>
+                        <button onclick="document.querySelector('.argument-table').className='argument-table'; document.getElementById('both-btn').style.backgroundColor='#4299e1'; document.getElementById('both-btn').style.color='white'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
+                        
+                        <button onclick="document.querySelector('.argument-table').className='argument-table appellant-only'; document.getElementById('app-btn').style.backgroundColor='#4299e1'; document.getElementById('app-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; margin-right: 5px;">Appellant Only</button>
+                        
+                        <button onclick="document.querySelector('.argument-table').className='argument-table respondent-only'; document.getElementById('resp-btn').style.backgroundColor='#4299e1'; document.getElementById('resp-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black';" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;">Respondent Only</button>
                     </div>
                     <div>
-                        <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
-                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
+                        
+                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
                     </div>
                 </div>
                 

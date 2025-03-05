@@ -1141,31 +1141,35 @@ def main():
                 const argumentsRows = document.querySelectorAll('.arguments-row');
                 
                 argumentsRows.forEach(row => {{
-                    const columns = row.children;
-                    if (columns.length !== 2) return;
+                    // Reset to default state first to avoid lingering styles
+                    row.style.gridTemplateColumns = '1fr 1fr';
                     
-                    const appellantCol = columns[0];
-                    const respondentCol = columns[1];
-                    
-                    if (view === 'both') {{
-                        // Show both columns at half width
+                    // Get the appellant and respondent columns
+                    if (row.children.length === 2) {{
+                        const appellantCol = row.children[0];
+                        const respondentCol = row.children[1];
+                        
+                        // Reset styles first
                         appellantCol.style.display = '';
                         respondentCol.style.display = '';
-                        appellantCol.style.width = '50%';
-                        respondentCol.style.width = '50%';
-                        row.style.gridTemplateColumns = '1fr 1fr';
-                    }} else if (view === 'appellant') {{
-                        // Show only appellant column at full width
-                        appellantCol.style.display = '';
-                        respondentCol.style.display = 'none';
-                        appellantCol.style.width = '100%';
-                        row.style.gridTemplateColumns = '1fr';
-                    }} else if (view === 'respondent') {{
-                        // Show only respondent column at full width
-                        appellantCol.style.display = 'none';
-                        respondentCol.style.display = '';
-                        respondentCol.style.width = '100%';
-                        row.style.gridTemplateColumns = '1fr';
+                        appellantCol.style.width = '';
+                        respondentCol.style.width = '';
+                        
+                        if (view === 'both') {{
+                            // Show both columns side by side
+                            appellantCol.style.display = 'block';
+                            respondentCol.style.display = 'block';
+                        }} else if (view === 'appellant') {{
+                            // Show only appellant column
+                            appellantCol.style.display = 'block';
+                            respondentCol.style.display = 'none';
+                            row.style.gridTemplateColumns = '1fr';
+                        }} else if (view === 'respondent') {{
+                            // Show only respondent column
+                            appellantCol.style.display = 'none';
+                            respondentCol.style.display = 'block';
+                            row.style.gridTemplateColumns = '1fr';
+                        }}
                     }}
                 }});
                 

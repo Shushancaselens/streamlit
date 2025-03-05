@@ -2102,7 +2102,7 @@ def main():
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
-                                    <div style="margin-top: 16px;">
+                                    <div style="margin-top: 10px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading appellant-color">Appellant's Position</h3>

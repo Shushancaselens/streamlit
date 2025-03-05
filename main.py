@@ -1111,7 +1111,7 @@ def main():
             let currentPartyView = 'both';
             
             // Function to toggle between party views
-            function togglePartyView(view) {
+            function togglePartyView(view) {{
                 // Update button styling
                 const bothBtn = document.getElementById('both-btn');
                 const appBtn = document.getElementById('app-btn');
@@ -1126,57 +1126,57 @@ def main():
                 respBtn.style.color = 'black';
                 
                 // Set active button
-                if (view === 'both') {
+                if (view === 'both') {{
                     bothBtn.style.backgroundColor = '#4299e1';
                     bothBtn.style.color = 'white';
-                } else if (view === 'appellant') {
+                }} else if (view === 'appellant') {{
                     appBtn.style.backgroundColor = '#4299e1';
                     appBtn.style.color = 'white';
-                } else if (view === 'respondent') {
+                }} else if (view === 'respondent') {{
                     respBtn.style.backgroundColor = '#4299e1';
                     respBtn.style.color = 'white';
-                }
+                }}
                 
                 // Get all arguments rows
                 const argumentsRows = document.querySelectorAll('.arguments-row');
                 
-                argumentsRows.forEach(row => {
+                argumentsRows.forEach(row => {{
                     const columns = row.children;
                     if (columns.length !== 2) return;
                     
                     const appellantCol = columns[0];
                     const respondentCol = columns[1];
                     
-                    if (view === 'both') {
+                    if (view === 'both') {{
                         // Show both columns at half width
                         appellantCol.style.display = '';
                         respondentCol.style.display = '';
                         appellantCol.style.width = '50%';
                         respondentCol.style.width = '50%';
                         row.style.gridTemplateColumns = '1fr 1fr';
-                    } else if (view === 'appellant') {
+                    }} else if (view === 'appellant') {{
                         // Show only appellant column at full width
                         appellantCol.style.display = '';
                         respondentCol.style.display = 'none';
                         appellantCol.style.width = '100%';
                         row.style.gridTemplateColumns = '1fr';
-                    } else if (view === 'respondent') {
+                    }} else if (view === 'respondent') {{
                         // Show only respondent column at full width
                         appellantCol.style.display = 'none';
                         respondentCol.style.display = '';
                         respondentCol.style.width = '100%';
                         row.style.gridTemplateColumns = '1fr';
-                    }
-                });
+                    }}
+                }});
                 
                 // Update current view
                 currentPartyView = view;
-            }
+            }}
             
             // For backward compatibility, keep the old function
-            window.switchPartyView = function(view) {
+            window.switchPartyView = function(view) {{
                 togglePartyView(view);
-            };
+            }};
             
             // Switch view between detailed and table
             window.switchView = function(viewType) {{

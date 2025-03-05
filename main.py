@@ -1002,9 +1002,9 @@ def main():
                 <!-- View toggle buttons -->
                 <div class="view-toggle" style="display: flex; justify-content: space-between;">
                     <div>
-                        <button id="both-parties-btn" class="active" onclick="switchPartyView('both')">Both Parties</button>
-                        <button id="appellant-btn" onclick="switchPartyView('appellant')">Appellant Only</button>
-                        <button id="respondent-btn" onclick="switchPartyView('respondent')">Respondent Only</button>
+                        <button id="both-parties-btn" class="active" onclick="window.switchPartyView('both')">Both Parties</button>
+                        <button id="appellant-btn" onclick="window.switchPartyView('appellant')">Appellant Only</button>
+                        <button id="respondent-btn" onclick="window.switchPartyView('respondent')">Respondent Only</button>
                     </div>
                     <div>
                         <button id="detailed-view-btn" class="active" onclick="switchView('detailed')">Detailed View</button>
@@ -1106,6 +1106,91 @@ def main():
             
             // Global variable to track current party view
             let currentPartyView = 'both';
+            
+            // Make global functions
+            window.switchPartyView = function(view) {{
+                console.log("Switching to view:", view);
+                
+                // Update button styling
+                document.getElementById('both-parties-btn').classList.remove('active');
+                document.getElementById('appellant-btn').classList.remove('active');
+                document.getElementById('respondent-btn').classList.remove('active');
+                
+                if (view === 'both') {{
+                    document.getElementById('both-parties-btn').classList.add('active');
+                }} else if (view === 'appellant') {{
+                    document.getElementById('appellant-btn').classList.add('active');
+                }} else if (view === 'respondent') {{
+                    document.getElementById('respondent-btn').classList.add('active');
+                }}
+                
+                // Get all table cells
+                const table = document.querySelector('.argument-table');
+                const rows = table.querySelectorAll('tr');
+                
+                // Apply visibility to cells based on view
+                rows.forEach(row => {{
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length !== 2) return;
+                    
+                    if (view === 'both') {{
+                        // Show both columns at half width
+                        cells[0].style.display = '';
+                        cells[1].style.display = '';
+                        cells[0].style.width = '50%';
+                        cells[1].style.width = '50%';
+                    }} else if (view === 'appellant') {{
+                        // Show only appellant column at full width
+                        cells[0].style.display = '';
+                        cells[1].style.display = 'none';
+                        cells[0].style.width = '100%';
+                    }} else if (view === 'respondent') {{
+                        // Show only respondent column at full width
+                        cells[0].style.display = 'none';
+                        cells[1].style.display = '';
+                        cells[1].style.width = '100%';
+                    }}
+                }});
+                
+                // Also update header cells
+                const headerCells = table.querySelectorAll('th');
+                if (headerCells.length === 2) {{
+                    if (view === 'both') {{
+                        headerCells[0].style.display = '';
+                        headerCells[1].style.display = '';
+                        headerCells[0].style.width = '50%';
+                        headerCells[1].style.width = '50%';
+                    }} else if (view === 'appellant') {{
+                        headerCells[0].style.display = '';
+                        headerCells[1].style.display = 'none';
+                        headerCells[0].style.width = '100%';
+                    }} else if (view === 'respondent') {{
+                        headerCells[0].style.display = 'none';
+                        headerCells[1].style.display = '';
+                        headerCells[1].style.width = '100%';
+                    }}
+                }}
+            }};
+            
+            // Switch view between detailed and table
+            window.switchView = function(viewType) {{
+                const detailedBtn = document.getElementById('detailed-view-btn');
+                const tableBtn = document.getElementById('table-view-btn');
+                const detailedView = document.getElementById('detailed-view');
+                const tableView = document.getElementById('table-view');
+                
+                if (viewType === 'detailed') {{
+                    detailedBtn.classList.add('active');
+                    tableBtn.classList.remove('active');
+                    detailedView.style.display = 'block';
+                    tableView.style.display = 'none';
+                }} else {{
+                    detailedBtn.classList.remove('active');
+                    tableBtn.classList.add('active');
+                    detailedView.style.display = 'none';
+                    tableView.style.display = 'block';
+                }}
+            }};
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{

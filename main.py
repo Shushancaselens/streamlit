@@ -1002,11 +1002,11 @@ def main():
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
                     <div>
-                        <button onclick="document.querySelector('.argument-table').className='argument-table'; document.getElementById('both-btn').style.backgroundColor='#4299e1'; document.getElementById('both-btn').style.color='white'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
+                        <button onclick="togglePartyView('both')" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
                         
-                        <button onclick="document.querySelector('.argument-table').className='argument-table appellant-only'; document.getElementById('app-btn').style.backgroundColor='#4299e1'; document.getElementById('app-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; margin-right: 5px;">Appellant Only</button>
+                        <button onclick="togglePartyView('appellant')" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
                         
-                        <button onclick="document.querySelector('.argument-table').className='argument-table respondent-only'; document.getElementById('resp-btn').style.backgroundColor='#4299e1'; document.getElementById('resp-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black';" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;">Respondent Only</button>
+                        <button onclick="togglePartyView('respondent')" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
                     <div>
                         <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
@@ -1110,70 +1110,73 @@ def main():
             // Global variable to track current party view
             let currentPartyView = 'both';
             
-            // Make global functions
-            window.switchPartyView = function(view) {{
-                console.log("Switching to view:", view);
-                
+            // Function to toggle between party views
+            function togglePartyView(view) {
                 // Update button styling
-                document.getElementById('both-parties-btn').classList.remove('active');
-                document.getElementById('appellant-btn').classList.remove('active');
-                document.getElementById('respondent-btn').classList.remove('active');
+                const bothBtn = document.getElementById('both-btn');
+                const appBtn = document.getElementById('app-btn');
+                const respBtn = document.getElementById('resp-btn');
                 
-                if (view === 'both') {{
-                    document.getElementById('both-parties-btn').classList.add('active');
-                }} else if (view === 'appellant') {{
-                    document.getElementById('appellant-btn').classList.add('active');
-                }} else if (view === 'respondent') {{
-                    document.getElementById('respondent-btn').classList.add('active');
-                }}
+                // Reset all buttons
+                bothBtn.style.backgroundColor = '#f7fafc';
+                bothBtn.style.color = 'black';
+                appBtn.style.backgroundColor = '#f7fafc';
+                appBtn.style.color = 'black';
+                respBtn.style.backgroundColor = '#f7fafc';
+                respBtn.style.color = 'black';
                 
-                // Get all table cells
-                const table = document.querySelector('.argument-table');
-                const rows = table.querySelectorAll('tr');
+                // Set active button
+                if (view === 'both') {
+                    bothBtn.style.backgroundColor = '#4299e1';
+                    bothBtn.style.color = 'white';
+                } else if (view === 'appellant') {
+                    appBtn.style.backgroundColor = '#4299e1';
+                    appBtn.style.color = 'white';
+                } else if (view === 'respondent') {
+                    respBtn.style.backgroundColor = '#4299e1';
+                    respBtn.style.color = 'white';
+                }
                 
-                // Apply visibility to cells based on view
-                rows.forEach(row => {{
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length !== 2) return;
+                // Get all arguments rows
+                const argumentsRows = document.querySelectorAll('.arguments-row');
+                
+                argumentsRows.forEach(row => {
+                    const columns = row.children;
+                    if (columns.length !== 2) return;
                     
-                    if (view === 'both') {{
+                    const appellantCol = columns[0];
+                    const respondentCol = columns[1];
+                    
+                    if (view === 'both') {
                         // Show both columns at half width
-                        cells[0].style.display = '';
-                        cells[1].style.display = '';
-                        cells[0].style.width = '50%';
-                        cells[1].style.width = '50%';
-                    }} else if (view === 'appellant') {{
+                        appellantCol.style.display = '';
+                        respondentCol.style.display = '';
+                        appellantCol.style.width = '50%';
+                        respondentCol.style.width = '50%';
+                        row.style.gridTemplateColumns = '1fr 1fr';
+                    } else if (view === 'appellant') {
                         // Show only appellant column at full width
-                        cells[0].style.display = '';
-                        cells[1].style.display = 'none';
-                        cells[0].style.width = '100%';
-                    }} else if (view === 'respondent') {{
+                        appellantCol.style.display = '';
+                        respondentCol.style.display = 'none';
+                        appellantCol.style.width = '100%';
+                        row.style.gridTemplateColumns = '1fr';
+                    } else if (view === 'respondent') {
                         // Show only respondent column at full width
-                        cells[0].style.display = 'none';
-                        cells[1].style.display = '';
-                        cells[1].style.width = '100%';
-                    }}
-                }});
+                        appellantCol.style.display = 'none';
+                        respondentCol.style.display = '';
+                        respondentCol.style.width = '100%';
+                        row.style.gridTemplateColumns = '1fr';
+                    }
+                });
                 
-                // Also update header cells
-                const headerCells = table.querySelectorAll('th');
-                if (headerCells.length === 2) {{
-                    if (view === 'both') {{
-                        headerCells[0].style.display = '';
-                        headerCells[1].style.display = '';
-                        headerCells[0].style.width = '50%';
-                        headerCells[1].style.width = '50%';
-                    }} else if (view === 'appellant') {{
-                        headerCells[0].style.display = '';
-                        headerCells[1].style.display = 'none';
-                        headerCells[0].style.width = '100%';
-                    }} else if (view === 'respondent') {{
-                        headerCells[0].style.display = 'none';
-                        headerCells[1].style.display = '';
-                        headerCells[1].style.width = '100%';
-                    }}
-                }}
-            }};
+                // Update current view
+                currentPartyView = view;
+            }
+            
+            // For backward compatibility, keep the old function
+            window.switchPartyView = function(view) {
+                togglePartyView(view);
+            };
             
             // Switch view between detailed and table
             window.switchView = function(viewType) {{

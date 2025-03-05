@@ -599,6 +599,16 @@ def main():
                 background-color: #fff;
             }}
             
+            /* Search highlighting */
+            .search-match {{
+                animation: highlight-fade 2s;
+            }}
+            
+            @keyframes highlight-fade {{
+                0% {{ background-color: rgba(66, 153, 225, 0.2); }}
+                100% {{ background-color: transparent; }}
+            }}
+            
             /* Simple container */
             .container {{
                 max-width: 1200px;
@@ -1000,6 +1010,38 @@ def main():
                 <div class="section-title">Issues</div>
                 
                 <!-- Direct inline buttons for view toggling -->
+                <!-- Search and filter bar -->
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                        <div style="position: relative; flex-grow: 1; margin-right: 15px;">
+                            <input type="text" id="search-input" placeholder="Search arguments, facts, or evidence..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                            <svg style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <div>
+                            <select id="filter-status" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-right: 10px; font-size: 14px;">
+                                <option value="all">All Status</option>
+                                <option value="disputed">Disputed Only</option>
+                                <option value="undisputed">Undisputed Only</option>
+                            </select>
+                            <select id="filter-evidence" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                                <option value="all">All Evidence</option>
+                                <option value="with-evidence">With Evidence</option>
+                                <option value="without-evidence">Without Evidence</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="search-results" style="display: none; margin-bottom: 15px; padding: 10px 15px; background-color: #f7fafc; border-radius: 6px; font-size: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span id="search-count">0 results found</span>
+                            <button onclick="clearSearch()" style="background: none; border: none; color: #4299e1; cursor: pointer; font-size: 14px;">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- View selection controls -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
                     <div>
                         <button onclick="togglePartyView('both')" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
@@ -1181,6 +1223,179 @@ def main():
             window.switchPartyView = function(view) {{
                 togglePartyView(view);
             }};
+            
+            // Search and filtering functionality
+            let searchTimeout;
+            
+            // Set up search input event listener
+            document.addEventListener('DOMContentLoaded', function() {{
+                const searchInput = document.getElementById('search-input');
+                
+                if (searchInput) {{
+                    searchInput.addEventListener('input', function() {{
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {{
+                            performSearch(this.value);
+                        }}, 300); // Debounce for 300ms
+                    }});
+                }}
+            }});
+            
+            // Perform search across all arguments
+            function performSearch(query) {{
+                if (!query || query.trim() === '') {{
+                    clearSearch();
+                    return;
+                }}
+                
+                query = query.toLowerCase().trim();
+                let matchCount = 0;
+                const cards = document.querySelectorAll('.card');
+                const searchResults = document.getElementById('search-results');
+                
+                // Reset all cards first
+                cards.forEach(card => {{
+                    card.style.display = '';
+                    card.classList.remove('search-match');
+                }});
+                
+                if (query === '') {{
+                    searchResults.style.display = 'none';
+                    return;
+                }}
+                
+                // Search within cards
+                cards.forEach(card => {{
+                    const cardText = card.textContent.toLowerCase();
+                    const cardHeader = card.querySelector('.card-header');
+                    const cardContent = card.querySelector('.card-content');
+                    
+                    if (cardText.includes(query)) {{
+                        card.classList.add('search-match');
+                        
+                        // If the match is in the content, expand the card
+                        if (cardContent && cardContent.textContent.toLowerCase().includes(query)) {{
+                            cardContent.style.display = 'block';
+                            if (cardHeader) {{
+                                const chevron = cardHeader.querySelector('.chevron');
+                                if (chevron) {{
+                                    chevron.classList.add('expanded');
+                                }}
+                            }}
+                        }}
+                        
+                        matchCount++;
+                    }} else {{
+                        // If we're in search mode, hide non-matching cards
+                        card.style.display = 'none';
+                    }}
+                }});
+                
+                // Update search results count and show the results bar
+                if (searchResults) {{
+                    const searchCount = document.getElementById('search-count');
+                    if (searchCount) {{
+                        searchCount.textContent = `${{matchCount}} result${{matchCount !== 1 ? 's' : ''}} found`;
+                    }}
+                    searchResults.style.display = 'block';
+                }}
+                
+                // Apply any active filters after search
+                applyFilters(true);
+            }}
+            
+            // Clear search results
+            function clearSearch() {{
+                const searchInput = document.getElementById('search-input');
+                const searchResults = document.getElementById('search-results');
+                
+                if (searchInput) {{
+                    searchInput.value = '';
+                }}
+                
+                if (searchResults) {{
+                    searchResults.style.display = 'none';
+                }}
+                
+                // Reset all cards
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {{
+                    card.style.display = '';
+                    card.classList.remove('search-match');
+                }});
+                
+                // Reset filters
+                const statusFilter = document.getElementById('filter-status');
+                const evidenceFilter = document.getElementById('filter-evidence');
+                
+                if (statusFilter) {{
+                    statusFilter.value = 'all';
+                }}
+                
+                if (evidenceFilter) {{
+                    evidenceFilter.value = 'all';
+                }}
+            }}
+            
+            // Apply filters to the cards
+            function applyFilters(isSearchActive = false) {{
+                const statusFilter = document.getElementById('filter-status').value;
+                const evidenceFilter = document.getElementById('filter-evidence').value;
+                const cards = document.querySelectorAll('.card');
+                
+                cards.forEach(card => {{
+                    // Skip if we're in search mode and this card is not a match
+                    if (isSearchActive && !card.classList.contains('search-match')) {{
+                        return;
+                    }}
+                    
+                    let showCard = true;
+                    
+                    // Status filter
+                    if (statusFilter !== 'all') {{
+                        const isDisputed = card.textContent.includes('Disputed');
+                        if ((statusFilter === 'disputed' && !isDisputed) || 
+                            (statusFilter === 'undisputed' && isDisputed)) {{
+                            showCard = false;
+                        }}
+                    }}
+                    
+                    // Evidence filter
+                    if (evidenceFilter !== 'all' && showCard) {{
+                        const hasEvidence = card.querySelector('.evidence-block') !== null;
+                        if ((evidenceFilter === 'with-evidence' && !hasEvidence) || 
+                            (evidenceFilter === 'without-evidence' && hasEvidence)) {{
+                            showCard = false;
+                        }}
+                    }}
+                    
+                    // Apply visibility
+                    if (!showCard) {{
+                        card.style.display = 'none';
+                    }} else if (!isSearchActive || (isSearchActive && card.classList.contains('search-match'))) {{
+                        card.style.display = '';
+                    }}
+                }});
+                
+                // If we're filtering and not in search mode, show the search results bar with filter count
+                if (!isSearchActive && (statusFilter !== 'all' || evidenceFilter !== 'all')) {{
+                    const searchResults = document.getElementById('search-results');
+                    const searchCount = document.getElementById('search-count');
+                    
+                    if (searchResults && searchCount) {{
+                        // Count visible cards
+                        const visibleCount = Array.from(cards).filter(card => card.style.display !== 'none').length;
+                        searchCount.textContent = `${{visibleCount}} result${{visibleCount !== 1 ? 's' : ''}} found (filtered)`;
+                        searchResults.style.display = 'block';
+                    }}
+                }} else if (!isSearchActive) {{
+                    // If no filters or search active, hide the results bar
+                    const searchResults = document.getElementById('search-results');
+                    if (searchResults) {{
+                        searchResults.style.display = 'none';
+                    }}
+                }}
+            }}
             
             // Switch view between detailed and table
             window.switchView = function(viewType) {{

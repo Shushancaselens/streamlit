@@ -1168,11 +1168,14 @@ def main():
             
             // Verify evidence function
             function verifyEvidence(exhibitId) {
-                const exhibit = exhibitsData.find(e => e.id === exhibitId);
-                if (exhibit) {
-                    alert(`Verifying Evidence: ${exhibitId}\nTitle: ${exhibit.title}\nType: ${exhibit.type}\nSummary: ${exhibit.summary}`);
-                    // In a real implementation, this would open a modal or navigate to a detail view
+                for (var i = 0; i < exhibitsData.length; i++) {
+                    if (exhibitsData[i].id === exhibitId) {
+                        var exhibit = exhibitsData[i];
+                        alert("Verifying Evidence: " + exhibitId + "\nTitle: " + exhibit.title + "\nType: " + exhibit.type + "\nSummary: " + exhibit.summary);
+                        break;
+                    }
                 }
+                // In a real implementation, this would open a modal or navigate to a detail view
             }
             
             // Show the selected view based on sidebar selection

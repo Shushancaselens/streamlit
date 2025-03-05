@@ -1010,33 +1010,54 @@ def main():
                 <div class="section-title">Issues</div>
                 
                 <!-- Direct inline buttons for view toggling -->
-                <!-- Search and filter bar -->
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                        <div style="position: relative; flex-grow: 1; margin-right: 15px;">
-                            <input type="text" id="search-input" placeholder="Search arguments, facts, or evidence..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
-                            <svg style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Search and filter bar - Improved layout -->
+                <div style="margin-bottom: 20px; background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; align-items: center; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
+                        <!-- Search input with better styling -->
+                        <div style="position: relative; flex-grow: 1; min-width: 250px;">
+                            <input type="text" id="search-input" placeholder="Search arguments, facts, or evidence..." 
+                                style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                            <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718096;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                         </div>
-                        <div>
-                            <select id="filter-status" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-right: 10px; font-size: 14px;">
+                        
+                        <!-- Filter section with better visual grouping -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                            <label style="font-size: 14px; color: #4a5568; white-space: nowrap;">Filter by:</label>
+                            <select id="filter-status" onchange="applyFilters()" 
+                                style="padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; min-width: 140px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                 <option value="all">All Status</option>
                                 <option value="disputed">Disputed Only</option>
                                 <option value="undisputed">Undisputed Only</option>
                             </select>
-                            <select id="filter-evidence" onchange="applyFilters()" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                            <select id="filter-evidence" onchange="applyFilters()" 
+                                style="padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; min-width: 140px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                 <option value="all">All Evidence</option>
                                 <option value="with-evidence">With Evidence</option>
                                 <option value="without-evidence">Without Evidence</option>
                             </select>
                         </div>
                     </div>
-                    <div id="search-results" style="display: none; margin-bottom: 15px; padding: 10px 15px; background-color: #f7fafc; border-radius: 6px; font-size: 14px;">
+                    
+                    <!-- Better styled search results indicator -->
+                    <div id="search-results" style="display: none; padding: 8px 12px; background-color: #ebf8ff; border-left: 3px solid #4299e1; border-radius: 4px; font-size: 14px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span id="search-count">0 results found</span>
-                            <button onclick="clearSearch()" style="background: none; border: none; color: #4299e1; cursor: pointer; font-size: 14px;">Clear</button>
+                            <div>
+                                <svg style="display: inline-block; margin-right: 8px; vertical-align: -4px;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4299e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 11 12 14 22 4"></polyline>
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                </svg>
+                                <span id="search-count" style="font-weight: 500; color: #2c5282;">0 results found</span>
+                            </div>
+                            <button onclick="clearSearch()" style="background: none; border: none; color: #3182ce; cursor: pointer; font-size: 14px; display: flex; align-items: center;">
+                                <svg style="margin-right: 4px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Clear
+                            </button>
                         </div>
                     </div>
                 </div>

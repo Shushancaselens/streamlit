@@ -646,6 +646,27 @@ def main():
                 gap: 20px;
             }}
             
+            /* Party view styles */
+            .appellant-only .arguments-row > div:nth-child(2) {{
+                display: none;
+            }}
+            .appellant-only .arguments-row > div:nth-child(1) {{
+                grid-column: 1 / span 2;
+            }}
+            .appellant-only .respondent-color {{
+                display: none;
+            }}
+            
+            .respondent-only .arguments-row > div:nth-child(1) {{
+                display: none;
+            }}
+            .respondent-only .arguments-row > div:nth-child(2) {{
+                grid-column: 1 / span 2;
+            }}
+            .respondent-only .appellant-color {{
+                display: none;
+            }}
+            
             .side-heading {{
                 margin-bottom: 16px;
                 font-weight: 500;
@@ -1001,12 +1022,12 @@ def main():
                 
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                    <div>
-                        <button onclick="document.querySelector('.argument-table').className='argument-table'; document.getElementById('both-btn').style.backgroundColor='#4299e1'; document.getElementById('both-btn').style.color='white'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="both-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
+                    <div id="party-buttons">
+                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
                         
-                        <button onclick="document.querySelector('.argument-table').className='argument-table appellant-only'; document.getElementById('app-btn').style.backgroundColor='#4299e1'; document.getElementById('app-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('resp-btn').style.backgroundColor='#f7fafc'; document.getElementById('resp-btn').style.color='black';" id="app-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; margin-right: 5px;">Appellant Only</button>
+                        <button id="app-btn" onclick="changePartyView('appellant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
                         
-                        <button onclick="document.querySelector('.argument-table').className='argument-table respondent-only'; document.getElementById('resp-btn').style.backgroundColor='#4299e1'; document.getElementById('resp-btn').style.color='white'; document.getElementById('both-btn').style.backgroundColor='#f7fafc'; document.getElementById('both-btn').style.color='black'; document.getElementById('app-btn').style.backgroundColor='#f7fafc'; document.getElementById('app-btn').style.color='black';" id="resp-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;">Respondent Only</button>
+                        <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
                     <div>
                         <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
@@ -1107,93 +1128,43 @@ def main():
             const factsData = {facts_json};
             const viewOptions = {view_options_json};
             
-            // Global variable to track current party view
-            let currentPartyView = 'both';
-            
-            // Make global functions
-            window.switchPartyView = function(view) {{
-                console.log("Switching to view:", view);
+            // Function to change party view
+            function changePartyView(view) {{
+                console.log("Changing party view to:", view);
+                
+                // Get the container
+                const container = document.getElementById('topics-container');
                 
                 // Update button styling
-                document.getElementById('both-parties-btn').classList.remove('active');
-                document.getElementById('appellant-btn').classList.remove('active');
-                document.getElementById('respondent-btn').classList.remove('active');
+                const bothBtn = document.getElementById('both-btn');
+                const appBtn = document.getElementById('app-btn');
+                const respBtn = document.getElementById('resp-btn');
+                
+                // Reset button styles
+                bothBtn.style.backgroundColor = '#f7fafc';
+                bothBtn.style.color = 'black';
+                appBtn.style.backgroundColor = '#f7fafc';
+                appBtn.style.color = 'black';
+                respBtn.style.backgroundColor = '#f7fafc';
+                respBtn.style.color = 'black';
+                
+                // Apply class to container based on view
+                container.className = '';
                 
                 if (view === 'both') {{
-                    document.getElementById('both-parties-btn').classList.add('active');
+                    bothBtn.style.backgroundColor = '#4299e1';
+                    bothBtn.style.color = 'white';
+                    // Default view - no special class needed
                 }} else if (view === 'appellant') {{
-                    document.getElementById('appellant-btn').classList.add('active');
+                    appBtn.style.backgroundColor = '#4299e1';
+                    appBtn.style.color = 'white';
+                    container.className = 'appellant-only';
                 }} else if (view === 'respondent') {{
-                    document.getElementById('respondent-btn').classList.add('active');
+                    respBtn.style.backgroundColor = '#4299e1';
+                    respBtn.style.color = 'white';
+                    container.className = 'respondent-only';
                 }}
-                
-                // Get all table cells
-                const table = document.querySelector('.argument-table');
-                const rows = table.querySelectorAll('tr');
-                
-                // Apply visibility to cells based on view
-                rows.forEach(row => {{
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length !== 2) return;
-                    
-                    if (view === 'both') {{
-                        // Show both columns at half width
-                        cells[0].style.display = '';
-                        cells[1].style.display = '';
-                        cells[0].style.width = '50%';
-                        cells[1].style.width = '50%';
-                    }} else if (view === 'appellant') {{
-                        // Show only appellant column at full width
-                        cells[0].style.display = '';
-                        cells[1].style.display = 'none';
-                        cells[0].style.width = '100%';
-                    }} else if (view === 'respondent') {{
-                        // Show only respondent column at full width
-                        cells[0].style.display = 'none';
-                        cells[1].style.display = '';
-                        cells[1].style.width = '100%';
-                    }}
-                }});
-                
-                // Also update header cells
-                const headerCells = table.querySelectorAll('th');
-                if (headerCells.length === 2) {{
-                    if (view === 'both') {{
-                        headerCells[0].style.display = '';
-                        headerCells[1].style.display = '';
-                        headerCells[0].style.width = '50%';
-                        headerCells[1].style.width = '50%';
-                    }} else if (view === 'appellant') {{
-                        headerCells[0].style.display = '';
-                        headerCells[1].style.display = 'none';
-                        headerCells[0].style.width = '100%';
-                    }} else if (view === 'respondent') {{
-                        headerCells[0].style.display = 'none';
-                        headerCells[1].style.display = '';
-                        headerCells[1].style.width = '100%';
-                    }}
-                }}
-            }};
-            
-            // Switch view between detailed and table
-            window.switchView = function(viewType) {{
-                const detailedBtn = document.getElementById('detailed-view-btn');
-                const tableBtn = document.getElementById('table-view-btn');
-                const detailedView = document.getElementById('detailed-view');
-                const tableView = document.getElementById('table-view');
-                
-                if (viewType === 'detailed') {{
-                    detailedBtn.classList.add('active');
-                    tableBtn.classList.remove('active');
-                    detailedView.style.display = 'block';
-                    tableView.style.display = 'none';
-                }} else {{
-                    detailedBtn.classList.remove('active');
-                    tableBtn.classList.add('active');
-                    detailedView.style.display = 'none';
-                    tableView.style.display = 'block';
-                }}
-            }};
+            }}
             
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{

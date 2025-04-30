@@ -12,87 +12,55 @@ st.markdown("""
         padding-top: 1rem;
     }
     
-    /* Table styling */
-    .stDataFrame {
-        border: none;
-    }
-    .facts-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .facts-table th {
-        background-color: #f8f9fa;
-        padding: 10px;
-        text-align: left;
-        font-weight: 600;
-        color: #333;
-        border-bottom: 1px solid #ddd;
-    }
-    .facts-table td {
-        padding: 12px 10px;
-        border-bottom: 1px solid #eee;
-        vertical-align: top;
-    }
-    
-    /* Status badges */
-    .badge {
-        display: inline-block;
+    /* Badge styling */
+    .badge-appellant {
+        background-color: #dbeafe;
+        color: #1e40af;
         padding: 3px 8px;
         border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
     }
-    .appellant {
-        background-color: #dbeafe;
-        color: #1e40af;
-    }
-    .respondent {
+    .badge-respondent {
         background-color: #fee2e2;
         color: #b91c1c;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
     }
-    .disputed {
+    .badge-disputed {
         background-color: #fef3c7;
         color: #92400e;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
     }
-    .undisputed {
+    .badge-undisputed {
         background-color: #d1fae5;
         color: #065f46;
-    }
-    
-    /* Document folder styling */
-    .folder {
-        display: flex;
-        align-items: center;
-        padding: 8px 12px;
+        padding: 3px 8px;
         border-radius: 4px;
-        margin-bottom: 4px;
-        background-color: #f9fafb;
-        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
     }
-    .folder:hover {
+    .badge-evidence {
         background-color: #f3f4f6;
-    }
-    .folder-blue {
-        border-left: 4px solid #3b82f6;
-    }
-    .folder-red {
-        border-left: 4px solid #ef4444;
-    }
-    .folder-gray {
-        border-left: 4px solid #9ca3af;
-    }
-    .folder-icon {
-        color: #3b82f6;
-        margin-right: 8px;
-    }
-    
-    /* Tab styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 16px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        padding: 8px 16px;
+        color: #4b5563;
+        padding: 3px 8px;
         border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .badge-document {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 5px;
     }
     
     /* Hide default elements */
@@ -101,7 +69,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Document folders data - matching the first screenshot
+# Document folders data
 document_folders = [
     {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
     {"id": "2", "name": "2. Request for a Stay", "party": "Respondent"},
@@ -117,32 +85,17 @@ document_folders = [
     {"id": "12", "name": "Swiss Court", "party": "Court"}
 ]
 
-# Timeline events data - matching the second screenshot
+# Timeline events data
 timeline_events = [
-    {"date": "1950-present", "event": "Continuous operation under same name since 1950", "party": "Appellant", "status": "Undisputed", "related_argument": "1. Sporting Succession", "evidence": "C-1"},
-    {"date": "1950", "event": "Initial registration in 1950", "party": "Appellant", "status": "Undisputed", "related_argument": "1.1.1. Registration History", "evidence": "C-2"},
-    {"date": "1950-present", "event": "Consistent use of blue and white since founding", "party": "Appellant", "status": "Disputed", "related_argument": "1.2. Club Colors Analysis", "evidence": "C-4"},
-    {"date": "1950-1975", "event": "Pre-1976 colors represented original city district", "party": "Respondent", "status": "Undisputed", "related_argument": "1.2.1. Color Changes Analysis", "evidence": "R-5"},
-    {"date": "1970-1980", "event": "Minor shade variations do not affect continuity", "party": "Appellant", "status": "Undisputed", "related_argument": "1.2.1. Color Variations Analysis", "evidence": "C-5"},
-    {"date": "1975-1976", "event": "Brief administrative gap in 1975-1976", "party": "Appellant", "status": "Disputed", "related_argument": "1.1.1. Registration History", "evidence": "C-2"},
-    {"date": "1975-1976", "event": "Operations ceased between 1975-1976", "party": "Respondent", "status": "Disputed", "related_argument": "1. Sporting Succession Rebuttal", "evidence": "R-1"},
-    {"date": "April 30, 1975", "event": "Registration formally terminated on April 30, 1975", "party": "Respondent", "status": "Undisputed", "related_argument": "1.1.1. Registration Gap", "evidence": "R-2"}
+    {"date": "1950-present", "event": "Continuous operation under same name since 1950", "party": "Appellant", "status": "Undisputed", "related_argument": "1. Sporting Succession", "evidence": "C-1", "related_folder": "1"},
+    {"date": "1950", "event": "Initial registration in 1950", "party": "Appellant", "status": "Undisputed", "related_argument": "1.1.1. Registration History", "evidence": "C-2", "related_folder": "1"},
+    {"date": "1950-present", "event": "Consistent use of blue and white since founding", "party": "Appellant", "status": "Disputed", "related_argument": "1.2. Club Colors Analysis", "evidence": "C-4", "related_folder": "5"},
+    {"date": "1950-1975", "event": "Pre-1976 colors represented original city district", "party": "Respondent", "status": "Undisputed", "related_argument": "1.2.1. Color Changes Analysis", "evidence": "R-5", "related_folder": "4"},
+    {"date": "1970-1980", "event": "Minor shade variations do not affect continuity", "party": "Appellant", "status": "Undisputed", "related_argument": "1.2.1. Color Variations Analysis", "evidence": "C-5", "related_folder": "5"},
+    {"date": "1975-1976", "event": "Brief administrative gap in 1975-1976", "party": "Appellant", "status": "Disputed", "related_argument": "1.1.1. Registration History", "evidence": "C-2", "related_folder": "1"},
+    {"date": "1975-1976", "event": "Operations ceased between 1975-1976", "party": "Respondent", "status": "Disputed", "related_argument": "1. Sporting Succession Rebuttal", "evidence": "R-1", "related_folder": "3"},
+    {"date": "April 30, 1975", "event": "Registration formally terminated on April 30, 1975", "party": "Respondent", "status": "Undisputed", "related_argument": "1.1.1. Registration Gap", "evidence": "R-2", "related_folder": "4"}
 ]
-
-# Add document folder references to events (matching your screenshots)
-for event in timeline_events:
-    if event["evidence"] == "C-1" or event["evidence"] == "C-2" or event["evidence"] == "C-3":
-        event["related_folder"] = "1"
-    elif event["evidence"] == "R-3" or event["evidence"] == "R-4":
-        event["related_folder"] = "2"
-    elif event["evidence"] == "R-1":
-        event["related_folder"] = "3"
-    elif event["evidence"] == "R-2" or event["evidence"] == "R-5":
-        event["related_folder"] = "4"
-    elif event["evidence"] == "C-4" or event["evidence"] == "C-5" or event["evidence"] == "C-6":
-        event["related_folder"] = "5"
-    else:
-        event["related_folder"] = ""
 
 # Convert to DataFrame for easier manipulation
 events_df = pd.DataFrame(timeline_events)
@@ -150,63 +103,45 @@ events_df = pd.DataFrame(timeline_events)
 # Create sidebar with document folders
 with st.sidebar:
     # Add logo/title
-    st.markdown("<h2 style='color:#3b82f6;'>CaseLens</h2>", unsafe_allow_html=True)
+    st.markdown('<h2 style="color:#3b82f6;">CaseLens</h2>', unsafe_allow_html=True)
     st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
     
     # Add sidebar navigation
     st.markdown("---")
+    st.markdown("<h4>Documents</h4>", unsafe_allow_html=True)
     
     # Create session state for tracking selected folders
     if 'selected_folder' not in st.session_state:
         st.session_state.selected_folder = "1"  # Default to first folder
     
     # Display document folders
-    st.markdown("<p style='font-weight:500; margin-bottom:10px;'>Documents</p>", unsafe_allow_html=True)
-    
-    # Create clickable folders
     for folder in document_folders:
         folder_id = folder["id"]
         folder_name = folder["name"]
         
-        # Determine folder styling based on party
-        border_class = ""
+        # Create styled containers for each folder
+        # Color the border based on party
         if folder["party"] == "Appellant":
-            border_class = "folder-blue"
+            border_style = "border-left: 4px solid #3b82f6;"
         elif folder["party"] == "Respondent":
-            border_class = "folder-red"
+            border_style = "border-left: 4px solid #ef4444;"
         else:
-            border_class = "folder-gray"
+            border_style = "border-left: 4px solid #9ca3af;"
         
-        # Create clickable folder div
-        is_selected = st.session_state.selected_folder == folder_id
-        bg_color = "#f0f9ff" if is_selected else "#f9fafb"
+        # Highlight the selected folder
+        bg_color = "#f0f9ff;" if folder_id == st.session_state.selected_folder else "white;"
         
-        folder_html = f"""
-        <div class="folder {border_class}" style="background-color:{bg_color};" 
-            onclick="handleFolderClick('{folder_id}')">
-            <span class="folder-icon">📁</span>
-            <span>{folder_name}</span>
-        </div>
-        """
-        st.markdown(folder_html, unsafe_allow_html=True)
+        # Create a container for each folder
+        folder_container = st.container()
         
-        # Add JavaScript for handling clicks
-        st.markdown("""
-        <script>
-        function handleFolderClick(folderId) {
-            // Use Streamlit's setComponentValue to update session state
-            // This is a simplified example - in a real app you'd need a custom component
-            window.parent.postMessage({
-                type: "streamlit:setComponentValue",
-                value: folderId
-            }, "*");
-        }
-        </script>
-        """, unsafe_allow_html=True)
+        # Apply styling to the container
+        folder_container.markdown(
+            f'<div style="padding: 8px; margin-bottom: 4px; border-radius: 4px; {border_style} background-color: {bg_color}">{folder_name}</div>',
+            unsafe_allow_html=True
+        )
         
-        # For the demo, also add regular buttons that actually work
-        # (The clickable divs above are just for show, as they need custom components to work properly)
-        if st.button(f"{folder_name}", key=f"btn_{folder_id}", use_container_width=True):
+        # Make the folder clickable with a button
+        if folder_container.button(f"Select", key=f"btn_{folder_id}", use_container_width=True, help=f"View {folder_name}"):
             st.session_state.selected_folder = folder_id
             st.rerun()
 
@@ -218,373 +153,209 @@ st.header("Case Facts")
 tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
 
 with tab1:
-    # Function to highlight the selected folder's events
-    def highlight_rows(row):
-        if row.related_folder == st.session_state.selected_folder:
-            return ['background-color: #f0f9ff'] * len(row)
-        return [''] * len(row)
+    # Display all facts using native Streamlit components
+    # Filter based on selected folder if needed
+    filtered_df = events_df.copy()
     
-    # Create a styled DataFrame
-    styled_df = events_df.style.apply(highlight_rows, axis=1)
+    # Add a new column for highlighting rows related to selected folder
+    filtered_df['highlight'] = filtered_df['related_folder'] == st.session_state.selected_folder
     
-    # Custom render for table to match screenshot exactly
-    html_table = """
-    <table class="facts-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Party</th>
-                <th>Status</th>
-                <th>Related Argument</th>
-                <th>Evidence</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+    # Create a DataFrame with formatted columns for display
+    display_df = pd.DataFrame()
+    display_df['Date'] = filtered_df['date']
+    display_df['Event'] = filtered_df['event']
     
-    for _, row in events_df.iterrows():
-        # Highlight row if it's related to selected folder
-        row_style = ""
-        if row["related_folder"] == st.session_state.selected_folder:
-            row_style = "background-color: #f0f9ff;"
+    # Format Party column with badges
+    def format_party(row):
+        party = row['party']
+        if party == 'Appellant':
+            return '<span class="badge-appellant">Appellant</span>'
+        else:
+            return '<span class="badge-respondent">Respondent</span>'
+    
+    # Format Status column with badges  
+    def format_status(row):
+        status = row['status']
+        if status == 'Disputed':
+            return '<span class="badge-disputed">Disputed</span>'
+        else:
+            return '<span class="badge-undisputed">Undisputed</span>'
+    
+    # Format Evidence column with badges
+    def format_evidence(row):
+        evidence = row['evidence']
+        folder = row['related_folder']
+        return f'<span class="badge-evidence">Evidence: {evidence}</span> <span class="badge-document">Document {folder}</span>'
+    
+    # Apply formatting
+    filtered_df['Party_Formatted'] = filtered_df.apply(format_party, axis=1)
+    filtered_df['Status_Formatted'] = filtered_df.apply(format_status, axis=1)
+    filtered_df['Evidence_Formatted'] = filtered_df.apply(format_evidence, axis=1)
+    
+    # Display the formatted table
+    st.markdown("### All Facts", unsafe_allow_html=True)
+    
+    # Use AgGrid or similar for advanced table formatting
+    # For now, we'll use simpler Streamlit methods
+    
+    # Display each row as a card instead of using HTML table
+    for idx, row in filtered_df.iterrows():
+        background = "#f0f9ff" if row['highlight'] else "white"
         
-        # Format party badge
-        party_class = "appellant" if row["party"] == "Appellant" else "respondent"
-        party_badge = f'<span class="badge {party_class}">{row["party"]}</span>'
-        
-        # Format status badge
-        status_class = "disputed" if row["status"] == "Disputed" else "undisputed"
-        status_badge = f'<span class="badge {status_class}">{row["status"]}</span>'
-        
-        # Format evidence and related document
-        evidence_badge = f'<span class="badge" style="background-color: #f3f4f6; color: #4b5563;">Evidence: {row["evidence"]}</span>'
-        
-        # Add related document badge (folder number)
-        folder_num = row["related_folder"]
-        doc_badge = f'<span class="badge" style="background-color: #e0e7ff; color: #4338ca; margin-left: 5px;">Document {folder_num}</span>'
-        
-        # Add row to table
-        html_table += f"""
-        <tr style="{row_style}">
-            <td>{row["date"]}</td>
-            <td>{row["event"]}</td>
-            <td>{party_badge}</td>
-            <td>{status_badge}</td>
-            <td>{row["related_argument"]}</td>
-            <td>{evidence_badge} {doc_badge}</td>
-        </tr>
-        """
-    
-    html_table += """
-        </tbody>
-    </table>
-    """
-    
-    st.markdown(html_table, unsafe_allow_html=True)
-    
-    # Add Copy and Export buttons to match screenshot
-    col1, col2 = st.columns([1, 10])
-    with col1:
-        st.button("Copy", key="copy_btn")
-    with col2:
-        st.button("Export", key="export_btn")
+        st.markdown(
+            f"""
+            <div style="padding: 12px; margin-bottom: 10px; border-radius: 4px; background-color: {background}; border-left: 4px solid {'#d97706' if row['status'] == 'Disputed' else '#10b981'};">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 6px;">{row['event']}</div>
+                        <div>{row['date']}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>{row['Party_Formatted']}</div>
+                        <div style="margin-top: 5px;">{row['Status_Formatted']}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px;">
+                    <div><strong>{row['related_argument']}</strong></div>
+                    <div>{row['Evidence_Formatted']}</div>
+                </div>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
 with tab2:
     # Filter for disputed facts
-    disputed_df = events_df[events_df["status"] == "Disputed"]
+    disputed_df = events_df[events_df['status'] == 'Disputed'].copy()
+    disputed_df['highlight'] = disputed_df['related_folder'] == st.session_state.selected_folder
     
-    # Create the same table but only with disputed facts
-    html_table = """
-    <table class="facts-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Party</th>
-                <th>Status</th>
-                <th>Related Argument</th>
-                <th>Evidence</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+    st.markdown("### Disputed Facts", unsafe_allow_html=True)
     
-    for _, row in disputed_df.iterrows():
-        # Highlight row if it's related to selected folder
-        row_style = ""
-        if row["related_folder"] == st.session_state.selected_folder:
-            row_style = "background-color: #f0f9ff;"
+    # Display disputed facts
+    for idx, row in disputed_df.iterrows():
+        background = "#f0f9ff" if row['highlight'] else "white"
         
-        # Format party badge
-        party_class = "appellant" if row["party"] == "Appellant" else "respondent"
-        party_badge = f'<span class="badge {party_class}">{row["party"]}</span>'
-        
-        # Format status badge
-        status_badge = f'<span class="badge disputed">Disputed</span>'
-        
-        # Format evidence and related document
-        evidence_badge = f'<span class="badge" style="background-color: #f3f4f6; color: #4b5563;">Evidence: {row["evidence"]}</span>'
-        
-        # Add related document badge (folder number)
-        folder_num = row["related_folder"]
-        doc_badge = f'<span class="badge" style="background-color: #e0e7ff; color: #4338ca; margin-left: 5px;">Document {folder_num}</span>'
-        
-        # Add row to table
-        html_table += f"""
-        <tr style="{row_style}">
-            <td>{row["date"]}</td>
-            <td>{row["event"]}</td>
-            <td>{party_badge}</td>
-            <td>{status_badge}</td>
-            <td>{row["related_argument"]}</td>
-            <td>{evidence_badge} {doc_badge}</td>
-        </tr>
-        """
-    
-    html_table += """
-        </tbody>
-    </table>
-    """
-    
-    st.markdown(html_table, unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div style="padding: 12px; margin-bottom: 10px; border-radius: 4px; background-color: {background}; border-left: 4px solid #d97706;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 6px;">{row['event']}</div>
+                        <div>{row['date']}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>{'<span class="badge-appellant">Appellant</span>' if row['party'] == 'Appellant' else '<span class="badge-respondent">Respondent</span>'}</div>
+                        <div style="margin-top: 5px;"><span class="badge-disputed">Disputed</span></div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px;">
+                    <div><strong>{row['related_argument']}</strong></div>
+                    <div><span class="badge-evidence">Evidence: {row['evidence']}</span> <span class="badge-document">Document {row['related_folder']}</span></div>
+                </div>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
 with tab3:
     # Filter for undisputed facts
-    undisputed_df = events_df[events_df["status"] == "Undisputed"]
+    undisputed_df = events_df[events_df['status'] == 'Undisputed'].copy()
+    undisputed_df['highlight'] = undisputed_df['related_folder'] == st.session_state.selected_folder
     
-    # Create the same table but only with undisputed facts
-    html_table = """
-    <table class="facts-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Party</th>
-                <th>Status</th>
-                <th>Related Argument</th>
-                <th>Evidence</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+    st.markdown("### Undisputed Facts", unsafe_allow_html=True)
     
-    for _, row in undisputed_df.iterrows():
-        # Highlight row if it's related to selected folder
-        row_style = ""
-        if row["related_folder"] == st.session_state.selected_folder:
-            row_style = "background-color: #f0f9ff;"
+    # Display undisputed facts
+    for idx, row in undisputed_df.iterrows():
+        background = "#f0f9ff" if row['highlight'] else "white"
         
-        # Format party badge
-        party_class = "appellant" if row["party"] == "Appellant" else "respondent"
-        party_badge = f'<span class="badge {party_class}">{row["party"]}</span>'
-        
-        # Format status badge
-        status_badge = f'<span class="badge undisputed">Undisputed</span>'
-        
-        # Format evidence and related document
-        evidence_badge = f'<span class="badge" style="background-color: #f3f4f6; color: #4b5563;">Evidence: {row["evidence"]}</span>'
-        
-        # Add related document badge (folder number)
-        folder_num = row["related_folder"]
-        doc_badge = f'<span class="badge" style="background-color: #e0e7ff; color: #4338ca; margin-left: 5px;">Document {folder_num}</span>'
-        
-        # Add row to table
-        html_table += f"""
-        <tr style="{row_style}">
-            <td>{row["date"]}</td>
-            <td>{row["event"]}</td>
-            <td>{party_badge}</td>
-            <td>{status_badge}</td>
-            <td>{row["related_argument"]}</td>
-            <td>{evidence_badge} {doc_badge}</td>
-        </tr>
-        """
-    
-    html_table += """
-        </tbody>
-    </table>
-    """
-    
-    st.markdown(html_table, unsafe_allow_html=True)
-
-# Add visualization component that shows the relationship between documents and events
-st.markdown("""
-<div style="margin-top: 30px;">
-    <h3>Connections Between Documents and Timeline Events</h3>
-    <p>The visualization below shows how documents connect to timeline events:</p>
-</div>
-""", unsafe_allow_html=True)
-
-# Create a function to visualize connections between documents and events
-def visualize_document_event_connections():
-    # Get the selected folder
-    selected_folder = st.session_state.selected_folder
-    
-    # Find related events
-    related_events = events_df[events_df["related_folder"] == selected_folder]
-    
-    # If there are no related events, show a message
-    if len(related_events) == 0:
-        st.info("This document doesn't have any connected timeline events.")
-        return
-    
-    # Create HTML for visualization
-    vis_html = f"""
-    <div style="margin-top: 20px; background-color: #f8fafc; padding: 20px; border-radius: 8px;">
-        <h4>Document: {next((f['name'] for f in document_folders if f['id'] == selected_folder), 'Unknown Document')}</h4>
-        <div style="display: flex; margin-top: 15px;">
-            <div style="flex: 0 0 200px; background-color: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="font-weight: 500; margin-bottom: 10px;">📁 Document Folder</div>
-                <div style="font-size: 14px; color: #4b5563;">
-                    <div>ID: {selected_folder}</div>
-                    <div>Party: {next((f['party'] for f in document_folders if f['id'] == selected_folder), 'Unknown')}</div>
-                    <div>Exhibits: {", ".join([e["evidence"] for _, e in related_events.iterrows()])}</div>
-                </div>
-            </div>
-            
-            <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-                <div style="width: 80px; height: 2px; background-color: #3b82f6;"></div>
-                <div style="width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid #3b82f6;"></div>
-            </div>
-            
-            <div style="flex: 0 0 400px; background-color: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div style="font-weight: 500; margin-bottom: 10px;">📅 Connected Timeline Events ({len(related_events)})</div>
-                <div style="max-height: 200px; overflow-y: auto;">
-    """
-    
-    # Add events to visualization
-    for _, event in related_events.iterrows():
-        event_status_class = "disputed" if event["status"] == "Disputed" else "undisputed"
-        event_party_class = "appellant" if event["party"] == "Appellant" else "respondent"
-        
-        vis_html += f"""
-            <div style="margin-bottom: 10px; padding: 8px; border-left: 3px solid #3b82f6; background-color: #f9fafb;">
-                <div style="font-weight: 500;">{event["event"]}</div>
-                <div style="display: flex; margin-top: 5px; font-size: 12px;">
-                    <span class="badge {event_status_class}" style="margin-right: 5px;">{event["status"]}</span>
-                    <span class="badge {event_party_class}">{event["party"]}</span>
-                    <span style="margin-left: auto; color: #6b7280;">{event["date"]}</span>
-                </div>
-            </div>
-        """
-    
-    vis_html += """
-                </div>
-            </div>
-        </div>
-    </div>
-    """
-    
-    st.markdown(vis_html, unsafe_allow_html=True)
-
-# Run the visualization function
-visualize_document_event_connections()
-
-# Add a data flow diagram showing how all documents connect to facts
-st.markdown("""
-<div style="margin-top: 30px;">
-    <h3>Document-Event Connection Overview</h3>
-    <p>This diagram shows how all case documents connect to the timeline events:</p>
-</div>
-""", unsafe_allow_html=True)
-
-# Count events per document
-doc_event_counts = events_df['related_folder'].value_counts().to_dict()
-
-# Create a horizontal diagram showing connections
-diagram_html = """
-<div style="margin-top: 20px; padding: 20px; background-color: #f8fafc; border-radius: 8px; overflow-x: auto;">
-    <div style="display: flex; justify-content: space-between; min-width: 900px;">
-"""
-
-# Left side - Documents
-diagram_html += """
-        <div style="flex: 0 0 300px;">
-            <h4 style="margin-bottom: 15px;">Case Documents</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-"""
-
-# Add document boxes
-for folder in document_folders:
-    folder_id = folder["id"]
-    folder_name = folder["name"]
-    
-    # Skip documents with no events
-    if folder_id not in doc_event_counts:
-        continue
-    
-    # Determine border color based on party
-    border_color = "#3b82f6" if folder["party"] == "Appellant" else "#ef4444" if folder["party"] == "Respondent" else "#9ca3af"
-    
-    # Highlight selected folder
-    bg_color = "#f0f9ff" if folder_id == st.session_state.selected_folder else "#ffffff"
-    
-    diagram_html += f"""
-                <div style="padding: 10px; background-color: {bg_color}; border-left: 4px solid {border_color}; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-weight: 500;">{folder_name}</div>
-                    <div style="font-size: 12px; color: #6b7280;">
-                        Connected events: {doc_event_counts.get(folder_id, 0)}
+        st.markdown(
+            f"""
+            <div style="padding: 12px; margin-bottom: 10px; border-radius: 4px; background-color: {background}; border-left: 4px solid #10b981;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 6px;">{row['event']}</div>
+                        <div>{row['date']}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div>{'<span class="badge-appellant">Appellant</span>' if row['party'] == 'Appellant' else '<span class="badge-respondent">Respondent</span>'}</div>
+                        <div style="margin-top: 5px;"><span class="badge-undisputed">Undisputed</span></div>
                     </div>
                 </div>
-    """
+                <div style="margin-top: 8px;">
+                    <div><strong>{row['related_argument']}</strong></div>
+                    <div><span class="badge-evidence">Evidence: {row['evidence']}</span> <span class="badge-document">Document {row['related_folder']}</span></div>
+                </div>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
-diagram_html += """
+# Add buttons for copy and export
+col1, col2 = st.columns([1, 10])
+with col1:
+    st.button("Copy")
+with col2:
+    st.button("Export")
+
+# Document-Event connection visualization
+st.markdown("## Document-Event Connections", unsafe_allow_html=True)
+
+# Get selected folder
+selected_folder = st.session_state.selected_folder
+selected_folder_name = next((f['name'] for f in document_folders if f['id'] == selected_folder), "Unknown")
+related_events = events_df[events_df['related_folder'] == selected_folder]
+
+# Display selected folder details
+st.markdown(f"### Selected Document: {selected_folder_name}", unsafe_allow_html=True)
+
+# Create two columns for selected document details
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("#### Document Details", unsafe_allow_html=True)
+    folder_party = next((f['party'] for f in document_folders if f['id'] == selected_folder), "Unknown")
+    
+    # Color based on party
+    color = "#3b82f6" if folder_party == "Appellant" else "#ef4444" if folder_party == "Respondent" else "#6b7280"
+    
+    st.markdown(
+        f"""
+        <div style="padding: 15px; border-radius: 6px; border-left: 4px solid {color}; background-color: #f8f9fa;">
+            <div style="font-weight: 500; margin-bottom: 10px;">{selected_folder_name}</div>
+            <div style="color: #6b7280;">
+                <div>Party: {folder_party}</div>
+                <div>Connected Events: {len(related_events)}</div>
             </div>
         </div>
-"""
+        """,
+        unsafe_allow_html=True
+    )
 
-# Center - Connections
-diagram_html += """
-        <div style="flex: 0 0 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <div style="width: 80px; height: 2px; background-color: #3b82f6;"></div>
-            <div style="width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid #3b82f6;"></div>
-        </div>
-"""
-
-# Right side - Events
-diagram_html += """
-        <div style="flex: 0 0 400px;">
-            <h4 style="margin-bottom: 15px;">Timeline Events</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-"""
-
-# Group events by status
-disputed_count = len(events_df[events_df["status"] == "Disputed"])
-undisputed_count = len(events_df[events_df["status"] == "Undisputed"])
-
-# Group events by party
-appellant_count = len(events_df[events_df["party"] == "Appellant"])
-respondent_count = len(events_df[events_df["party"] == "Respondent"])
-
-# Add event group boxes
-diagram_html += f"""
-                <div style="padding: 10px; background-color: #ffffff; border-left: 4px solid #65a30d; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-weight: 500;">Undisputed Events</div>
-                    <div style="font-size: 12px; color: #6b7280;">Count: {undisputed_count}</div>
+with col2:
+    st.markdown("#### Connected Timeline Events", unsafe_allow_html=True)
+    
+    if len(related_events) > 0:
+        for _, event in related_events.iterrows():
+            status_class = "badge-disputed" if event['status'] == "Disputed" else "badge-undisputed"
+            party_class = "badge-appellant" if event['party'] == "Appellant" else "badge-respondent"
+            
+            st.markdown(
+                f"""
+                <div style="padding: 10px; margin-bottom: 8px; border-radius: 4px; background-color: #f8f9fa; border-left: 3px solid {color};">
+                    <div style="font-weight: 500;">{event['event']}</div>
+                    <div style="display: flex; margin-top: 8px; justify-content: space-between;">
+                        <div>
+                            <span class="{status_class}">{event['status']}</span>
+                            <span class="{party_class}" style="margin-left: 5px;">{event['party']}</span>
+                        </div>
+                        <div>{event['date']}</div>
+                    </div>
                 </div>
-                <div style="padding: 10px; background-color: #ffffff; border-left: 4px solid #d97706; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-weight: 500;">Disputed Events</div>
-                    <div style="font-size: 12px; color: #6b7280;">Count: {disputed_count}</div>
-                </div>
-                <div style="padding: 10px; background-color: #ffffff; border-left: 4px solid #3b82f6; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-weight: 500;">Appellant Events</div>
-                    <div style="font-size: 12px; color: #6b7280;">Count: {appellant_count}</div>
-                </div>
-                <div style="padding: 10px; background-color: #ffffff; border-left: 4px solid #ef4444; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-weight: 500;">Respondent Events</div>
-                    <div style="font-size: 12px; color: #6b7280;">Count: {respondent_count}</div>
-                </div>
-"""
-
-diagram_html += """
-            </div>
-        </div>
-    </div>
-</div>
-"""
-
-st.markdown(diagram_html, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True
+            )
+    else:
+        st.info("No timeline events are connected to this document.")
 
 # Function to run the app
 if __name__ == "__main__":

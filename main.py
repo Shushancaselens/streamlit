@@ -208,7 +208,7 @@ with st.sidebar:
         # (The clickable divs above are just for show, as they need custom components to work properly)
         if st.button(f"{folder_name}", key=f"btn_{folder_id}", use_container_width=True):
             st.session_state.selected_folder = folder_id
-            st.experimental_rerun()
+            st.rerun()
 
 # Main content area
 st.title("Summary of arguments")
@@ -590,4 +590,3 @@ st.markdown(diagram_html, unsafe_allow_html=True)
 if __name__ == "__main__":
     # This is already running in the Streamlit app
     pass
-

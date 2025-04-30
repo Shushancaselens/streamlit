@@ -4,10 +4,10 @@ import pandas as pd
 # Set page config to match CaseLens layout
 st.set_page_config(layout="wide", page_title="CaseLens")
 
-# Custom CSS to exactly match the CaseLens interface
+# Custom CSS to EXACTLY match the CaseLens interface from the screenshots
 st.markdown("""
 <style>
-    /* Main layout and colors */
+    /* Reset and base styles */
     .main .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
@@ -16,23 +16,25 @@ st.markdown("""
     body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         color: #212529;
-        background-color: #f8f9fa;
-    }
-    h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: #212529;
-    }
-    h2 {
-        font-size: 1.4rem;
-        font-weight: 500;
-        margin-top: 1rem;
-        margin-bottom: 0.8rem;
-        color: #212529;
+        background-color: #fff;
     }
     
-    /* Sidebar styling */
+    /* Headers match exactly as in screenshot */
+    h1 {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        color: #333;
+    }
+    h2 {
+        font-size: 24px;
+        font-weight: 500;
+        margin-top: 16px;
+        margin-bottom: 16px;
+        color: #333;
+    }
+    
+    /* Sidebar styling to match the screenshot */
     [data-testid="stSidebar"] {
         background-color: #f5f6f8;
     }
@@ -57,180 +59,137 @@ st.markdown("""
         font-size: 24px;
     }
     
-    /* Table styling */
+    /* Table styling to exactly match the screenshot */
     table {
         width: 100%;
         border-collapse: collapse;
+        border: none;
+        margin-bottom: 20px;
+        font-size: 14px;
     }
-    thead tr {
-        border-bottom: 1px solid #dee2e6;
+    thead {
+        background-color: white;
     }
     th {
-        background-color: #fff;
-        font-weight: 500;
+        border-bottom: 1px solid #ddd;
+        padding: 12px 16px;
         text-align: left;
-        padding: 12px 8px;
+        font-weight: 500;
+        color: #333;
     }
     td {
-        padding: 12px 8px;
+        padding: 12px 16px;
         text-align: left;
-        border-top: 1px solid #f2f2f2;
+        border-bottom: 1px solid #eee;
     }
     tr:nth-child(even) {
-        background-color: #fbfbfb;
+        background-color: #fafafa;
+    }
+    tr:nth-child(odd) {
+        background-color: white;
     }
     
-    /* Tab styling */
+    /* Tab styling to match the screenshot */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
+        gap: 0;
+        background-color: #f8f9fa;
         border-bottom: 1px solid #dee2e6;
+        padding-left: 0;
     }
     .stTabs [data-baseweb="tab"] {
         height: 40px;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding: 10px 16px;
         font-weight: 400;
+        color: #333;
+        background-color: transparent;
+        border: none;
+        margin-right: 2px;
     }
     .stTabs [aria-selected="true"] {
         border-bottom: 2px solid #4285F4;
         font-weight: 500;
+        color: #4285F4;
     }
     
-    /* Button styling */
-    .stButton button {
-        background-color: white;
-        border: 1px solid #d0d7de;
-        border-radius: 6px;
-        padding: 8px 16px;
-        font-size: 14px;
-        color: #24292f;
-    }
+    /* Button styling to match the screenshot */
     .copy-export-container {
         display: flex;
         justify-content: flex-end;
         gap: 8px;
         margin-bottom: 12px;
     }
+    .copy-btn, .export-btn {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
     
-    /* Party styling */
+    /* Party styling to exactly match the screenshot */
     .appellant {
         background-color: rgba(66, 133, 244, 0.1);
-        color: #4285F4;
+        color: rgb(66, 133, 244);
         padding: 4px 8px;
-        border-radius: 12px;
+        border-radius: 4px;
         font-size: 13px;
         font-weight: 500;
     }
     .respondent {
         background-color: rgba(244, 67, 54, 0.1);
-        color: #F44336;
+        color: rgb(244, 67, 54);
         padding: 4px 8px;
-        border-radius: 12px;
+        border-radius: 4px;
         font-size: 13px;
         font-weight: 500;
     }
     
-    /* Status styling */
+    /* Status styling to match the screenshot */
     .disputed {
-        color: #F44336;
+        color: rgb(244, 67, 54);
         font-weight: 500;
     }
     .undisputed {
-        color: #24292f;
+        color: #333;
         font-weight: 500;
     }
     
-    /* Evidence styling */
+    /* Evidence styling to exactly match the screenshot */
     .evidence-tag {
-        color: #F44336;
         font-weight: 500;
         font-family: monospace;
     }
-    .evidence-tag-c {
-        color: #F44336;
+    .evidence-c {
+        color: rgb(244, 67, 54);
     }
-    .evidence-tag-r {
-        color: #FF9800;
+    .evidence-r {
+        color: rgb(244, 67, 54);
     }
     
-    /* Document folder styling */
+    /* Document folder styling to match the screenshot */
     .folder {
         display: flex;
         align-items: center;
-        padding: 8px 16px;
-        background-color: white;
+        padding: 10px 12px;
+        background-color: transparent;
         margin-bottom: 2px;
-        border-radius: 4px;
         cursor: pointer;
     }
     .folder:hover {
-        background-color: #f0f6ff;
-    }
-    .folder-appellant {
-        background-color: rgba(66, 133, 244, 0.1);
-    }
-    .folder-respondent {
-        background-color: rgba(244, 67, 54, 0.1);
+        background-color: rgba(0, 0, 0, 0.05);
     }
     .folder-icon {
-        color: #4285F4;
+        color: rgb(66, 133, 244);
         margin-right: 8px;
     }
     .folder-icon-respondent {
-        color: #F44336;
+        color: rgb(244, 67, 54);
     }
     
-    /* Document-event connection styling */
-    .connection-container {
-        background-color: white;
-        border-radius: 8px;
-        padding: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        margin-bottom: 16px;
-    }
-    .connection-header {
-        font-weight: 500;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-    }
-    .connection-item {
-        display: flex;
-        padding: 12px;
-        border-bottom: 1px solid #f2f2f2;
-        align-items: center;
-    }
-    .connection-document {
-        width: 30%;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-    }
-    .connection-events {
-        width: 70%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .connection-event {
-        background-color: #f2f2f2;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-    }
-    .connection-event-appellant {
-        background-color: rgba(66, 133, 244, 0.1);
-        color: #4285F4;
-    }
-    .connection-event-respondent {
-        background-color: rgba(244, 67, 54, 0.1);
-        color: #F44336;
-    }
-    .connection-event-disputed {
-        border: 1px dashed #F44336;
-    }
-    
-    /* Hide default elements */
+    /* Hide default Streamlit elements */
     div[data-testid="stToolbar"] {
         visibility: hidden;
         height: 0%;
@@ -245,139 +204,137 @@ st.markdown("""
         visibility: hidden;
     }
     
-    /* Document connections matrix */
-    .matrix-container {
-        overflow-x: auto;
-        background-color: white;
-        border-radius: 8px;
-        padding: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    /* Document list to match screenshot */
+    .doc-list {
+        background-color: #fff;
+        border-radius: 4px;
     }
-    .matrix-table {
-        width: 100%;
-        border-collapse: collapse;
+    .doc-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #f2f2f2;
     }
-    .matrix-table th {
+    .doc-item:last-child {
+        border-bottom: none;
+    }
+    .doc-item:hover {
         background-color: #f5f6f8;
-        padding: 8px;
-        text-align: center;
-        font-weight: 500;
-        font-size: 13px;
     }
-    .matrix-table td {
-        padding: 8px;
-        text-align: center;
-        border: 1px solid #f2f2f2;
-    }
-    .matrix-connected {
-        background-color: rgba(66, 133, 244, 0.2);
-        color: #4285F4;
-        font-weight: bold;
-    }
-    .matrix-connected-respondent {
-        background-color: rgba(244, 67, 54, 0.2);
-        color: #F44336;
-        font-weight: bold;
-    }
-    .matrix-disputed {
-        border: 2px dashed #F44336;
+    .doc-icon {
+        margin-right: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar with CaseLens logo and navigation
+# Sidebar with CaseLens logo and navigation to match screenshot exactly
 with st.sidebar:
     st.markdown("""
-    <div class="sidebar-title">
-        <div class="logo-container">
+    <div style="display: flex; align-items: center; margin-bottom: 24px; padding: 12px 0;">
+        <div style="background-color: rgb(66, 133, 244); width: 40px; height: 40px; display: flex; 
+                justify-content: center; align-items: center; border-radius: 4px; margin-right: 10px;">
             <span style="color: white; font-weight: bold; font-size: 20px;">C</span>
         </div>
-        <span class="logo-text">CaseLens</span>
+        <span style="color: rgb(66, 133, 244); font-weight: bold; font-size: 20px;">CaseLens</span>
+    </div>
+    
+    <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 8px; color: #333;">Legal Analysis</h3>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
-    
-    # Navigation items styled to match the screenshot
+    # Navigation items styled to match the screenshot exactly
     st.markdown("""
-    <div>
-        <div class="folder">
-            <span style="margin-right: 8px;">📄</span> Arguments
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: #555;">📄</span>
+            <span style="color: #555;">Arguments</span>
         </div>
-        <div class="folder" style="background-color: rgba(66, 133, 244, 0.1);">
-            <span style="margin-right: 8px;">📊</span> Facts
+        <div style="display: flex; align-items: center; padding: 10px; background-color: #f0f6ff; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: #555;">📊</span>
+            <span style="color: #555;">Facts</span>
         </div>
-        <div class="folder">
-            <span style="margin-right: 8px;">📋</span> Exhibits
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: #555;">📋</span>
+            <span style="color: #555;">Exhibits</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Document folder structure
-    st.markdown("<h4 style='margin-top: 20px;'>Case Documents</h4>", unsafe_allow_html=True)
-    
-    # Appellant documents
+    # Document folder structure to exactly match the screenshot
     st.markdown("""
-    <div>
-        <div class="folder folder-appellant">
-            <span class="folder-icon">📁</span> 1. Statement of Appeal
+    <div style="margin-top: 20px;">
+        <div style="display: flex; align-items: center; padding: 10px; background-color: #f0f6ff; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>1. Statement of Appeal</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon folder-icon-respondent">📁</span> 2. Request for a Stay
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>2. Request for a Stay</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon folder-icon-respondent">📁</span> 3. Answer to Request for PM
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>3. Answer to Request for PM</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon folder-icon-respondent">📁</span> 4. Answer to PM
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>4. Answer to PM</span>
         </div>
-        <div class="folder folder-appellant">
-            <span class="folder-icon">📁</span> 5. Appeal Brief
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>5. Appeal Brief</span>
         </div>
-        <div class="folder folder-appellant">
-            <span class="folder-icon">📁</span> 6. Brief on Admissibility
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>6. Brief on Admissibility</span>
         </div>
-        <div class="folder folder-appellant">
-            <span class="folder-icon">📁</span> 7. Reply to Objection to Admissibility
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>7. Reply to Objection to Admissibility</span>
         </div>
-        <div class="folder folder-appellant">
-            <span class="folder-icon">📁</span> 8. Challenge
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>8. Challenge</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon">📁</span> ChatGPT
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>ChatGPT</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon">📁</span> Jurisprudence
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>Jurisprudence</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon folder-icon-respondent">📁</span> Objection to Admissibility
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>Objection to Admissibility</span>
         </div>
-        <div class="folder">
-            <span class="folder-icon">📁</span> Swiss Court
+        <div style="display: flex; align-items: center; padding: 10px; background-color: white; margin-bottom: 2px; border-radius: 4px;">
+            <span style="margin-right: 8px; color: rgb(66, 133, 244);">📁</span>
+            <span>Swiss Court</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# Main content area
+# Main content area with exact style match from screenshot
 st.markdown("<h1>Summary of arguments</h1>", unsafe_allow_html=True)
 
 # Case Facts section with title and Copy/Export buttons
 st.markdown("<h2>Case Facts</h2>", unsafe_allow_html=True)
 st.markdown("""
-<div class="copy-export-container">
-    <button class="copy-btn">
+<div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 16px;">
+    <button style="background-color: white; border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; font-size: 14px; display: flex; align-items: center;">
         <span style="margin-right: 5px;">📋</span> Copy
     </button>
-    <button class="export-btn">
+    <button style="background-color: white; border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; font-size: 14px; display: flex; align-items: center;">
         <span style="margin-right: 5px;">⬇️</span> Export
     </button>
 </div>
 """, unsafe_allow_html=True)
 
-# Create tabs for All Facts, Disputed Facts, Undisputed Facts
+# Create tabs exactly as in the screenshot
 tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
 
-# Case facts data exactly matching the screenshot
+# Create case facts DataFrame exactly matching the screenshot
 facts_data = {
     "Date": ["1950-present", "1950", "1950-present", "1950-1975", "1970-1980", "1975-1976", "1975-1976"],
     "Event": [
@@ -419,92 +376,195 @@ documents = [
     {"name": "Swiss Court", "type": "other", "related_events": []}
 ]
 
-# Create a DataFrame
+# Create DataFrames
 df = pd.DataFrame(facts_data)
 
-# Display data in the tabs
+# Display data in the tabs with exact styling from screenshot
 with tabs[0]:  # All Facts
-    # Format the DataFrame to match the exact styling from the screenshot
-    html_table = df.to_html(index=False, escape=False)
+    # Custom HTML table to exactly match the screenshot
+    table_html = """
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Date</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Event</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Party</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Status</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Related Argument</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Evidence</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
     
-    # Replace with styled content
-    html_table = html_table.replace('<td>Appellant</td>', '<td><span class="appellant">Appellant</span></td>')
-    html_table = html_table.replace('<td>Respondent</td>', '<td><span class="respondent">Respondent</span></td>')
-    html_table = html_table.replace('<td>Disputed</td>', '<td><span class="disputed">Disputed</span></td>')
-    html_table = html_table.replace('<td>Undisputed</td>', '<td><span class="undisputed">Undisputed</span></td>')
-    
-    # Format evidence tags with color
-    for i, evidence in enumerate(["C-1", "C-2", "C-4", "R-5", "C-5", "C-2", "R-1"]):
-        if evidence.startswith("C-"):
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-c">{evidence}</span></td>')
+    # Add rows with exact styling
+    for i, row in df.iterrows():
+        bg_color = "#f9f9fa" if i % 2 == 1 else "white"
+        
+        # Format the party tag to match screenshot exactly
+        if row["Party"] == "Appellant":
+            party_html = '<span style="background-color: rgba(66, 133, 244, 0.1); color: rgb(66, 133, 244); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Appellant</span>'
         else:
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-r">{evidence}</span></td>')
+            party_html = '<span style="background-color: rgba(244, 67, 54, 0.1); color: rgb(244, 67, 54); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Respondent</span>'
+        
+        # Format the status to match screenshot exactly
+        if row["Status"] == "Disputed":
+            status_html = '<span style="color: rgb(244, 67, 54); font-weight: 500;">Disputed</span>'
+        else:
+            status_html = '<span style="font-weight: 500;">Undisputed</span>'
+        
+        # Format the evidence tag to match screenshot exactly
+        evidence = row["Evidence"]
+        if evidence.startswith("C-"):
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        else:
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        
+        table_html += f"""
+        <tr style="background-color: {bg_color};">
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Date"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Event"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{party_html}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{status_html}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Related Argument"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{evidence_html}</td>
+        </tr>
+        """
     
-    st.markdown(f"""
-    <div style="overflow-x: auto;">
-        {html_table}
-    </div>
-    """, unsafe_allow_html=True)
+    table_html += """
+        </tbody>
+    </table>
+    """
+    
+    st.markdown(table_html, unsafe_allow_html=True)
 
 with tabs[1]:  # Disputed Facts
+    # Filter for disputed facts
     disputed_df = df[df['Status'] == 'Disputed']
     
-    html_table = disputed_df.to_html(index=False, escape=False)
+    # Custom HTML table for disputed facts
+    table_html = """
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Date</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Event</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Party</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Status</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Related Argument</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Evidence</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
     
-    # Replace with styled content
-    html_table = html_table.replace('<td>Appellant</td>', '<td><span class="appellant">Appellant</span></td>')
-    html_table = html_table.replace('<td>Respondent</td>', '<td><span class="respondent">Respondent</span></td>')
-    html_table = html_table.replace('<td>Disputed</td>', '<td><span class="disputed">Disputed</span></td>')
-    
-    # Format evidence tags with color
-    for evidence in ["C-4", "C-2", "R-1"]:
-        if evidence.startswith("C-"):
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-c">{evidence}</span></td>')
+    # Add rows with exact styling
+    for i, row in disputed_df.iterrows():
+        bg_color = "#f9f9fa" if i % 2 == 1 else "white"
+        
+        # Format the party tag to match screenshot exactly
+        if row["Party"] == "Appellant":
+            party_html = '<span style="background-color: rgba(66, 133, 244, 0.1); color: rgb(66, 133, 244); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Appellant</span>'
         else:
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-r">{evidence}</span></td>')
+            party_html = '<span style="background-color: rgba(244, 67, 54, 0.1); color: rgb(244, 67, 54); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Respondent</span>'
+        
+        # Format the evidence tag to match screenshot exactly
+        evidence = row["Evidence"]
+        if evidence.startswith("C-"):
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        else:
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        
+        table_html += f"""
+        <tr style="background-color: {bg_color};">
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Date"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Event"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{party_html}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;"><span style="color: rgb(244, 67, 54); font-weight: 500;">Disputed</span></td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Related Argument"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{evidence_html}</td>
+        </tr>
+        """
     
-    st.markdown(f"""
-    <div style="overflow-x: auto;">
-        {html_table}
-    </div>
-    """, unsafe_allow_html=True)
+    table_html += """
+        </tbody>
+    </table>
+    """
+    
+    st.markdown(table_html, unsafe_allow_html=True)
 
 with tabs[2]:  # Undisputed Facts
+    # Filter for undisputed facts
     undisputed_df = df[df['Status'] == 'Undisputed']
     
-    html_table = undisputed_df.to_html(index=False, escape=False)
+    # Custom HTML table for undisputed facts
+    table_html = """
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Date</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Event</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Party</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Status</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Related Argument</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6;">Evidence</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
     
-    # Replace with styled content
-    html_table = html_table.replace('<td>Appellant</td>', '<td><span class="appellant">Appellant</span></td>')
-    html_table = html_table.replace('<td>Respondent</td>', '<td><span class="respondent">Respondent</span></td>')
-    html_table = html_table.replace('<td>Undisputed</td>', '<td><span class="undisputed">Undisputed</span></td>')
-    
-    # Format evidence tags with color
-    for evidence in ["C-1", "C-2", "R-5", "C-5"]:
-        if evidence.startswith("C-"):
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-c">{evidence}</span></td>')
+    # Add rows with exact styling
+    for i, row in undisputed_df.iterrows():
+        bg_color = "#f9f9fa" if i % 2 == 1 else "white"
+        
+        # Format the party tag to match screenshot exactly
+        if row["Party"] == "Appellant":
+            party_html = '<span style="background-color: rgba(66, 133, 244, 0.1); color: rgb(66, 133, 244); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Appellant</span>'
         else:
-            html_table = html_table.replace(f'<td>{evidence}</td>', f'<td><span class="evidence-tag evidence-tag-r">{evidence}</span></td>')
+            party_html = '<span style="background-color: rgba(244, 67, 54, 0.1); color: rgb(244, 67, 54); padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 500;">Respondent</span>'
+        
+        # Format the evidence tag to match screenshot exactly
+        evidence = row["Evidence"]
+        if evidence.startswith("C-"):
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        else:
+            evidence_html = f'<span style="color: rgb(244, 67, 54); font-weight: 500;">{evidence}</span>'
+        
+        table_html += f"""
+        <tr style="background-color: {bg_color};">
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Date"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Event"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{party_html}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;"><span style="font-weight: 500;">Undisputed</span></td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{row["Related Argument"]}</td>
+            <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">{evidence_html}</td>
+        </tr>
+        """
     
-    st.markdown(f"""
-    <div style="overflow-x: auto;">
-        {html_table}
-    </div>
-    """, unsafe_allow_html=True)
+    table_html += """
+        </tbody>
+    </table>
+    """
+    
+    st.markdown(table_html, unsafe_allow_html=True)
 
-# Document-Event Connection Visualization (custom section)
+# Document-Event Connection Visualization styled to match CaseLens exactly
 st.markdown("<h2>Document-Event Connections</h2>", unsafe_allow_html=True)
 
-# Connection display for each document
+# Document-event connections in a table format matching CaseLens style
 st.markdown("""
-<div class="connection-container">
-    <div class="connection-header">
-        <span>Document</span>
-        <span>Connected Events</span>
-    </div>
+<div style="background-color: white; border-radius: 4px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6; width: 30%;">Document</th>
+                <th style="text-align: left; padding: 12px 16px; border-bottom: 1px solid #dee2e6; width: 70%;">Related Events</th>
+            </tr>
+        </thead>
+        <tbody>
 """, unsafe_allow_html=True)
 
-# Iterate through documents with related events
+# Generate document event connections
 for doc in documents:
     if not doc["related_events"]:
         continue
@@ -514,105 +574,71 @@ for doc in documents:
     for event_date in doc["related_events"]:
         events = df[df["Date"] == event_date]
         for _, event in events.iterrows():
-            event_class = "connection-event-appellant" if event["Party"] == "Appellant" else "connection-event-respondent"
-            disputed_class = "connection-event-disputed" if event["Status"] == "Disputed" else ""
-            related_events_html += f'<span class="connection-event {event_class} {disputed_class}">{event_date}: {event["Event"][:30]}{"..." if len(event["Event"]) > 30 else ""}</span>'
+            # Style based on party and disputed status
+            if event["Party"] == "Appellant":
+                event_class = "background-color: rgba(66, 133, 244, 0.1); color: rgb(66, 133, 244);"
+            else:
+                event_class = "background-color: rgba(244, 67, 54, 0.1); color: rgb(244, 67, 54);"
+            
+            # Add border for disputed items
+            if event["Status"] == "Disputed":
+                event_border = "border: 1px dashed rgb(244, 67, 54);"
+            else:
+                event_border = ""
+            
+            related_events_html += f"""
+            <span style="display: inline-block; margin: 2px 4px; padding: 4px 8px; border-radius: 12px; font-size: 12px; {event_class} {event_border}">
+                {event_date}: {event["Event"][:30]}{"..." if len(event["Event"]) > 30 else ""}
+            </span>
+            """
     
-    # Determine document class based on type
-    doc_class = ""
-    icon_class = "folder-icon"
+    # Determine document icon and style
     if doc["type"] == "appellant":
-        doc_class = "connection-document-appellant"
-        icon_class = "folder-icon"
+        doc_color = "rgb(66, 133, 244)"
     elif doc["type"] == "respondent":
-        doc_class = "connection-document-respondent"
-        icon_class = "folder-icon-respondent"
+        doc_color = "rgb(244, 67, 54)"
+    else:
+        doc_color = "#555"
     
     st.markdown(f"""
-    <div class="connection-item">
-        <div class="connection-document {doc_class}">
-            <span class="{icon_class}" style="margin-right:8px;">📁</span>
-            {doc["name"]}
-        </div>
-        <div class="connection-events">
-            {related_events_html}
-        </div>
-    </div>
+    <tr>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2; vertical-align: top;">
+            <div style="display: flex; align-items: center;">
+                <span style="color: {doc_color}; margin-right: 8px;">📁</span>
+                <span>{doc["name"]}</span>
+            </div>
+        </td>
+        <td style="padding: 12px 16px; border-bottom: 1px solid #f2f2f2;">
+            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                {related_events_html}
+            </div>
+        </td>
+    </tr>
     """, unsafe_allow_html=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Document-Event Matrix visualization
-st.markdown("<h2>Document-Event Matrix</h2>", unsafe_allow_html=True)
-
-# Create a matrix to show all connections
-st.markdown('<div class="matrix-container">', unsafe_allow_html=True)
-
-# Events for column headers
-events = []
-for date in facts_data["Date"]:
-    matching_events = df[df["Date"] == date]
-    for _, event in matching_events.iterrows():
-        events.append({
-            "date": event["Date"],
-            "name": event["Event"],
-            "party": event["Party"],
-            "status": event["Status"]
-        })
-
-# Generate HTML for matrix
-matrix_html = '<table class="matrix-table"><tr><th>Document / Event</th>'
-for event in events:
-    matrix_html += f'<th>{event["date"]}<br/>{event["name"][:20]}...</th>'
-matrix_html += '</tr>'
-
-# Rows for each document
-for doc in documents:
-    if doc["type"] == "other":
-        continue
-    
-    matrix_html += f'<tr><td><span class="{"folder-icon" if doc["type"] == "appellant" else "folder-icon-respondent"}" style="margin-right:8px;">📁</span> {doc["name"]}</td>'
-    
-    # Check each event for connection
-    for event in events:
-        is_connected = event["date"] in doc["related_events"]
-        is_disputed = event["status"] == "Disputed"
-        
-        if is_connected:
-            cell_class = "matrix-connected" if doc["type"] == "appellant" else "matrix-connected-respondent"
-            disputed_class = "matrix-disputed" if is_disputed else ""
-            matrix_html += f'<td class="{cell_class} {disputed_class}">✓</td>'
-        else:
-            matrix_html += '<td></td>'
-    
-    matrix_html += '</tr>'
-
-matrix_html += '</table>'
-st.markdown(matrix_html, unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Legend for the visualizations
 st.markdown("""
-<div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; background-color: white; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="appellant" style="width:12px; height:12px; border-radius:50%; display:inline-block;"></span>
-        <span>Appellant Document</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="respondent" style="width:12px; height:12px; border-radius:50%; display:inline-block;"></span>
-        <span>Respondent Document</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width:12px; height:12px; border:2px dashed #F44336; border-radius:50%; display:inline-block;"></span>
-        <span>Disputed Fact</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="evidence-tag-c" style="font-weight:bold;">C-#</span>
-        <span>Appellant Evidence</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="evidence-tag-r" style="font-weight:bold;">R-#</span>
-        <span>Respondent Evidence</span>
+        </tbody>
+    </table>
+</div>
+""", unsafe_allow_html=True)
+
+# Summary section - styled to match CaseLens
+st.markdown("""
+<div style="background-color: white; border-radius: 4px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+    <h3 style="font-size: 16px; margin-bottom: 12px;">Event Legend</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background-color: rgba(66, 133, 244, 0.1); width: 16px; height: 16px; border-radius: 4px;"></span>
+            <span>Appellant</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background-color: rgba(244, 67, 54, 0.1); width: 16px; height: 16px; border-radius: 4px;"></span>
+            <span>Respondent</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 16px; height: 16px; border: 1px dashed rgb(244, 67, 54); border-radius: 4px;"></span>
+            <span>Disputed Fact</span>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)

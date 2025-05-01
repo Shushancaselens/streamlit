@@ -301,80 +301,502 @@ with tab2:
 with tab3:
     st.markdown("### Connected Timeline View")
     
+    # Add additional CSS for the improved connected view
+    st.markdown("""
+    <style>
+        .year-header {
+            background-color: #f1f3f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .month-header {
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .timeline-controls {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .event-counter {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 5px;
+        }
+        .timeline-container {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .compact-timeline .timeline-item {
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+        .timeline-connector {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #ddd;
+            z-index: -1;
+        }
+        .timeline-event-compact {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+        .timeline-date-compact {
+            width: 120px;
+            flex-shrink: 0;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        .timeline-content-compact {
+            flex-grow: 1;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Create control panel for filters
+    st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # Filter by party
+        party_filter = st.multiselect(
+            "Filter by Party:",
+            options=["All", "Appellant", "Respondent", "N/A"],
+            default=["All"]
+        )
+    
+    with col2:
+        # Filter by status
+        status_filter = st.multiselect(
+            "Filter by Status:",
+            options=["All", "Disputed", "Undisputed"],
+            default=["All"]
+        )
+    
+    with col3:
+        # Filter by date range
+        min_date = pd.to_datetime(df_events["date"].min())
+        max_date = pd.to_datetime(df_events["date"].max())
+        
+        date_range = st.date_input(
+            "Date Range:",
+            value=(min_date, max_date),
+            min_value=min_date,
+            max_value=max_date
+        )
+    
+    # Search functionality
+    search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
+    
+    # Display options
+    col1, col2 = st.columns(2)
+    with col1:
+        view_mode = st.radio(
+            "View Mode:",
+            options=["By Document", "By Timeline"],
+            horizontal=True
+        )
+    with col2:
+        display_mode = st.radio(
+            "Display Mode:",
+            options=["Compact", "Detailed"],
+            horizontal=True
+        )
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+    
     # Create a visualization showing documents and their connected events
     timeline_data = []
     
-    # Group events by document
-    document_events = df_events.groupby("document_id")
+    # Convert date strings to datetime for filtering
+    df_events["datetime"] = pd.to_datetime(df_events["date"])
     
-    # Create timeline data
-    for doc_id, events in document_events:
-        doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
+    # Apply filters
+    filtered_events = df_events.copy()
+    
+    # Party filter
+    if "All" not in party_filter:
+        filtered_events = filtered_events[filtered_events["party"].isin(party_filter)]
+    
+    # Status filter
+    if "All" not in status_filter:
+        filtered_events = filtered_events[filtered_events["status"].isin(status_filter)]
+    
+    # Date range filter
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+        filtered_events = filtered_events[
+            (filtered_events["datetime"] >= pd.to_datetime(start_date)) & 
+            (filtered_events["datetime"] <= pd.to_datetime(end_date))
+        ]
+    
+    # Search term filter
+    if search_term:
+        search_term = search_term.lower()
+        filtered_events = filtered_events[
+            filtered_events["event"].str.lower().str.contains(search_term) | 
+            filtered_events["argument"].str.lower().str.contains(search_term)
+        ]
+    
+    # Group events by document
+    if view_mode == "By Document":
+        document_events = filtered_events.groupby("document_id")
         
-        # Get timeline events for this document
-        doc_timeline = []
-        for _, event in events.iterrows():
-            doc_timeline.append({
+        # Create timeline data
+        for doc_id, events in document_events:
+            doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
+            
+            # Get timeline events for this document
+            doc_timeline = []
+            for _, event in events.iterrows():
+                doc_timeline.append({
+                    "date": event["date"],
+                    "datetime": event["datetime"],
+                    "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
+                    "event": event["event"],
+                    "party": event["party"],
+                    "status": event["status"],
+                    "argument": event["argument"],
+                    "evidence": event["evidence"]
+                })
+            
+            # Sort events by date
+            doc_timeline = sorted(doc_timeline, key=lambda x: x["datetime"])
+            
+            timeline_data.append({
+                "document": doc_info["name"],
+                "party": doc_info["party"],
+                "events": doc_timeline
+            })
+        
+        # Display the connected timeline
+        st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
+        for doc in timeline_data:
+            # Create expandable section for each document
+            with st.expander(f"{doc['document']} ({len(doc['events'])} events)"):
+                # Style based on party
+                party_class = ""
+                if doc["party"] == "Appellant":
+                    party_class = "appellant"
+                elif doc["party"] == "Respondent":
+                    party_class = "respondent"
+                
+                st.markdown(f"<span class='party-tag {party_class}'>{doc['party']}</span>", unsafe_allow_html=True)
+                
+                if not doc["events"]:
+                    st.info("No events match the current filters.")
+                    continue
+                
+                # Group events by year and month if there are many
+                if len(doc["events"]) > 5:
+                    # Group by year
+                    years = {}
+                    for event in doc["events"]:
+                        year = event["datetime"].year
+                        if year not in years:
+                            years[year] = []
+                        years[year].append(event)
+                    
+                    # Display events grouped by year
+                    for year in sorted(years.keys()):
+                        st.markdown(f"<div class='year-header'>{year} ({len(years[year])} events)</div>", unsafe_allow_html=True)
+                        
+                        # Display events for this year
+                        if display_mode == "Compact":
+                            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
+                            for event in years[year]:
+                                # Format the date range
+                                if event["end_date"]:
+                                    date_display = f"{event['date']} to {event['end_date']}"
+                                else:
+                                    date_display = event["date"]
+                                
+                                # Format status
+                                status_class = ""
+                                if event["status"] == "Disputed":
+                                    status_class = "disputed"
+                                elif event["status"] == "Undisputed":
+                                    status_class = "undisputed"
+                                
+                                # Create compact timeline item
+                                timeline_html = f"""
+                                <div class="timeline-event-compact">
+                                    <div class="timeline-date-compact">{date_display}</div>
+                                    <div class="timeline-content-compact">
+                                        <strong>{event["event"]}</strong>
+                                        <div style="margin-top: 2px;">
+                                            <span class="status-tag {status_class}">{event["status"]}</span>
+                                            <span class="evidence-tag">{event["evidence"]}</span>
+                                            <span>{event["argument"]}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                """
+                                st.markdown(timeline_html, unsafe_allow_html=True)
+                            st.markdown("</div>", unsafe_allow_html=True)
+                        else:
+                            # Detailed view
+                            for event in years[year]:
+                                # Format the date range
+                                if event["end_date"]:
+                                    date_display = f"{event['date']} to {event['end_date']}"
+                                else:
+                                    date_display = event["date"]
+                                
+                                # Format status
+                                status_class = ""
+                                if event["status"] == "Disputed":
+                                    status_class = "disputed"
+                                elif event["status"] == "Undisputed":
+                                    status_class = "undisputed"
+                                
+                                # Create timeline item
+                                timeline_html = f"""
+                                <div class="timeline-item">
+                                    <div class="timeline-date">{date_display}</div>
+                                    <div class="timeline-event">
+                                        <strong>{event["event"]}</strong>
+                                    </div>
+                                    <div style="margin-top: 5px;">
+                                        <span class="status-tag {status_class}">{event["status"]}</span>
+                                        <span class="evidence-tag">{event["evidence"]}</span>
+                                    </div>
+                                    <div style="margin-top: 5px;">
+                                        <span>{event["argument"]}</span>
+                                    </div>
+                                </div>
+                                """
+                                st.markdown(timeline_html, unsafe_allow_html=True)
+                else:
+                    # Display events without grouping for smaller sets
+                    if display_mode == "Compact":
+                        st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
+                        for event in doc["events"]:
+                            # Format the date range
+                            if event["end_date"]:
+                                date_display = f"{event['date']} to {event['end_date']}"
+                            else:
+                                date_display = event["date"]
+                            
+                            # Format status
+                            status_class = ""
+                            if event["status"] == "Disputed":
+                                status_class = "disputed"
+                            elif event["status"] == "Undisputed":
+                                status_class = "undisputed"
+                            
+                            # Create compact timeline item
+                            timeline_html = f"""
+                            <div class="timeline-event-compact">
+                                <div class="timeline-date-compact">{date_display}</div>
+                                <div class="timeline-content-compact">
+                                    <strong>{event["event"]}</strong>
+                                    <div style="margin-top: 2px;">
+                                        <span class="status-tag {status_class}">{event["status"]}</span>
+                                        <span class="evidence-tag">{event["evidence"]}</span>
+                                        <span>{event["argument"]}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            """
+                            st.markdown(timeline_html, unsafe_allow_html=True)
+                        st.markdown("</div>", unsafe_allow_html=True)
+                    else:
+                        # Detailed view
+                        for event in doc["events"]:
+                            # Format the date range
+                            if event["end_date"]:
+                                date_display = f"{event['date']} to {event['end_date']}"
+                            else:
+                                date_display = event["date"]
+                            
+                            # Format status
+                            status_class = ""
+                            if event["status"] == "Disputed":
+                                status_class = "disputed"
+                            elif event["status"] == "Undisputed":
+                                status_class = "undisputed"
+                            
+                            # Create timeline item
+                            timeline_html = f"""
+                            <div class="timeline-item">
+                                <div class="timeline-date">{date_display}</div>
+                                <div class="timeline-event">
+                                    <strong>{event["event"]}</strong>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span class="status-tag {status_class}">{event["status"]}</span>
+                                    <span class="evidence-tag">{event["evidence"]}</span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span>{event["argument"]}</span>
+                                </div>
+                            </div>
+                            """
+                            st.markdown(timeline_html, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    else:  # View mode: By Timeline
+        # Convert to pandas DataFrame for easier manipulation
+        all_events = []
+        for _, event in filtered_events.iterrows():
+            doc_info = df_folders[df_folders["id"] == event["document_id"]].iloc[0]
+            
+            all_events.append({
                 "date": event["date"],
+                "datetime": event["datetime"],
                 "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
                 "event": event["event"],
                 "party": event["party"],
                 "status": event["status"],
                 "argument": event["argument"],
-                "evidence": event["evidence"]
+                "evidence": event["evidence"],
+                "document": doc_info["name"],
+                "document_party": doc_info["party"]
             })
         
-        timeline_data.append({
-            "document": doc_info["name"],
-            "party": doc_info["party"],
-            "events": doc_timeline
-        })
-    
-    # Display the connected timeline
-    for doc in timeline_data:
-        # Create expandable section for each document
-        with st.expander(f"{doc['document']} ({len(doc['events'])} events)"):
-            # Style based on party
-            party_class = ""
-            if doc["party"] == "Appellant":
-                party_class = "appellant"
-            elif doc["party"] == "Respondent":
-                party_class = "respondent"
+        # Sort events by date
+        all_events = sorted(all_events, key=lambda x: x["datetime"])
+        
+        if not all_events:
+            st.info("No events match the current filters.")
+        else:
+            # Display events grouped by year
+            events_by_year = {}
+            for event in all_events:
+                year = event["datetime"].year
+                if year not in events_by_year:
+                    events_by_year[year] = []
+                events_by_year[year].append(event)
             
-            st.markdown(f"<span class='party-tag {party_class}'>{doc['party']}</span>", unsafe_allow_html=True)
-            
-            # Display events in a timeline
-            for event in doc["events"]:
-                # Format the date range
-                if event["end_date"]:
-                    date_display = f"{event['date']} to {event['end_date']}"
-                else:
-                    date_display = event["date"]
+            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
+            for year in sorted(events_by_year.keys()):
+                st.markdown(f"<div class='year-header'>{year} ({len(events_by_year[year])} events)</div>", unsafe_allow_html=True)
                 
-                # Format status
-                status_class = ""
-                if event["status"] == "Disputed":
-                    status_class = "disputed"
-                elif event["status"] == "Undisputed":
-                    status_class = "undisputed"
+                # Group by month within the year
+                events_by_month = {}
+                for event in events_by_year[year]:
+                    month = event["datetime"].month
+                    if month not in events_by_month:
+                        events_by_month[month] = []
+                    events_by_month[month].append(event)
                 
-                # Create timeline item
-                timeline_html = f"""
-                <div class="timeline-item">
-                    <div class="timeline-date">{date_display}</div>
-                    <div class="timeline-event">
-                        <strong>{event["event"]}</strong>
-                    </div>
-                    <div style="margin-top: 5px;">
-                        <span class="status-tag {status_class}">{event["status"]}</span>
-                        <span class="evidence-tag">{event["evidence"]}</span>
-                    </div>
-                    <div style="margin-top: 5px;">
-                        <span>{event["argument"]}</span>
-                    </div>
-                </div>
-                """
-                st.markdown(timeline_html, unsafe_allow_html=True)
+                for month in sorted(events_by_month.keys()):
+                    month_name = pd.to_datetime(f"{year}-{month}-01").strftime("%B")
+                    st.markdown(f"<div class='month-header'>{month_name} ({len(events_by_month[month])} events)</div>", unsafe_allow_html=True)
+                    
+                    # Display events for this month
+                    if display_mode == "Compact":
+                        st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
+                        for event in events_by_month[month]:
+                            # Format the date range
+                            if event["end_date"]:
+                                date_display = f"{event['date']} to {event['end_date']}"
+                            else:
+                                date_display = event["date"]
+                            
+                            # Format status
+                            status_class = ""
+                            if event["status"] == "Disputed":
+                                status_class = "disputed"
+                            elif event["status"] == "Undisputed":
+                                status_class = "undisputed"
+                            
+                            # Format document party
+                            doc_party_class = ""
+                            if event["document_party"] == "Appellant":
+                                doc_party_class = "appellant"
+                            elif event["document_party"] == "Respondent":
+                                doc_party_class = "respondent"
+                            
+                            # Create compact timeline item
+                            timeline_html = f"""
+                            <div class="timeline-event-compact">
+                                <div class="timeline-date-compact">{date_display}</div>
+                                <div class="timeline-content-compact">
+                                    <strong>{event["event"]}</strong>
+                                    <div style="margin-top: 2px;">
+                                        <span class="status-tag {status_class}">{event["status"]}</span>
+                                        <span class="evidence-tag">{event["evidence"]}</span>
+                                        <span class="party-tag {doc_party_class}">{event["document_party"]}</span>
+                                    </div>
+                                    <div style="margin-top: 2px; font-size: 0.9em;">
+                                        Document: {event["document"]}
+                                    </div>
+                                    <div style="margin-top: 2px; font-size: 0.9em;">
+                                        {event["argument"]}
+                                    </div>
+                                </div>
+                            </div>
+                            """
+                            st.markdown(timeline_html, unsafe_allow_html=True)
+                        st.markdown("</div>", unsafe_allow_html=True)
+                    else:
+                        # Detailed view
+                        for event in events_by_month[month]:
+                            # Format the date range
+                            if event["end_date"]:
+                                date_display = f"{event['date']} to {event['end_date']}"
+                            else:
+                                date_display = event["date"]
+                            
+                            # Format status
+                            status_class = ""
+                            if event["status"] == "Disputed":
+                                status_class = "disputed"
+                            elif event["status"] == "Undisputed":
+                                status_class = "undisputed"
+                            
+                            # Format document party
+                            doc_party_class = ""
+                            if event["document_party"] == "Appellant":
+                                doc_party_class = "appellant"
+                            elif event["document_party"] == "Respondent":
+                                doc_party_class = "respondent"
+                            
+                            # Create timeline item
+                            timeline_html = f"""
+                            <div class="timeline-item">
+                                <div class="timeline-date">{date_display}</div>
+                                <div class="timeline-event">
+                                    <strong>{event["event"]}</strong>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span class="status-tag {status_class}">{event["status"]}</span>
+                                    <span class="evidence-tag">{event["evidence"]}</span>
+                                    <span class="party-tag {doc_party_class}">{event["document_party"]}</span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    Document: {event["document"]}
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    {event["argument"]}
+                                </div>
+                            </div>
+                            """
+                            st.markdown(timeline_html, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+    # Add a download button for the filtered events
+    st.download_button(
+        "Download Filtered Events as CSV",
+        data=filtered_events.to_csv(index=False).encode('utf-8'),
+        file_name="filtered_case_events.csv",
+        mime="text/csv"
+    )
 
 # Add custom JavaScript to handle click events and update state
 st.markdown("""

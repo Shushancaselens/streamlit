@@ -864,13 +864,12 @@ def render_document_uploader():
     uploaded_files = st.file_uploader(
         "Drag and drop documents to analyze connections", 
         accept_multiple_files=True,
-        type=["pdf", "docx", "doc", "txt", "rtf"],
-        label_visibility="collapsed"
+        type=["pdf", "docx", "doc", "txt", "rtf"]
     )
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Process Documents", type="primary", disabled=not uploaded_files):
+        if st.button("Process Documents", disabled=not uploaded_files):
             if uploaded_files:
                 st.session_state.upload_step = "analyze"
                 with st.spinner("Analyzing documents..."):
@@ -884,10 +883,11 @@ def render_document_uploader():
                     st.session_state.connections = detect_connections(st.session_state.documents)
                     
                     st.session_state.upload_step = "complete"
-                    st.experimental_rerun()
     
     with col2:
-        st.button("Use Demo Data", type="secondary")
+        if st.button("Use Demo Data"):
+            # Already using demo data, so just acknowledge
+            st.success("Using demo data")
 
 def render_search_filters():
     """Render search and filter options."""
@@ -900,19 +900,15 @@ def render_search_filters():
     # Date filters
     col1, col2 = st.columns(2)
     with col1:
-        st.date_input("From Date", 
-                      format="YYYY-MM-DD", 
+        date_from = st.date_input("From Date", 
                       value=datetime.strptime("1950-01-01", "%Y-%m-%d"),
-                      key="date_from_input",
-                      on_change=lambda: st.session_state.filters.update(
-                          {"date_from": st.session_state.date_from_input.strftime("%Y-%m-%d")}))
+                      key="date_from_input")
+        st.session_state.filters["date_from"] = date_from.strftime("%Y-%m-%d")
     with col2:
-        st.date_input("To Date", 
-                      format="YYYY-MM-DD", 
+        date_to = st.date_input("To Date", 
                       value=datetime.strptime("2025-01-01", "%Y-%m-%d"),
-                      key="date_to_input",
-                      on_change=lambda: st.session_state.filters.update(
-                          {"date_to": st.session_state.date_to_input.strftime("%Y-%m-%d")}))
+                      key="date_to_input")
+        st.session_state.filters["date_to"] = date_to.strftime("%Y-%m-%d")
     
     # Party and Type filters
     st.markdown("### Filter by Party")
@@ -957,7 +953,6 @@ def render_search_filters():
             "search": ""
         }
         st.session_state.search_input = ""
-        st.experimental_rerun()
 
 def render_document_list(documents):
     """Render the list of documents with connection indicators."""
@@ -993,10 +988,9 @@ def render_document_list(documents):
         </div>
         ''', unsafe_allow_html=True)
         
-        # Hidden button to handle selection
-        if st.button("Select", key=f"select-doc-{doc['id']}", label_visibility="collapsed"):
+        # Create a clickable element and update the session state when clicked
+        if st.button(f"View {doc['title']}", key=f"select-doc-{doc['id']}"):
             st.session_state.selected_document = doc["id"]
-            st.experimental_rerun()
 
 def render_document_details(doc_id):
     """Render detailed view of selected document."""
@@ -1026,6 +1020,7 @@ def render_document_details(doc_id):
         st.markdown("### Exhibits")
         for exhibit in document["exhibits"]:
             st.markdown(f'<span class="badge badge-yellow">{exhibit}</span>', unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
     
     # Document events
     if document["events"]:

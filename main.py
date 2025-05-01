@@ -667,62 +667,58 @@ with tab2:
     else:
         # Check which view mode is selected
         if view_mode == "All Facts Together":
-            # Display all facts in a single table
-            st.markdown("<div class='table-container'>", unsafe_allow_html=True)
+            # Display all facts together in timeline format
+            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
+            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
             
-            # Create a DataFrame for display
-            facts_df = pd.DataFrame(all_events)
-            facts_df = facts_df[[
-                "date", "end_date", "event", "party", "status", 
-                "argument", "evidence", "document", "document_set"
-            ]]
+            # Sort all events by date
+            all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
             
-            # Rename columns for display
-            facts_df = facts_df.rename(columns={
-                "date": "Date",
-                "end_date": "End Date",
-                "event": "Event",
-                "party": "Party",
-                "status": "Status",
-                "argument": "Related Argument",
-                "evidence": "Evidence",
-                "document": "Document",
-                "document_set": "Document Set"
-            })
-            
-            # Format the data for display
-            def format_party(party):
-                if party == "Appellant":
-                    return f'<span class="party-tag appellant">{party}</span>'
-                elif party == "Respondent":
-                    return f'<span class="party-tag respondent">{party}</span>'
+            # Display each event in timeline format
+            for event in all_events_sorted:
+                # Format the date range
+                if event["end_date"]:
+                    date_display = f"{event['date']} to {event['end_date']}"
                 else:
-                    return party
+                    date_display = event["date"]
+                
+                # Format status
+                status_class = ""
+                if event["status"] == "Disputed":
+                    status_class = "disputed"
+                elif event["status"] == "Undisputed":
+                    status_class = "undisputed"
+                
+                # Format party
+                party_class = ""
+                if event["party"] == "Appellant":
+                    party_class = "appellant"
+                elif event["party"] == "Respondent":
+                    party_class = "respondent"
+                
+                # Create compact timeline item
+                timeline_html = f"""
+                <div class="timeline-event-compact">
+                    <div class="timeline-date-compact">{date_display}</div>
+                    <div class="timeline-content-compact">
+                        <strong>{event["event"]}</strong>
+                        <div style="margin-top: 2px;">
+                            <span class="party-tag {party_class}">{event["party"]}</span>
+                            <span class="status-tag {status_class}">{event["status"]}</span>
+                            <span class="evidence-tag">{event["evidence"]}</span>
+                        </div>
+                        <div style="margin-top: 2px; font-size: 0.9em;">
+                            {event["argument"]}
+                        </div>
+                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
+                            Source: {event["document"]}
+                        </div>
+                    </div>
+                </div>
+                """
+                st.markdown(timeline_html, unsafe_allow_html=True)
             
-            def format_status(status):
-                if status == "Disputed":
-                    return f'<span class="status-tag disputed">{status}</span>'
-                elif status == "Undisputed":
-                    return f'<span class="status-tag undisputed">{status}</span>'
-                else:
-                    return status
-            
-            def format_evidence(evidence):
-                return f'<span class="evidence-tag">{evidence}</span>'
-            
-            # Apply formatting
-            facts_df["Party"] = facts_df["Party"].apply(format_party)
-            facts_df["Status"] = facts_df["Status"].apply(format_status)
-            facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
-            
-            # Handle end date - replace None/NaN with empty string
-            facts_df["End Date"] = facts_df["End Date"].fillna("")
-            
-            # Create table with styling
-            html_table = facts_df.to_html(escape=False, index=False)
-            html_table = html_table.replace('<table', '<table class="facts-table"')
-            
-            st.markdown(html_table, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             
         else:

@@ -184,171 +184,7 @@ col1, col2, col3 = st.columns([1, 1, 4])
 with col1:
     st.button("Copy")
 with col2:
-    st.button("Export")# Add a document-centric view
-st.header("Documents and Related Events")
-
-# Group facts by related documents
-doc_to_facts = {}
-for fact in case_facts:
-    for doc in fact['related_documents']:
-        if doc not in doc_to_facts:
-            doc_to_facts[doc] = []
-        doc_to_facts[doc].append(fact)
-
-# Create tabs for each document type
-doc_tabs = st.tabs(list(doc_to_facts.keys()))
-
-# Fill each tab with related events
-for i, (doc, facts) in enumerate(doc_to_facts.items()):
-    with doc_tabs[i]:
-        st.subheader(f"Events Referenced in {doc}")
-        
-        # Display a styled table for facts in this document
-        st.markdown("""
-        <table class="facts-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Event</th>
-                    <th>Party</th>
-                    <th>Status</th>
-                    <th>Related Argument</th>
-                    <th>Evidence</th>
-                </tr>
-            </thead>
-            <tbody>
-        """, unsafe_allow_html=True)
-        
-        # Sort facts by date and display in table
-        sorted_facts = sorted(facts, key=lambda x: x['date'].split('-')[0])
-        for fact in sorted_facts:
-            # Determine party and status styling
-            party_class = "appellant-tag" if fact["party"] == "Appellant" else "respondent-tag"
-            status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
-            
-            st.markdown(f"""
-            <tr>
-                <td>{fact["date"]}</td>
-                <td>{fact["event"]}</td>
-                <td><span class="{party_class}">{fact["party"]}</span></td>
-                <td><span class="status-tag {status_class}">{fact["status"]}</span></td>
-                <td>{fact["argument"]}</td>
-                <td><span class="evidence-tag">{fact["evidence"]}</span></td>
-            </tr>
-            """, unsafe_allow_html=True)
-            
-        st.markdown("""
-            </tbody>
-        </table>
-        """, unsafe_allow_html=True)
-        
-        # Create a visual timeline specific to this document
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("### Timeline for this Document")
-        
-        # Create a horizontal timeline for document events
-        st.markdown("""
-        <div style="position: relative; height: 120px; margin: 30px 0; background-color: white; 
-             border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        """, unsafe_allow_html=True)
-        
-        # Get all years from events
-        all_years = set()
-        for fact in sorted_facts:
-            date_parts = fact['date'].split('-')
-            all_years.add(int(date_parts[0]))
-            if len(date_parts) > 1 and date_parts[1] != "present":
-                all_years.add(int(date_parts[1]))
-        
-        # Create year markers
-        timeline_years = sorted(list(all_years))
-        if "present" in [f['date'].split('-')[-1] for f in sorted_facts]:
-            timeline_years.append(2025)  # Use current year for "present"
-        
-        # Draw the timeline line
-        st.markdown("""
-        <div style="position: absolute; top: 50px; left: 40px; right: 40px; height: 2px; background-color: #ddd;"></div>
-        """, unsafe_allow_html=True)
-        
-        # Calculate positions for year markers
-        if len(timeline_years) > 1:
-            min_year = min(timeline_years)
-            max_year = max(timeline_years)
-            year_range = max_year - min_year
-            
-            # Draw year markers
-            for year in timeline_years:
-                if year_range > 0:
-                    position = ((year - min_year) / year_range) * 100
-                else:
-                    position = 50
-                
-                # Display as "Present" if it's the max year and we have a "present" date
-                year_label = "Present" if year == max_year and "present" in [f['date'].split('-')[-1] for f in sorted_facts] else year
-                
-                st.markdown(f"""
-                <div style="position: absolute; top: 60px; left: calc(40px + {position}% * (100% - 80px)); 
-                     transform: translateX(-50%); text-align: center;">
-                    <div style="width: 2px; height: 8px; background-color: #666; margin: 0 auto;"></div>
-                    <div style="font-size: 12px; color: #666; margin-top: 5px;">{year_label}</div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        # Draw event markers on timeline
-        for fact in sorted_facts:
-            date_parts = fact['date'].split('-')
-            start_year = int(date_parts[0])
-            
-            # Determine position based on start year
-            if len(timeline_years) > 1:
-                min_year = min(timeline_years)
-                max_year = max(timeline_years)
-                year_range = max_year - min_year
-                position = ((start_year - min_year) / year_range) * 100 if year_range > 0 else 50
-            else:
-                position = 50
-            
-            # Color based on party
-            color = "#4c72b0" if fact["party"] == "Appellant" else "#e15759"
-            
-            # Draw marker
-            st.markdown(f"""
-            <div style="position: absolute; top: 40px; left: calc(40px + {position}% * (100% - 80px)); 
-                 transform: translateX(-50%);">
-                <div style="width: 16px; height: 16px; background-color: {color}; border-radius: 50%; 
-                     border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"
-                     title="{fact['event']}"></div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Group events by argument with improved styling
-        st.markdown("### Arguments Referenced")
-        
-        # Group by argument
-        facts_by_argument = {}
-        for fact in facts:
-            arg = fact['argument']
-            if arg not in facts_by_argument:
-                facts_by_argument[arg] = []
-            facts_by_argument[arg].append(fact)
-        
-        for arg, arg_facts in facts_by_argument.items():
-            with st.expander(arg, expanded=False):
-                for fact in arg_facts:
-                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
-                    status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
-                    
-                    st.markdown(f"""
-                    <div class="timeline-event {party_class}" style="margin-bottom: 15px;">
-                        <h4>{fact['event']}</h4>
-                        <p><strong>Date:</strong> {fact['date']}</p>
-                        <p><strong>Party:</strong> <span class="{party_class}-tag">{fact['party']}</span></p>
-                        <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
-                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
-                    </div>
-                    """, unsafe_allow_html=True)import streamlit as st
+    st.button("Export")import streamlit as st
 import pandas as pd
 from datetime import datetime
 
@@ -759,14 +595,24 @@ with tabs[0]:  # All Facts
             <td><span class="evidence-tag">{fact["evidence"]}</span></td>
         </tr>
         """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        </tbody>
+    </table>
+    """, unsafe_allow_html=True)
+    
+    # Create expandable containers for each fact (below the table)
+    for i, fact in enumerate(case_facts):
+        party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+        status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
+        party_tag_class = f"{party_class}-tag"
         
-        # Create expandable container for each fact (below the table)
         with st.expander(f"View details for: {fact['event']}", expanded=False):
             st.markdown(f"""
-            <div class="timeline-event {party_class.split('-')[0]}">
+            <div class="timeline-event {party_class}">
                 <h4>{fact['event']}</h4>
                 <p><strong>Date:</strong> {fact['date']}</p>
-                <p><strong>Party:</strong> <span class="{party_class}">{fact['party']}</span></p>
+                <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
                 <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
                 <p><strong>Related Argument:</strong> {fact['argument']}</p>
                 <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
@@ -776,11 +622,6 @@ with tabs[0]:  # All Facts
                 </ul>
             </div>
             """, unsafe_allow_html=True)
-    
-    st.markdown("""
-        </tbody>
-    </table>
-    """, unsafe_allow_html=True)
 
 with tabs[1]:  # Disputed Facts
     disputed_facts = [fact for fact in case_facts if fact["status"] == "Disputed"]
@@ -881,12 +722,14 @@ with tabs[1]:  # Disputed Facts
                 # Single disputed fact without direct conflict
                 for fact in facts:
                     party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    party_tag_class = f"{party_class}-tag"
+                    
                     with st.expander(f"{fact['event']} ({fact['party']})", expanded=False):
                         st.markdown(f"""
                         <div class="timeline-event {party_class}">
                             <h4>{fact['event']}</h4>
                             <p><strong>Date:</strong> {fact['date']}</p>
-                            <p><strong>Party:</strong> <span class="{party_class}-tag">{fact['party']}</span></p>
+                            <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
                             <p><strong>Related Argument:</strong> {fact['argument']}</p>
                             <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
                             <p><strong>Related Documents:</strong></p>
@@ -979,3 +822,170 @@ with tabs[2]:  # Undisputed Facts
                     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     else:
         st.info("No undisputed facts found.")
+
+# Add a document-centric view
+st.header("Documents and Related Events")
+
+# Group facts by related documents
+doc_to_facts = {}
+for fact in case_facts:
+    for doc in fact['related_documents']:
+        if doc not in doc_to_facts:
+            doc_to_facts[doc] = []
+        doc_to_facts[doc].append(fact)
+
+# Create tabs for each document type
+doc_tabs = st.tabs(list(doc_to_facts.keys()))
+
+# Fill each tab with related events
+for i, (doc, facts) in enumerate(doc_to_facts.items()):
+    with doc_tabs[i]:
+        st.subheader(f"Events Referenced in {doc}")
+        
+        # Display a styled table for facts in this document
+        st.markdown("""
+        <table class="facts-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Party</th>
+                    <th>Status</th>
+                    <th>Related Argument</th>
+                    <th>Evidence</th>
+                </tr>
+            </thead>
+            <tbody>
+        """, unsafe_allow_html=True)
+        
+        # Sort facts by date and display in table
+        sorted_facts = sorted(facts, key=lambda x: x['date'].split('-')[0])
+        for fact in sorted_facts:
+            # Determine party and status styling
+            party_class = "appellant-tag" if fact["party"] == "Appellant" else "respondent-tag"
+            status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
+            
+            st.markdown(f"""
+            <tr>
+                <td>{fact["date"]}</td>
+                <td>{fact["event"]}</td>
+                <td><span class="{party_class}">{fact["party"]}</span></td>
+                <td><span class="status-tag {status_class}">{fact["status"]}</span></td>
+                <td>{fact["argument"]}</td>
+                <td><span class="evidence-tag">{fact["evidence"]}</span></td>
+            </tr>
+            """, unsafe_allow_html=True)
+            
+        st.markdown("""
+            </tbody>
+        </table>
+        """, unsafe_allow_html=True)
+        
+        # Create a visual timeline specific to this document
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        st.markdown("### Timeline for this Document")
+        
+        # Create a horizontal timeline for document events
+        st.markdown("""
+        <div style="position: relative; height: 120px; margin: 30px 0; background-color: white; 
+             border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        """, unsafe_allow_html=True)
+        
+        # Get all years from events
+        all_years = set()
+        for fact in sorted_facts:
+            date_parts = fact['date'].split('-')
+            all_years.add(int(date_parts[0]))
+            if len(date_parts) > 1 and date_parts[1] != "present":
+                all_years.add(int(date_parts[1]))
+        
+        # Create year markers
+        timeline_years = sorted(list(all_years))
+        if "present" in [f['date'].split('-')[-1] for f in sorted_facts]:
+            timeline_years.append(2025)  # Use current year for "present"
+        
+        # Draw the timeline line
+        st.markdown("""
+        <div style="position: absolute; top: 50px; left: 40px; right: 40px; height: 2px; background-color: #ddd;"></div>
+        """, unsafe_allow_html=True)
+        
+        # Calculate positions for year markers
+        if len(timeline_years) > 1:
+            min_year = min(timeline_years)
+            max_year = max(timeline_years)
+            year_range = max_year - min_year
+            
+            # Draw year markers
+            for year in timeline_years:
+                if year_range > 0:
+                    position = ((year - min_year) / year_range) * 100
+                else:
+                    position = 50
+                
+                # Display as "Present" if it's the max year and we have a "present" date
+                year_label = "Present" if year == max_year and "present" in [f['date'].split('-')[-1] for f in sorted_facts] else year
+                
+                st.markdown(f"""
+                <div style="position: absolute; top: 60px; left: calc(40px + {position}% * (100% - 80px)); 
+                     transform: translateX(-50%); text-align: center;">
+                    <div style="width: 2px; height: 8px; background-color: #666; margin: 0 auto;"></div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">{year_label}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Draw event markers on timeline
+        for fact in sorted_facts:
+            date_parts = fact['date'].split('-')
+            start_year = int(date_parts[0])
+            
+            # Determine position based on start year
+            if len(timeline_years) > 1:
+                min_year = min(timeline_years)
+                max_year = max(timeline_years)
+                year_range = max_year - min_year
+                position = ((start_year - min_year) / year_range) * 100 if year_range > 0 else 50
+            else:
+                position = 50
+            
+            # Color based on party
+            color = "#4c72b0" if fact["party"] == "Appellant" else "#e15759"
+            
+            # Draw marker
+            st.markdown(f"""
+            <div style="position: absolute; top: 40px; left: calc(40px + {position}% * (100% - 80px)); 
+                 transform: translateX(-50%);">
+                <div style="width: 16px; height: 16px; background-color: {color}; border-radius: 50%; 
+                     border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"
+                     title="{fact['event']}"></div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Group events by argument with improved styling
+        st.markdown("### Arguments Referenced")
+        
+        # Group by argument
+        facts_by_argument = {}
+        for fact in facts:
+            arg = fact['argument']
+            if arg not in facts_by_argument:
+                facts_by_argument[arg] = []
+            facts_by_argument[arg].append(fact)
+        
+        for arg, arg_facts in facts_by_argument.items():
+            with st.expander(arg, expanded=False):
+                for fact in arg_facts:
+                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
+                    party_tag_class = f"{party_class}-tag"
+                    
+                    st.markdown(f"""
+                    <div class="timeline-event {party_class}" style="margin-bottom: 15px;">
+                        <h4>{fact['event']}</h4>
+                        <p><strong>Date:</strong> {fact['date']}</p>
+                        <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
+                        <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
+                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                    </div>
+                    """, unsafe_allow_html=True)

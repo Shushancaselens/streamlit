@@ -167,56 +167,27 @@ st.markdown("# Summary of arguments")
 # Create two tabs
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
-# Add CSS to completely remove white container space under tabs
+# Add CSS to remove white container space under tabs
 st.markdown("""
 <style>
-    /* More aggressive removal of white space under tabs */
     .stTabs [data-baseweb="tab-panel"] {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
+        padding-top: 0px;
     }
     
-    /* Remove any background from tab content */
-    .stTabs [data-baseweb="tab-panel"] > div {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        margin-top: 0 !important;
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    .streamlit-expanderHeader {
+        font-size: 1em;
+        font-weight: normal;
     }
     
-    /* Remove top margin from first element inside tabs */
-    .stTabs [data-baseweb="tab-panel"] > div > * {
-        margin-top: 0 !important;
-    }
-    
-    /* Fix tab list bottom margin */
+    /* Remove any extra white space */
     .stTabs [data-baseweb="tab-list"] {
-        margin-bottom: 0 !important;
+        margin-bottom: 0;
     }
     
-    /* Remove all streamlit block containers within tabs */
-    .stTabs [data-baseweb="tab-panel"] .block-container {
-        padding-top: 0 !important;
-        margin-top: 0 !important;
-        background-color: transparent !important;
-    }
-    
-    /* Ensure no extra white space in controls */
-    .facts-controls, .timeline-controls {
-        margin-top: 0 !important;
+    /* Adjust spacing after tabs */
+    .stTabs [data-baseweb="tab-panel"] > div:first-child {
+        margin-top: 0;
+        padding-top: 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -324,20 +295,34 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
     
-    # Create control panel for filters - remove top padding
+    # Create control panel for filters - make background transparent
     st.markdown("""
     <style>
         .facts-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 0px;
-            margin-bottom: 20px;
+            background-color: transparent;
+            padding: 10px 0px 0px 0px;
+            margin: 0px;
+            border-radius: 0px;
+        }
+        
+        /* Remove any extra white space */
+        .stTabs [data-baseweb="tab-panel"] {
+            padding: 0px !important;
+        }
+        
+        /* Make sure no white background is visible */
+        .stTabs [data-baseweb="tab-panel"] > div {
+            background-color: transparent !important;
+            padding: 0px !important;
+            margin: 0px !important;
         }
     </style>
     """, unsafe_allow_html=True)
-    st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
     
+    # Remove the div container or make it transparent
+    # st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
+    
+    # Make sure filter display works without the containing div
     # Top filter section - now with more dropdowns
     col1, col2 = st.columns([2, 1])
     
@@ -373,7 +358,8 @@ with tab1:
             key="facts_view_mode"
         )
     
-    st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
+    # End of facts-controls div - removing this line
+    # st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     
     # Get the data and apply filters
     filtered_facts = df_events.copy()
@@ -613,20 +599,22 @@ with tab2:
     </style>
     """, unsafe_allow_html=True)
     
-    # Create control panel for filters with improved dropdowns - remove top padding
+    # Create control panel for filters - make background transparent
     st.markdown("""
     <style>
         .timeline-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 0px;
-            margin-bottom: 20px;
+            background-color: transparent;
+            padding: 10px 0px 0px 0px;
+            margin: 0px;
+            border-radius: 0px;
         }
     </style>
     """, unsafe_allow_html=True)
-    st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
     
+    # Remove the div container or make it transparent
+    # st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
+    
+    # Make sure filter display works without the containing div
     # Search and date filter row
     search_col, date_col = st.columns([1, 1])
     
@@ -676,7 +664,8 @@ with tab2:
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"
     
-    st.markdown("</div>", unsafe_allow_html=True)
+    # End of timeline-controls div - removing this line
+    # st.markdown("</div>", unsafe_allow_html=True)
     
     # Create a visualization showing documents and their connected events
     timeline_data = []

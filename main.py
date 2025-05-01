@@ -287,21 +287,142 @@ with tab1:
     with col3:
         sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key="facts_order")
     
-    # Status filter with horizontal radio buttons
-    status_filter = st.radio(
-        "Filter by status:",
-        options=["All", "Disputed", "Undisputed"],
-        horizontal=True,
-        key="status_filter"
-    )
+    # Add custom CSS for improved filter buttons
+    st.markdown("""
+    <style>
+        .filter-container {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .filter-label {
+            font-weight: 500;
+            margin-right: 15px;
+            min-width: 120px;
+        }
+        .button-group {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .filter-button {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .filter-button:hover:not(.active) {
+            background-color: #e9ecef;
+        }
+        .filter-button.active {
+            background-color: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        .filter-button:first-child {
+            border-radius: 6px 0 0 6px;
+        }
+        .filter-button:last-child {
+            border-radius: 0 6px 6px 0;
+        }
+        .filter-button.all.active {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .filter-button.disputed.active {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .filter-button.undisputed.active {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .view-icon {
+            margin-right: 5px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     
-    # View mode selection
-    view_mode = st.radio(
-        "View Mode:",
-        options=["Table View", "Document Sets View"],
-        horizontal=True,
-        key="facts_view_mode"
-    )
+    # Custom buttons for status filter
+    st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
+    st.markdown("<div class='filter-label'>Filter by status:</div>", unsafe_allow_html=True)
+    st.markdown("<div class='button-group'>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col1:
+        all_active = st.button("All", key="status_all", 
+                             use_container_width=True, 
+                             type="secondary" if status_filter != "All" else "primary")
+    with col2:
+        disputed_active = st.button("⚠️ Disputed", key="status_disputed", 
+                                  use_container_width=True, 
+                                  type="secondary" if status_filter != "Disputed" else "primary")
+    with col3:
+        undisputed_active = st.button("✓ Undisputed", key="status_undisputed", 
+                                    use_container_width=True, 
+                                    type="secondary" if status_filter != "Undisputed" else "primary")
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+    
+    # Set status filter based on button clicks
+    if disputed_active:
+        status_filter = "Disputed"
+    elif undisputed_active:
+        status_filter = "Undisputed"
+    elif all_active:
+        status_filter = "All"
+    else:
+        # Default if no button is clicked yet
+        status_filter = status_filter if 'status_filter' in locals() else "All"
+    
+    # Store the selected value in session state
+    if 'status_filter' not in st.session_state:
+        st.session_state.status_filter = status_filter
+    elif disputed_active or undisputed_active or all_active:
+        st.session_state.status_filter = status_filter
+    else:
+        status_filter = st.session_state.status_filter
+    
+    # Custom buttons for view mode
+    st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
+    st.markdown("<div class='filter-label'>View Mode:</div>", unsafe_allow_html=True)
+    st.markdown("<div class='button-group'>", unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        table_active = st.button("📊 Table View", key="view_table", 
+                               use_container_width=True,
+                               type="secondary" if 'view_mode' in st.session_state and 
+                                               st.session_state.view_mode != "Table View" else "primary")
+    with col2:
+        sets_active = st.button("📁 Document Sets", key="view_sets", 
+                              use_container_width=True,
+                              type="secondary" if 'view_mode' in st.session_state and 
+                                              st.session_state.view_mode != "Document Sets View" else "primary")
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+    
+    # Set view mode based on button clicks
+    if table_active:
+        view_mode = "Table View"
+    elif sets_active:
+        view_mode = "Document Sets View"
+    else:
+        # Default if no button is clicked yet
+        view_mode = "Table View" if 'view_mode' not in st.session_state else st.session_state.view_mode
+    
+    # Store the selected value in session state
+    if 'view_mode' not in st.session_state:
+        st.session_state.view_mode = view_mode
+    elif table_active or sets_active:
+        st.session_state.view_mode = view_mode
+    else:
+        view_mode = st.session_state.view_mode
     
     st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     
@@ -547,100 +668,91 @@ with tab2:
     # Create control panel for filters
     st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
     
-    # Add CSS for improved filters
+    # Add CSS for improved filter UI
     st.markdown("""
     <style>
-        /* Custom toggle button styles */
-        .toggle-container {
+        .filter-chip-container {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 15px;
         }
-        .toggle-button {
-            background-color: #f1f3f5;
-            border: 1px solid #d0d7de;
+        .filter-chip {
+            display: inline-block;
+            padding: 6px 12px;
             border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 0.85em;
+            font-size: 0.9em;
+            border: 1px solid #dee2e6;
             cursor: pointer;
-            transition: all 0.2s ease;
-            flex: 1;
-            text-align: center;
-            white-space: nowrap;
+            transition: all 0.2s;
+            user-select: none;
         }
-        .toggle-button:hover {
-            background-color: #e9ecef;
+        .filter-chip:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .toggle-button.active {
+        .filter-chip.selected {
             background-color: #4285f4;
             color: white;
             border-color: #4285f4;
         }
-        .toggle-button.active-appellant {
+        .filter-chip.appellant.selected {
             background-color: #0066cc;
-            color: white;
             border-color: #0066cc;
         }
-        .toggle-button.active-respondent {
+        .filter-chip.respondent.selected {
             background-color: #cc3300;
-            color: white;
             border-color: #cc3300;
         }
-        .toggle-button.active-disputed {
+        .filter-chip.disputed.selected {
             background-color: #dc3545;
-            color: white;
             border-color: #dc3545;
         }
-        .toggle-button.active-undisputed {
+        .filter-chip.undisputed.selected {
             background-color: #28a745;
-            color: white;
             border-color: #28a745;
         }
-        .toggle-button.active-all {
+        .filter-chip.all.selected {
             background-color: #6c757d;
-            color: white;
             border-color: #6c757d;
+        }
+        .filter-section {
+            margin-bottom: 15px;
         }
         .filter-label {
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
-        
-        /* View mode selector */
-        .view-mode-container {
+        .view-toggle-container {
             display: flex;
-            gap: 10px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+            overflow: hidden;
             margin-bottom: 15px;
         }
-        .view-mode-button {
-            background-color: #f8f9fa;
-            border: 1px solid #d0d7de;
-            border-radius: 4px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .view-toggle-option {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-        }
-        .view-mode-button:hover {
-            background-color: #e9ecef;
-        }
-        .view-mode-button.active {
-            background-color: #e9ecef;
-            border-color: #4285f4;
-            border-width: 2px;
-        }
-        .view-mode-icon {
-            font-size: 1.5em;
-            margin-bottom: 5px;
-            color: #4285f4;
-        }
-        .view-mode-label {
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
             font-weight: 500;
+        }
+        .view-toggle-option.selected {
+            background-color: #4285f4;
+            color: white;
+        }
+        .view-toggle-option:hover:not(.selected) {
+            background-color: #e9ecef;
+        }
+        .date-range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .date-label {
+            font-size: 0.9em;
+            color: #666;
+            white-space: nowrap;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -648,255 +760,171 @@ with tab2:
     col1, col2 = st.columns(2)
     
     with col1:
-        # Search functionality (moved to top)
-        search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
-    
-    with col2:
-        # Filter by date range
-        min_date = pd.to_datetime(df_events["date"].min())
-        max_date = pd.to_datetime(df_events["date"].max())
-        
-        date_range = st.date_input(
-            "Date Range:",
-            value=(min_date, max_date),
-            min_value=min_date,
-            max_value=max_date
-        )
-    
-    # Create columns for filter sections
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Filter by party with custom toggle buttons
+        # Party filter as chips
+        st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
         st.markdown("<div class='filter-label'>Filter by Party:</div>", unsafe_allow_html=True)
         
-        # Get party filter from session state or initialize
+        # Initialize session state for party filter
         if 'party_filter' not in st.session_state:
             st.session_state.party_filter = ["All"]
         
-        # Create HTML for party filter buttons
-        party_buttons_html = "<div class='toggle-container'>"
+        # Custom chip UI for party selection
+        party_options = ["All", "Appellant", "Respondent", "N/A"]
+        party_cols = st.columns(len(party_options))
         
-        for party in ["All", "Appellant", "Respondent", "N/A"]:
-            active_class = ""
-            if party in st.session_state.party_filter:
-                if party == "All":
-                    active_class = "active-all"
-                elif party == "Appellant":
-                    active_class = "active-appellant"
-                elif party == "Respondent":
-                    active_class = "active-respondent"
-                else:
-                    active_class = "active"
-            
-            party_buttons_html += f"""
-            <div class='toggle-button {active_class}' 
-                 onclick="this.classList.toggle('{active_class}'); 
-                          updatePartyFilter('{party}');">
-                {party}
-            </div>
-            """
+        for i, party in enumerate(party_options):
+            with party_cols[i]:
+                party_class = party.lower() if party != "N/A" else "na"
+                is_selected = party in st.session_state.party_filter
+                
+                if st.button(
+                    party,
+                    key=f"party_{party_class}",
+                    type="primary" if is_selected else "secondary",
+                    use_container_width=True
+                ):
+                    # Toggle this party's selection
+                    if party == "All":
+                        # All is exclusive
+                        st.session_state.party_filter = ["All"]
+                    else:
+                        # Remove "All" if it's there
+                        if "All" in st.session_state.party_filter:
+                            st.session_state.party_filter.remove("All")
+                        
+                        # Toggle this party
+                        if party in st.session_state.party_filter:
+                            st.session_state.party_filter.remove(party)
+                            # If nothing is selected, default to "All"
+                            if not st.session_state.party_filter:
+                                st.session_state.party_filter = ["All"]
+                        else:
+                            st.session_state.party_filter.append(party)
         
-        party_buttons_html += "</div>"
-        st.markdown(party_buttons_html, unsafe_allow_html=True)
-        
-        # Create party filter using conventional method as fallback
-        # This creates the form control but we'll hide it with CSS
-        party_filter = st.multiselect(
-            "Filter by Party (fallback):",
-            options=["All", "Appellant", "Respondent", "N/A"],
-            default=st.session_state.party_filter,
-            key="party_filter_fallback",
-            label_visibility="collapsed"
-        )
-        
-        # Use the fallback value
-        party_filter = party_filter if party_filter else st.session_state.party_filter
+        party_filter = st.session_state.party_filter
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        # Filter by status with custom toggle buttons
+        # Status filter as chips
+        st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
         st.markdown("<div class='filter-label'>Filter by Status:</div>", unsafe_allow_html=True)
         
-        # Get status filter from session state or initialize
-        if 'status_filter' not in st.session_state:
-            st.session_state.status_filter = ["All"]
+        # Initialize session state for status filter
+        if 'timeline_status_filter' not in st.session_state:
+            st.session_state.timeline_status_filter = ["All"]
         
-        # Create HTML for status filter buttons
-        status_buttons_html = "<div class='toggle-container'>"
+        # Custom chip UI for status selection
+        status_options = ["All", "Disputed", "Undisputed"]
+        status_cols = st.columns(len(status_options))
         
-        for status in ["All", "Disputed", "Undisputed"]:
-            active_class = ""
-            if status in st.session_state.status_filter:
-                if status == "All":
-                    active_class = "active-all"
-                elif status == "Disputed":
-                    active_class = "active-disputed"
+        for i, status in enumerate(status_options):
+            with status_cols[i]:
+                status_class = status.lower()
+                is_selected = status in st.session_state.timeline_status_filter
+                
+                # Add icons to make it more visual
+                label = status
+                if status == "Disputed":
+                    label = "⚠️ " + status
                 elif status == "Undisputed":
-                    active_class = "active-undisputed"
-            
-            status_buttons_html += f"""
-            <div class='toggle-button {active_class}' 
-                 onclick="this.classList.toggle('{active_class}'); 
-                          updateStatusFilter('{status}');">
-                {status}
-            </div>
-            """
+                    label = "✓ " + status
+                
+                if st.button(
+                    label,
+                    key=f"status_{status_class}",
+                    type="primary" if is_selected else "secondary",
+                    use_container_width=True
+                ):
+                    # Toggle this status's selection
+                    if status == "All":
+                        # All is exclusive
+                        st.session_state.timeline_status_filter = ["All"]
+                    else:
+                        # Remove "All" if it's there
+                        if "All" in st.session_state.timeline_status_filter:
+                            st.session_state.timeline_status_filter.remove("All")
+                        
+                        # Toggle this status
+                        if status in st.session_state.timeline_status_filter:
+                            st.session_state.timeline_status_filter.remove(status)
+                            # If nothing is selected, default to "All"
+                            if not st.session_state.timeline_status_filter:
+                                st.session_state.timeline_status_filter = ["All"]
+                        else:
+                            st.session_state.timeline_status_filter.append(status)
         
-        status_buttons_html += "</div>"
-        st.markdown(status_buttons_html, unsafe_allow_html=True)
-        
-        # Create status filter using conventional method as fallback
-        status_filter = st.multiselect(
-            "Filter by Status (fallback):",
-            options=["All", "Disputed", "Undisputed"],
-            default=st.session_state.status_filter,
-            key="status_filter_fallback",
-            label_visibility="collapsed"
-        )
-        
-        # Use the fallback value
-        status_filter = status_filter if status_filter else st.session_state.status_filter
+        status_filter = st.session_state.timeline_status_filter
+        st.markdown("</div>", unsafe_allow_html=True)
     
-    # Display options with improved UI
+    # Date range filter with improved UI
+    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
+    st.markdown("<div class='filter-label'>Date Range:</div>", unsafe_allow_html=True)
+    col1, col2 = st.columns([1, 1])
+    
+    # Get min and max dates
+    min_date = pd.to_datetime(df_events["date"].min())
+    max_date = pd.to_datetime(df_events["date"].max())
+    
+    with col1:
+        start_date = st.date_input(
+            "From:",
+            value=min_date,
+            min_value=min_date,
+            max_value=max_date,
+            key="timeline_start_date"
+        )
+    
+    with col2:
+        end_date = st.date_input(
+            "To:",
+            value=max_date,
+            min_value=min_date,
+            max_value=max_date,
+            key="timeline_end_date"
+        )
+    
+    date_range = (start_date, end_date)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Search functionality with improved styling
+    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
+    search_term = st.text_input(
+        "Search Events:", 
+        placeholder="Enter keywords to filter events...",
+        key="timeline_search"
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # View mode toggle with improved UI
+    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
     st.markdown("<div class='filter-label'>View Mode:</div>", unsafe_allow_html=True)
     
-    # Initialize view mode in session state if not present
-    if 'connected_view_mode' not in st.session_state:
-        st.session_state.connected_view_mode = "By Document Sets"
+    # Initialize session state for view mode
+    if 'timeline_view_mode' not in st.session_state:
+        st.session_state.timeline_view_mode = "By Document Sets"
     
-    # Create HTML for view mode buttons
-    view_mode_html = "<div class='view-mode-container'>"
+    col1, col2 = st.columns(2)
     
-    # Button for Document Sets view
-    doc_sets_active = "active" if st.session_state.connected_view_mode == "By Document Sets" else ""
-    view_mode_html += f"""
-    <div class='view-mode-button {doc_sets_active}' id='btn-doc-sets' onclick="selectViewMode('By Document Sets')">
-        <div class='view-mode-icon'>📁</div>
-        <div class='view-mode-label'>By Document Sets</div>
-        <div>View events grouped by documents</div>
-    </div>
-    """
+    with col1:
+        if st.button(
+            "📁 By Document Sets",
+            key="view_by_sets",
+            type="primary" if st.session_state.timeline_view_mode == "By Document Sets" else "secondary",
+            use_container_width=True
+        ):
+            st.session_state.timeline_view_mode = "By Document Sets"
     
-    # Button for Timeline view
-    timeline_active = "active" if st.session_state.connected_view_mode == "All Facts Together" else ""
-    view_mode_html += f"""
-    <div class='view-mode-button {timeline_active}' id='btn-timeline' onclick="selectViewMode('All Facts Together')">
-        <div class='view-mode-icon'>⏱️</div>
-        <div class='view-mode-label'>Timeline View</div>
-        <div>View all events in chronological order</div>
-    </div>
-    """
+    with col2:
+        if st.button(
+            "📈 All Facts Together",
+            key="view_all_facts",
+            type="primary" if st.session_state.timeline_view_mode == "All Facts Together" else "secondary",
+            use_container_width=True
+        ):
+            st.session_state.timeline_view_mode = "All Facts Together"
     
-    view_mode_html += "</div>"
-    st.markdown(view_mode_html, unsafe_allow_html=True)
-    
-    # Traditional radio buttons as fallback (hidden with CSS)
-    view_mode = st.radio(
-        "View Mode (fallback):",
-        options=["By Document Sets", "All Facts Together"],
-        index=0 if st.session_state.connected_view_mode == "By Document Sets" else 1,
-        horizontal=True,
-        key="connected_view_mode",
-        label_visibility="collapsed"
-    )
-    
-    # JavaScript to handle the custom UI interactions
-    st.markdown("""
-    <script>
-    // Function to update party filter
-    function updatePartyFilter(party) {
-        // Get the current selections from the hidden multiselect
-        const multiselect = document.querySelector('[data-testid="stMultiSelect"]');
-        if (!multiselect) return;
-        
-        // Simulate click on the multiselect to open it
-        multiselect.click();
-        
-        // Find the option corresponding to the clicked party
-        const options = document.querySelectorAll('[data-baseweb="select"] [role="option"]');
-        for (let option of options) {
-            if (option.textContent.includes(party)) {
-                option.click();
-                break;
-            }
-        }
-        
-        // Close the dropdown
-        document.body.click();
-    }
-    
-    // Function to update status filter
-    function updateStatusFilter(status) {
-        // Get all multiselects
-        const multiselects = document.querySelectorAll('[data-testid="stMultiSelect"]');
-        if (multiselects.length < 2) return;
-        
-        // The second multiselect should be the status filter
-        const statusMultiselect = multiselects[1];
-        
-        // Simulate click on the multiselect to open it
-        statusMultiselect.click();
-        
-        // Find the option corresponding to the clicked status
-        const options = document.querySelectorAll('[data-baseweb="select"] [role="option"]');
-        for (let option of options) {
-            if (option.textContent.includes(status)) {
-                option.click();
-                break;
-            }
-        }
-        
-        // Close the dropdown
-        document.body.click();
-    }
-    
-    // Function to select view mode
-    function selectViewMode(mode) {
-        // Remove active class from all view mode buttons
-        document.querySelectorAll('.view-mode-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Add active class to selected button
-        if (mode === 'By Document Sets') {
-            document.getElementById('btn-doc-sets').classList.add('active');
-        } else {
-            document.getElementById('btn-timeline').classList.add('active');
-        }
-        
-        // Get the radio buttons
-        const radioButtons = document.querySelectorAll('[data-testid="stRadio"] input');
-        if (radioButtons.length < 2) return;
-        
-        // Click the appropriate radio button
-        if (mode === 'By Document Sets') {
-            radioButtons[0].click();
-        } else {
-            radioButtons[1].click();
-        }
-    }
-    
-    // Hide the fallback form controls with CSS
-    document.addEventListener('DOMContentLoaded', function() {
-        const style = document.createElement('style');
-        style.textContent = `
-            [data-testid="stMultiSelect"] {
-                position: absolute;
-                opacity: 0;
-                height: 0;
-                overflow: hidden;
-            }
-            [data-testid="stRadio"] {
-                position: absolute;
-                opacity: 0;
-                height: 0;
-                overflow: hidden;
-            }
-        `;
-        document.head.appendChild(style);
-    });
-    </script>
-    """, unsafe_allow_html=True)
+    view_mode = st.session_state.timeline_view_mode
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"

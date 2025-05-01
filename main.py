@@ -109,21 +109,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Add global CSS for document headers - making sure it applies everywhere
-st.markdown("""
-<style>
-    /* Force milder colors for document headers - using !important to override any other styles */
-    .document-set-header, 
-    div.document-set-header,
-    [class*="document-set-header"],
-    *[class*="document-set-header"] {
-        background-color: #e8f0fe !important; 
-        color: #3c4043 !important;
-        border-left: 3px solid #4285f4 !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Header with logo and title
 col1, col2 = st.columns([1, 11])
 with col1:
@@ -490,12 +475,7 @@ with tab1:
                 if not facts:
                     continue
                 
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; 
-                margin-top: 20px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;">
-                {doc_set} ({len(facts)} facts)
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"<div class='document-set-header'>{doc_set} ({len(facts)} facts)</div>", unsafe_allow_html=True)
                 
                 # Group by document within the set
                 doc_ids = set([fact["Document ID"] for fact in facts])
@@ -517,12 +497,7 @@ with tab1:
                     elif doc_party == "Respondent":
                         party_class = "respondent"
                     
-                    st.markdown(f"""
-                    <div style="background-color: #f8f9fa; padding: 8px 12px; border-radius: 4px; 
-                    margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
-                    {doc_name} ({len(doc_facts)} facts) <span class='party-tag {party_class}'>{doc_party}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_facts)} facts) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
                     
                     # Create DataFrame for this document
                     doc_df = pd.DataFrame(doc_facts)
@@ -840,13 +815,7 @@ with tab2:
             )
             
             for doc_set, events in sorted_sets:
-                # Force milder colors for document headers
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; 
-                margin-top: 15px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;">
-                {doc_set} ({len(events)} events)
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"<div class='document-set-header'>{doc_set} ({len(events)} events)</div>", unsafe_allow_html=True)
                 
                 # Group by document within the set
                 events_by_doc = {}
@@ -868,12 +837,7 @@ with tab2:
                     elif doc_party == "Respondent":
                         party_class = "respondent"
                     
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 8px 12px; border-radius: 4px; 
-                margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
-                {doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span>
-                </div>
-                """, unsafe_allow_html=True)
+                    st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
                     
                     # Sort events by date
                     doc_events = sorted(doc_events, key=lambda x: x["datetime"])

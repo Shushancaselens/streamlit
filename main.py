@@ -4,8 +4,6 @@ import numpy as np
 from datetime import datetime
 import json
 import random
-from st_aggrid import AgGrid, GridOptionsBuilder
-from st_aggrid.shared import JsCode
 
 st.set_page_config(layout="wide", page_title="CaseLens - Legal Document Timeline")
 
@@ -316,44 +314,64 @@ with tab1:
     # Reorder columns
     display_df = display_df[["Date", "Event", "Party", "Status", "Related Argument", "Evidence"]]
     
-    # Set up AgGrid for better display and interaction
-    gb = GridOptionsBuilder.from_dataframe(display_df)
-    gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=15)
-    gb.configure_column("Date", sortable=True, filter=True)
-    gb.configure_column("Event", sortable=True, filter=True, width=300)
-    gb.configure_column("Party", sortable=True, filter=True, width=120,
-                        cellRenderer=JsCode('''
-                        function(params) {
-                            if (params.value === "Appellant") {
-                                return '<span style="background-color: #e6f2ff; color: #0066cc; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">' + params.value + '</span>';
-                            } else if (params.value === "Respondent") {
-                                return '<span style="background-color: #ffebe6; color: #cc3300; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">' + params.value + '</span>';
-                            } else {
-                                return params.value;
-                            }
-                        }
-                        '''))
-    gb.configure_column("Status", sortable=True, filter=True, width=120,
-                        cellRenderer=JsCode('''
-                        function(params) {
-                            if (params.value === "Disputed") {
-                                return '<span style="background-color: #ffebe6; color: #cc3300; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">' + params.value + '</span>';
-                            } else if (params.value === "Undisputed") {
-                                return '<span style="background-color: #e6f7e6; color: #008000; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">' + params.value + '</span>';
-                            } else {
-                                return params.value;
-                            }
-                        }
-                        '''))
-    gb.configure_column("Related Argument", sortable=True, filter=True, width=220)
-    gb.configure_column("Evidence", sortable=True, filter=True, width=120,
-                        cellRenderer=JsCode('''
-                        function(params) {
-                            return '<span style="background-color: #f8f9fa; color: #666; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">' + params.value + '</span>';
-                        }
-                        '''))
+    # Set up pagination for the data display
+    items_per_page = 15
+    total_rows = len(display_df)
+    total_pages = (total_rows + items_per_page - 1) // items_per_page
     
-    grid_options = gb.build()
+    # Initialize pagination state
+    if "facts_page" not in st.session_state:
+        st.session_state.facts_page = 1
+    
+    # Function to render a stylized table
+    def render_styled_table(df):
+        # Apply styling using a custom HTML table
+        html_table = "<table style='width:100%; border-collapse: collapse;'>"
+        
+        # Table header
+        html_table += "<thead><tr style='background-color: #f2f2f2;'>"
+        for col in df.columns:
+            html_table += f"<th style='padding: 8px; text-align: left; border-bottom: 2px solid #ddd;'>{col}</th>"
+        html_table += "</tr></thead>"
+        
+        # Table body
+        html_table += "<tbody>"
+        for _, row in df.iterrows():
+            html_table += "<tr style='border-bottom: 1px solid #ddd;'>"
+            
+            # Date column
+            html_table += f"<td style='padding: 8px;'>{row['Date']}</td>"
+            
+            # Event column
+            html_table += f"<td style='padding: 8px;'>{row['Event']}</td>"
+            
+            # Party column with styling
+            party_style = ""
+            if row['Party'] == "Appellant":
+                party_style = "background-color: #e6f2ff; color: #0066cc; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;"
+            elif row['Party'] == "Respondent":
+                party_style = "background-color: #ffebe6; color: #cc3300; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;"
+            html_table += f"<td style='padding: 8px;'><span style='{party_style}'>{row['Party']}</span></td>"
+            
+            # Status column with styling
+            status_style = ""
+            if row['Status'] == "Disputed":
+                status_style = "background-color: #ffebe6; color: #cc3300; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;"
+            elif row['Status'] == "Undisputed":
+                status_style = "background-color: #e6f7e6; color: #008000; padding: 2px 8px; border-radius: 12px; font-size: 0.9em;"
+            html_table += f"<td style='padding: 8px;'><span style='{status_style}'>{row['Status']}</span></td>"
+            
+            # Related Argument column
+            html_table += f"<td style='padding: 8px;'>{row['Related Argument']}</td>"
+            
+            # Evidence column with styling
+            evidence_style = "background-color: #f8f9fa; color: #666; padding: 2px 8px; border-radius: 4px; font-size: 0.9em;"
+            html_table += f"<td style='padding: 8px;'><span style='{evidence_style}'>{row['Evidence']}</span></td>"
+            
+            html_table += "</tr>"
+        html_table += "</tbody></table>"
+        
+        return html_table
     
     with fact_tabs[0]:  # All Facts
         # Display the count of events
@@ -369,47 +387,118 @@ with tab1:
                 mime='text/csv',
             )
         
-        # Display the table using AgGrid for better performance with large datasets
-        AgGrid(
-            display_df,
-            gridOptions=grid_options,
-            enable_enterprise_modules=False,
-            allow_unsafe_jscode=True,
-            update_mode="MANUAL",
-            height=500
-        )
+        # Pagination controls
+        if total_pages > 1:
+            col1, col2, col3 = st.columns([1, 3, 1])
+            
+            with col1:
+                if st.button("← Previous", key="prev_facts", disabled=(st.session_state.facts_page == 1)):
+                    st.session_state.facts_page = max(1, st.session_state.facts_page - 1)
+                    st.rerun()
+            
+            with col2:
+                st.markdown(f"<div style='text-align: center;'>Page {st.session_state.facts_page} of {total_pages}</div>", unsafe_allow_html=True)
+                page_selector = st.slider("Go to page", min_value=1, max_value=total_pages, value=st.session_state.facts_page, key="facts_page_slider")
+                if page_selector != st.session_state.facts_page:
+                    st.session_state.facts_page = page_selector
+                    st.rerun()
+            
+            with col3:
+                if st.button("Next →", key="next_facts", disabled=(st.session_state.facts_page == total_pages)):
+                    st.session_state.facts_page = min(total_pages, st.session_state.facts_page + 1)
+                    st.rerun()
+        
+        # Calculate slice for current page
+        start_idx = (st.session_state.facts_page - 1) * items_per_page
+        end_idx = min(start_idx + items_per_page, total_rows)
+        
+        # Display the current page of data
+        page_df = display_df.iloc[start_idx:end_idx]
+        
+        # Render the styled table
+        st.markdown(render_styled_table(page_df), unsafe_allow_html=True)
     
     with fact_tabs[1]:  # Disputed Facts
-        disputed_df = display_df[display_df["Status"].str.contains("Disputed")]
+        disputed_df = display_df[display_df["Status"] == "Disputed"]
         
         # Display the count of events
         st.markdown(f"### Showing {len(disputed_df)} disputed events")
         
-        # Display the table using AgGrid
-        AgGrid(
-            disputed_df,
-            gridOptions=grid_options,
-            enable_enterprise_modules=False,
-            allow_unsafe_jscode=True,
-            update_mode="MANUAL",
-            height=500
-        )
+        # Pagination for disputed facts
+        disputed_total_pages = (len(disputed_df) + items_per_page - 1) // items_per_page
+        
+        # Initialize pagination state for disputed
+        if "disputed_page" not in st.session_state:
+            st.session_state.disputed_page = 1
+        st.session_state.disputed_page = min(st.session_state.disputed_page, max(1, disputed_total_pages))
+        
+        # Pagination controls
+        if disputed_total_pages > 1:
+            col1, col2, col3 = st.columns([1, 3, 1])
+            
+            with col1:
+                if st.button("← Previous", key="prev_disputed", disabled=(st.session_state.disputed_page == 1)):
+                    st.session_state.disputed_page = max(1, st.session_state.disputed_page - 1)
+                    st.rerun()
+            
+            with col2:
+                st.markdown(f"<div style='text-align: center;'>Page {st.session_state.disputed_page} of {disputed_total_pages}</div>", unsafe_allow_html=True)
+            
+            with col3:
+                if st.button("Next →", key="next_disputed", disabled=(st.session_state.disputed_page == disputed_total_pages)):
+                    st.session_state.disputed_page = min(disputed_total_pages, st.session_state.disputed_page + 1)
+                    st.rerun()
+        
+        # Calculate slice for current page
+        start_idx = (st.session_state.disputed_page - 1) * items_per_page
+        end_idx = min(start_idx + items_per_page, len(disputed_df))
+        
+        # Display the current page of data
+        page_df = disputed_df.iloc[start_idx:end_idx]
+        
+        # Render the styled table
+        st.markdown(render_styled_table(page_df), unsafe_allow_html=True)
     
     with fact_tabs[2]:  # Undisputed Facts
-        undisputed_df = display_df[display_df["Status"].str.contains("Undisputed")]
+        undisputed_df = display_df[display_df["Status"] == "Undisputed"]
         
         # Display the count of events
         st.markdown(f"### Showing {len(undisputed_df)} undisputed events")
         
-        # Display the table using AgGrid
-        AgGrid(
-            undisputed_df,
-            gridOptions=grid_options,
-            enable_enterprise_modules=False,
-            allow_unsafe_jscode=True,
-            update_mode="MANUAL",
-            height=500
-        )
+        # Pagination for undisputed facts
+        undisputed_total_pages = (len(undisputed_df) + items_per_page - 1) // items_per_page
+        
+        # Initialize pagination state for undisputed
+        if "undisputed_page" not in st.session_state:
+            st.session_state.undisputed_page = 1
+        st.session_state.undisputed_page = min(st.session_state.undisputed_page, max(1, undisputed_total_pages))
+        
+        # Pagination controls
+        if undisputed_total_pages > 1:
+            col1, col2, col3 = st.columns([1, 3, 1])
+            
+            with col1:
+                if st.button("← Previous", key="prev_undisputed", disabled=(st.session_state.undisputed_page == 1)):
+                    st.session_state.undisputed_page = max(1, st.session_state.undisputed_page - 1)
+                    st.rerun()
+            
+            with col2:
+                st.markdown(f"<div style='text-align: center;'>Page {st.session_state.undisputed_page} of {undisputed_total_pages}</div>", unsafe_allow_html=True)
+            
+            with col3:
+                if st.button("Next →", key="next_undisputed", disabled=(st.session_state.undisputed_page == undisputed_total_pages)):
+                    st.session_state.undisputed_page = min(undisputed_total_pages, st.session_state.undisputed_page + 1)
+                    st.rerun()
+        
+        # Calculate slice for current page
+        start_idx = (st.session_state.undisputed_page - 1) * items_per_page
+        end_idx = min(start_idx + items_per_page, len(undisputed_df))
+        
+        # Display the current page of data
+        page_df = undisputed_df.iloc[start_idx:end_idx]
+        
+        # Render the styled table
+        st.markdown(render_styled_table(page_df), unsafe_allow_html=True)
 
 with tab2:
     # Create columns for the document structure and timeline

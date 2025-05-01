@@ -876,6 +876,7 @@ with tab2:
                 """, unsafe_allow_html=True)
                     
                     # Sort events by date
+                                        # Sort events by date
                     doc_events = sorted(doc_events, key=lambda x: x["datetime"])
                     
                     # Display events for this document - always use compact mode

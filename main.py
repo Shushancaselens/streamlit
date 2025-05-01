@@ -219,31 +219,27 @@ with tab1:
             overflow-y: auto;
             margin-top: 10px;
         }
-        .facts-filter-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .filter-pill {
+        .status-badge {
             display: inline-block;
-            padding: 6px 12px;
-            background-color: #f1f3f5;
-            border-radius: 20px;
-            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            background-color: #e9ecef;
             font-size: 0.9em;
+            cursor: pointer;
         }
-        .filter-pill.active {
-            background-color: #4285f4;
+        .status-badge.active {
             color: white;
+            font-weight: 500;
         }
-        .filter-count {
-            display: inline-block;
-            padding: 2px 6px;
-            background-color: rgba(0,0,0,0.1);
-            border-radius: 10px;
-            margin-left: 5px;
-            font-size: 0.8em;
+        .status-badge.all.active {
+            background-color: #6c757d;
+        }
+        .status-badge.disputed.active {
+            background-color: #dc3545;
+        }
+        .status-badge.undisputed.active {
+            background-color: #28a745;
         }
         .sort-icon {
             margin-left: 5px;
@@ -255,212 +251,115 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
     
-    # Subtabs for filtering facts
-    fact_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+    # Create control panel for filters
+    st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
     
-    # Create a function to display facts based on status filter
-    def display_facts(status_filter=None):
-        # Create control panel for filters
-        st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
-        
-        # Filter fact data based on status if needed
-        if status_filter:
-            filtered_facts = df_events[df_events["status"] == status_filter].copy()
+    # Top filter section
+    col1, col2, col3 = st.columns([3, 2, 1])
+    
+    with col1:
+        search_term = st.text_input("Search Facts:", placeholder="Search by keyword...", key="facts_search")
+    
+    with col2:
+        sort_by = st.selectbox("Sort by:", 
+                              ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
+                              key="facts_sort")
+    
+    with col3:
+        sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key="facts_order")
+    
+    # Status filter with horizontal radio buttons styled as badges
+    status_filter = st.radio(
+        "Filter by status:",
+        options=["All", "Disputed", "Undisputed"],
+        horizontal=True,
+        key="status_filter"
+    )
+    
+    st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
+    
+    # Get the data and apply filters
+    filtered_facts = df_events.copy()
+    
+    # Apply status filter if needed
+    if status_filter != "All":
+        filtered_facts = filtered_facts[filtered_facts["status"] == status_filter]
+    
+    # Apply search filter if needed
+    if search_term:
+        filtered_facts = filtered_facts[
+            filtered_facts["event"].str.lower().str.contains(search_term.lower()) | 
+            filtered_facts["argument"].str.lower().str.contains(search_term.lower())
+        ]
+    
+    # Convert to a formatted DataFrame for display
+    facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence"]].copy()
+    facts_df = facts_df.rename(columns={
+        "date": "Date", 
+        "event": "Event", 
+        "party": "Party", 
+        "status": "Status", 
+        "argument": "Related Argument", 
+        "evidence": "Evidence"
+    })
+    
+    # Sort the data
+    sort_col = sort_by
+    is_ascending = sort_order == "Ascending"
+    facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
+    
+    # Format the data for display
+    def format_party(party):
+        if party == "Appellant":
+            return f'<span class="party-tag appellant">{party}</span>'
+        elif party == "Respondent":
+            return f'<span class="party-tag respondent">{party}</span>'
         else:
-            filtered_facts = df_events.copy()
-        
-        # Get counts for different categories for filter pills
-        party_counts = filtered_facts["party"].value_counts().to_dict()
-        argument_counts = filtered_facts["argument"].value_counts().to_dict()
-        
-        # Top filter section with search
-        col1, col2, col3 = st.columns([2, 1, 1])
-        
-        with col1:
-            search_term = st.text_input("Search Facts:", key=f"search_{status_filter}", placeholder="Search by keyword...")
-        
-        with col2:
-            sort_by = st.selectbox("Sort by:", 
-                                  ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
-                                  key=f"sort_{status_filter}")
-        
-        with col3:
-            sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key=f"order_{status_filter}")
-        
-        # Filter pills for Party
-        st.markdown("<div class='facts-filter-bar'>", unsafe_allow_html=True)
-        st.markdown("<strong style='margin-right:10px;'>Party:</strong>", unsafe_allow_html=True)
-        
-        # Create filter pills for parties
-        selected_party = st.session_state.get(f"party_filter_{status_filter}", "All")
-        
-        # All pill
-        all_active = "active" if selected_party == "All" else ""
-        all_count = len(filtered_facts)
-        st.markdown(f"<span class='filter-pill {all_active}' onclick=\"setPartyFilter('{status_filter}', 'All')\">All <span class='filter-count'>{all_count}</span></span>", unsafe_allow_html=True)
-        
-        # Appellant pill
-        appellant_active = "active" if selected_party == "Appellant" else ""
-        appellant_count = party_counts.get("Appellant", 0)
-        st.markdown(f"<span class='filter-pill {appellant_active}' onclick=\"setPartyFilter('{status_filter}', 'Appellant')\">Appellant <span class='filter-count'>{appellant_count}</span></span>", unsafe_allow_html=True)
-        
-        # Respondent pill
-        respondent_active = "active" if selected_party == "Respondent" else ""
-        respondent_count = party_counts.get("Respondent", 0)
-        st.markdown(f"<span class='filter-pill {respondent_active}' onclick=\"setPartyFilter('{status_filter}', 'Respondent')\">Respondent <span class='filter-count'>{respondent_count}</span></span>", unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Filter pills for Arguments
-        st.markdown("<div class='facts-filter-bar'>", unsafe_allow_html=True)
-        st.markdown("<strong style='margin-right:10px;'>Argument:</strong>", unsafe_allow_html=True)
-        
-        # Create filter pills for arguments
-        selected_argument = st.session_state.get(f"argument_filter_{status_filter}", "All")
-        
-        # All pill for arguments
-        all_arg_active = "active" if selected_argument == "All" else ""
-        st.markdown(f"<span class='filter-pill {all_arg_active}' onclick=\"setArgumentFilter('{status_filter}', 'All')\">All <span class='filter-count'>{all_count}</span></span>", unsafe_allow_html=True)
-        
-        # Top 5 arguments as pills (to prevent too many)
-        top_arguments = sorted(argument_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        for arg, count in top_arguments:
-            arg_active = "active" if selected_argument == arg else ""
-            st.markdown(f"<span class='filter-pill {arg_active}' onclick=\"setArgumentFilter('{status_filter}', '{arg}')\">{'...' if len(arg) > 15 else ''}{arg[-15:] if len(arg) > 15 else arg} <span class='filter-count'>{count}</span></span>", unsafe_allow_html=True)
-        
-        # More filter dropdown if there are more than 5 arguments
-        if len(argument_counts) > 5:
-            other_arguments = sorted(argument_counts.items(), key=lambda x: x[1], reverse=True)[5:]
-            if other_arguments:
-                with st.expander("More arguments..."):
-                    for arg, count in other_arguments:
-                        arg_active = "active" if selected_argument == arg else ""
-                        st.markdown(f"<span class='filter-pill {arg_active}' onclick=\"setArgumentFilter('{status_filter}', '{arg}')\">{arg} <span class='filter-count'>{count}</span></span>", unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
-        
-        # Apply search filter if needed
-        if search_term:
-            filtered_facts = filtered_facts[
-                filtered_facts["event"].str.lower().str.contains(search_term.lower()) | 
-                filtered_facts["argument"].str.lower().str.contains(search_term.lower())
-            ]
-        
-        # Apply party filter if needed
-        if selected_party != "All":
-            filtered_facts = filtered_facts[filtered_facts["party"] == selected_party]
-        
-        # Apply argument filter if needed
-        if selected_argument != "All":
-            filtered_facts = filtered_facts[filtered_facts["argument"] == selected_argument]
-        
-        # Convert to a formatted DataFrame for display
-        facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence"]].copy()
-        facts_df = facts_df.rename(columns={
-            "date": "Date", 
-            "event": "Event", 
-            "party": "Party", 
-            "status": "Status", 
-            "argument": "Related Argument", 
-            "evidence": "Evidence"
-        })
-        
-        # Sort the data
-        sort_col = sort_by
-        is_ascending = sort_order == "Ascending"
-        facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
-        
-        # Format the data for display
-        def format_party(party):
-            if party == "Appellant":
-                return f'<span class="party-tag appellant">{party}</span>'
-            elif party == "Respondent":
-                return f'<span class="party-tag respondent">{party}</span>'
-            else:
-                return party
-        
-        def format_status(status):
-            if status == "Disputed":
-                return f'<span class="status-tag disputed">{status}</span>'
-            elif status == "Undisputed":
-                return f'<span class="status-tag undisputed">{status}</span>'
-            else:
-                return status
-        
-        def format_evidence(evidence):
-            return f'<span class="evidence-tag">{evidence}</span>'
-        
-        # Apply formatting
-        facts_df["Party"] = facts_df["Party"].apply(format_party)
-        facts_df["Status"] = facts_df["Status"].apply(format_status)
-        facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
-        
-        if len(facts_df) > 0:
-            # Display the table with classes for styling
-            html_table = facts_df.to_html(escape=False, index=False)
-            html_table = html_table.replace('<table', '<table class="facts-table"')
-            html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
-            html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
-            html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
-            html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
-            html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
-            html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
-            
-            st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
-            
-            # Add download button for the filtered data
-            csv = facts_df.to_csv(index=False).encode('utf-8')
-            status_label = f"{status_filter}_" if status_filter else ""
-            st.download_button(
-                label=f"Download {status_label}Facts",
-                data=csv,
-                file_name=f"{status_label.lower()}facts.csv",
-                mime="text/csv",
-            )
+            return party
+    
+    def format_status(status):
+        if status == "Disputed":
+            return f'<span class="status-tag disputed">{status}</span>'
+        elif status == "Undisputed":
+            return f'<span class="status-tag undisputed">{status}</span>'
         else:
-            st.info("No facts match the current filters.")
+            return status
     
-    # Display the appropriate facts based on the selected tab
-    with fact_tabs[0]:  # All Facts
-        display_facts()
+    def format_evidence(evidence):
+        return f'<span class="evidence-tag">{evidence}</span>'
     
-    with fact_tabs[1]:  # Disputed Facts
-        display_facts("Disputed")
+    # Apply formatting
+    facts_df["Party"] = facts_df["Party"].apply(format_party)
+    facts_df["Status"] = facts_df["Status"].apply(format_status)
+    facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
     
-    with fact_tabs[2]:  # Undisputed Facts
-        display_facts("Undisputed")
+    # Display facts count
+    st.write(f"**Found {len(facts_df)} facts**")
     
-    # Add JavaScript for interactivity
-    st.markdown("""
-    <script>
-    function setPartyFilter(statusFilter, party) {
-        // Create a key for session state
-        const key = `party_filter_${statusFilter}`;
+    if len(facts_df) > 0:
+        # Display the table with classes for styling
+        html_table = facts_df.to_html(escape=False, index=False)
+        html_table = html_table.replace('<table', '<table class="facts-table"')
+        html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
+        html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
+        html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
+        html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
+        html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
+        html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
         
-        // Use Streamlit's setComponentValue to update session state
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            value: {
-                [key]: party
-            }
-        }, '*');
-    }
-    
-    function setArgumentFilter(statusFilter, argument) {
-        // Create a key for session state
-        const key = `argument_filter_${statusFilter}`;
+        st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
         
-        // Use Streamlit's setComponentValue to update session state
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            value: {
-                [key]: argument
-            }
-        }, '*');
-    }
-    </script>
-    """, unsafe_allow_html=True)
+        # Add download button for the filtered data
+        csv = facts_df.to_csv(index=False).encode('utf-8')
+        status_label = f"{status_filter}_" if status_filter != "All" else ""
+        st.download_button(
+            label=f"Download {status_label}Facts",
+            data=csv,
+            file_name=f"{status_label.lower()}facts.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info("No facts match the current filters.")
 
 # Tab 2 is now Connected View (former tab3)
 

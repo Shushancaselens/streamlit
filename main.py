@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Set page configuration
 st.set_page_config(page_title="CaseLens", layout="wide")
@@ -73,6 +71,54 @@ st.markdown("""
     }
     .undisputed {
         background-color: #55a868;
+    }
+    .timeline-container {
+        position: relative;
+        margin: 20px 0;
+        padding-left: 50px;
+    }
+    .timeline-line {
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #ccc;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        color: white;
+        font-weight: bold;
+    }
+    .timeline-marker.appellant {
+        background-color: #4c72b0;
+        border: 2px solid white;
+    }
+    .timeline-marker.respondent {
+        background-color: #e15759;
+        border: 2px solid white;
+    }
+    .timeline-content {
+        position: relative;
+        margin-left: 15px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .timeline-date {
+        position: absolute;
+        left: -85px;
+        width: 70px;
+        text-align: right;
+        font-size: 12px;
+        color: #666;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -196,89 +242,57 @@ case_facts = [
 # Convert to dataframe for easier manipulation
 df = pd.DataFrame(case_facts)
 
-# Function to create the timeline visualization
-def create_timeline():
-    fig = go.Figure()
+# Create a custom timeline using pure Streamlit components
+def create_timeline(facts):
+    st.markdown('<div class="timeline-container">', unsafe_allow_html=True)
+    st.markdown('<div class="timeline-line"></div>', unsafe_allow_html=True)
     
-    # Parse dates and create a date column we can sort by
-    date_vals = []
-    for date_str in df['date']:
-        if '-present' in date_str:
-            date_vals.append(datetime.strptime(date_str.split('-')[0], '%Y'))
-        elif '-' in date_str:
-            date_vals.append(datetime.strptime(date_str.split('-')[0], '%Y'))
-        else:
-            date_vals.append(datetime.strptime(date_str, '%Y'))
+    # Sort facts by date
+    def get_start_year(date_str):
+        if '-' in date_str:
+            return int(date_str.split('-')[0])
+        return int(date_str)
     
-    df['date_val'] = date_vals
-    sorted_df = df.sort_values('date_val')
+    sorted_facts = sorted(facts, key=lambda x: get_start_year(x['date']))
     
-    # Add lines for time periods
-    for i, row in sorted_df.iterrows():
-        color = "#4c72b0" if row['party'] == "Appellant" else "#e15759"
+    for i, fact in enumerate(sorted_facts):
+        party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+        status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
         
-        # Handle date range
-        if '-' in row['date']:
-            parts = row['date'].split('-')
-            start_year = parts[0]
-            
-            # Handle "present" or end year
-            if parts[1] == "present":
-                end_year = "2025"  # Assuming current year
-            else:
-                end_year = parts[1]
-                
-            # Add line for time range
-            fig.add_trace(go.Scatter(
-                x=[start_year, end_year],
-                y=[i, i],
-                mode='lines',
-                line=dict(color=color, width=10),
-                opacity=0.7,
-                name=row['event'],
-                hoverinfo='text',
-                hovertext=f"{row['event']}<br>Status: {row['status']}<br>Evidence: {row['evidence']}",
-                showlegend=False
-            ))
-            
-        # Add marker for the event
-        fig.add_trace(go.Scatter(
-            x=[row['date'].split('-')[0]],
-            y=[i],
-            mode='markers',
-            marker=dict(size=15, color=color, line=dict(color='white', width=2)),
-            name=row['event'],
-            text=row['event'],
-            hoverinfo='text',
-            hovertext=f"{row['event']}<br>Party: {row['party']}<br>Status: {row['status']}<br>Evidence: {row['evidence']}",
-            showlegend=False
-        ))
+        top_pos = i * 150  # Adjust vertical spacing
+        
+        # Create marker and content
+        st.markdown(f"""
+        <div class="timeline-marker {party_class}" style="top: {top_pos}px;">{i+1}</div>
+        <div class="timeline-content" style="margin-top: {30 if i > 0 else 0}px;">
+            <div class="timeline-date">{fact['date']}</div>
+            <h4>{fact['event']}</h4>
+            <p>
+                <strong>Party:</strong> <span style="color: {'#4c72b0' if fact['party'] == 'Appellant' else '#e15759'};">{fact['party']}</span><br>
+                <strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span><br>
+                <strong>Argument:</strong> {fact['argument']}<br>
+                <strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span>
+            </p>
+            <details>
+                <summary>Related Documents</summary>
+                <ul>
+                    {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
+                </ul>
+            </details>
+        </div>
+        """, unsafe_allow_html=True)
     
-    # Update layout
-    fig.update_layout(
-        title="Case Timeline",
-        xaxis=dict(
-            title="Year",
-            type='category',
-            tickvals=["1950", "1960", "1970", "1980", "1990", "2000", "2010", "2020", "Present"],
-        ),
-        yaxis=dict(
-            showticklabels=False,
-        ),
-        height=400,
-        margin=dict(l=20, r=20, t=40, b=20),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        hovermode='closest'
-    )
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    return fig
+    # Add spacing at the end
+    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
 
 # Display different content based on the active tab
 with tabs[0]:  # All Facts
-    # Display timeline
-    st.plotly_chart(create_timeline(), use_container_width=True)
+    st.subheader("Timeline View")
+    create_timeline(case_facts)
     
+    st.subheader("Table View")
     # Display facts table with columns
     cols = st.columns([1, 2, 1, 1, 2, 1])
     cols[0].markdown("**Date**")
@@ -331,6 +345,10 @@ with tabs[1]:  # Disputed Facts
     disputed_facts = [fact for fact in case_facts if fact["status"] == "Disputed"]
     
     if disputed_facts:
+        st.subheader("Timeline of Disputed Facts")
+        create_timeline(disputed_facts)
+        
+        st.subheader("Details")
         for i, fact in enumerate(disputed_facts):
             party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
             
@@ -368,6 +386,10 @@ with tabs[2]:  # Undisputed Facts
     undisputed_facts = [fact for fact in case_facts if fact["status"] == "Undisputed"]
     
     if undisputed_facts:
+        st.subheader("Timeline of Undisputed Facts")
+        create_timeline(undisputed_facts)
+        
+        st.subheader("Details")
         for fact in undisputed_facts:
             party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
             
@@ -430,6 +452,135 @@ for i, (doc, facts) in enumerate(doc_to_facts.items()):
                     <p><strong>Evidence:</strong> <span class="evidence-tag">{event['evidence']}</span></p>
                 </div>
                 """, unsafe_allow_html=True)
+        
+        # Visual representation of document connection to case events
+        st.subheader("Document Timeline")
+        st.markdown("<div style='position: relative; padding: 20px 0;'>", unsafe_allow_html=True)
+        
+        # Sort facts by date for timeline
+        sorted_doc_facts = sorted(facts, key=lambda x: x['date'].split('-')[0])
+        
+        # Create a simple horizontal timeline
+        timeline_html = """
+        <div style="display: flex; margin-top: 30px; margin-bottom: 60px; position: relative;">
+            <div style="position: absolute; top: 15px; left: 0; right: 0; height: 2px; background-color: #ddd;"></div>
+        """
+        
+        # Add markers for each year mentioned
+        years = set()
+        for fact in sorted_doc_facts:
+            date_parts = fact['date'].split('-')
+            years.add(date_parts[0])
+            if len(date_parts) > 1 and date_parts[1] != "present":
+                years.add(date_parts[1])
+        
+        years = sorted(list(years))
+        year_positions = {}
+        width = 100 / (len(years) - 1) if len(years) > 1 else 100
+        
+        for i, year in enumerate(years):
+            position = i * width if len(years) > 1 else 50
+            year_positions[year] = position
+            timeline_html += f"""
+            <div style="position: absolute; top: 25px; left: {position}%; transform: translateX(-50%);">
+                <div style="width: 10px; height: 10px; background-color: #666; border-radius: 50%; margin: 0 auto;"></div>
+                <div style="text-align: center; margin-top: 5px; font-size: 12px;">{year}</div>
+            </div>
+            """
+        
+        # Add document connection points
+        for i, fact in enumerate(sorted_doc_facts):
+            start_year = fact['date'].split('-')[0]
+            position = year_positions[start_year]
+            color = "#4c72b0" if fact["party"] == "Appellant" else "#e15759"
+            
+            timeline_html += f"""
+            <div style="position: absolute; top: -20px; left: {position}%; transform: translateX(-50%);">
+                <div style="width: 14px; height: 14px; background-color: {color}; border-radius: 50%; 
+                     border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
+                <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); 
+                     background-color: white; border: 1px solid #ddd; border-radius: 4px; padding: 2px 6px; 
+                     font-size: 11px; white-space: nowrap; display: none;">
+                    {fact['event']}
+                </div>
+            </div>
+            """
+        
+        timeline_html += "</div>"
+        st.markdown(timeline_html, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# Connection explorer view
+st.header("Document-Event Connection Explorer")
+
+selected_document = st.selectbox("Select Document", list(doc_to_facts.keys()))
+selected_event = None
+
+if selected_document:
+    facts = doc_to_facts[selected_document]
+    event_options = [fact['event'] for fact in facts]
+    selected_event = st.selectbox("Select Event", event_options)
+
+if selected_event:
+    selected_fact = next((fact for fact in case_facts if fact['event'] == selected_event), None)
+    if selected_fact:
+        # Create visualization for the connection
+        st.subheader("Connection Details")
+        
+        # Create columns for document and event
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"""
+            <div style="background-color: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h4>📁 {selected_document}</h4>
+                <p><strong>Document Type:</strong> {selected_document.split('.')[0]}</p>
+                <p><strong>Filed By:</strong> {"Appellant" if "Appeal" in selected_document or "Reply" in selected_document else "Respondent"}</p>
+                <p><strong>Referenced Arguments:</strong></p>
+                <ul>
+                    {"".join([f"<li>{fact['argument']}</li>" for fact in doc_to_facts[selected_document]])}
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            party_class = "appellant" if selected_fact["party"] == "Appellant" else "respondent"
+            status_class = "disputed" if selected_fact["status"] == "Disputed" else "undisputed"
+            
+            st.markdown(f"""
+            <div class="timeline-event {party_class}">
+                <h4>{selected_fact['event']}</h4>
+                <p><strong>Date:</strong> {selected_fact['date']}</p>
+                <p><strong>Party:</strong> {selected_fact['party']}</p>
+                <p><strong>Status:</strong> <span class="status-tag {status_class}">{selected_fact['status']}</span></p>
+                <p><strong>Related Argument:</strong> {selected_fact['argument']}</p>
+                <p><strong>Evidence:</strong> <span class="evidence-tag">{selected_fact['evidence']}</span></p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Show connection visualization
+        st.markdown("""
+        <div style="margin: 30px 0; text-align: center;">
+            <div style="display: inline-block; width: 100px; height: 100px; border-radius: 50%; background-color: #f0f0f5; 
+                  text-align: center; line-height: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                📁
+            </div>
+            <div style="display: inline-block; width: 100px; height: 2px; background-color: #333; margin: 0 15px; vertical-align: middle;"></div>
+            <div style="display: inline-block; width: 100px; height: 100px; border-radius: 50%; background-color: #f0f0f5; 
+                  text-align: center; line-height: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                📅
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show other documents referencing the same event
+        other_docs = [doc for doc in selected_fact['related_documents'] if doc != selected_document]
+        if other_docs:
+            st.markdown("### Other Documents Referencing This Event")
+            st.markdown("<ul>", unsafe_allow_html=True)
+            for doc in other_docs:
+                st.markdown(f"<li>{doc}</li>", unsafe_allow_html=True)
+            st.markdown("</ul>", unsafe_allow_html=True)
 
 # Add footer with action buttons
 col1, col2, col3 = st.columns([1, 1, 4])

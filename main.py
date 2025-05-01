@@ -610,16 +610,21 @@ with tab2:
         .timeline-event-compact {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         .timeline-date-compact {
-            width: 120px;
+            width: 150px; /* Wider to accommodate longer dates */
             flex-shrink: 0;
-            font-weight: 500;
-            font-size: 0.9em;
+            font-weight: 700; /* Bolder */
+            font-size: 1.05em; /* Bigger */
+            color: #1a73e8; /* Blue color to make it stand out */
+            padding-right: 15px; /* More space between date and content */
+            line-height: 1.4;
         }
         .timeline-content-compact {
             flex-grow: 1;
+            padding-left: 10px; /* Additional spacing from date */
+            border-left: 1px solid #e0e0e0; /* Light separator */
         }
     </style>
     """, unsafe_allow_html=True)
@@ -776,9 +781,9 @@ with tab2:
             
             # Display each event in timeline format
             for event in all_events_sorted:
-                # Format the date range
+                # Format the date range with a clearer separator for better visibility
                 if event["end_date"]:
-                    date_display = f"{event['date']} to {event['end_date']}"
+                    date_display = f"{event['date']}<br/>to<br/>{event['end_date']}"
                 else:
                     date_display = event["date"]
                 
@@ -894,17 +899,18 @@ with tab2:
                         elif event["status"] == "Undisputed":
                             status_class = "undisputed"
                         
-                        # Create compact timeline item
+                        # Create compact timeline item with improved date formatting
                         timeline_html = f"""
                         <div class="timeline-event-compact">
                             <div class="timeline-date-compact">{date_display}</div>
                             <div class="timeline-content-compact">
                                 <strong>{event["event"]}</strong>
-                                <div style="margin-top: 2px;">
+                                <div style="margin-top: 4px;">
+                                    <span class="party-tag {party_class}">{event["party"]}</span>
                                     <span class="status-tag {status_class}">{event["status"]}</span>
                                     <span class="evidence-tag">{event["evidence"]}</span>
                                 </div>
-                                <div style="margin-top: 2px; font-size: 0.9em;">
+                                <div style="margin-top: 4px; font-size: 0.9em;">
                                     {event["argument"]}
                                 </div>
                             </div>

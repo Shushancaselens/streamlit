@@ -287,134 +287,21 @@ with tab1:
     with col3:
         sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key="facts_order")
     
-    # Add custom CSS for improved filter buttons
-    st.markdown("""
-    <style>
-        .filter-container {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-        .filter-label {
-            font-weight: 500;
-            margin-right: 15px;
-            min-width: 120px;
-        }
-        .button-group {
-            display: flex;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .filter-button {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            color: #495057;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        .filter-button:hover:not(.active) {
-            background-color: #e9ecef;
-        }
-        .filter-button.active {
-            background-color: #4285f4;
-            color: white;
-            border-color: #4285f4;
-        }
-        .filter-button:first-child {
-            border-radius: 6px 0 0 6px;
-        }
-        .filter-button:last-child {
-            border-radius: 0 6px 6px 0;
-        }
-        .filter-button.all.active {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-        .filter-button.disputed.active {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .filter-button.undisputed.active {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .view-icon {
-            margin-right: 5px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # Status filter with horizontal radio buttons
+    status_filter = st.radio(
+        "Filter by status:",
+        options=["All", "Disputed", "Undisputed"],
+        horizontal=True,
+        key="status_filter"
+    )
     
-    # Initialize status_filter from session state
-    if 'status_filter' not in st.session_state:
-        st.session_state.status_filter = "All"
-    status_filter = st.session_state.status_filter
-    
-    # Custom buttons for status filter
-    st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
-    st.markdown("<div class='filter-label'>Filter by status:</div>", unsafe_allow_html=True)
-    st.markdown("<div class='button-group'>", unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col1:
-        all_active = st.button("All", key="status_all", 
-                             use_container_width=True, 
-                             type="secondary" if status_filter != "All" else "primary")
-    with col2:
-        disputed_active = st.button("⚠️ Disputed", key="status_disputed", 
-                                  use_container_width=True, 
-                                  type="secondary" if status_filter != "Disputed" else "primary")
-    with col3:
-        undisputed_active = st.button("✓ Undisputed", key="status_undisputed", 
-                                    use_container_width=True, 
-                                    type="secondary" if status_filter != "Undisputed" else "primary")
-    
-    st.markdown("</div></div>", unsafe_allow_html=True)
-    
-    # Set status filter based on button clicks
-    if disputed_active:
-        status_filter = "Disputed"
-    elif undisputed_active:
-        status_filter = "Undisputed"
-    elif all_active:
-        status_filter = "All"
-    
-    # Update session state
-    st.session_state.status_filter = status_filter
-    
-    # Initialize view_mode from session state
-    if 'view_mode' not in st.session_state:
-        st.session_state.view_mode = "Table View"
-    view_mode = st.session_state.view_mode
-    
-    # Custom buttons for view mode
-    st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
-    st.markdown("<div class='filter-label'>View Mode:</div>", unsafe_allow_html=True)
-    st.markdown("<div class='button-group'>", unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([1, 1])
-    with col1:
-        table_active = st.button("📊 Table View", key="view_table", 
-                               use_container_width=True,
-                               type="secondary" if view_mode != "Table View" else "primary")
-    with col2:
-        sets_active = st.button("📁 Document Sets", key="view_sets", 
-                              use_container_width=True,
-                              type="secondary" if view_mode != "Document Sets View" else "primary")
-    
-    st.markdown("</div></div>", unsafe_allow_html=True)
-    
-    # Set view mode based on button clicks
-    if table_active:
-        view_mode = "Table View"
-    elif sets_active:
-        view_mode = "Document Sets View"
-    
-    # Update session state
-    st.session_state.view_mode = view_mode
+    # View mode selection
+    view_mode = st.radio(
+        "View Mode:",
+        options=["Table View", "Document Sets View"],
+        horizontal=True,
+        key="facts_view_mode"
+    )
     
     st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     
@@ -659,264 +546,46 @@ with tab2:
     
     # Create control panel for filters
     st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
-    
-    # Add CSS for improved filter UI
-    st.markdown("""
-    <style>
-        .filter-chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .filter-chip {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            border: 1px solid #dee2e6;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .filter-chip:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .filter-chip.selected {
-            background-color: #4285f4;
-            color: white;
-            border-color: #4285f4;
-        }
-        .filter-chip.appellant.selected {
-            background-color: #0066cc;
-            border-color: #0066cc;
-        }
-        .filter-chip.respondent.selected {
-            background-color: #cc3300;
-            border-color: #cc3300;
-        }
-        .filter-chip.disputed.selected {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .filter-chip.undisputed.selected {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .filter-chip.all.selected {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-        .filter-section {
-            margin-bottom: 15px;
-        }
-        .filter-label {
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-        .view-toggle-container {
-            display: flex;
-            background-color: #f1f3f5;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-        .view-toggle-option {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .view-toggle-option.selected {
-            background-color: #4285f4;
-            color: white;
-        }
-        .view-toggle-option:hover:not(.selected) {
-            background-color: #e9ecef;
-        }
-        .date-range-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .date-label {
-            font-size: 0.9em;
-            color: #666;
-            white-space: nowrap;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        # Party filter as chips
-        st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
-        st.markdown("<div class='filter-label'>Filter by Party:</div>", unsafe_allow_html=True)
-        
-        # Initialize session state for party filter
-        if 'party_filter' not in st.session_state:
-            st.session_state.party_filter = ["All"]
-        
-        # Custom chip UI for party selection
-        party_options = ["All", "Appellant", "Respondent", "N/A"]
-        party_cols = st.columns(len(party_options))
-        
-        for i, party in enumerate(party_options):
-            with party_cols[i]:
-                party_class = party.lower() if party != "N/A" else "na"
-                is_selected = party in st.session_state.party_filter
-                
-                if st.button(
-                    party,
-                    key=f"party_{party_class}",
-                    type="primary" if is_selected else "secondary",
-                    use_container_width=True
-                ):
-                    # Toggle this party's selection
-                    if party == "All":
-                        # All is exclusive
-                        st.session_state.party_filter = ["All"]
-                    else:
-                        # Remove "All" if it's there
-                        if "All" in st.session_state.party_filter:
-                            st.session_state.party_filter.remove("All")
-                        
-                        # Toggle this party
-                        if party in st.session_state.party_filter:
-                            st.session_state.party_filter.remove(party)
-                            # If nothing is selected, default to "All"
-                            if not st.session_state.party_filter:
-                                st.session_state.party_filter = ["All"]
-                        else:
-                            st.session_state.party_filter.append(party)
-        
-        party_filter = st.session_state.party_filter
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    with col2:
-        # Status filter as chips
-        st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
-        st.markdown("<div class='filter-label'>Filter by Status:</div>", unsafe_allow_html=True)
-        
-        # Initialize session state for status filter
-        if 'timeline_status_filter' not in st.session_state:
-            st.session_state.timeline_status_filter = ["All"]
-        
-        # Custom chip UI for status selection
-        status_options = ["All", "Disputed", "Undisputed"]
-        status_cols = st.columns(len(status_options))
-        
-        for i, status in enumerate(status_options):
-            with status_cols[i]:
-                status_class = status.lower()
-                is_selected = status in st.session_state.timeline_status_filter
-                
-                # Add icons to make it more visual
-                label = status
-                if status == "Disputed":
-                    label = "⚠️ " + status
-                elif status == "Undisputed":
-                    label = "✓ " + status
-                
-                if st.button(
-                    label,
-                    key=f"status_{status_class}",
-                    type="primary" if is_selected else "secondary",
-                    use_container_width=True
-                ):
-                    # Toggle this status's selection
-                    if status == "All":
-                        # All is exclusive
-                        st.session_state.timeline_status_filter = ["All"]
-                    else:
-                        # Remove "All" if it's there
-                        if "All" in st.session_state.timeline_status_filter:
-                            st.session_state.timeline_status_filter.remove("All")
-                        
-                        # Toggle this status
-                        if status in st.session_state.timeline_status_filter:
-                            st.session_state.timeline_status_filter.remove(status)
-                            # If nothing is selected, default to "All"
-                            if not st.session_state.timeline_status_filter:
-                                st.session_state.timeline_status_filter = ["All"]
-                        else:
-                            st.session_state.timeline_status_filter.append(status)
-        
-        status_filter = st.session_state.timeline_status_filter
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Date range filter with improved UI
-    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
-    st.markdown("<div class='filter-label'>Date Range:</div>", unsafe_allow_html=True)
-    col1, col2 = st.columns([1, 1])
-    
-    # Get min and max dates
-    min_date = pd.to_datetime(df_events["date"].min())
-    max_date = pd.to_datetime(df_events["date"].max())
-    
-    with col1:
-        start_date = st.date_input(
-            "From:",
-            value=min_date,
-            min_value=min_date,
-            max_value=max_date,
-            key="timeline_start_date"
+        # Filter by party
+        party_filter = st.multiselect(
+            "Filter by Party:",
+            options=["All", "Appellant", "Respondent", "N/A"],
+            default=["All"]
         )
     
     with col2:
-        end_date = st.date_input(
-            "To:",
-            value=max_date,
-            min_value=min_date,
-            max_value=max_date,
-            key="timeline_end_date"
+        # Filter by status
+        status_filter = st.multiselect(
+            "Filter by Status:",
+            options=["All", "Disputed", "Undisputed"],
+            default=["All"]
         )
     
-    date_range = (start_date, end_date)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with col3:
+        # Filter by date range
+        min_date = pd.to_datetime(df_events["date"].min())
+        max_date = pd.to_datetime(df_events["date"].max())
+        
+        date_range = st.date_input(
+            "Date Range:",
+            value=(min_date, max_date),
+            min_value=min_date,
+            max_value=max_date
+        )
     
-    # Search functionality with improved styling
-    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
-    search_term = st.text_input(
-        "Search Events:", 
-        placeholder="Enter keywords to filter events...",
-        key="timeline_search"
+    # Search functionality
+    search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
+    
+    # Display options
+    view_mode = st.radio(
+        "View Mode:",
+        options=["By Document Sets", "All Facts Together"],
+        horizontal=True,
+        key="connected_view_mode"
     )
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # View mode toggle with improved UI
-    st.markdown("<div class='filter-section'>", unsafe_allow_html=True)
-    st.markdown("<div class='filter-label'>View Mode:</div>", unsafe_allow_html=True)
-    
-    # Initialize session state for view mode
-    if 'timeline_view_mode' not in st.session_state:
-        st.session_state.timeline_view_mode = "By Document Sets"
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if st.button(
-            "📁 By Document Sets",
-            key="view_by_sets",
-            type="primary" if st.session_state.timeline_view_mode == "By Document Sets" else "secondary",
-            use_container_width=True
-        ):
-            st.session_state.timeline_view_mode = "By Document Sets"
-    
-    with col2:
-        if st.button(
-            "📈 All Facts Together",
-            key="view_all_facts",
-            type="primary" if st.session_state.timeline_view_mode == "All Facts Together" else "secondary",
-            use_container_width=True
-        ):
-            st.session_state.timeline_view_mode = "All Facts Together"
-    
-    view_mode = st.session_state.timeline_view_mode
-    st.markdown("</div>", unsafe_allow_html=True)
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"

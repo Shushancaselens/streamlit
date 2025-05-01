@@ -86,7 +86,7 @@ if selected_event:
         st.subheader("Connection Details")
         
         # Display connection visualization
-        st.markdown("""
+        st.markdown(f"""
         <div style="display: flex; justify-content: center; align-items: center; margin: 30px 0; text-align: center;">
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <div style="width: 120px; height: 120px; border-radius: 50%; background-color: #f0f0f5; 
@@ -184,7 +184,109 @@ col1, col2, col3 = st.columns([1, 1, 4])
 with col1:
     st.button("Copy")
 with col2:
-    st.button("Export")import streamlit as st
+    st.button("Export")
+        # Create a visual timeline specific to this document
+        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        st.markdown("### Timeline for this Document")
+        
+        # Create a horizontal timeline for document events
+        st.markdown("""
+        <div style="position: relative; height: 120px; margin: 30px 0; background-color: white; 
+             border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        """, unsafe_allow_html=True)
+        
+        # Get all years from events
+        all_years = set()
+        for fact in sorted_facts:
+            date_parts = fact['date'].split('-')
+            all_years.add(int(date_parts[0]))
+            if len(date_parts) > 1 and date_parts[1] != "present":
+                all_years.add(int(date_parts[1]))
+        
+        # Create year markers
+        timeline_years = sorted(list(all_years))
+        if "present" in [f['date'].split('-')[-1] for f in sorted_facts]:
+            timeline_years.append(2025)  # Use current year for "present"
+        
+        # Draw the timeline line
+        st.markdown("""
+        <div style="position: absolute; top: 50px; left: 40px; right: 40px; height: 2px; background-color: #ddd;"></div>
+        """, unsafe_allow_html=True)
+        
+        # Calculate positions for year markers
+        if len(timeline_years) > 1:
+            min_year = min(timeline_years)
+            max_year = max(timeline_years)
+            year_range = max_year - min_year
+            
+            # Draw year markers
+            for year in timeline_years:
+                if year_range > 0:
+                    position = ((year - min_year) / year_range) * 100
+                else:
+                    position = 50
+                
+                # Display as "Present" if it's the max year and we have a "present" date
+                year_label = "Present" if year == max_year and "present" in [f['date'].split('-')[-1] for f in sorted_facts] else year
+                
+                st.markdown(f"""
+                <div style="position: absolute; top: 60px; left: calc(40px + {position}% * (100% - 80px)); 
+                     transform: translateX(-50%); text-align: center;">
+                    <div style="width: 2px; height: 8px; background-color: #666; margin: 0 auto;"></div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">{year_label}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+            # Draw event markers on timeline
+            for fact in sorted_facts:
+                date_parts = fact['date'].split('-')
+                start_year = int(date_parts[0])
+                
+                # Determine position based on start year
+                position = ((start_year - min_year) / year_range) * 100 if year_range > 0 else 50
+                
+                # Color based on party
+                color = "#4c72b0" if fact["party"] == "Appellant" else "#e15759"
+                
+                # Draw marker
+                st.markdown(f"""
+                <div style="position: absolute; top: 40px; left: calc(40px + {position}% * (100% - 80px)); 
+                     transform: translateX(-50%);">
+                    <div style="width: 16px; height: 16px; background-color: {color}; border-radius: 50%; 
+                         border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"
+                         title="{fact['event']}"></div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Group events by argument with improved styling
+        st.markdown("### Arguments Referenced")
+        
+        # Group by argument
+        facts_by_argument = {}
+        for fact in facts:
+            arg = fact['argument']
+            if arg not in facts_by_argument:
+                facts_by_argument[arg] = []
+            facts_by_argument[arg].append(fact)
+        
+        for arg, arg_facts in facts_by_argument.items():
+            with st.expander(arg, expanded=False):
+                for fact in arg_facts:
+                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
+                    party_tag_class = f"{party_class}-tag"
+                    
+                    st.markdown(f"""
+                    <div class="timeline-event {party_class}" style="margin-bottom: 15px;">
+                        <h4>{fact['event']}</h4>
+                        <p><strong>Date:</strong> {fact['date']}</p>
+                        <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
+                        <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
+                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                    </div>
+                    """, unsafe_allow_html=True)import streamlit as st
 import pandas as pd
 from datetime import datetime
 
@@ -880,112 +982,3 @@ for i, (doc, facts) in enumerate(doc_to_facts.items()):
             </tbody>
         </table>
         """, unsafe_allow_html=True)
-        
-        # Create a visual timeline specific to this document
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown("### Timeline for this Document")
-        
-        # Create a horizontal timeline for document events
-        st.markdown("""
-        <div style="position: relative; height: 120px; margin: 30px 0; background-color: white; 
-             border-radius: 6px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-        """, unsafe_allow_html=True)
-        
-        # Get all years from events
-        all_years = set()
-        for fact in sorted_facts:
-            date_parts = fact['date'].split('-')
-            all_years.add(int(date_parts[0]))
-            if len(date_parts) > 1 and date_parts[1] != "present":
-                all_years.add(int(date_parts[1]))
-        
-        # Create year markers
-        timeline_years = sorted(list(all_years))
-        if "present" in [f['date'].split('-')[-1] for f in sorted_facts]:
-            timeline_years.append(2025)  # Use current year for "present"
-        
-        # Draw the timeline line
-        st.markdown("""
-        <div style="position: absolute; top: 50px; left: 40px; right: 40px; height: 2px; background-color: #ddd;"></div>
-        """, unsafe_allow_html=True)
-        
-        # Calculate positions for year markers
-        if len(timeline_years) > 1:
-            min_year = min(timeline_years)
-            max_year = max(timeline_years)
-            year_range = max_year - min_year
-            
-            # Draw year markers
-            for year in timeline_years:
-                if year_range > 0:
-                    position = ((year - min_year) / year_range) * 100
-                else:
-                    position = 50
-                
-                # Display as "Present" if it's the max year and we have a "present" date
-                year_label = "Present" if year == max_year and "present" in [f['date'].split('-')[-1] for f in sorted_facts] else year
-                
-                st.markdown(f"""
-                <div style="position: absolute; top: 60px; left: calc(40px + {position}% * (100% - 80px)); 
-                     transform: translateX(-50%); text-align: center;">
-                    <div style="width: 2px; height: 8px; background-color: #666; margin: 0 auto;"></div>
-                    <div style="font-size: 12px; color: #666; margin-top: 5px;">{year_label}</div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        # Draw event markers on timeline
-        for fact in sorted_facts:
-            date_parts = fact['date'].split('-')
-            start_year = int(date_parts[0])
-            
-            # Determine position based on start year
-            if len(timeline_years) > 1:
-                min_year = min(timeline_years)
-                max_year = max(timeline_years)
-                year_range = max_year - min_year
-                position = ((start_year - min_year) / year_range) * 100 if year_range > 0 else 50
-            else:
-                position = 50
-            
-            # Color based on party
-            color = "#4c72b0" if fact["party"] == "Appellant" else "#e15759"
-            
-            # Draw marker
-            st.markdown(f"""
-            <div style="position: absolute; top: 40px; left: calc(40px + {position}% * (100% - 80px)); 
-                 transform: translateX(-50%);">
-                <div style="width: 16px; height: 16px; background-color: {color}; border-radius: 50%; 
-                     border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"
-                     title="{fact['event']}"></div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        # Group events by argument with improved styling
-        st.markdown("### Arguments Referenced")
-        
-        # Group by argument
-        facts_by_argument = {}
-        for fact in facts:
-            arg = fact['argument']
-            if arg not in facts_by_argument:
-                facts_by_argument[arg] = []
-            facts_by_argument[arg].append(fact)
-        
-        for arg, arg_facts in facts_by_argument.items():
-            with st.expander(arg, expanded=False):
-                for fact in arg_facts:
-                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
-                    status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
-                    party_tag_class = f"{party_class}-tag"
-                    
-                    st.markdown(f"""
-                    <div class="timeline-event {party_class}" style="margin-bottom: 15px;">
-                        <h4>{fact['event']}</h4>
-                        <p><strong>Date:</strong> {fact['date']}</p>
-                        <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
-                        <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
-                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
-                    </div>
-                    """, unsafe_allow_html=True)

@@ -167,177 +167,196 @@ st.markdown("# Summary of arguments")
 # Create two tabs
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
-# Sample document sets to use throughout the app
-document_sets = {
-    "ICA Appeal 2023/A/001": "Appeal documents from the main club licensing case",
-    "UEFA Club Licensing Documents": "Official licensing documentation for the appeal",
-    "CAS Procedure 2023/O/123": "Court of Arbitration for Sport proceedings",
-    "Swiss Federal Tribunal Case 4A_248": "Related Swiss federal court documents",
-    "Historical Club Records (1950-1980)": "Documentation of club's historical operations"
-}
-
 with tab1:
-    # Add CSS for improved facts filtering
+    # Add CSS for improved Facts tab
     st.markdown("""
     <style>
-        .fact-filters {
+        .facts-controls {
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 20px;
         }
-        .fact-table {
-            margin-top: 15px;
+        .facts-table {
+            border-collapse: collapse;
+            width: 100%;
         }
-        .fact-table th {
+        .facts-table th {
             background-color: #f1f3f5;
-            padding: 8px;
+            padding: 10px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .fact-table td {
-            padding: 8px;
+        .facts-table td {
+            padding: 8px 10px;
             border-bottom: 1px solid #eee;
         }
-        .fact-table tr:hover {
+        .facts-table tbody tr:hover {
             background-color: #f8f9fa;
+        }
+        .date-column {
+            width: 120px;
+        }
+        .event-column {
+            width: 30%;
+        }
+        .party-column {
+            width: 100px;
+        }
+        .status-column {
+            width: 100px;
+        }
+        .argument-column {
+            width: 25%;
+        }
+        .evidence-column {
+            width: 80px;
+        }
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .facts-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
         .filter-pill {
             display: inline-block;
-            padding: 4px 12px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            border-radius: 16px;
-            background-color: #e9ecef;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            background-color: #f1f3f5;
+            border-radius: 20px;
             cursor: pointer;
-        }
-        .filter-pill:hover {
-            background-color: #dee2e6;
+            font-size: 0.9em;
         }
         .filter-pill.active {
             background-color: #4285f4;
             color: white;
         }
-        .filter-section {
-            margin-bottom: 15px;
+        .filter-count {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-left: 5px;
+            font-size: 0.8em;
         }
-        .filter-header {
-            font-weight: 500;
-            margin-bottom: 5px;
+        .sort-icon {
+            margin-left: 5px;
+            opacity: 0.5;
+        }
+        .sort-icon.active {
+            opacity: 1;
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # Create advanced filter UI
-    st.markdown("<div class='fact-filters'>", unsafe_allow_html=True)
+    # Subtabs for filtering facts
+    fact_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
     
-    # Top filter tabs with improved styling
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        status_filter = st.radio(
-            "Filter by Status:",
-            options=["All Facts", "Disputed Facts", "Undisputed Facts"],
-            horizontal=True
-        )
-    
-    with col2:
-        party_filter = st.multiselect(
-            "Filter by Party:",
-            options=["Appellant", "Respondent", "N/A"],
-            default=[]
-        )
+    # Create a function to display facts based on status filter
+    def display_facts(status_filter=None):
+        # Create control panel for filters
+        st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
         
-    with col3:
-        argument_filter = st.selectbox(
-            "Filter by Argument:",
-            options=["All Arguments"] + sorted(df_events["argument"].unique().tolist())
-        )
-    
-    # Date range filter
-    col1, col2 = st.columns(2)
-    with col1:
-        date_range = st.date_input(
-            "Date Range:",
-            value=(pd.to_datetime(df_events["date"].min()).date(), 
-                   pd.to_datetime(df_events["date"].max()).date())
-        )
-    
-    with col2:
-        search_query = st.text_input("Search:", placeholder="Search in events...")
-    
-    # Evidence filter
-    evidence_options = sorted(df_events["evidence"].unique().tolist())
-    evidence_filter = st.multiselect(
-        "Filter by Evidence:",
-        options=evidence_options,
-        default=[]
-    )
-    
-    # Apply filters
-    filtered_df = df_events.copy()
-    
-    # Convert date to datetime for filtering
-    filtered_df["datetime"] = pd.to_datetime(filtered_df["date"])
-    
-    # Status filter
-    if status_filter == "Disputed Facts":
-        filtered_df = filtered_df[filtered_df["status"] == "Disputed"]
-    elif status_filter == "Undisputed Facts":
-        filtered_df = filtered_df[filtered_df["status"] == "Undisputed"]
-    
-    # Party filter
-    if party_filter:
-        filtered_df = filtered_df[filtered_df["party"].isin(party_filter)]
-    
-    # Argument filter
-    if argument_filter != "All Arguments":
-        filtered_df = filtered_df[filtered_df["argument"] == argument_filter]
-    
-    # Date range filter
-    if len(date_range) == 2:
-        start_date, end_date = date_range
-        filtered_df = filtered_df[
-            (filtered_df["datetime"].dt.date >= start_date) & 
-            (filtered_df["datetime"].dt.date <= end_date)
-        ]
-    
-    # Evidence filter
-    if evidence_filter:
-        filtered_df = filtered_df[filtered_df["evidence"].isin(evidence_filter)]
-    
-    # Search query
-    if search_query:
-        search_query = search_query.lower()
-        filtered_df = filtered_df[
-            filtered_df["event"].str.lower().str.contains(search_query) | 
-            filtered_df["argument"].str.lower().str.contains(search_query)
-        ]
-    
-    # Show active filters summary
-    active_filters = []
-    if status_filter != "All Facts":
-        active_filters.append(f"Status: {status_filter}")
-    if party_filter:
-        active_filters.append(f"Party: {', '.join(party_filter)}")
-    if argument_filter != "All Arguments":
-        active_filters.append(f"Argument: {argument_filter}")
-    if len(date_range) == 2:
-        active_filters.append(f"Date range: {date_range[0]} to {date_range[1]}")
-    if evidence_filter:
-        active_filters.append(f"Evidence: {', '.join(evidence_filter)}")
-    if search_query:
-        active_filters.append(f"Search: '{search_query}'")
-    
-    if active_filters:
-        st.markdown(f"**Active Filters:** {' | '.join(active_filters)}")
-    
-    # Show result count
-    st.markdown(f"**Showing {len(filtered_df)} facts**")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Create a table with the filtered events
-    if not filtered_df.empty:
-        facts_df = filtered_df[["date", "event", "party", "status", "argument", "evidence"]]
+        # Filter fact data based on status if needed
+        if status_filter:
+            filtered_facts = df_events[df_events["status"] == status_filter].copy()
+        else:
+            filtered_facts = df_events.copy()
+        
+        # Get counts for different categories for filter pills
+        party_counts = filtered_facts["party"].value_counts().to_dict()
+        argument_counts = filtered_facts["argument"].value_counts().to_dict()
+        
+        # Top filter section with search
+        col1, col2, col3 = st.columns([2, 1, 1])
+        
+        with col1:
+            search_term = st.text_input("Search Facts:", key=f"search_{status_filter}", placeholder="Search by keyword...")
+        
+        with col2:
+            sort_by = st.selectbox("Sort by:", 
+                                  ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
+                                  key=f"sort_{status_filter}")
+        
+        with col3:
+            sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key=f"order_{status_filter}")
+        
+        # Filter pills for Party
+        st.markdown("<div class='facts-filter-bar'>", unsafe_allow_html=True)
+        st.markdown("<strong style='margin-right:10px;'>Party:</strong>", unsafe_allow_html=True)
+        
+        # Create filter pills for parties
+        selected_party = st.session_state.get(f"party_filter_{status_filter}", "All")
+        
+        # All pill
+        all_active = "active" if selected_party == "All" else ""
+        all_count = len(filtered_facts)
+        st.markdown(f"<span class='filter-pill {all_active}' onclick=\"setPartyFilter('{status_filter}', 'All')\">All <span class='filter-count'>{all_count}</span></span>", unsafe_allow_html=True)
+        
+        # Appellant pill
+        appellant_active = "active" if selected_party == "Appellant" else ""
+        appellant_count = party_counts.get("Appellant", 0)
+        st.markdown(f"<span class='filter-pill {appellant_active}' onclick=\"setPartyFilter('{status_filter}', 'Appellant')\">Appellant <span class='filter-count'>{appellant_count}</span></span>", unsafe_allow_html=True)
+        
+        # Respondent pill
+        respondent_active = "active" if selected_party == "Respondent" else ""
+        respondent_count = party_counts.get("Respondent", 0)
+        st.markdown(f"<span class='filter-pill {respondent_active}' onclick=\"setPartyFilter('{status_filter}', 'Respondent')\">Respondent <span class='filter-count'>{respondent_count}</span></span>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Filter pills for Arguments
+        st.markdown("<div class='facts-filter-bar'>", unsafe_allow_html=True)
+        st.markdown("<strong style='margin-right:10px;'>Argument:</strong>", unsafe_allow_html=True)
+        
+        # Create filter pills for arguments
+        selected_argument = st.session_state.get(f"argument_filter_{status_filter}", "All")
+        
+        # All pill for arguments
+        all_arg_active = "active" if selected_argument == "All" else ""
+        st.markdown(f"<span class='filter-pill {all_arg_active}' onclick=\"setArgumentFilter('{status_filter}', 'All')\">All <span class='filter-count'>{all_count}</span></span>", unsafe_allow_html=True)
+        
+        # Top 5 arguments as pills (to prevent too many)
+        top_arguments = sorted(argument_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        for arg, count in top_arguments:
+            arg_active = "active" if selected_argument == arg else ""
+            st.markdown(f"<span class='filter-pill {arg_active}' onclick=\"setArgumentFilter('{status_filter}', '{arg}')\">{'...' if len(arg) > 15 else ''}{arg[-15:] if len(arg) > 15 else arg} <span class='filter-count'>{count}</span></span>", unsafe_allow_html=True)
+        
+        # More filter dropdown if there are more than 5 arguments
+        if len(argument_counts) > 5:
+            other_arguments = sorted(argument_counts.items(), key=lambda x: x[1], reverse=True)[5:]
+            if other_arguments:
+                with st.expander("More arguments..."):
+                    for arg, count in other_arguments:
+                        arg_active = "active" if selected_argument == arg else ""
+                        st.markdown(f"<span class='filter-pill {arg_active}' onclick=\"setArgumentFilter('{status_filter}', '{arg}')\">{arg} <span class='filter-count'>{count}</span></span>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
+        
+        # Apply search filter if needed
+        if search_term:
+            filtered_facts = filtered_facts[
+                filtered_facts["event"].str.lower().str.contains(search_term.lower()) | 
+                filtered_facts["argument"].str.lower().str.contains(search_term.lower())
+            ]
+        
+        # Apply party filter if needed
+        if selected_party != "All":
+            filtered_facts = filtered_facts[filtered_facts["party"] == selected_party]
+        
+        # Apply argument filter if needed
+        if selected_argument != "All":
+            filtered_facts = filtered_facts[filtered_facts["argument"] == selected_argument]
+        
+        # Convert to a formatted DataFrame for display
+        facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence"]].copy()
         facts_df = facts_df.rename(columns={
             "date": "Date", 
             "event": "Event", 
@@ -346,6 +365,11 @@ with tab1:
             "argument": "Related Argument", 
             "evidence": "Evidence"
         })
+        
+        # Sort the data
+        sort_col = sort_by
+        is_ascending = sort_order == "Ascending"
+        facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
         
         # Format the data for display
         def format_party(party):
@@ -372,129 +396,98 @@ with tab1:
         facts_df["Status"] = facts_df["Status"].apply(format_status)
         facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
         
-        # Display the table with improved styling
-        st.markdown('<div class="fact-table">', unsafe_allow_html=True)
-        st.write(facts_df.to_html(escape=False, index=False, classes="fact-table"), unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        if len(facts_df) > 0:
+            # Display the table with classes for styling
+            html_table = facts_df.to_html(escape=False, index=False)
+            html_table = html_table.replace('<table', '<table class="facts-table"')
+            html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
+            html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
+            html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
+            html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
+            html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
+            html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
+            
+            st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
+            
+            # Add download button for the filtered data
+            csv = facts_df.to_csv(index=False).encode('utf-8')
+            status_label = f"{status_filter}_" if status_filter else ""
+            st.download_button(
+                label=f"Download {status_label}Facts",
+                data=csv,
+                file_name=f"{status_label.lower()}facts.csv",
+                mime="text/csv",
+            )
+        else:
+            st.info("No facts match the current filters.")
+    
+    # Display the appropriate facts based on the selected tab
+    with fact_tabs[0]:  # All Facts
+        display_facts()
+    
+    with fact_tabs[1]:  # Disputed Facts
+        display_facts("Disputed")
+    
+    with fact_tabs[2]:  # Undisputed Facts
+        display_facts("Undisputed")
+    
+    # Add JavaScript for interactivity
+    st.markdown("""
+    <script>
+    function setPartyFilter(statusFilter, party) {
+        // Create a key for session state
+        const key = `party_filter_${statusFilter}`;
         
-        # Add export options
-        st.download_button(
-            "Export Facts as CSV",
-            data=filtered_df.to_csv(index=False).encode('utf-8'),
-            file_name="case_facts.csv",
-            mime="text/csv"
-        )
-    else:
-        st.info("No facts match the current filters.")
+        // Use Streamlit's setComponentValue to update session state
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: {
+                [key]: party
+            }
+        }, '*');
+    }
+    
+    function setArgumentFilter(statusFilter, argument) {
+        // Create a key for session state
+        const key = `argument_filter_${statusFilter}`;
+        
+        // Use Streamlit's setComponentValue to update session state
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: {
+                [key]: argument
+            }
+        }, '*');
+    }
+    </script>
+    """, unsafe_allow_html=True)
+
+# Tab 2 is now Connected View (former tab3)
 
 with tab2:
-    # Create columns for the document structure and timeline
-    col1, col2 = st.columns([3, 7])
-    
-    with col1:
-        st.markdown("### Document Structure")
-        selected_folder = st.session_state.get("selected_folder", 1)
-        
-        # Display folders with selection capability
-        for folder in document_folders:
-            folder_class = "folder selected" if folder["id"] == selected_folder else "folder"
-            party_class = ""
-            if folder["party"] == "Appellant":
-                party_class = "appellant"
-            elif folder["party"] == "Respondent":
-                party_class = "respondent"
-            
-            folder_html = f"""
-            <div class="{folder_class}" onclick="handleFolderClick({folder['id']})">
-                <span class="folder-icon">📁</span> {folder['name']}
-                {f'<span class="party-tag {party_class}" style="margin-left: auto;">{folder["party"]}</span>' if folder["party"] != "N/A" else ''}
-            </div>
-            """
-            st.markdown(folder_html, unsafe_allow_html=True)
-        
-        # JavaScript for handling clicks
-        st.markdown("""
-        <script>
-        function handleFolderClick(id) {
-            // Use Streamlit's setComponentValue to update session state
-            window.parent.postMessage({
-                type: "streamlit:setComponentValue",
-                value: id
-            }, "*");
-        }
-        </script>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("### Document Timeline")
-        
-        # Filter events for the selected folder
-        folder_events = df_events[df_events["document_id"] == selected_folder]
-        
-        if len(folder_events) > 0:
-            for _, event in folder_events.iterrows():
-                # Format the date range
-                if pd.notna(event["end_date"]) and event["end_date"] != "None":
-                    date_display = f"{event['date']} to {event['end_date']}"
-                else:
-                    date_display = event["date"]
-                
-                # Format the party tag
-                party_class = ""
-                if event["party"] == "Appellant":
-                    party_class = "appellant"
-                elif event["party"] == "Respondent":
-                    party_class = "respondent"
-                
-                # Format the status tag
-                status_class = ""
-                if event["status"] == "Disputed":
-                    status_class = "disputed"
-                elif event["status"] == "Undisputed":
-                    status_class = "undisputed"
-                
-                # Create timeline item
-                timeline_html = f"""
-                <div class="timeline-item">
-                    <div class="timeline-date">{date_display}</div>
-                    <div class="timeline-event">
-                        <strong>{event["event"]}</strong>
-                    </div>
-                    <div style="margin-top: 5px;">
-                        <span class="party-tag {party_class}">{event["party"]}</span>
-                        <span class="status-tag {status_class}">{event["status"]}</span>
-                        <span class="evidence-tag">{event["evidence"]}</span>
-                    </div>
-                    <div style="margin-top: 5px;">
-                        <span>{event["argument"]}</span>
-                    </div>
-                </div>
-                """
-                st.markdown(timeline_html, unsafe_allow_html=True)
-        else:
-            st.info("No events associated with this document.")
-
-with tab3:
     st.markdown("### Connected Timeline View")
     
     # Add additional CSS for the improved connected view
     st.markdown("""
     <style>
-        .year-header {
-            background-color: #f1f3f5;
-            padding: 8px 12px;
+        .document-set-header {
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 15px;
             border-radius: 4px;
             margin-top: 15px;
             margin-bottom: 10px;
             font-weight: bold;
+            font-size: 1.1em;
         }
-        .month-header {
+        .document-subset-header {
             background-color: #f8f9fa;
-            padding: 4px 8px;
+            padding: 8px 12px;
             border-radius: 4px;
             margin-top: 8px;
             margin-bottom: 5px;
             font-weight: 500;
+            border-left: 3px solid #4285f4;
         }
         .timeline-controls {
             background-color: #f8f9fa;
@@ -627,137 +620,83 @@ with tab3:
             filtered_events["argument"].str.lower().str.contains(search_term)
         ]
     
+    # Define document sets (imaginary names for demonstration)
+    document_sets = {
+        "Initial Registration Materials": [1, 2],
+        "Trademark Opposition Filings": [3, 4, 11],
+        "Appeal Documentation": [5, 6, 7],
+        "Procedural Challenges": [8, 12],
+        "Supporting Research": [9, 10]
+    }
+    
     # Group events by document
     if view_mode == "By Document":
-        document_events = filtered_events.groupby("document_id")
+        # Create document set groups
+        document_set_data = {}
         
-        # Create timeline data
-        for doc_id, events in document_events:
-            doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
+        # Organize documents into sets
+        for set_name, doc_ids in document_sets.items():
+            document_set_data[set_name] = []
             
-            # Get timeline events for this document
-            doc_timeline = []
-            for _, event in events.iterrows():
-                doc_timeline.append({
-                    "date": event["date"],
-                    "datetime": event["datetime"],
-                    "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
-                    "event": event["event"],
-                    "party": event["party"],
-                    "status": event["status"],
-                    "argument": event["argument"],
-                    "evidence": event["evidence"]
+            # Filter events for this document set
+            set_events = filtered_events[filtered_events["document_id"].isin(doc_ids)]
+            
+            # Group by document_id within the set
+            for doc_id, events in set_events.groupby("document_id"):
+                doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
+                
+                # Get timeline events for this document
+                doc_timeline = []
+                for _, event in events.iterrows():
+                    doc_timeline.append({
+                        "date": event["date"],
+                        "datetime": event["datetime"],
+                        "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
+                        "event": event["event"],
+                        "party": event["party"],
+                        "status": event["status"],
+                        "argument": event["argument"],
+                        "evidence": event["evidence"]
+                    })
+                
+                # Sort events by date
+                doc_timeline = sorted(doc_timeline, key=lambda x: x["datetime"])
+                
+                document_set_data[set_name].append({
+                    "document": doc_info["name"],
+                    "party": doc_info["party"],
+                    "events": doc_timeline
                 })
-            
-            # Sort events by date
-            doc_timeline = sorted(doc_timeline, key=lambda x: x["datetime"])
-            
-            timeline_data.append({
-                "document": doc_info["name"],
-                "party": doc_info["party"],
-                "events": doc_timeline
-            })
         
-        # Display the connected timeline
+        # Display the connected timeline organized by document sets
         st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-        for doc in timeline_data:
-            # Create expandable section for each document
-            with st.expander(f"{doc['document']} ({len(doc['events'])} events)"):
-                # Style based on party
-                party_class = ""
-                if doc["party"] == "Appellant":
-                    party_class = "appellant"
-                elif doc["party"] == "Respondent":
-                    party_class = "respondent"
+        
+        # Count total events in all filtered documents
+        total_events = sum(len(doc["events"]) for docs in document_set_data.values() for doc in docs)
+        
+        for set_name, docs in document_set_data.items():
+            # Count events in this document set
+            set_event_count = sum(len(doc["events"]) for doc in docs)
+            
+            if set_event_count == 0:
+                continue  # Skip empty document sets
                 
-                st.markdown(f"<span class='party-tag {party_class}'>{doc['party']}</span>", unsafe_allow_html=True)
-                
-                if not doc["events"]:
-                    st.info("No events match the current filters.")
-                    continue
-                
-                # Group events by year and month if there are many
-                if len(doc["events"]) > 5:
-                    # Group by year
-                    years = {}
-                    for event in doc["events"]:
-                        year = event["datetime"].year
-                        if year not in years:
-                            years[year] = []
-                        years[year].append(event)
-                    
-                    # Display events grouped by year
-                    for year in sorted(years.keys()):
-                        st.markdown(f"<div class='year-header'>{year} ({len(years[year])} events)</div>", unsafe_allow_html=True)
+            # Create expandable section for each document set
+            with st.expander(f"{set_name} ({set_event_count} events)"):
+                for doc in docs:
+                    if not doc["events"]:
+                        continue  # Skip documents with no matching events
                         
-                        # Display events for this year
-                        if display_mode == "Compact":
-                            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-                            for event in years[year]:
-                                # Format the date range
-                                if event["end_date"]:
-                                    date_display = f"{event['date']} to {event['end_date']}"
-                                else:
-                                    date_display = event["date"]
-                                
-                                # Format status
-                                status_class = ""
-                                if event["status"] == "Disputed":
-                                    status_class = "disputed"
-                                elif event["status"] == "Undisputed":
-                                    status_class = "undisputed"
-                                
-                                # Create compact timeline item
-                                timeline_html = f"""
-                                <div class="timeline-event-compact">
-                                    <div class="timeline-date-compact">{date_display}</div>
-                                    <div class="timeline-content-compact">
-                                        <strong>{event["event"]}</strong>
-                                        <div style="margin-top: 2px;">
-                                            <span class="status-tag {status_class}">{event["status"]}</span>
-                                            <span class="evidence-tag">{event["evidence"]}</span>
-                                            <span>{event["argument"]}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                """
-                                st.markdown(timeline_html, unsafe_allow_html=True)
-                            st.markdown("</div>", unsafe_allow_html=True)
-                        else:
-                            # Detailed view
-                            for event in years[year]:
-                                # Format the date range
-                                if event["end_date"]:
-                                    date_display = f"{event['date']} to {event['end_date']}"
-                                else:
-                                    date_display = event["date"]
-                                
-                                # Format status
-                                status_class = ""
-                                if event["status"] == "Disputed":
-                                    status_class = "disputed"
-                                elif event["status"] == "Undisputed":
-                                    status_class = "undisputed"
-                                
-                                # Create timeline item
-                                timeline_html = f"""
-                                <div class="timeline-item">
-                                    <div class="timeline-date">{date_display}</div>
-                                    <div class="timeline-event">
-                                        <strong>{event["event"]}</strong>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span class="status-tag {status_class}">{event["status"]}</span>
-                                        <span class="evidence-tag">{event["evidence"]}</span>
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <span>{event["argument"]}</span>
-                                    </div>
-                                </div>
-                                """
-                                st.markdown(timeline_html, unsafe_allow_html=True)
-                else:
-                    # Display events without grouping for smaller sets
+                    # Display document header
+                    party_class = ""
+                    if doc["party"] == "Appellant":
+                        party_class = "appellant"
+                    elif doc["party"] == "Respondent":
+                        party_class = "respondent"
+                    
+                    st.markdown(f"<div class='document-subset-header'>{doc['document']} ({len(doc['events'])} events) <span class='party-tag {party_class}'>{doc['party']}</span></div>", unsafe_allow_html=True)
+                    
+                    # Display events for this document
                     if display_mode == "Compact":
                         st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
                         for event in doc["events"]:
@@ -826,6 +765,12 @@ with tab3:
         st.markdown("</div>", unsafe_allow_html=True)
     
     else:  # View mode: By Timeline
+        # Create document set mapping for lookup
+        doc_to_set = {}
+        for set_name, doc_ids in document_sets.items():
+            for doc_id in doc_ids:
+                doc_to_set[doc_id] = set_name
+        
         # Convert to pandas DataFrame for easier manipulation
         all_events = []
         for _, event in filtered_events.iterrows():
@@ -841,7 +786,8 @@ with tab3:
                 "argument": event["argument"],
                 "evidence": event["evidence"],
                 "document": doc_info["name"],
-                "document_party": doc_info["party"]
+                "document_party": doc_info["party"],
+                "document_set": doc_to_set.get(event["document_id"], "Other Documents")
             })
         
         # Sort events by date
@@ -850,44 +796,54 @@ with tab3:
         if not all_events:
             st.info("No events match the current filters.")
         else:
-            # Display events grouped by year
-            events_by_year = {}
+            # Group events by document set
+            events_by_set = {}
             for event in all_events:
-                year = event["datetime"].year
-                if year not in events_by_year:
-                    events_by_year[year] = []
-                events_by_year[year].append(event)
+                doc_set = event["document_set"]
+                if doc_set not in events_by_set:
+                    events_by_set[doc_set] = []
+                events_by_set[doc_set].append(event)
             
             st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            for year in sorted(events_by_year.keys()):
-                st.markdown(f"<div class='year-header'>{year} ({len(events_by_year[year])} events)</div>", unsafe_allow_html=True)
+            
+            # Sort document sets by earliest event date
+            sorted_sets = sorted(
+                events_by_set.items(),
+                key=lambda x: min(e["datetime"] for e in x[1])
+            )
+            
+            for doc_set, events in sorted_sets:
+                st.markdown(f"<div class='document-set-header'>{doc_set} ({len(events)} events)</div>", unsafe_allow_html=True)
                 
-                # Group by document type within the document set
-                doc_types = {}
+                # Group by document within the set
+                events_by_doc = {}
                 for event in events:
-                    # Create document type based on argument or evidence category
-                    if "Registration" in event["argument"]:
-                        doc_type = "Registration Documents"
-                    elif "Color" in event["argument"]:
-                        doc_type = "Club Identity Documents"
-                    elif "Sporting Succession" in event["argument"]:
-                        doc_type = "Historical Continuity Records"
-                    elif "Procedural" in event["argument"]:
-                        doc_type = "Procedural Filings"
-                    else:
-                        doc_type = "Supporting Evidence"
-                    
-                    if doc_type not in doc_types:
-                        doc_types[doc_type] = []
-                    doc_types[doc_type].append(event)
+                    doc_name = event["document"]
+                    if doc_name not in events_by_doc:
+                        events_by_doc[doc_name] = []
+                    events_by_doc[doc_name].append(event)
                 
-                for doc_type in sorted(doc_types.keys()):
-                    st.markdown(f"<div class='month-header'>{doc_type} ({len(doc_types[doc_type])} items)</div>", unsafe_allow_html=True)
+                for doc_name, doc_events in events_by_doc.items():
+                    # Get sample event to determine party
+                    sample_event = doc_events[0]
+                    doc_party = sample_event["document_party"]
                     
-                    # Display events for this month
+                    # Format document party for display
+                    party_class = ""
+                    if doc_party == "Appellant":
+                        party_class = "appellant"
+                    elif doc_party == "Respondent":
+                        party_class = "respondent"
+                    
+                    st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
+                    
+                    # Sort events by date
+                    doc_events = sorted(doc_events, key=lambda x: x["datetime"])
+                    
+                    # Display events for this document
                     if display_mode == "Compact":
                         st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-                        for event in events_by_month[month]:
+                        for event in doc_events:
                             # Format the date range
                             if event["end_date"]:
                                 date_display = f"{event['date']} to {event['end_date']}"
@@ -901,13 +857,6 @@ with tab3:
                             elif event["status"] == "Undisputed":
                                 status_class = "undisputed"
                             
-                            # Format document party
-                            doc_party_class = ""
-                            if event["document_party"] == "Appellant":
-                                doc_party_class = "appellant"
-                            elif event["document_party"] == "Respondent":
-                                doc_party_class = "respondent"
-                            
                             # Create compact timeline item
                             timeline_html = f"""
                             <div class="timeline-event-compact">
@@ -917,10 +866,6 @@ with tab3:
                                     <div style="margin-top: 2px;">
                                         <span class="status-tag {status_class}">{event["status"]}</span>
                                         <span class="evidence-tag">{event["evidence"]}</span>
-                                        <span class="party-tag {doc_party_class}">{event["document_party"]}</span>
-                                    </div>
-                                    <div style="margin-top: 2px; font-size: 0.9em;">
-                                        Document: {event["document"]}
                                     </div>
                                     <div style="margin-top: 2px; font-size: 0.9em;">
                                         {event["argument"]}
@@ -932,7 +877,7 @@ with tab3:
                         st.markdown("</div>", unsafe_allow_html=True)
                     else:
                         # Detailed view
-                        for event in events_by_month[month]:
+                        for event in doc_events:
                             # Format the date range
                             if event["end_date"]:
                                 date_display = f"{event['date']} to {event['end_date']}"
@@ -946,13 +891,6 @@ with tab3:
                             elif event["status"] == "Undisputed":
                                 status_class = "undisputed"
                             
-                            # Format document party
-                            doc_party_class = ""
-                            if event["document_party"] == "Appellant":
-                                doc_party_class = "appellant"
-                            elif event["document_party"] == "Respondent":
-                                doc_party_class = "respondent"
-                            
                             # Create timeline item
                             timeline_html = f"""
                             <div class="timeline-item">
@@ -963,10 +901,6 @@ with tab3:
                                 <div style="margin-top: 5px;">
                                     <span class="status-tag {status_class}">{event["status"]}</span>
                                     <span class="evidence-tag">{event["evidence"]}</span>
-                                    <span class="party-tag {doc_party_class}">{event["document_party"]}</span>
-                                </div>
-                                <div style="margin-top: 5px;">
-                                    Document: {event["document"]}
                                 </div>
                                 <div style="margin-top: 5px;">
                                     {event["argument"]}

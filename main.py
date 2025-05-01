@@ -513,6 +513,7 @@ with tab2:
             max-height: 600px;
             overflow-y: auto;
             padding-right: 10px;
+            position: relative;
         }
         .compact-timeline .timeline-item {
             padding-bottom: 8px;
@@ -520,26 +521,88 @@ with tab2:
         }
         .timeline-connector {
             position: absolute;
-            left: 0;
+            left: 60px;
             top: 0;
             bottom: 0;
             width: 2px;
             background-color: #ddd;
-            z-index: -1;
+            z-index: 0;
         }
         .timeline-event-compact {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 15px;
+            z-index: 1;
         }
         .timeline-date-compact {
-            width: 120px;
+            width: 100px;
             flex-shrink: 0;
             font-weight: 500;
             font-size: 0.9em;
+            text-align: right;
+            padding-right: 20px;
+            color: #555;
         }
         .timeline-content-compact {
             flex-grow: 1;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 12px;
+            border-left: 4px solid #4285f4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .timeline-content-compact:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: #4285f4;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        .timeline-dot.appellant {
+            background-color: #0066cc;
+        }
+        .timeline-dot.respondent {
+            background-color: #cc3300;
+        }
+        .timeline-dot.neutral {
+            background-color: #888888;
+        }
+        .timeline-year-marker {
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0 15px 0;
+            padding: 5px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        .timeline-source {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed #ddd;
+        }
+        /* Styles for alternating events */
+        .timeline-event-compact:nth-child(even) .timeline-content-compact {
+            background-color: #f0f4f8;
+        }
+        .timeline-event-compact.disputed .timeline-content-compact {
+            border-left-color: #cc3300;
+        }
+        .timeline-event-compact.undisputed .timeline-content-compact {
+            border-left-color: #008000;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -667,56 +730,86 @@ with tab2:
     else:
         # Check which view mode is selected
         if view_mode == "All Facts Together":
-            # Display all facts together in timeline format
+            # Display all facts together in an improved timeline format
             st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
+            
+            # Add a vertical line that connects all events
+            st.markdown("<div class='timeline-connector'></div>", unsafe_allow_html=True)
+            
             st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
             
             # Sort all events by date
             all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
             
-            # Display each event in timeline format
+            # Group events by year for better organization
+            events_by_year = {}
             for event in all_events_sorted:
-                # Format the date range
-                if event["end_date"]:
-                    date_display = f"{event['date']} to {event['end_date']}"
-                else:
-                    date_display = event["date"]
+                year = event["datetime"].year
+                if year not in events_by_year:
+                    events_by_year[year] = []
+                events_by_year[year].append(event)
+            
+            # Display each year's events
+            for year in sorted(events_by_year.keys()):
+                # Add a year marker
+                st.markdown(f"<div class='timeline-year-marker'>{year}</div>", unsafe_allow_html=True)
                 
-                # Format status
-                status_class = ""
-                if event["status"] == "Disputed":
-                    status_class = "disputed"
-                elif event["status"] == "Undisputed":
-                    status_class = "undisputed"
-                
-                # Format party
-                party_class = ""
-                if event["party"] == "Appellant":
-                    party_class = "appellant"
-                elif event["party"] == "Respondent":
-                    party_class = "respondent"
-                
-                # Create compact timeline item
-                timeline_html = f"""
-                <div class="timeline-event-compact">
-                    <div class="timeline-date-compact">{date_display}</div>
-                    <div class="timeline-content-compact">
-                        <strong>{event["event"]}</strong>
-                        <div style="margin-top: 2px;">
-                            <span class="party-tag {party_class}">{event["party"]}</span>
-                            <span class="status-tag {status_class}">{event["status"]}</span>
-                            <span class="evidence-tag">{event["evidence"]}</span>
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.9em;">
-                            {event["argument"]}
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
-                            Source: {event["document"]}
+                # Display each event for this year
+                for event in events_by_year[year]:
+                    # Format the date range
+                    if event["end_date"]:
+                        date_display = f"{event['date']} to {event['end_date']}"
+                    else:
+                        date_display = event["date"]
+                    
+                    # Format month/day only for display (year is already in the header)
+                    if "-" in event["date"]:
+                        try:
+                            date_parts = event["date"].split("-")
+                            if len(date_parts) >= 3:
+                                date_display = f"{date_parts[1]}-{date_parts[2]}"
+                        except:
+                            pass
+                    
+                    # Format status
+                    status_class = ""
+                    if event["status"] == "Disputed":
+                        status_class = "disputed"
+                    elif event["status"] == "Undisputed":
+                        status_class = "undisputed"
+                    
+                    # Format party
+                    party_class = ""
+                    dot_class = "neutral"
+                    if event["party"] == "Appellant":
+                        party_class = "appellant"
+                        dot_class = "appellant"
+                    elif event["party"] == "Respondent":
+                        party_class = "respondent"
+                        dot_class = "respondent"
+                    
+                    # Create compact timeline item with enhanced visuals
+                    timeline_html = f"""
+                    <div class="timeline-event-compact {status_class}">
+                        <div class="timeline-date-compact">{date_display}</div>
+                        <div class="timeline-dot {dot_class}"></div>
+                        <div class="timeline-content-compact">
+                            <strong>{event["event"]}</strong>
+                            <div style="margin-top: 6px;">
+                                <span class="party-tag {party_class}">{event["party"]}</span>
+                                <span class="status-tag {status_class}">{event["status"]}</span>
+                                <span class="evidence-tag">{event["evidence"]}</span>
+                            </div>
+                            <div style="margin-top: 6px; font-size: 0.95em;">
+                                {event["argument"]}
+                            </div>
+                            <div class="timeline-source">
+                                <strong>Source:</strong> {event["document"]}
+                            </div>
                         </div>
                     </div>
-                </div>
-                """
-                st.markdown(timeline_html, unsafe_allow_html=True)
+                    """
+                    st.markdown(timeline_html, unsafe_allow_html=True)
             
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)

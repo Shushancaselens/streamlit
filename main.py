@@ -167,6 +167,31 @@ st.markdown("# Summary of arguments")
 # Create two tabs
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
+# Add CSS to remove white container space under tabs
+st.markdown("""
+<style>
+    .stTabs [data-baseweb="tab-panel"] {
+        padding-top: 0px;
+    }
+    
+    .streamlit-expanderHeader {
+        font-size: 1em;
+        font-weight: normal;
+    }
+    
+    /* Remove any extra white space */
+    .stTabs [data-baseweb="tab-list"] {
+        margin-bottom: 0;
+    }
+    
+    /* Adjust spacing after tabs */
+    .stTabs [data-baseweb="tab-panel"] > div:first-child {
+        margin-top: 0;
+        padding-top: 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 with tab1:
     # Add CSS for improved Facts tab
     st.markdown("""
@@ -270,7 +295,18 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
     
-    # Create control panel for filters
+    # Create control panel for filters - remove top padding
+    st.markdown("""
+    <style>
+        .facts-controls {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
     
     # Top filter section - now with more dropdowns
@@ -479,7 +515,6 @@ with tab1:
 # Tab 2 is now Connected View (former tab3)
 
 with tab2:
-    st.markdown("### Connected Timeline View")
     
     # Add additional CSS for the improved connected view
     st.markdown("""
@@ -549,7 +584,18 @@ with tab2:
     </style>
     """, unsafe_allow_html=True)
     
-    # Create control panel for filters with improved dropdowns
+    # Create control panel for filters with improved dropdowns - remove top padding
+    st.markdown("""
+    <style>
+        .timeline-controls {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
     st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
     
     # Search and date filter row

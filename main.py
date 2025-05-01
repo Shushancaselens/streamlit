@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Set page configuration
 st.set_page_config(layout="wide", page_title="CaseLens - Case Timeline")
@@ -250,60 +248,47 @@ with right_col:
     # Provide a note about visualization
     st.info("📌 Select a document from the left panel to see its connections to case events.", icon="ℹ️")
     
-    # Add a timeline visualization (optional enhancement)
+    # Add a simple timeline visualization using native Streamlit components
     if st.checkbox("Show Timeline Visualization", value=False):
-        # Convert dates for timeline
-        timeline_data = []
-        for event in events:
-            # Handle date ranges
-            if "-" in event['date'] and "present" not in event['date']:
-                start, end = event['date'].split("-")
-                timeline_data.append({
-                    "Task": event['event'], 
-                    "Start": start.strip(), 
-                    "Finish": end.strip(),
-                    "Party": event['party']
-                })
-            elif "present" in event['date']:
-                # For ranges to present, use today's date
-                start = event['date'].split("-")[0].strip()
-                timeline_data.append({
-                    "Task": event['event'], 
-                    "Start": start, 
-                    "Finish": "2025",
-                    "Party": event['party']
-                })
-            else:
-                # For single dates
-                timeline_data.append({
-                    "Task": event['event'], 
-                    "Start": event['date'], 
-                    "Finish": event['date'],
-                    "Party": event['party']
-                })
+        st.markdown("### Case Timeline")
         
-        df_timeline = pd.DataFrame(timeline_data)
+        # Create a simple timeline visualization using native Streamlit components
+        # Sort events by date for timeline display
+        sorted_events = sorted(events, key=lambda x: x['date'].split('-')[0])
         
-        # Create colors
-        colors = {'Appellant': '#3b82f6', 'Respondent': '#ef4444'}
+        # Create columns for the timeline
+        timeline_cols = st.columns([1, 10])
         
-        fig = px.timeline(
-            df_timeline, 
-            x_start="Start", 
-            x_end="Finish", 
-            y="Task",
-            color="Party",
-            color_discrete_map=colors,
-            title="Case Timeline"
-        )
+        # Draw the timeline
+        with timeline_cols[0]:
+            st.markdown('<div style="border-right: 2px solid #cbd5e1; height: 100%;"></div>', unsafe_allow_html=True)
         
-        fig.update_layout(
-            xaxis_title="",
-            yaxis_title="",
-            height=400,
-            xaxis=dict(
-                type='category'
-            )
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        with timeline_cols[1]:
+            for event in sorted_events:
+                # Format date
+                date_text = event['date']
+                
+                # Party color
+                party_color = "#3b82f6" if event['party'] == "Appellant" else "#ef4444"
+                
+                # Status color
+                status_color = "#ef4444" if event['status'] == "Disputed" else "#333333"
+                
+                # Determine if this event is connected to the selected folder
+                is_connected = selected_folder and event['event'] in selected_folder['connected_events']
+                
+                # Create the timeline entry
+                st.markdown(f"""
+                <div style="margin-bottom: 20px; position: relative; padding-left: 20px; 
+                     {'background-color: #f0f7ff;' if is_connected else ''} padding: 10px; border-radius: 4px;">
+                    <h4 style="margin: 0; color: {party_color};">{date_text}</h4>
+                    <p style="margin: 5px 0;">{event['event']}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: {party_color};">{event['party']}</span>
+                        <span style="color: {status_color};">{event['status']}</span>
+                        <span>{event['argument']}</span>
+                        <span class="evidence-tag">{event['evidence']}</span>
+                    </div>
+                    {f'<div style="margin-top: 10px; border-left: 2px solid {party_color}; padding-left: 10px;">Connected to <strong>{selected_folder["name"]}</strong></div>' if is_connected else ''}
+                </div>
+                """, unsafe_allow_html=True)

@@ -248,32 +248,12 @@ with tab1:
         .sort-icon.active {
             opacity: 1;
         }
-        .view-toggle {
-            display: flex;
-            padding: 5px;
-            border-radius: 4px;
-            background-color: #e9ecef;
-            width: fit-content;
-            margin-bottom: 10px;
-        }
-        .view-toggle-btn {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            cursor: pointer;
-            text-align: center;
-            margin: 0 2px;
-        }
-        .view-toggle-btn.active {
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
         .document-set-header {
             background-color: #4285f4;
             color: white;
             padding: 10px 15px;
             border-radius: 4px;
-            margin-top: 15px;
+            margin-top: 20px;
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 1.1em;
@@ -286,25 +266,6 @@ with tab1:
             margin-bottom: 5px;
             font-weight: 500;
             border-left: 3px solid #4285f4;
-        }
-        .compact-timeline {
-            margin-left: 15px;
-        }
-        .timeline-event-compact {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 5px;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .timeline-date-compact {
-            width: 120px;
-            flex-shrink: 0;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
-        .timeline-content-compact {
-            flex-grow: 1;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -326,7 +287,7 @@ with tab1:
     with col3:
         sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key="facts_order")
     
-    # Status filter with horizontal radio buttons styled as badges
+    # Status filter with horizontal radio buttons
     status_filter = st.radio(
         "Filter by status:",
         options=["All", "Disputed", "Undisputed"],
@@ -334,12 +295,12 @@ with tab1:
         key="status_filter"
     )
     
-    # View toggle - Table or Document Sets
-    view_type = st.radio(
-        "View as:",
-        options=["Table", "Document Sets"],
+    # View mode selection
+    view_mode = st.radio(
+        "View Mode:",
+        options=["Table View", "Document Sets View"],
         horizontal=True,
-        key="view_type"
+        key="facts_view_mode"
     )
     
     st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
@@ -358,55 +319,57 @@ with tab1:
             filtered_facts["argument"].str.lower().str.contains(search_term.lower())
         ]
     
-    # Display facts count
-    st.write(f"**Found {len(filtered_facts)} facts**")
+    # Convert to a formatted DataFrame for display
+    facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence", "document_id"]].copy()
+    facts_df = facts_df.rename(columns={
+        "date": "Date", 
+        "event": "Event", 
+        "party": "Party", 
+        "status": "Status", 
+        "argument": "Related Argument", 
+        "evidence": "Evidence",
+        "document_id": "Document ID"
+    })
     
-    # Table View
-    if view_type == "Table":
-        # Convert to a formatted DataFrame for display
-        facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence"]].copy()
-        facts_df = facts_df.rename(columns={
-            "date": "Date", 
-            "event": "Event", 
-            "party": "Party", 
-            "status": "Status", 
-            "argument": "Related Argument", 
-            "evidence": "Evidence"
-        })
-        
-        # Sort the data
-        sort_col = sort_by
-        is_ascending = sort_order == "Ascending"
-        facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
-        
-        # Format the data for display
-        def format_party(party):
-            if party == "Appellant":
-                return f'<span class="party-tag appellant">{party}</span>'
-            elif party == "Respondent":
-                return f'<span class="party-tag respondent">{party}</span>'
-            else:
-                return party
-        
-        def format_status(status):
-            if status == "Disputed":
-                return f'<span class="status-tag disputed">{status}</span>'
-            elif status == "Undisputed":
-                return f'<span class="status-tag undisputed">{status}</span>'
-            else:
-                return status
-        
-        def format_evidence(evidence):
-            return f'<span class="evidence-tag">{evidence}</span>'
-        
-        # Apply formatting
-        facts_df["Party"] = facts_df["Party"].apply(format_party)
-        facts_df["Status"] = facts_df["Status"].apply(format_status)
-        facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
-        
-        if len(facts_df) > 0:
+    # Sort the data
+    sort_col = sort_by
+    is_ascending = sort_order == "Ascending"
+    facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
+    
+    # Format the data for display
+    def format_party(party):
+        if party == "Appellant":
+            return f'<span class="party-tag appellant">{party}</span>'
+        elif party == "Respondent":
+            return f'<span class="party-tag respondent">{party}</span>'
+        else:
+            return party
+    
+    def format_status(status):
+        if status == "Disputed":
+            return f'<span class="status-tag disputed">{status}</span>'
+        elif status == "Undisputed":
+            return f'<span class="status-tag undisputed">{status}</span>'
+        else:
+            return status
+    
+    def format_evidence(evidence):
+        return f'<span class="evidence-tag">{evidence}</span>'
+    
+    # Apply formatting
+    facts_df["Party"] = facts_df["Party"].apply(format_party)
+    facts_df["Status"] = facts_df["Status"].apply(format_status)
+    facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
+    
+    # Display facts count
+    st.write(f"**Found {len(facts_df)} facts**")
+    
+    if len(facts_df) > 0:
+        # TABLE VIEW
+        if view_mode == "Table View":
             # Display the table with classes for styling
-            html_table = facts_df.to_html(escape=False, index=False)
+            display_df = facts_df.drop(columns=["Document ID"])  # Don't show document ID in table view
+            html_table = display_df.to_html(escape=False, index=False)
             html_table = html_table.replace('<table', '<table class="facts-table"')
             html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
             html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
@@ -416,138 +379,97 @@ with tab1:
             html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
             
             st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
+        
+        # DOCUMENT SETS VIEW
         else:
-            st.info("No facts match the current filters.")
-    
-    # Document Sets View
-    else:
-        # Define document sets (same as Connected View)
-        document_sets = {
-            "Initial Registration Materials": [1, 2],
-            "Trademark Opposition Filings": [3, 4, 11],
-            "Appeal Documentation": [5, 6, 7],
-            "Procedural Challenges": [8, 12],
-            "Supporting Research": [9, 10]
-        }
-        
-        # Create document set mapping for lookup
-        doc_to_set = {}
-        for set_name, doc_ids in document_sets.items():
-            for doc_id in doc_ids:
-                doc_to_set[doc_id] = set_name
-        
-        # Add datetime column for sorting
-        filtered_facts["datetime"] = pd.to_datetime(filtered_facts["date"])
-        
-        # Convert to a format organized by document sets
-        all_events = []
-        for _, event in filtered_facts.iterrows():
-            doc_info = df_folders[df_folders["id"] == event["document_id"]].iloc[0]
+            # Define document sets (same as in Connected View)
+            document_sets = {
+                "Initial Registration Materials": [1, 2],
+                "Trademark Opposition Filings": [3, 4, 11],
+                "Appeal Documentation": [5, 6, 7],
+                "Procedural Challenges": [8, 12],
+                "Supporting Research": [9, 10]
+            }
             
-            all_events.append({
-                "date": event["date"],
-                "datetime": event["datetime"],
-                "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
-                "event": event["event"],
-                "party": event["party"],
-                "status": event["status"],
-                "argument": event["argument"],
-                "evidence": event["evidence"],
-                "document": doc_info["name"],
-                "document_party": doc_info["party"],
-                "document_set": doc_to_set.get(event["document_id"], "Other Documents")
-            })
-        
-        # Sort events
-        sort_field = sort_by.lower()
-        if sort_field == "date":
-            sort_field = "datetime"
-        elif sort_field == "related argument":
-            sort_field = "argument"
-        
-        is_ascending = sort_order == "Ascending"
-        all_events = sorted(all_events, key=lambda x: x[sort_field] if sort_field in x else "", reverse=not is_ascending)
-        
-        if not all_events:
-            st.info("No facts match the current filters.")
-        else:
-            # Group events by document set
-            events_by_set = {}
-            for event in all_events:
-                doc_set = event["document_set"]
-                if doc_set not in events_by_set:
-                    events_by_set[doc_set] = []
-                events_by_set[doc_set].append(event)
+            # Create document set mapping for lookup
+            doc_to_set = {}
+            for set_name, doc_ids in document_sets.items():
+                for doc_id in doc_ids:
+                    doc_to_set[doc_id] = set_name
             
-            # Display document sets
-            for doc_set, events in events_by_set.items():
-                with st.expander(f"{doc_set} ({len(events)} facts)", expanded=True):
-                    # Group by document within the set
-                    events_by_doc = {}
-                    for event in events:
-                        doc_name = event["document"]
-                        if doc_name not in events_by_doc:
-                            events_by_doc[doc_name] = []
-                        events_by_doc[doc_name].append(event)
+            # Group facts by document set
+            facts_by_set = {}
+            for _, fact in facts_df.iterrows():
+                doc_id = fact["Document ID"]
+                doc_set = doc_to_set.get(doc_id, "Other Documents")
+                
+                if doc_set not in facts_by_set:
+                    facts_by_set[doc_set] = []
+                
+                facts_by_set[doc_set].append(fact)
+            
+            # Sort document sets (optional - by first date in each set)
+            sorted_sets = sorted(
+                facts_by_set.items(),
+                key=lambda x: pd.to_datetime(x[1][0]["Date"]) if x[1] else pd.Timestamp.max
+            )
+            
+            # Display facts grouped by document sets
+            for doc_set, facts in sorted_sets:
+                if not facts:
+                    continue
+                
+                st.markdown(f"<div class='document-set-header'>{doc_set} ({len(facts)} facts)</div>", unsafe_allow_html=True)
+                
+                # Group by document within the set
+                doc_ids = set([fact["Document ID"] for fact in facts])
+                
+                # Get document names for each ID
+                for doc_id in doc_ids:
+                    # Get document name
+                    doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
+                    doc_name = doc_info["name"]
+                    doc_party = doc_info["party"]
                     
-                    for doc_name, doc_events in events_by_doc.items():
-                        # Get sample event to determine party
-                        sample_event = doc_events[0]
-                        doc_party = sample_event["document_party"]
-                        
-                        # Format document party for display
-                        party_class = ""
-                        if doc_party == "Appellant":
-                            party_class = "appellant"
-                        elif doc_party == "Respondent":
-                            party_class = "respondent"
-                        
-                        st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_events)} facts) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
-                        
-                        # Display events for this document
-                        st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-                        for event in doc_events:
-                            # Format the date range
-                            if event["end_date"]:
-                                date_display = f"{event['date']} to {event['end_date']}"
-                            else:
-                                date_display = event["date"]
-                            
-                            # Format status
-                            status_class = ""
-                            if event["status"] == "Disputed":
-                                status_class = "disputed"
-                            elif event["status"] == "Undisputed":
-                                status_class = "undisputed"
-                            
-                            # Create compact timeline item
-                            timeline_html = f"""
-                            <div class="timeline-event-compact">
-                                <div class="timeline-date-compact">{date_display}</div>
-                                <div class="timeline-content-compact">
-                                    <strong>{event["event"]}</strong>
-                                    <div style="margin-top: 2px;">
-                                        <span class="status-tag {status_class}">{event["status"]}</span>
-                                        <span class="evidence-tag">{event["evidence"]}</span>
-                                    </div>
-                                    <div style="margin-top: 2px; font-size: 0.9em;">
-                                        {event["argument"]}
-                                    </div>
-                                </div>
-                            </div>
-                            """
-                            st.markdown(timeline_html, unsafe_allow_html=True)
-                        st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Add download button for the filtered data
-    csv = filtered_facts.to_csv(index=False).encode('utf-8')
-    status_label = f"{status_filter}_" if status_filter != "All" else ""
-    st.download_button(
-        label=f"Download {status_label}Facts",
-        data=csv,
-        file_name=f"{status_label.lower()}facts.csv",
-        mime="text/csv",
-    )
+                    # Filter facts for this document
+                    doc_facts = [fact for fact in facts if fact["Document ID"] == doc_id]
+                    
+                    # Format document party for display
+                    party_class = ""
+                    if doc_party == "Appellant":
+                        party_class = "appellant"
+                    elif doc_party == "Respondent":
+                        party_class = "respondent"
+                    
+                    st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_facts)} facts) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
+                    
+                    # Create DataFrame for this document
+                    doc_df = pd.DataFrame(doc_facts)
+                    doc_df = doc_df.drop(columns=["Document ID"])  # Don't need to show this column
+                    
+                    # Display the document facts table
+                    html_table = doc_df.to_html(escape=False, index=False)
+                    html_table = html_table.replace('<table', '<table class="facts-table"')
+                    html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
+                    html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
+                    html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
+                    html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
+                    html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
+                    html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
+                    
+                    st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
+        
+        # Add download button for the filtered data
+        csv = facts_df.drop(columns=["Document ID"]).to_csv(index=False).encode('utf-8')
+        status_label = f"{status_filter}_" if status_filter != "All" else ""
+        st.download_button(
+            label=f"Download {status_label}Facts",
+            data=csv,
+            file_name=f"{status_label.lower()}facts.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info("No facts match the current filters.")
 
 # Tab 2 is now Connected View (former tab3)
 

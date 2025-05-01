@@ -167,27 +167,56 @@ st.markdown("# Summary of arguments")
 # Create two tabs
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
-# Add CSS to remove white container space under tabs
+# Add CSS to completely remove white container space under tabs
 st.markdown("""
 <style>
+    /* More aggressive removal of white space under tabs */
     .stTabs [data-baseweb="tab-panel"] {
-        padding-top: 0px;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
     }
     
-    .streamlit-expanderHeader {
-        font-size: 1em;
-        font-weight: normal;
+    /* Remove any background from tab content */
+    .stTabs [data-baseweb="tab-panel"] > div {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-top: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
     }
     
-    /* Remove any extra white space */
+    /* Remove top margin from first element inside tabs */
+    .stTabs [data-baseweb="tab-panel"] > div > * {
+        margin-top: 0 !important;
+    }
+    
+    /* Fix tab list bottom margin */
     .stTabs [data-baseweb="tab-list"] {
-        margin-bottom: 0;
+        margin-bottom: 0 !important;
     }
     
-    /* Adjust spacing after tabs */
-    .stTabs [data-baseweb="tab-panel"] > div:first-child {
-        margin-top: 0;
-        padding-top: 0;
+    /* Remove all streamlit block containers within tabs */
+    .stTabs [data-baseweb="tab-panel"] .block-container {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        background-color: transparent !important;
+    }
+    
+    /* Ensure no extra white space in controls */
+    .facts-controls, .timeline-controls {
+        margin-top: 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)

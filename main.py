@@ -273,35 +273,40 @@ with tab1:
     # Create control panel for filters
     st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
     
-    # Top filter section
-    col1, col2, col3 = st.columns([3, 2, 1])
+    # Top filter section - now with more dropdowns
+    col1, col2 = st.columns([2, 1])
     
     with col1:
         search_term = st.text_input("Search Facts:", placeholder="Search by keyword...", key="facts_search")
     
-    with col2:
+    # Create a row of dropdown filters
+    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
+    
+    with filter_col1:
         sort_by = st.selectbox("Sort by:", 
                               ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
                               key="facts_sort")
     
-    with col3:
-        sort_order = st.radio("Order:", ["Ascending", "Descending"], horizontal=True, key="facts_order")
+    with filter_col2:
+        sort_order = st.selectbox("Order:", 
+                                 ["Ascending", "Descending"], 
+                                 key="facts_order")
     
-    # Status filter with horizontal radio buttons
-    status_filter = st.radio(
-        "Filter by status:",
-        options=["All", "Disputed", "Undisputed"],
-        horizontal=True,
-        key="status_filter"
-    )
+    with filter_col3:
+        # Status filter dropdown
+        status_filter = st.selectbox(
+            "Filter by status:",
+            options=["All", "Disputed", "Undisputed"],
+            key="status_filter"
+        )
     
-    # View mode selection
-    view_mode = st.radio(
-        "View Mode:",
-        options=["Table View", "Document Sets View"],
-        horizontal=True,
-        key="facts_view_mode"
-    )
+    with filter_col4:
+        # View mode dropdown
+        view_mode = st.selectbox(
+            "View Mode:",
+            options=["Table View", "Document Sets View"],
+            key="facts_view_mode"
+        )
     
     st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     
@@ -544,27 +549,17 @@ with tab2:
     </style>
     """, unsafe_allow_html=True)
     
-    # Create control panel for filters
+    # Create control panel for filters with improved dropdowns
     st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
     
-    with col1:
-        # Filter by party
-        party_filter = st.multiselect(
-            "Filter by Party:",
-            options=["All", "Appellant", "Respondent", "N/A"],
-            default=["All"]
-        )
+    # Search and date filter row
+    search_col, date_col = st.columns([1, 1])
     
-    with col2:
-        # Filter by status
-        status_filter = st.multiselect(
-            "Filter by Status:",
-            options=["All", "Disputed", "Undisputed"],
-            default=["All"]
-        )
+    with search_col:
+        # Search functionality
+        search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
     
-    with col3:
+    with date_col:
         # Filter by date range
         min_date = pd.to_datetime(df_events["date"].min())
         max_date = pd.to_datetime(df_events["date"].max())
@@ -576,16 +571,32 @@ with tab2:
             max_value=max_date
         )
     
-    # Search functionality
-    search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
+    # Advanced filter options
+    filter_col1, filter_col2, filter_col3 = st.columns(3)
     
-    # Display options
-    view_mode = st.radio(
-        "View Mode:",
-        options=["By Document Sets", "All Facts Together"],
-        horizontal=True,
-        key="connected_view_mode"
-    )
+    with filter_col1:
+        # Filter by party - keep as multiselect for multiple selection
+        party_filter = st.multiselect(
+            "Filter by Party:",
+            options=["All", "Appellant", "Respondent", "N/A"],
+            default=["All"]
+        )
+    
+    with filter_col2:
+        # Filter by status - keep as multiselect for multiple selection
+        status_filter = st.multiselect(
+            "Filter by Status:",
+            options=["All", "Disputed", "Undisputed"],
+            default=["All"]
+        )
+    
+    with filter_col3:
+        # Display options - change to dropdown
+        view_mode = st.selectbox(
+            "View Mode:",
+            options=["By Document Sets", "All Facts Together"],
+            key="connected_view_mode"
+        )
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"

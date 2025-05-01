@@ -513,7 +513,6 @@ with tab2:
             max-height: 600px;
             overflow-y: auto;
             padding-right: 10px;
-            position: relative;
         }
         .compact-timeline .timeline-item {
             padding-bottom: 8px;
@@ -521,113 +520,138 @@ with tab2:
         }
         .timeline-connector {
             position: absolute;
-            left: 60px;
+            left: 0;
             top: 0;
             bottom: 0;
             width: 2px;
             background-color: #ddd;
-            z-index: 0;
+            z-index: -1;
         }
         .timeline-event-compact {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 15px;
-            position: relative;
-            padding-left: 15px;
-            z-index: 1;
+            margin-bottom: 5px;
         }
         .timeline-date-compact {
-            width: 100px;
+            width: 120px;
             flex-shrink: 0;
             font-weight: 500;
             font-size: 0.9em;
-            text-align: right;
-            padding-right: 20px;
-            color: #555;
         }
         .timeline-content-compact {
             flex-grow: 1;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            padding: 12px;
-            border-left: 4px solid #4285f4;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .timeline-content-compact:hover {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        }
-        .timeline-dot {
-            position: absolute;
-            left: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background-color: #4285f4;
-            border-radius: 50%;
-            z-index: 2;
-        }
-        .timeline-dot.appellant {
-            background-color: #0066cc;
-        }
-        .timeline-dot.respondent {
-            background-color: #cc3300;
-        }
-        .timeline-dot.neutral {
-            background-color: #888888;
-        }
-        .timeline-year-marker {
-            text-align: center;
-            font-weight: bold;
-            margin: 20px 0 15px 0;
-            padding: 5px;
-            background-color: #e9ecef;
-            border-radius: 15px;
-            position: relative;
-            z-index: 2;
-        }
-        .timeline-source {
-            font-size: 0.8em;
-            color: #666;
-            margin-top: 5px;
-            padding-top: 5px;
-            border-top: 1px dashed #ddd;
-        }
-        /* Styles for alternating events */
-        .timeline-event-compact:nth-child(even) .timeline-content-compact {
-            background-color: #f0f4f8;
-        }
-        .timeline-event-compact.disputed .timeline-content-compact {
-            border-left-color: #cc3300;
-        }
-        .timeline-event-compact.undisputed .timeline-content-compact {
-            border-left-color: #008000;
         }
     </style>
     """, unsafe_allow_html=True)
     
     # Create control panel for filters
     st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
+    
+    # Add CSS for improved filters
+    st.markdown("""
+    <style>
+        /* Custom toggle button styles */
+        .toggle-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .toggle-button {
+            background-color: #f1f3f5;
+            border: 1px solid #d0d7de;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .toggle-button:hover {
+            background-color: #e9ecef;
+        }
+        .toggle-button.active {
+            background-color: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        .toggle-button.active-appellant {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        .toggle-button.active-respondent {
+            background-color: #cc3300;
+            color: white;
+            border-color: #cc3300;
+        }
+        .toggle-button.active-disputed {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        .toggle-button.active-undisputed {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .toggle-button.active-all {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        .filter-label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        /* View mode selector */
+        .view-mode-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .view-mode-button {
+            background-color: #f8f9fa;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+        .view-mode-button:hover {
+            background-color: #e9ecef;
+        }
+        .view-mode-button.active {
+            background-color: #e9ecef;
+            border-color: #4285f4;
+            border-width: 2px;
+        }
+        .view-mode-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+            color: #4285f4;
+        }
+        .view-mode-label {
+            font-weight: 500;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
     
     with col1:
-        # Filter by party
-        party_filter = st.multiselect(
-            "Filter by Party:",
-            options=["All", "Appellant", "Respondent", "N/A"],
-            default=["All"]
-        )
+        # Search functionality (moved to top)
+        search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
     
     with col2:
-        # Filter by status
-        status_filter = st.multiselect(
-            "Filter by Status:",
-            options=["All", "Disputed", "Undisputed"],
-            default=["All"]
-        )
-    
-    with col3:
         # Filter by date range
         min_date = pd.to_datetime(df_events["date"].min())
         max_date = pd.to_datetime(df_events["date"].max())
@@ -639,16 +663,240 @@ with tab2:
             max_value=max_date
         )
     
-    # Search functionality
-    search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
+    # Create columns for filter sections
+    col1, col2 = st.columns(2)
     
-    # Display options
+    with col1:
+        # Filter by party with custom toggle buttons
+        st.markdown("<div class='filter-label'>Filter by Party:</div>", unsafe_allow_html=True)
+        
+        # Get party filter from session state or initialize
+        if 'party_filter' not in st.session_state:
+            st.session_state.party_filter = ["All"]
+        
+        # Create HTML for party filter buttons
+        party_buttons_html = "<div class='toggle-container'>"
+        
+        for party in ["All", "Appellant", "Respondent", "N/A"]:
+            active_class = ""
+            if party in st.session_state.party_filter:
+                if party == "All":
+                    active_class = "active-all"
+                elif party == "Appellant":
+                    active_class = "active-appellant"
+                elif party == "Respondent":
+                    active_class = "active-respondent"
+                else:
+                    active_class = "active"
+            
+            party_buttons_html += f"""
+            <div class='toggle-button {active_class}' 
+                 onclick="this.classList.toggle('{active_class}'); 
+                          updatePartyFilter('{party}');">
+                {party}
+            </div>
+            """
+        
+        party_buttons_html += "</div>"
+        st.markdown(party_buttons_html, unsafe_allow_html=True)
+        
+        # Create party filter using conventional method as fallback
+        # This creates the form control but we'll hide it with CSS
+        party_filter = st.multiselect(
+            "Filter by Party (fallback):",
+            options=["All", "Appellant", "Respondent", "N/A"],
+            default=st.session_state.party_filter,
+            key="party_filter_fallback",
+            label_visibility="collapsed"
+        )
+        
+        # Use the fallback value
+        party_filter = party_filter if party_filter else st.session_state.party_filter
+    
+    with col2:
+        # Filter by status with custom toggle buttons
+        st.markdown("<div class='filter-label'>Filter by Status:</div>", unsafe_allow_html=True)
+        
+        # Get status filter from session state or initialize
+        if 'status_filter' not in st.session_state:
+            st.session_state.status_filter = ["All"]
+        
+        # Create HTML for status filter buttons
+        status_buttons_html = "<div class='toggle-container'>"
+        
+        for status in ["All", "Disputed", "Undisputed"]:
+            active_class = ""
+            if status in st.session_state.status_filter:
+                if status == "All":
+                    active_class = "active-all"
+                elif status == "Disputed":
+                    active_class = "active-disputed"
+                elif status == "Undisputed":
+                    active_class = "active-undisputed"
+            
+            status_buttons_html += f"""
+            <div class='toggle-button {active_class}' 
+                 onclick="this.classList.toggle('{active_class}'); 
+                          updateStatusFilter('{status}');">
+                {status}
+            </div>
+            """
+        
+        status_buttons_html += "</div>"
+        st.markdown(status_buttons_html, unsafe_allow_html=True)
+        
+        # Create status filter using conventional method as fallback
+        status_filter = st.multiselect(
+            "Filter by Status (fallback):",
+            options=["All", "Disputed", "Undisputed"],
+            default=st.session_state.status_filter,
+            key="status_filter_fallback",
+            label_visibility="collapsed"
+        )
+        
+        # Use the fallback value
+        status_filter = status_filter if status_filter else st.session_state.status_filter
+    
+    # Display options with improved UI
+    st.markdown("<div class='filter-label'>View Mode:</div>", unsafe_allow_html=True)
+    
+    # Initialize view mode in session state if not present
+    if 'connected_view_mode' not in st.session_state:
+        st.session_state.connected_view_mode = "By Document Sets"
+    
+    # Create HTML for view mode buttons
+    view_mode_html = "<div class='view-mode-container'>"
+    
+    # Button for Document Sets view
+    doc_sets_active = "active" if st.session_state.connected_view_mode == "By Document Sets" else ""
+    view_mode_html += f"""
+    <div class='view-mode-button {doc_sets_active}' id='btn-doc-sets' onclick="selectViewMode('By Document Sets')">
+        <div class='view-mode-icon'>📁</div>
+        <div class='view-mode-label'>By Document Sets</div>
+        <div>View events grouped by documents</div>
+    </div>
+    """
+    
+    # Button for Timeline view
+    timeline_active = "active" if st.session_state.connected_view_mode == "All Facts Together" else ""
+    view_mode_html += f"""
+    <div class='view-mode-button {timeline_active}' id='btn-timeline' onclick="selectViewMode('All Facts Together')">
+        <div class='view-mode-icon'>⏱️</div>
+        <div class='view-mode-label'>Timeline View</div>
+        <div>View all events in chronological order</div>
+    </div>
+    """
+    
+    view_mode_html += "</div>"
+    st.markdown(view_mode_html, unsafe_allow_html=True)
+    
+    # Traditional radio buttons as fallback (hidden with CSS)
     view_mode = st.radio(
-        "View Mode:",
+        "View Mode (fallback):",
         options=["By Document Sets", "All Facts Together"],
+        index=0 if st.session_state.connected_view_mode == "By Document Sets" else 1,
         horizontal=True,
-        key="connected_view_mode"
+        key="connected_view_mode",
+        label_visibility="collapsed"
     )
+    
+    # JavaScript to handle the custom UI interactions
+    st.markdown("""
+    <script>
+    // Function to update party filter
+    function updatePartyFilter(party) {
+        // Get the current selections from the hidden multiselect
+        const multiselect = document.querySelector('[data-testid="stMultiSelect"]');
+        if (!multiselect) return;
+        
+        // Simulate click on the multiselect to open it
+        multiselect.click();
+        
+        // Find the option corresponding to the clicked party
+        const options = document.querySelectorAll('[data-baseweb="select"] [role="option"]');
+        for (let option of options) {
+            if (option.textContent.includes(party)) {
+                option.click();
+                break;
+            }
+        }
+        
+        // Close the dropdown
+        document.body.click();
+    }
+    
+    // Function to update status filter
+    function updateStatusFilter(status) {
+        // Get all multiselects
+        const multiselects = document.querySelectorAll('[data-testid="stMultiSelect"]');
+        if (multiselects.length < 2) return;
+        
+        // The second multiselect should be the status filter
+        const statusMultiselect = multiselects[1];
+        
+        // Simulate click on the multiselect to open it
+        statusMultiselect.click();
+        
+        // Find the option corresponding to the clicked status
+        const options = document.querySelectorAll('[data-baseweb="select"] [role="option"]');
+        for (let option of options) {
+            if (option.textContent.includes(status)) {
+                option.click();
+                break;
+            }
+        }
+        
+        // Close the dropdown
+        document.body.click();
+    }
+    
+    // Function to select view mode
+    function selectViewMode(mode) {
+        // Remove active class from all view mode buttons
+        document.querySelectorAll('.view-mode-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to selected button
+        if (mode === 'By Document Sets') {
+            document.getElementById('btn-doc-sets').classList.add('active');
+        } else {
+            document.getElementById('btn-timeline').classList.add('active');
+        }
+        
+        // Get the radio buttons
+        const radioButtons = document.querySelectorAll('[data-testid="stRadio"] input');
+        if (radioButtons.length < 2) return;
+        
+        // Click the appropriate radio button
+        if (mode === 'By Document Sets') {
+            radioButtons[0].click();
+        } else {
+            radioButtons[1].click();
+        }
+    }
+    
+    // Hide the fallback form controls with CSS
+    document.addEventListener('DOMContentLoaded', function() {
+        const style = document.createElement('style');
+        style.textContent = `
+            [data-testid="stMultiSelect"] {
+                position: absolute;
+                opacity: 0;
+                height: 0;
+                overflow: hidden;
+            }
+            [data-testid="stRadio"] {
+                position: absolute;
+                opacity: 0;
+                height: 0;
+                overflow: hidden;
+            }
+        `;
+        document.head.appendChild(style);
+    });
+    </script>
+    """, unsafe_allow_html=True)
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"
@@ -730,86 +978,56 @@ with tab2:
     else:
         # Check which view mode is selected
         if view_mode == "All Facts Together":
-            # Display all facts together in an improved timeline format
+            # Display all facts together in timeline format
             st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            
-            # Add a vertical line that connects all events
-            st.markdown("<div class='timeline-connector'></div>", unsafe_allow_html=True)
-            
             st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
             
             # Sort all events by date
             all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
             
-            # Group events by year for better organization
-            events_by_year = {}
+            # Display each event in timeline format
             for event in all_events_sorted:
-                year = event["datetime"].year
-                if year not in events_by_year:
-                    events_by_year[year] = []
-                events_by_year[year].append(event)
-            
-            # Display each year's events
-            for year in sorted(events_by_year.keys()):
-                # Add a year marker
-                st.markdown(f"<div class='timeline-year-marker'>{year}</div>", unsafe_allow_html=True)
+                # Format the date range
+                if event["end_date"]:
+                    date_display = f"{event['date']} to {event['end_date']}"
+                else:
+                    date_display = event["date"]
                 
-                # Display each event for this year
-                for event in events_by_year[year]:
-                    # Format the date range
-                    if event["end_date"]:
-                        date_display = f"{event['date']} to {event['end_date']}"
-                    else:
-                        date_display = event["date"]
-                    
-                    # Format month/day only for display (year is already in the header)
-                    if "-" in event["date"]:
-                        try:
-                            date_parts = event["date"].split("-")
-                            if len(date_parts) >= 3:
-                                date_display = f"{date_parts[1]}-{date_parts[2]}"
-                        except:
-                            pass
-                    
-                    # Format status
-                    status_class = ""
-                    if event["status"] == "Disputed":
-                        status_class = "disputed"
-                    elif event["status"] == "Undisputed":
-                        status_class = "undisputed"
-                    
-                    # Format party
-                    party_class = ""
-                    dot_class = "neutral"
-                    if event["party"] == "Appellant":
-                        party_class = "appellant"
-                        dot_class = "appellant"
-                    elif event["party"] == "Respondent":
-                        party_class = "respondent"
-                        dot_class = "respondent"
-                    
-                    # Create compact timeline item with enhanced visuals
-                    timeline_html = f"""
-                    <div class="timeline-event-compact {status_class}">
-                        <div class="timeline-date-compact">{date_display}</div>
-                        <div class="timeline-dot {dot_class}"></div>
-                        <div class="timeline-content-compact">
-                            <strong>{event["event"]}</strong>
-                            <div style="margin-top: 6px;">
-                                <span class="party-tag {party_class}">{event["party"]}</span>
-                                <span class="status-tag {status_class}">{event["status"]}</span>
-                                <span class="evidence-tag">{event["evidence"]}</span>
-                            </div>
-                            <div style="margin-top: 6px; font-size: 0.95em;">
-                                {event["argument"]}
-                            </div>
-                            <div class="timeline-source">
-                                <strong>Source:</strong> {event["document"]}
-                            </div>
+                # Format status
+                status_class = ""
+                if event["status"] == "Disputed":
+                    status_class = "disputed"
+                elif event["status"] == "Undisputed":
+                    status_class = "undisputed"
+                
+                # Format party
+                party_class = ""
+                if event["party"] == "Appellant":
+                    party_class = "appellant"
+                elif event["party"] == "Respondent":
+                    party_class = "respondent"
+                
+                # Create compact timeline item
+                timeline_html = f"""
+                <div class="timeline-event-compact">
+                    <div class="timeline-date-compact">{date_display}</div>
+                    <div class="timeline-content-compact">
+                        <strong>{event["event"]}</strong>
+                        <div style="margin-top: 2px;">
+                            <span class="party-tag {party_class}">{event["party"]}</span>
+                            <span class="status-tag {status_class}">{event["status"]}</span>
+                            <span class="evidence-tag">{event["evidence"]}</span>
+                        </div>
+                        <div style="margin-top: 2px; font-size: 0.9em;">
+                            {event["argument"]}
+                        </div>
+                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
+                            Source: {event["document"]}
                         </div>
                     </div>
-                    """
-                    st.markdown(timeline_html, unsafe_allow_html=True)
+                </div>
+                """
+                st.markdown(timeline_html, unsafe_allow_html=True)
             
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)

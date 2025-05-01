@@ -14,6 +14,7 @@ st.markdown("""
     .css-1d391kg {
         background-color: #f9f9fb;
     }
+    /* Document folders styling (from screenshot 2) */
     .doc-folder {
         background-color: white;
         border-radius: 4px;
@@ -31,40 +32,78 @@ st.markdown("""
     .sidebar-content {
         padding: 10px;
     }
+    
+    /* Tab styling to match screenshot 1 */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
+        gap: 0px;
+        border-bottom: 1px solid #ddd;
     }
     .stTabs [data-baseweb="tab"] {
         padding: 10px 16px;
-        background-color: #f0f0f5;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #4c72b0 !important;
-        color: white !important;
-    }
-    .timeline-event {
-        padding: 10px;
-        border-radius: 4px;
-        margin: 5px 0;
-    }
-    .appellant {
-        border-left: 4px solid #4c72b0;
-    }
-    .respondent {
-        border-left: 4px solid #e15759;
-    }
-    .evidence-tag {
-        background-color: #f0f0f5;
-        border-radius: 12px;
-        padding: 2px 8px;
-        font-size: 12px;
+        background-color: transparent;
+        border: none;
+        font-weight: 500;
         color: #666;
     }
+    .stTabs [aria-selected="true"] {
+        background-color: transparent !important;
+        color: #4c72b0 !important;
+        border-bottom: 2px solid #4c72b0 !important;
+    }
+    
+    /* Facts table styling to match screenshot 1 */
+    .facts-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background-color: white;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .facts-table th {
+        text-align: left;
+        padding: 12px 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        color: #666;
+        font-weight: 500;
+    }
+    .facts-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        vertical-align: top;
+    }
+    .facts-table tr:last-child td {
+        border-bottom: none;
+    }
+    .facts-table tr:hover {
+        background-color: #f9fafb;
+    }
+    
+    /* Party and evidence tags to match screenshot 1 */
+    .appellant-tag {
+        color: #4c72b0;
+        font-weight: 500;
+    }
+    .respondent-tag {
+        color: #e15759;
+        font-weight: 500;
+    }
+    .evidence-tag {
+        background-color: #f8f2e9;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 12px;
+        color: #c67941;
+        font-weight: 500;
+    }
     .status-tag {
-        border-radius: 12px;
+        border-radius: 4px;
         padding: 2px 8px;
         font-size: 12px;
         color: white;
+        font-weight: 500;
     }
     .disputed {
         background-color: #e15759;
@@ -72,6 +111,23 @@ st.markdown("""
     .undisputed {
         background-color: #55a868;
     }
+    
+    /* Event styling with better match to screenshot 1 */
+    .timeline-event {
+        padding: 15px;
+        border-radius: 6px;
+        margin: 10px 0;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .appellant {
+        border-left: 4px solid #4c72b0;
+    }
+    .respondent {
+        border-left: 4px solid #e15759;
+    }
+    
+    /* Timeline styling */
     .timeline-container {
         position: relative;
         margin: 20px 0;
@@ -83,7 +139,7 @@ st.markdown("""
         top: 0;
         bottom: 0;
         width: 2px;
-        background-color: #ccc;
+        background-color: #ddd;
     }
     .timeline-marker {
         position: absolute;
@@ -99,17 +155,19 @@ st.markdown("""
     .timeline-marker.appellant {
         background-color: #4c72b0;
         border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .timeline-marker.respondent {
         background-color: #e15759;
         border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .timeline-content {
         position: relative;
         margin-left: 15px;
-        padding: 10px;
+        padding: 15px;
         background-color: white;
-        border-radius: 4px;
+        border-radius: 6px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .timeline-date {
@@ -119,6 +177,32 @@ st.markdown("""
         text-align: right;
         font-size: 12px;
         color: #666;
+        font-weight: 500;
+    }
+    
+    /* Button styling to match screenshot 1 */
+    .stButton button {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        font-weight: 500;
+    }
+    .stButton button:hover {
+        background-color: #f8f9fa;
+        border-color: #ccc;
+    }
+    
+    /* Header styling */
+    h1, h2, h3, h4 {
+        color: #333;
+        font-weight: 600;
+    }
+    
+    /* Override some default Streamlit styles */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -293,92 +377,174 @@ with tabs[0]:  # All Facts
     create_timeline(case_facts)
     
     st.subheader("Table View")
-    # Display facts table with columns
-    cols = st.columns([1, 2, 1, 1, 2, 1])
-    cols[0].markdown("**Date**")
-    cols[1].markdown("**Event**")
-    cols[2].markdown("**Party**")
-    cols[3].markdown("**Status**")
-    cols[4].markdown("**Related Argument**")
-    cols[5].markdown("**Evidence**")
+    # Display facts table matching screenshot 1 style
+    st.markdown("""
+    <table class="facts-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Event</th>
+                <th>Party</th>
+                <th>Status</th>
+                <th>Related Argument</th>
+                <th>Evidence</th>
+            </tr>
+        </thead>
+        <tbody>
+    """, unsafe_allow_html=True)
     
     # Display rows with styling based on party and status
     for i, fact in enumerate(case_facts):
-        cols = st.columns([1, 2, 1, 1, 2, 1])
+        # Determine party style and class
+        party_class = "appellant-tag" if fact["party"] == "Appellant" else "respondent-tag"
+        status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
         
-        # Determine party style
-        party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+        st.markdown(f"""
+        <tr>
+            <td>{fact["date"]}</td>
+            <td>{fact["event"]}</td>
+            <td><span class="{party_class}">{fact["party"]}</span></td>
+            <td><span class="status-tag {status_class}">{fact["status"]}</span></td>
+            <td>{fact["argument"]}</td>
+            <td><span class="evidence-tag">{fact["evidence"]}</span></td>
+        </tr>
+        """, unsafe_allow_html=True)
         
-        # Create expandable container for each fact
-        with st.expander(f"Event {i+1}: {fact['event']}", expanded=False):
+        # Create expandable container for each fact (below the table)
+        with st.expander(f"View details for: {fact['event']}", expanded=False):
             st.markdown(f"""
-            <div class="timeline-event {party_class}">
-                <p><strong>Event:</strong> {fact['event']}</p>
+            <div class="timeline-event {party_class.split('-')[0]}">
+                <h4>{fact['event']}</h4>
                 <p><strong>Date:</strong> {fact['date']}</p>
-                <p><strong>Party:</strong> {fact['party']}</p>
-                <p><strong>Status:</strong> {fact['status']}</p>
+                <p><strong>Party:</strong> <span class="{party_class}">{fact['party']}</span></p>
+                <p><strong>Status:</strong> <span class="status-tag {status_class}">{fact['status']}</span></p>
                 <p><strong>Related Argument:</strong> {fact['argument']}</p>
-                <p><strong>Evidence:</strong> {fact['evidence']}</p>
+                <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
                 <p><strong>Related Documents:</strong></p>
                 <ul>
                     {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
                 </ul>
             </div>
             """, unsafe_allow_html=True)
-        
-        # Display basic info in the table
-        cols[0].write(fact["date"])
-        cols[1].write(fact["event"])
-        
-        # Style the party column
-        party_style = "color: #4c72b0; font-weight: bold;" if fact["party"] == "Appellant" else "color: #e15759; font-weight: bold;"
-        cols[2].markdown(f"<span style='{party_style}'>{fact['party']}</span>", unsafe_allow_html=True)
-        
-        # Style the status column
-        status_class = "disputed" if fact["status"] == "Disputed" else "undisputed"
-        cols[3].markdown(f"<span class='status-tag {status_class}'>{fact['status']}</span>", unsafe_allow_html=True)
-        
-        cols[4].write(fact["argument"])
-        cols[5].markdown(f"<span class='evidence-tag'>{fact['evidence']}</span>", unsafe_allow_html=True)
+    
+    st.markdown("""
+        </tbody>
+    </table>
+    """, unsafe_allow_html=True)
 
 with tabs[1]:  # Disputed Facts
     disputed_facts = [fact for fact in case_facts if fact["status"] == "Disputed"]
     
     if disputed_facts:
+        # Display disputed facts table similar to screenshot 1
+        st.markdown("""
+        <table class="facts-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Party</th>
+                    <th>Status</th>
+                    <th>Related Argument</th>
+                    <th>Evidence</th>
+                </tr>
+            </thead>
+            <tbody>
+        """, unsafe_allow_html=True)
+        
+        # Display rows with styling based on party
+        for i, fact in enumerate(disputed_facts):
+            # Determine party style and class
+            party_class = "appellant-tag" if fact["party"] == "Appellant" else "respondent-tag"
+            
+            st.markdown(f"""
+            <tr>
+                <td>{fact["date"]}</td>
+                <td>{fact["event"]}</td>
+                <td><span class="{party_class}">{fact["party"]}</span></td>
+                <td><span class="status-tag disputed">Disputed</span></td>
+                <td>{fact["argument"]}</td>
+                <td><span class="evidence-tag">{fact["evidence"]}</span></td>
+            </tr>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            </tbody>
+        </table>
+        """, unsafe_allow_html=True)
+        
+        # Show timeline visualization
         st.subheader("Timeline of Disputed Facts")
         create_timeline(disputed_facts)
         
-        st.subheader("Details")
-        for i, fact in enumerate(disputed_facts):
-            party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
-            
-            with st.expander(f"{fact['event']}", expanded=True):
-                st.markdown(f"""
-                <div class="timeline-event {party_class}">
-                    <p><strong>Event:</strong> {fact['event']}</p>
-                    <p><strong>Date:</strong> {fact['date']}</p>
-                    <p><strong>Party:</strong> {fact['party']}</p>
-                    <p><strong>Related Argument:</strong> {fact['argument']}</p>
-                    <p><strong>Evidence:</strong> {fact['evidence']}</p>
-                    <p><strong>Related Documents:</strong></p>
-                    <ul>
-                        {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
-                    </ul>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Show related document connections
-                if i < len(disputed_facts) - 1:
-                    opposing_facts = [f for f in disputed_facts if f['argument'] == fact['argument'] and f['party'] != fact['party']]
-                    if opposing_facts:
-                        st.markdown("#### Conflicting Claims")
-                        for opp in opposing_facts:
+        # Organize disputed facts by argument to show conflicts
+        disputed_by_argument = {}
+        for fact in disputed_facts:
+            arg = fact['argument']
+            if arg not in disputed_by_argument:
+                disputed_by_argument[arg] = []
+            disputed_by_argument[arg].append(fact)
+        
+        # Show conflicting claims for each argument
+        st.subheader("Conflicting Claims Analysis")
+        for arg, facts in disputed_by_argument.items():
+            if len(facts) > 1 and len(set([f['party'] for f in facts])) > 1:
+                with st.expander(f"Conflict: {arg}", expanded=True):
+                    st.markdown(f"### {arg}")
+                    
+                    # Create columns for appellant and respondent
+                    col1, col2 = st.columns(2)
+                    
+                    appellant_facts = [f for f in facts if f['party'] == 'Appellant']
+                    respondent_facts = [f for f in facts if f['party'] == 'Respondent']
+                    
+                    with col1:
+                        st.markdown("#### Appellant's Position")
+                        for fact in appellant_facts:
                             st.markdown(f"""
-                            <div class="timeline-event {"appellant" if opp["party"] == "Appellant" else "respondent"}">
-                                <p><strong>{opp['party']} claims:</strong> {opp['event']}</p>
-                                <p><strong>Evidence:</strong> {opp['evidence']}</p>
+                            <div class="timeline-event appellant">
+                                <h4>{fact['event']}</h4>
+                                <p><strong>Date:</strong> {fact['date']}</p>
+                                <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                                <p><strong>Referenced in:</strong></p>
+                                <ul>
+                                    {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
+                                </ul>
                             </div>
                             """, unsafe_allow_html=True)
+                    
+                    with col2:
+                        st.markdown("#### Respondent's Position")
+                        for fact in respondent_facts:
+                            st.markdown(f"""
+                            <div class="timeline-event respondent">
+                                <h4>{fact['event']}</h4>
+                                <p><strong>Date:</strong> {fact['date']}</p>
+                                <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                                <p><strong>Referenced in:</strong></p>
+                                <ul>
+                                    {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
+                                </ul>
+                            </div>
+                            """, unsafe_allow_html=True)
+            else:
+                # Single disputed fact without direct conflict
+                for fact in facts:
+                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    with st.expander(f"{fact['event']} ({fact['party']})", expanded=False):
+                        st.markdown(f"""
+                        <div class="timeline-event {party_class}">
+                            <h4>{fact['event']}</h4>
+                            <p><strong>Date:</strong> {fact['date']}</p>
+                            <p><strong>Party:</strong> <span class="{party_class}-tag">{fact['party']}</span></p>
+                            <p><strong>Related Argument:</strong> {fact['argument']}</p>
+                            <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                            <p><strong>Related Documents:</strong></p>
+                            <ul>
+                                {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
+                            </ul>
+                        </div>
+                        """, unsafe_allow_html=True)
     else:
         st.info("No disputed facts found.")
 
@@ -386,61 +552,85 @@ with tabs[2]:  # Undisputed Facts
     undisputed_facts = [fact for fact in case_facts if fact["status"] == "Undisputed"]
     
     if undisputed_facts:
+        # Display undisputed facts table similar to screenshot 1
+        st.markdown("""
+        <table class="facts-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Party</th>
+                    <th>Status</th>
+                    <th>Related Argument</th>
+                    <th>Evidence</th>
+                </tr>
+            </thead>
+            <tbody>
+        """, unsafe_allow_html=True)
+        
+        # Display rows with styling based on party
+        for fact in undisputed_facts:
+            # Determine party style and class
+            party_class = "appellant-tag" if fact["party"] == "Appellant" else "respondent-tag"
+            
+            st.markdown(f"""
+            <tr>
+                <td>{fact["date"]}</td>
+                <td>{fact["event"]}</td>
+                <td><span class="{party_class}">{fact["party"]}</span></td>
+                <td><span class="status-tag undisputed">Undisputed</span></td>
+                <td>{fact["argument"]}</td>
+                <td><span class="evidence-tag">{fact["evidence"]}</span></td>
+            </tr>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            </tbody>
+        </table>
+        """, unsafe_allow_html=True)
+        
+        # Show timeline visualization
         st.subheader("Timeline of Undisputed Facts")
         create_timeline(undisputed_facts)
         
-        st.subheader("Details")
+        # Group undisputed facts by argument for better organization
+        facts_by_argument = {}
         for fact in undisputed_facts:
-            party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
-            
-            with st.expander(f"{fact['event']}", expanded=True):
-                st.markdown(f"""
-                <div class="timeline-event {party_class}">
-                    <p><strong>Event:</strong> {fact['event']}</p>
-                    <p><strong>Date:</strong> {fact['date']}</p>
-                    <p><strong>Party:</strong> {fact['party']}</p>
-                    <p><strong>Related Argument:</strong> {fact['argument']}</p>
-                    <p><strong>Evidence:</strong> {fact['evidence']}</p>
-                    <p><strong>Related Documents:</strong></p>
-                    <ul>
-                        {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
-                    </ul>
-                </div>
-                """, unsafe_allow_html=True)
+            arg = fact['argument']
+            if arg not in facts_by_argument:
+                facts_by_argument[arg] = []
+            facts_by_argument[arg].append(fact)
+        
+        # Show details organized by argument
+        st.subheader("Undisputed Facts by Argument")
+        for arg, facts in facts_by_argument.items():
+            with st.expander(f"{arg}", expanded=False):
+                st.markdown(f"### {arg}")
+                
+                # Create a card for each fact
+                for fact in facts:
+                    party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    party_tag_class = f"{party_class}-tag"
+                    
+                    st.markdown(f"""
+                    <div class="timeline-event {party_class}">
+                        <h4>{fact['event']}</h4>
+                        <p><strong>Date:</strong> {fact['date']}</p>
+                        <p><strong>Party:</strong> <span class="{party_tag_class}">{fact['party']}</span></p>
+                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                        <p><strong>Referenced in:</strong></p>
+                        <ul>
+                            {"".join([f"<li>{doc}</li>" for doc in fact['related_documents']])}
+                        </ul>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Add a small spacer between facts
+                    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     else:
         st.info("No undisputed facts found.")
 
-# Add a document-centric view
-st.header("Documents and Related Events")
 
-# Group facts by related documents
-doc_to_facts = {}
-for fact in case_facts:
-    for doc in fact['related_documents']:
-        if doc not in doc_to_facts:
-            doc_to_facts[doc] = []
-        doc_to_facts[doc].append(fact)
-
-# Create tabs for each document type
-doc_tabs = st.tabs(list(doc_to_facts.keys()))
-
-# Fill each tab with related events
-for i, (doc, facts) in enumerate(doc_to_facts.items()):
-    with doc_tabs[i]:
-        st.subheader(f"Events Referenced in {doc}")
-        
-        # Create a mini-timeline for this document
-        events_df = pd.DataFrame(facts)
-        
-        # Group events by argument
-        arguments = events_df['argument'].unique()
-        for arg in arguments:
-            arg_events = events_df[events_df['argument'] == arg]
-            
-            st.markdown(f"### {arg}")
-            
-            for _, event in arg_events.iterrows():
-                party_class = "appellant" if event["party"] == "Appellant" else "respondent"
                 status_class = "disputed" if event["status"] == "Disputed" else "undisputed"
                 
                 st.markdown(f"""
@@ -510,40 +700,127 @@ for i, (doc, facts) in enumerate(doc_to_facts.items()):
         st.markdown(timeline_html, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-# Connection explorer view
+# Add the Connection Explorer with improved styling
 st.header("Document-Event Connection Explorer")
 
-selected_document = st.selectbox("Select Document", list(doc_to_facts.keys()))
+# Add a description
+st.markdown("""
+<div style="background-color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <p>Use this explorer to investigate connections between specific documents and events. 
+    Select a document to see all events it references, then select a specific event to examine in detail.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Create a styled selectbox for documents
+selected_document = st.selectbox(
+    "Select Document", 
+    list(doc_to_facts.keys()),
+    format_func=lambda x: f"📁 {x}"
+)
+
 selected_event = None
 
 if selected_document:
+    # Get facts for the selected document
     facts = doc_to_facts[selected_document]
-    event_options = [fact['event'] for fact in facts]
-    selected_event = st.selectbox("Select Event", event_options)
+    
+    # Create columns for document info and event selection
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        # Display document information in a card
+        document_type = "Appellant Filing" if any(x in selected_document for x in ["Appeal", "Statement", "Reply"]) else "Respondent Filing"
+        document_icon = "📝" if "Brief" in selected_document else "📄"
+        
+        st.markdown(f"""
+        <div style="background-color: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0;">{document_icon} {selected_document}</h3>
+            <p><strong>Type:</strong> {document_type}</p>
+            <p><strong>Referenced Events:</strong> {len(facts)}</p>
+            <p><strong>Arguments Made:</strong></p>
+            <ul>
+                {"".join([f"<li>{fact['argument']}</li>" for fact in facts if fact['party'] == ('Appellant' if 'Appellant' in document_type else 'Respondent')])}
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        # Group events by disputed status for better organization
+        disputed_events = [fact for fact in facts if fact["status"] == "Disputed"]
+        undisputed_events = [fact for fact in facts if fact["status"] == "Undisputed"]
+        
+        st.markdown("### Referenced Events")
+        
+        # Display disputed events first with warning styling
+        if disputed_events:
+            st.markdown("""
+            <div style="background-color: #fff8f8; border-left: 3px solid #e15759; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <h4 style="margin-top: 0; color: #e15759;">⚠️ Disputed Facts</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            event_options = [f"{fact['event']} ({fact['date']})" for fact in disputed_events]
+            selected_disputed = st.selectbox("Select disputed event", [""] + event_options)
+            
+            if selected_disputed:
+                selected_event = next((fact['event'] for fact in disputed_events if f"{fact['event']} ({fact['date']})" == selected_disputed), None)
+        
+        # Display undisputed events
+        if undisputed_events:
+            st.markdown("""
+            <div style="background-color: #f8fff8; border-left: 3px solid #55a868; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                <h4 style="margin-top: 0; color: #55a868;">✓ Undisputed Facts</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            event_options = [f"{fact['event']} ({fact['date']})" for fact in undisputed_events]
+            selected_undisputed = st.selectbox("Select undisputed event", [""] + event_options)
+            
+            if selected_undisputed:
+                selected_event = next((fact['event'] for fact in undisputed_events if f"{fact['event']} ({fact['date']})" == selected_undisputed), None)
 
+# Display the connection details if an event is selected
 if selected_event:
     selected_fact = next((fact for fact in case_facts if fact['event'] == selected_event), None)
+    
     if selected_fact:
-        # Create visualization for the connection
+        st.markdown("---")
         st.subheader("Connection Details")
         
-        # Create columns for document and event
+        # Display connection visualization
+        st.markdown("""
+        <div style="display: flex; justify-content: center; align-items: center; margin: 30px 0; text-align: center;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background-color: #f0f0f5; 
+                      display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <span style="font-size: 48px;">📁</span>
+                </div>
+                <div style="margin-top: 10px; font-weight: 500;">Document</div>
+                <div style="font-size: 14px; color: #666;">{selected_document}</div>
+            </div>
+            
+            <div style="margin: 0 20px; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 150px; height: 2px; background-color: #333; margin-bottom: 5px;"></div>
+                <div style="font-size: 14px; color: #666;">References</div>
+                <div style="width: 150px; height: 2px; background-color: #333; margin-top: 5px;"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; 
+                      background-color: {'#e6f3ff' if selected_fact['party'] == 'Appellant' else '#ffefef'}; 
+                      display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <span style="font-size: 48px;">📅</span>
+                </div>
+                <div style="margin-top: 10px; font-weight: 500;">Event</div>
+                <div style="font-size: 14px; color: #666;">{selected_fact['date']}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Create columns for detailed information
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown(f"""
-            <div style="background-color: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <h4>📁 {selected_document}</h4>
-                <p><strong>Document Type:</strong> {selected_document.split('.')[0]}</p>
-                <p><strong>Filed By:</strong> {"Appellant" if "Appeal" in selected_document or "Reply" in selected_document else "Respondent"}</p>
-                <p><strong>Referenced Arguments:</strong></p>
-                <ul>
-                    {"".join([f"<li>{fact['argument']}</li>" for fact in doc_to_facts[selected_document]])}
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
             party_class = "appellant" if selected_fact["party"] == "Appellant" else "respondent"
             status_class = "disputed" if selected_fact["status"] == "Disputed" else "undisputed"
             
@@ -551,38 +828,58 @@ if selected_event:
             <div class="timeline-event {party_class}">
                 <h4>{selected_fact['event']}</h4>
                 <p><strong>Date:</strong> {selected_fact['date']}</p>
-                <p><strong>Party:</strong> {selected_fact['party']}</p>
+                <p><strong>Party:</strong> <span class="{party_class}-tag">{selected_fact['party']}</span></p>
                 <p><strong>Status:</strong> <span class="status-tag {status_class}">{selected_fact['status']}</span></p>
                 <p><strong>Related Argument:</strong> {selected_fact['argument']}</p>
                 <p><strong>Evidence:</strong> <span class="evidence-tag">{selected_fact['evidence']}</span></p>
             </div>
             """, unsafe_allow_html=True)
         
-        # Show connection visualization
-        st.markdown("""
-        <div style="margin: 30px 0; text-align: center;">
-            <div style="display: inline-block; width: 100px; height: 100px; border-radius: 50%; background-color: #f0f0f5; 
-                  text-align: center; line-height: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                📁
+        with col2:
+            # Show other documents referencing this event
+            other_docs = [doc for doc in selected_fact['related_documents'] if doc != selected_document]
+            
+            st.markdown(f"""
+            <div style="background-color: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h4 style="margin-top: 0;">Other Documents Referencing This Event</h4>
+                
+                {"<ul>" + "".join([f"<li>📁 {doc}</li>" for doc in other_docs]) + "</ul>" if other_docs else 
+                "<p>No other documents reference this event.</p>"}
+                
+                <h4>Connection Impact</h4>
+                <p>This event is {'disputed' if selected_fact['status'] == 'Disputed' else 'undisputed'} and is used to support:</p>
+                <ul>
+                    <li><strong>{selected_fact['argument']}</strong></li>
+                </ul>
             </div>
-            <div style="display: inline-block; width: 100px; height: 2px; background-color: #333; margin: 0 15px; vertical-align: middle;"></div>
-            <div style="display: inline-block; width: 100px; height: 100px; border-radius: 50%; background-color: #f0f0f5; 
-                  text-align: center; line-height: 100px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                📅
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         
-        # Show other documents referencing the same event
-        other_docs = [doc for doc in selected_fact['related_documents'] if doc != selected_document]
-        if other_docs:
-            st.markdown("### Other Documents Referencing This Event")
-            st.markdown("<ul>", unsafe_allow_html=True)
-            for doc in other_docs:
-                st.markdown(f"<li>{doc}</li>", unsafe_allow_html=True)
-            st.markdown("</ul>", unsafe_allow_html=True)
+        # If this is a disputed fact, show the conflicting claims
+        if selected_fact['status'] == 'Disputed':
+            st.markdown("### Conflicting Claims")
+            
+            opposing_facts = [f for f in case_facts if f['argument'] == selected_fact['argument'] 
+                             and f['party'] != selected_fact['party'] and f['status'] == 'Disputed']
+            
+            if opposing_facts:
+                for fact in opposing_facts:
+                    opp_party_class = "appellant" if fact["party"] == "Appellant" else "respondent"
+                    
+                    st.markdown(f"""
+                    <div class="timeline-event {opp_party_class}">
+                        <h4>{fact['event']}</h4>
+                        <p><strong>Date:</strong> {fact['date']}</p>
+                        <p><strong>Party:</strong> <span class="{opp_party_class}-tag">{fact['party']}</span></p>
+                        <p><strong>Evidence:</strong> <span class="evidence-tag">{fact['evidence']}</span></p>
+                        <p><strong>Referenced in:</strong></p>
+                        <ul>
+                            {"".join([f"<li>📁 {doc}</li>" for doc in fact['related_documents']])}
+                        </ul>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-# Add footer with action buttons
+# Add footer with action buttons to match screenshot 1
+st.markdown("---")
 col1, col2, col3 = st.columns([1, 1, 4])
 with col1:
     st.button("Copy")

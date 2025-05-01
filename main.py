@@ -5,21 +5,6 @@ import json
 
 st.set_page_config(layout="wide")
 
-# Add global CSS for document headers - making sure it applies everywhere
-st.markdown("""
-<style>
-    /* Force milder colors for document headers - using !important to override any other styles */
-    .document-set-header, 
-    div.document-set-header,
-    [class*="document-set-header"],
-    *[class*="document-set-header"] {
-        background-color: #e8f0fe !important; 
-        color: #3c4043 !important;
-        border-left: 3px solid #4285f4 !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Custom CSS for styling similar to the reference image
 st.markdown("""
 <style>
@@ -124,6 +109,21 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Add global CSS for document headers - making sure it applies everywhere
+st.markdown("""
+<style>
+    /* Force milder colors for document headers - using !important to override any other styles */
+    .document-set-header, 
+    div.document-set-header,
+    [class*="document-set-header"],
+    *[class*="document-set-header"] {
+        background-color: #e8f0fe !important; 
+        color: #3c4043 !important;
+        border-left: 3px solid #4285f4 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Header with logo and title
 col1, col2 = st.columns([1, 11])
 with col1:
@@ -179,60 +179,43 @@ df_events = pd.DataFrame(events)
 # Main content area
 st.markdown("# Summary of arguments")
 
-# Create two tabs with custom styling to remove white container
+# Create two tabs
+tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
+
+# Add CSS to remove white container space under tabs
 st.markdown("""
 <style>
-    /* Override Streamlit's default styling */
     .stTabs [data-baseweb="tab-panel"] {
-        padding: 0 !important;
-        margin: 0 !important;
-        background-color: transparent !important;
+        padding-top: 0px;
     }
     
-    /* Remove white background from tab panels */
-    .stTabs [data-baseweb="tab-panel"] > div {
-        background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    .streamlit-expanderHeader {
+        font-size: 1em;
+        font-weight: normal;
     }
     
-    /* Remove padding from tab list */
+    /* Remove any extra white space */
     .stTabs [data-baseweb="tab-list"] {
-        margin-bottom: 0 !important;
+        margin-bottom: 0;
     }
     
-    /* Remove padding from controls */
-    .facts-controls, .timeline-controls {
-        background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    /* Target any div wrapper that Streamlit might add */
-    .stTabs [data-baseweb="tab-panel"] > div > div {
-        background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    /* Remove any shadow effects that could make it look like a white container */
-    .stTabs {
-        box-shadow: none !important;
+    /* Adjust spacing after tabs */
+    .stTabs [data-baseweb="tab-panel"] > div:first-child {
+        margin-top: 0;
+        padding-top: 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
-
 with tab1:
-    # Add CSS for improved Facts tab with milder document set headers
+    # Add CSS for improved Facts tab
     st.markdown("""
     <style>
         .facts-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
         .facts-table {
             border-collapse: collapse;
@@ -306,15 +289,14 @@ with tab1:
             opacity: 1;
         }
         .document-set-header {
-            background-color: #e8f0fe; /* Lighter, milder blue */
-            color: #3c4043; /* Darker text for contrast */
+            background-color: #4285f4;
+            color: white;
             padding: 10px 15px;
             border-radius: 4px;
             margin-top: 20px;
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 1.1em;
-            border-left: 3px solid #4285f4; /* Keep a hint of the original blue */
         }
         .document-subset-header {
             background-color: #f8f9fa;
@@ -570,20 +552,22 @@ with tab1:
     else:
         st.info("No facts match the current filters.")
 
+# Tab 2 is now Connected View (former tab3)
+
 with tab2:
+    
     # Add additional CSS for the improved connected view
     st.markdown("""
     <style>
         .document-set-header {
-            background-color: #e8f0fe; /* Lighter, milder blue */
-            color: #3c4043; /* Darker text for contrast */
+            background-color: #4285f4;
+            color: white;
             padding: 10px 15px;
             border-radius: 4px;
             margin-top: 15px;
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 1.1em;
-            border-left: 3px solid #4285f4; /* Keep a hint of the original blue */
         }
         .document-subset-header {
             background-color: #f8f9fa;
@@ -595,10 +579,10 @@ with tab2:
             border-left: 3px solid #4285f4;
         }
         .timeline-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
         .event-counter {
             font-size: 0.8em;
@@ -652,6 +636,9 @@ with tab2:
     </style>
     """, unsafe_allow_html=True)
     
+    # Remove the div container or make it transparent
+    # st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
+    
     # Make sure filter display works without the containing div
     # Search and date filter row
     search_col, date_col = st.columns([1, 1])
@@ -701,6 +688,9 @@ with tab2:
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"
+    
+    # End of timeline-controls div - removing this line
+    # st.markdown("</div>", unsafe_allow_html=True)
     
     # Create a visualization showing documents and their connected events
     timeline_data = []
@@ -878,12 +868,12 @@ with tab2:
                     elif doc_party == "Respondent":
                         party_class = "respondent"
                     
-                    st.markdown(f"""
-                    <div style="background-color: #e8f0fe; color: #3c4043; padding: 8px 12px; border-radius: 4px; 
-                    margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
-                    {doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style="background-color: #e8f0fe; color: #3c4043; padding: 8px 12px; border-radius: 4px; 
+                margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
+                {doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span>
+                </div>
+                """, unsafe_allow_html=True)
                     
                     # Sort events by date
                     doc_events = sorted(doc_events, key=lambda x: x["datetime"])

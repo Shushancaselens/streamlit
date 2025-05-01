@@ -165,179 +165,15 @@ df_events = pd.DataFrame(events)
 st.markdown("# Summary of arguments")
 
 # Create two tabs
-tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
-
-# Sample document sets to use throughout the app
-document_sets = {
-    "ICA Appeal 2023/A/001": "Appeal documents from the main club licensing case",
-    "UEFA Club Licensing Documents": "Official licensing documentation for the appeal",
-    "CAS Procedure 2023/O/123": "Court of Arbitration for Sport proceedings",
-    "Swiss Federal Tribunal Case 4A_248": "Related Swiss federal court documents",
-    "Historical Club Records (1950-1980)": "Documentation of club's historical operations"
-}
+tab1, tab2, tab3 = st.tabs(["Case Facts", "Document Timeline", "Connected View"])
 
 with tab1:
-    # Add CSS for improved facts filtering
-    st.markdown("""
-    <style>
-        .fact-filters {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .fact-table {
-            margin-top: 15px;
-        }
-        .fact-table th {
-            background-color: #f1f3f5;
-            padding: 8px;
-        }
-        .fact-table td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .fact-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        .filter-pill {
-            display: inline-block;
-            padding: 4px 12px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            border-radius: 16px;
-            background-color: #e9ecef;
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-        .filter-pill:hover {
-            background-color: #dee2e6;
-        }
-        .filter-pill.active {
-            background-color: #4285f4;
-            color: white;
-        }
-        .filter-section {
-            margin-bottom: 15px;
-        }
-        .filter-header {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # Subtabs for filtering facts
+    fact_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
     
-    # Create advanced filter UI
-    st.markdown("<div class='fact-filters'>", unsafe_allow_html=True)
-    
-    # Top filter tabs with improved styling
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        status_filter = st.radio(
-            "Filter by Status:",
-            options=["All Facts", "Disputed Facts", "Undisputed Facts"],
-            horizontal=True
-        )
-    
-    with col2:
-        party_filter = st.multiselect(
-            "Filter by Party:",
-            options=["Appellant", "Respondent", "N/A"],
-            default=[]
-        )
-        
-    with col3:
-        argument_filter = st.selectbox(
-            "Filter by Argument:",
-            options=["All Arguments"] + sorted(df_events["argument"].unique().tolist())
-        )
-    
-    # Date range filter
-    col1, col2 = st.columns(2)
-    with col1:
-        date_range = st.date_input(
-            "Date Range:",
-            value=(pd.to_datetime(df_events["date"].min()).date(), 
-                   pd.to_datetime(df_events["date"].max()).date())
-        )
-    
-    with col2:
-        search_query = st.text_input("Search:", placeholder="Search in events...")
-    
-    # Evidence filter
-    evidence_options = sorted(df_events["evidence"].unique().tolist())
-    evidence_filter = st.multiselect(
-        "Filter by Evidence:",
-        options=evidence_options,
-        default=[]
-    )
-    
-    # Apply filters
-    filtered_df = df_events.copy()
-    
-    # Convert date to datetime for filtering
-    filtered_df["datetime"] = pd.to_datetime(filtered_df["date"])
-    
-    # Status filter
-    if status_filter == "Disputed Facts":
-        filtered_df = filtered_df[filtered_df["status"] == "Disputed"]
-    elif status_filter == "Undisputed Facts":
-        filtered_df = filtered_df[filtered_df["status"] == "Undisputed"]
-    
-    # Party filter
-    if party_filter:
-        filtered_df = filtered_df[filtered_df["party"].isin(party_filter)]
-    
-    # Argument filter
-    if argument_filter != "All Arguments":
-        filtered_df = filtered_df[filtered_df["argument"] == argument_filter]
-    
-    # Date range filter
-    if len(date_range) == 2:
-        start_date, end_date = date_range
-        filtered_df = filtered_df[
-            (filtered_df["datetime"].dt.date >= start_date) & 
-            (filtered_df["datetime"].dt.date <= end_date)
-        ]
-    
-    # Evidence filter
-    if evidence_filter:
-        filtered_df = filtered_df[filtered_df["evidence"].isin(evidence_filter)]
-    
-    # Search query
-    if search_query:
-        search_query = search_query.lower()
-        filtered_df = filtered_df[
-            filtered_df["event"].str.lower().str.contains(search_query) | 
-            filtered_df["argument"].str.lower().str.contains(search_query)
-        ]
-    
-    # Show active filters summary
-    active_filters = []
-    if status_filter != "All Facts":
-        active_filters.append(f"Status: {status_filter}")
-    if party_filter:
-        active_filters.append(f"Party: {', '.join(party_filter)}")
-    if argument_filter != "All Arguments":
-        active_filters.append(f"Argument: {argument_filter}")
-    if len(date_range) == 2:
-        active_filters.append(f"Date range: {date_range[0]} to {date_range[1]}")
-    if evidence_filter:
-        active_filters.append(f"Evidence: {', '.join(evidence_filter)}")
-    if search_query:
-        active_filters.append(f"Search: '{search_query}'")
-    
-    if active_filters:
-        st.markdown(f"**Active Filters:** {' | '.join(active_filters)}")
-    
-    # Show result count
-    st.markdown(f"**Showing {len(filtered_df)} facts**")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Create a table with the filtered events
-    if not filtered_df.empty:
-        facts_df = filtered_df[["date", "event", "party", "status", "argument", "evidence"]]
+    with fact_tabs[0]:  # All Facts
+        # Create a table with all the events
+        facts_df = df_events[["date", "event", "party", "status", "argument", "evidence"]]
         facts_df = facts_df.rename(columns={
             "date": "Date", 
             "event": "Event", 
@@ -372,20 +208,8 @@ with tab1:
         facts_df["Status"] = facts_df["Status"].apply(format_status)
         facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
         
-        # Display the table with improved styling
-        st.markdown('<div class="fact-table">', unsafe_allow_html=True)
-        st.write(facts_df.to_html(escape=False, index=False, classes="fact-table"), unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Add export options
-        st.download_button(
-            "Export Facts as CSV",
-            data=filtered_df.to_csv(index=False).encode('utf-8'),
-            file_name="case_facts.csv",
-            mime="text/csv"
-        )
-    else:
-        st.info("No facts match the current filters.")
+        # Display the table
+        st.write(facts_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 with tab2:
     # Create columns for the document structure and timeline
@@ -862,27 +686,17 @@ with tab3:
             for year in sorted(events_by_year.keys()):
                 st.markdown(f"<div class='year-header'>{year} ({len(events_by_year[year])} events)</div>", unsafe_allow_html=True)
                 
-                # Group by document type within the document set
-                doc_types = {}
-                for event in events:
-                    # Create document type based on argument or evidence category
-                    if "Registration" in event["argument"]:
-                        doc_type = "Registration Documents"
-                    elif "Color" in event["argument"]:
-                        doc_type = "Club Identity Documents"
-                    elif "Sporting Succession" in event["argument"]:
-                        doc_type = "Historical Continuity Records"
-                    elif "Procedural" in event["argument"]:
-                        doc_type = "Procedural Filings"
-                    else:
-                        doc_type = "Supporting Evidence"
-                    
-                    if doc_type not in doc_types:
-                        doc_types[doc_type] = []
-                    doc_types[doc_type].append(event)
+                # Group by month within the year
+                events_by_month = {}
+                for event in events_by_year[year]:
+                    month = event["datetime"].month
+                    if month not in events_by_month:
+                        events_by_month[month] = []
+                    events_by_month[month].append(event)
                 
-                for doc_type in sorted(doc_types.keys()):
-                    st.markdown(f"<div class='month-header'>{doc_type} ({len(doc_types[doc_type])} items)</div>", unsafe_allow_html=True)
+                for month in sorted(events_by_month.keys()):
+                    month_name = pd.to_datetime(f"{year}-{month}-01").strftime("%B")
+                    st.markdown(f"<div class='month-header'>{month_name} ({len(events_by_month[month])} events)</div>", unsafe_allow_html=True)
                     
                     # Display events for this month
                     if display_mode == "Compact":

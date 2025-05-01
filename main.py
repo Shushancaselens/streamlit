@@ -580,6 +580,13 @@ with tab2:
     search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
     
     # Display options
+    view_mode = st.radio(
+        "View Mode:",
+        options=["By Document Sets", "All Facts Together"],
+        horizontal=True,
+        key="connected_view_mode"
+    )
+    
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"
     
@@ -658,84 +665,146 @@ with tab2:
     if not all_events:
         st.info("No events match the current filters.")
     else:
-        # Group events by document set
-        events_by_set = {}
-        for event in all_events:
-            doc_set = event["document_set"]
-            if doc_set not in events_by_set:
-                events_by_set[doc_set] = []
-            events_by_set[doc_set].append(event)
-        
-        st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-        
-        # Sort document sets by earliest event date
-        sorted_sets = sorted(
-            events_by_set.items(),
-            key=lambda x: min(e["datetime"] for e in x[1])
-        )
-        
-        for doc_set, events in sorted_sets:
-            st.markdown(f"<div class='document-set-header'>{doc_set} ({len(events)} events)</div>", unsafe_allow_html=True)
+        # Check which view mode is selected
+        if view_mode == "All Facts Together":
+            # Display all facts in a single table
+            st.markdown("<div class='table-container'>", unsafe_allow_html=True)
             
-            # Group by document within the set
-            events_by_doc = {}
-            for event in events:
-                doc_name = event["document"]
-                if doc_name not in events_by_doc:
-                    events_by_doc[doc_name] = []
-                events_by_doc[doc_name].append(event)
+            # Create a DataFrame for display
+            facts_df = pd.DataFrame(all_events)
+            facts_df = facts_df[[
+                "date", "end_date", "event", "party", "status", 
+                "argument", "evidence", "document", "document_set"
+            ]]
             
-            for doc_name, doc_events in events_by_doc.items():
-                # Get sample event to determine party
-                sample_event = doc_events[0]
-                doc_party = sample_event["document_party"]
+            # Rename columns for display
+            facts_df = facts_df.rename(columns={
+                "date": "Date",
+                "end_date": "End Date",
+                "event": "Event",
+                "party": "Party",
+                "status": "Status",
+                "argument": "Related Argument",
+                "evidence": "Evidence",
+                "document": "Document",
+                "document_set": "Document Set"
+            })
+            
+            # Format the data for display
+            def format_party(party):
+                if party == "Appellant":
+                    return f'<span class="party-tag appellant">{party}</span>'
+                elif party == "Respondent":
+                    return f'<span class="party-tag respondent">{party}</span>'
+                else:
+                    return party
+            
+            def format_status(status):
+                if status == "Disputed":
+                    return f'<span class="status-tag disputed">{status}</span>'
+                elif status == "Undisputed":
+                    return f'<span class="status-tag undisputed">{status}</span>'
+                else:
+                    return status
+            
+            def format_evidence(evidence):
+                return f'<span class="evidence-tag">{evidence}</span>'
+            
+            # Apply formatting
+            facts_df["Party"] = facts_df["Party"].apply(format_party)
+            facts_df["Status"] = facts_df["Status"].apply(format_status)
+            facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
+            
+            # Handle end date - replace None/NaN with empty string
+            facts_df["End Date"] = facts_df["End Date"].fillna("")
+            
+            # Create table with styling
+            html_table = facts_df.to_html(escape=False, index=False)
+            html_table = html_table.replace('<table', '<table class="facts-table"')
+            
+            st.markdown(html_table, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+        else:
+            # Document Sets View (original view)
+            # Group events by document set
+            events_by_set = {}
+            for event in all_events:
+                doc_set = event["document_set"]
+                if doc_set not in events_by_set:
+                    events_by_set[doc_set] = []
+                events_by_set[doc_set].append(event)
+            
+            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
+            
+            # Sort document sets by earliest event date
+            sorted_sets = sorted(
+                events_by_set.items(),
+                key=lambda x: min(e["datetime"] for e in x[1])
+            )
+            
+            for doc_set, events in sorted_sets:
+                st.markdown(f"<div class='document-set-header'>{doc_set} ({len(events)} events)</div>", unsafe_allow_html=True)
                 
-                # Format document party for display
-                party_class = ""
-                if doc_party == "Appellant":
-                    party_class = "appellant"
-                elif doc_party == "Respondent":
-                    party_class = "respondent"
+                # Group by document within the set
+                events_by_doc = {}
+                for event in events:
+                    doc_name = event["document"]
+                    if doc_name not in events_by_doc:
+                        events_by_doc[doc_name] = []
+                    events_by_doc[doc_name].append(event)
                 
-                st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
-                
-                # Sort events by date
-                doc_events = sorted(doc_events, key=lambda x: x["datetime"])
-                
-                # Display events for this document - always use compact mode
-                st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-                for event in doc_events:
-                    # Format the date range
-                    if event["end_date"]:
-                        date_display = f"{event['date']} to {event['end_date']}"
-                    else:
-                        date_display = event["date"]
+                for doc_name, doc_events in events_by_doc.items():
+                    # Get sample event to determine party
+                    sample_event = doc_events[0]
+                    doc_party = sample_event["document_party"]
                     
-                    # Format status
-                    status_class = ""
-                    if event["status"] == "Disputed":
-                        status_class = "disputed"
-                    elif event["status"] == "Undisputed":
-                        status_class = "undisputed"
+                    # Format document party for display
+                    party_class = ""
+                    if doc_party == "Appellant":
+                        party_class = "appellant"
+                    elif doc_party == "Respondent":
+                        party_class = "respondent"
                     
-                    # Create compact timeline item
-                    timeline_html = f"""
-                    <div class="timeline-event-compact">
-                        <div class="timeline-date-compact">{date_display}</div>
-                        <div class="timeline-content-compact">
-                            <strong>{event["event"]}</strong>
-                            <div style="margin-top: 2px;">
-                                <span class="status-tag {status_class}">{event["status"]}</span>
-                                <span class="evidence-tag">{event["evidence"]}</span>
-                            </div>
-                            <div style="margin-top: 2px; font-size: 0.9em;">
-                                {event["argument"]}
+                    st.markdown(f"<div class='document-subset-header'>{doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span></div>", unsafe_allow_html=True)
+                    
+                    # Sort events by date
+                    doc_events = sorted(doc_events, key=lambda x: x["datetime"])
+                    
+                    # Display events for this document - always use compact mode
+                    st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
+                    for event in doc_events:
+                        # Format the date range
+                        if event["end_date"]:
+                            date_display = f"{event['date']} to {event['end_date']}"
+                        else:
+                            date_display = event["date"]
+                        
+                        # Format status
+                        status_class = ""
+                        if event["status"] == "Disputed":
+                            status_class = "disputed"
+                        elif event["status"] == "Undisputed":
+                            status_class = "undisputed"
+                        
+                        # Create compact timeline item
+                        timeline_html = f"""
+                        <div class="timeline-event-compact">
+                            <div class="timeline-date-compact">{date_display}</div>
+                            <div class="timeline-content-compact">
+                                <strong>{event["event"]}</strong>
+                                <div style="margin-top: 2px;">
+                                    <span class="status-tag {status_class}">{event["status"]}</span>
+                                    <span class="evidence-tag">{event["evidence"]}</span>
+                                </div>
+                                <div style="margin-top: 2px; font-size: 0.9em;">
+                                    {event["argument"]}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    """
-                    st.markdown(timeline_html, unsafe_allow_html=True)
-                st.markdown("</div>", unsafe_allow_html=True)
+                        """
+                        st.markdown(timeline_html, unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
     # Add a download button for the filtered events

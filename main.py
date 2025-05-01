@@ -348,6 +348,11 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
     
+    # Initialize status_filter from session state
+    if 'status_filter' not in st.session_state:
+        st.session_state.status_filter = "All"
+    status_filter = st.session_state.status_filter
+    
     # Custom buttons for status filter
     st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
     st.markdown("<div class='filter-label'>Filter by status:</div>", unsafe_allow_html=True)
@@ -376,17 +381,14 @@ with tab1:
         status_filter = "Undisputed"
     elif all_active:
         status_filter = "All"
-    else:
-        # Default if no button is clicked yet
-        status_filter = status_filter if 'status_filter' in locals() else "All"
     
-    # Store the selected value in session state
-    if 'status_filter' not in st.session_state:
-        st.session_state.status_filter = status_filter
-    elif disputed_active or undisputed_active or all_active:
-        st.session_state.status_filter = status_filter
-    else:
-        status_filter = st.session_state.status_filter
+    # Update session state
+    st.session_state.status_filter = status_filter
+    
+    # Initialize view_mode from session state
+    if 'view_mode' not in st.session_state:
+        st.session_state.view_mode = "Table View"
+    view_mode = st.session_state.view_mode
     
     # Custom buttons for view mode
     st.markdown("<div class='filter-container'>", unsafe_allow_html=True)
@@ -397,13 +399,11 @@ with tab1:
     with col1:
         table_active = st.button("📊 Table View", key="view_table", 
                                use_container_width=True,
-                               type="secondary" if 'view_mode' in st.session_state and 
-                                               st.session_state.view_mode != "Table View" else "primary")
+                               type="secondary" if view_mode != "Table View" else "primary")
     with col2:
         sets_active = st.button("📁 Document Sets", key="view_sets", 
                               use_container_width=True,
-                              type="secondary" if 'view_mode' in st.session_state and 
-                                              st.session_state.view_mode != "Document Sets View" else "primary")
+                              type="secondary" if view_mode != "Document Sets View" else "primary")
     
     st.markdown("</div></div>", unsafe_allow_html=True)
     
@@ -412,17 +412,9 @@ with tab1:
         view_mode = "Table View"
     elif sets_active:
         view_mode = "Document Sets View"
-    else:
-        # Default if no button is clicked yet
-        view_mode = "Table View" if 'view_mode' not in st.session_state else st.session_state.view_mode
     
-    # Store the selected value in session state
-    if 'view_mode' not in st.session_state:
-        st.session_state.view_mode = view_mode
-    elif table_active or sets_active:
-        st.session_state.view_mode = view_mode
-    else:
-        view_mode = st.session_state.view_mode
+    # Update session state
+    st.session_state.view_mode = view_mode
     
     st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     

@@ -109,12 +109,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Header with logo and title
-col1, col2 = st.columns([1, 11])
-with col1:
-    st.markdown('<div style="background-color: #4285f4; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">CL</div>', unsafe_allow_html=True)
-with col2:
-    st.title("CaseLens")
+# Remove logo and title
 
 # Sidebar navigation
 st.sidebar.markdown("## Legal Analysis")

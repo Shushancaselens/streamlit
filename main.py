@@ -5,7 +5,7 @@ import json
 
 st.set_page_config(layout="wide")
 
-# Custom CSS for styling similar to the reference image
+# Global CSS for consistent styling
 st.markdown("""
 <style>
     .folder {
@@ -106,13 +106,120 @@ st.markdown("""
         border-left: 1px solid #ddd;
         padding-left: 20px;
     }
-</style>
-""", unsafe_allow_html=True)
-
-# Add global CSS for document headers - making sure it applies everywhere
-st.markdown("""
-<style>
-    /* Force milder colors for document headers - using !important to override any other styles */
+    .facts-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .facts-table th {
+        background-color: #f1f3f5;
+        padding: 10px;
+        text-align: left;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .facts-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .facts-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .date-column {
+        width: 120px;
+    }
+    .event-column {
+        width: 30%;
+    }
+    .party-column {
+        width: 100px;
+    }
+    .status-column {
+        width: 100px;
+    }
+    .argument-column {
+        width: 25%;
+    }
+    .evidence-column {
+        width: 80px;
+    }
+    .table-container {
+        max-height: 600px;
+        overflow-y: auto;
+        margin-top: 10px;
+    }
+    .event-counter {
+        font-size: 0.8em;
+        color: #666;
+        margin-left: 5px;
+    }
+    .timeline-container {
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .compact-timeline .timeline-item {
+        padding-bottom: 8px;
+        margin-bottom: 5px;
+    }
+    .timeline-connector {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #ddd;
+        z-index: -1;
+    }
+    .timeline-event-compact {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 5px;
+    }
+    .timeline-date-compact {
+        width: 120px;
+        flex-shrink: 0;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+    .timeline-content-compact {
+        flex-grow: 1;
+    }
+    
+    /* Remove white background from tab panels */
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: transparent !important;
+    }
+    
+    .stTabs [data-baseweb="tab-panel"] > div {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        margin-bottom: 0 !important;
+    }
+    
+    .facts-controls, .timeline-controls {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .stTabs [data-baseweb="tab-panel"] > div > div {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .stTabs {
+        box-shadow: none !important;
+    }
+    
+    /* Force milder colors for document headers */
     .document-set-header, 
     div.document-set-header,
     [class*="document-set-header"],
@@ -179,772 +286,30 @@ df_events = pd.DataFrame(events)
 # Main content area
 st.markdown("# Summary of arguments")
 
-# Create two tabs
-tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
-
-# Add CSS to remove white container space under tabs
+# Create two tabs with custom styling to remove white container
 st.markdown("""
 <style>
+    /* Override Streamlit's default styling */
     .stTabs [data-baseweb="tab-panel"] {
-        padding-top: 0px;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: transparent !important;
     }
     
-    .streamlit-expanderHeader {
-        font-size: 1em;
-        font-weight: normal;
+    /* Remove white background from tab panels */
+    .stTabs [data-baseweb="tab-panel"] > div {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
-    /* Remove any extra white space */
+    /* Remove padding from tab list */
     .stTabs [data-baseweb="tab-list"] {
-        margin-bottom: 0;
+        margin-bottom: 0 !important;
     }
     
-    /* Adjust spacing after tabs */
-    .stTabs [data-baseweb="tab-panel"] > div:first-child {
-        margin-top: 0;
-        padding-top: 0;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-with tab1:
-    # Add CSS for improved Facts tab
-    st.markdown("""
-    <style>
-        .facts-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .facts-table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        .facts-table th {
-            background-color: #f1f3f5;
-            padding: 10px;
-            text-align: left;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .facts-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .facts-table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .date-column {
-            width: 120px;
-        }
-        .event-column {
-            width: 30%;
-        }
-        .party-column {
-            width: 100px;
-        }
-        .status-column {
-            width: 100px;
-        }
-        .argument-column {
-            width: 25%;
-        }
-        .evidence-column {
-            width: 80px;
-        }
-        .table-container {
-            max-height: 600px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            margin-right: 8px;
-            background-color: #e9ecef;
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-        .status-badge.active {
-            color: white;
-            font-weight: 500;
-        }
-        .status-badge.all.active {
-            background-color: #6c757d;
-        }
-        .status-badge.disputed.active {
-            background-color: #dc3545;
-        }
-        .status-badge.undisputed.active {
-            background-color: #28a745;
-        }
-        .sort-icon {
-            margin-left: 5px;
-            opacity: 0.5;
-        }
-        .sort-icon.active {
-            opacity: 1;
-        }
-        .document-set-header {
-            background-color: #4285f4;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .document-subset-header {
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 8px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            border-left: 3px solid #4285f4;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Create control panel for filters - make background transparent
-    st.markdown("""
-    <style>
-        .facts-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
-        }
-        
-        /* Remove any extra white space */
-        .stTabs [data-baseweb="tab-panel"] {
-            padding: 0px !important;
-        }
-        
-        /* Make sure no white background is visible */
-        .stTabs [data-baseweb="tab-panel"] > div {
-            background-color: transparent !important;
-            padding: 0px !important;
-            margin: 0px !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Remove the div container or make it transparent
-    # st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
-    
-    # Make sure filter display works without the containing div
-    # Top filter section - now with more dropdowns
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        search_term = st.text_input("Search Facts:", placeholder="Search by keyword...", key="facts_search")
-    
-    # Create a row of dropdown filters
-    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
-    
-    with filter_col1:
-        sort_by = st.selectbox("Sort by:", 
-                              ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
-                              key="facts_sort")
-    
-    with filter_col2:
-        sort_order = st.selectbox("Order:", 
-                                 ["Ascending", "Descending"], 
-                                 key="facts_order")
-    
-    with filter_col3:
-        # Status filter dropdown
-        status_filter = st.selectbox(
-            "Filter by status:",
-            options=["All", "Disputed", "Undisputed"],
-            key="status_filter"
-        )
-    
-    with filter_col4:
-        # View mode dropdown
-        view_mode = st.selectbox(
-            "View Mode:",
-            options=["Table View", "Document Sets View"],
-            key="facts_view_mode"
-        )
-    
-    # End of facts-controls div - removing this line
-    # st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
-    
-    # Get the data and apply filters
-    filtered_facts = df_events.copy()
-    
-    # Apply status filter if needed
-    if status_filter != "All":
-        filtered_facts = filtered_facts[filtered_facts["status"] == status_filter]
-    
-    # Apply search filter if needed
-    if search_term:
-        filtered_facts = filtered_facts[
-            filtered_facts["event"].str.lower().str.contains(search_term.lower()) | 
-            filtered_facts["argument"].str.lower().str.contains(search_term.lower())
-        ]
-    
-    # Convert to a formatted DataFrame for display
-    facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence", "document_id"]].copy()
-    facts_df = facts_df.rename(columns={
-        "date": "Date", 
-        "event": "Event", 
-        "party": "Party", 
-        "status": "Status", 
-        "argument": "Related Argument", 
-        "evidence": "Evidence",
-        "document_id": "Document ID"
-    })
-    
-    # Sort the data
-    sort_col = sort_by
-    is_ascending = sort_order == "Ascending"
-    facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
-    
-    # Format the data for display
-    def format_party(party):
-        if party == "Appellant":
-            return f'<span class="party-tag appellant">{party}</span>'
-        elif party == "Respondent":
-            return f'<span class="party-tag respondent">{party}</span>'
-        else:
-            return party
-    
-    def format_status(status):
-        if status == "Disputed":
-            return f'<span class="status-tag disputed">{status}</span>'
-        elif status == "Undisputed":
-            return f'<span class="status-tag undisputed">{status}</span>'
-        else:
-            return status
-    
-    def format_evidence(evidence):
-        return f'<span class="evidence-tag">{evidence}</span>'
-    
-    # Apply formatting
-    facts_df["Party"] = facts_df["Party"].apply(format_party)
-    facts_df["Status"] = facts_df["Status"].apply(format_status)
-    facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
-    
-    # Display facts count
-    st.write(f"**Found {len(facts_df)} facts**")
-    
-    if len(facts_df) > 0:
-        # TABLE VIEW
-        if view_mode == "Table View":
-            # Display the table with classes for styling
-            display_df = facts_df.drop(columns=["Document ID"])  # Don't show document ID in table view
-            html_table = display_df.to_html(escape=False, index=False)
-            html_table = html_table.replace('<table', '<table class="facts-table"')
-            html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
-            html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
-            html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
-            html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
-            html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
-            html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
-            
-            st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
-        
-        # DOCUMENT SETS VIEW
-        else:
-            # Define document sets (same as in Connected View)
-            document_sets = {
-                "Initial Registration Materials": [1, 2],
-                "Trademark Opposition Filings": [3, 4, 11],
-                "Appeal Documentation": [5, 6, 7],
-                "Procedural Challenges": [8, 12],
-                "Supporting Research": [9, 10]
-            }
-            
-            # Create document set mapping for lookup
-            doc_to_set = {}
-            for set_name, doc_ids in document_sets.items():
-                for doc_id in doc_ids:
-                    doc_to_set[doc_id] = set_name
-            
-            # Group facts by document set
-            facts_by_set = {}
-            for _, fact in facts_df.iterrows():
-                doc_id = fact["Document ID"]
-                doc_set = doc_to_set.get(doc_id, "Other Documents")
-                
-                if doc_set not in facts_by_set:
-                    facts_by_set[doc_set] = []
-                
-                facts_by_set[doc_set].append(fact)
-            
-            # Sort document sets (optional - by first date in each set)
-            sorted_sets = sorted(
-                facts_by_set.items(),
-                key=lambda x: pd.to_datetime(x[1][0]["Date"]) if x[1] else pd.Timestamp.max
-            )
-            
-            # Display facts grouped by document sets
-            for doc_set, facts in sorted_sets:
-                if not facts:
-                    continue
-                
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; 
-                margin-top: 20px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;">
-                {doc_set} ({len(facts)} facts)
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Group by document within the set
-                doc_ids = set([fact["Document ID"] for fact in facts])
-                
-                # Get document names for each ID
-                for doc_id in doc_ids:
-                    # Get document name
-                    doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
-                    doc_name = doc_info["name"]
-                    doc_party = doc_info["party"]
-                    
-                    # Filter facts for this document
-                    doc_facts = [fact for fact in facts if fact["Document ID"] == doc_id]
-                    
-                    # Format document party for display
-                    party_class = ""
-                    if doc_party == "Appellant":
-                        party_class = "appellant"
-                    elif doc_party == "Respondent":
-                        party_class = "respondent"
-                    
-                    st.markdown(f"""
-                    <div style="background-color: #f8f9fa; padding: 8px 12px; border-radius: 4px; 
-                    margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
-                    {doc_name} ({len(doc_facts)} facts) <span class='party-tag {party_class}'>{doc_party}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Create DataFrame for this document
-                    doc_df = pd.DataFrame(doc_facts)
-                    doc_df = doc_df.drop(columns=["Document ID"])  # Don't need to show this column
-                    
-                    # Display the document facts table
-                    html_table = doc_df.to_html(escape=False, index=False)
-                    html_table = html_table.replace('<table', '<table class="facts-table"')
-                    html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
-                    html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
-                    html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
-                    html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
-                    html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
-                    html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
-                    
-                    st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
-        
-        # Add download button for the filtered data
-        csv = facts_df.drop(columns=["Document ID"]).to_csv(index=False).encode('utf-8')
-        status_label = f"{status_filter}_" if status_filter != "All" else ""
-        st.download_button(
-            label=f"Download {status_label}Facts",
-            data=csv,
-            file_name=f"{status_label.lower()}facts.csv",
-            mime="text/csv",
-        )
-    else:
-        st.info("No facts match the current filters.")
-
-# Tab 2 is now Connected View (former tab3)
-
-with tab2:
-    
-    # Add additional CSS for the improved connected view
-    st.markdown("""
-    <style>
-        .document-set-header {
-            background-color: #4285f4;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .document-subset-header {
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 8px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            border-left: 3px solid #4285f4;
-        }
-        .timeline-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .event-counter {
-            font-size: 0.8em;
-            color: #666;
-            margin-left: 5px;
-        }
-        .timeline-container {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        .compact-timeline .timeline-item {
-            padding-bottom: 8px;
-            margin-bottom: 5px;
-        }
-        .timeline-connector {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: #ddd;
-            z-index: -1;
-        }
-        .timeline-event-compact {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 5px;
-        }
-        .timeline-date-compact {
-            width: 120px;
-            flex-shrink: 0;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
-        .timeline-content-compact {
-            flex-grow: 1;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Create control panel for filters - make background transparent
-    st.markdown("""
-    <style>
-        .timeline-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Remove the div container or make it transparent
-    # st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
-    
-    # Make sure filter display works without the containing div
-    # Search and date filter row
-    search_col, date_col = st.columns([1, 1])
-    
-    with search_col:
-        # Search functionality
-        search_term = st.text_input("Search Events:", placeholder="Enter keywords...")
-    
-    with date_col:
-        # Filter by date range
-        min_date = pd.to_datetime(df_events["date"].min())
-        max_date = pd.to_datetime(df_events["date"].max())
-        
-        date_range = st.date_input(
-            "Date Range:",
-            value=(min_date, max_date),
-            min_value=min_date,
-            max_value=max_date
-        )
-    
-    # Advanced filter options
-    filter_col1, filter_col2, filter_col3 = st.columns(3)
-    
-    with filter_col1:
-        # Filter by party - keep as multiselect for multiple selection
-        party_filter = st.multiselect(
-            "Filter by Party:",
-            options=["All", "Appellant", "Respondent", "N/A"],
-            default=["All"]
-        )
-    
-    with filter_col2:
-        # Filter by status - keep as multiselect for multiple selection
-        status_filter = st.multiselect(
-            "Filter by Status:",
-            options=["All", "Disputed", "Undisputed"],
-            default=["All"]
-        )
-    
-    with filter_col3:
-        # Display options - change to dropdown
-        view_mode = st.selectbox(
-            "View Mode:",
-            options=["By Document Sets", "All Facts Together"],
-            key="connected_view_mode"
-        )
-    
-    # Default to Compact mode (removing the filter as requested)
-    display_mode = "Compact"
-    
-    # End of timeline-controls div - removing this line
-    # st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Create a visualization showing documents and their connected events
-    timeline_data = []
-    
-    # Convert date strings to datetime for filtering
-    df_events["datetime"] = pd.to_datetime(df_events["date"])
-    
-    # Apply filters
-    filtered_events = df_events.copy()
-    
-    # Party filter
-    if "All" not in party_filter:
-        filtered_events = filtered_events[filtered_events["party"].isin(party_filter)]
-    
-    # Status filter
-    if "All" not in status_filter:
-        filtered_events = filtered_events[filtered_events["status"].isin(status_filter)]
-    
-    # Date range filter
-    if len(date_range) == 2:
-        start_date, end_date = date_range
-        filtered_events = filtered_events[
-            (filtered_events["datetime"] >= pd.to_datetime(start_date)) & 
-            (filtered_events["datetime"] <= pd.to_datetime(end_date))
-        ]
-    
-    # Search term filter
-    if search_term:
-        search_term = search_term.lower()
-        filtered_events = filtered_events[
-            filtered_events["event"].str.lower().str.contains(search_term) | 
-            filtered_events["argument"].str.lower().str.contains(search_term)
-        ]
-    
-    # Define document sets (imaginary names for demonstration)
-    document_sets = {
-        "Initial Registration Materials": [1, 2],
-        "Trademark Opposition Filings": [3, 4, 11],
-        "Appeal Documentation": [5, 6, 7],
-        "Procedural Challenges": [8, 12],
-        "Supporting Research": [9, 10]
-    }
-    
-    # Create document set mapping for lookup
-    doc_to_set = {}
-    for set_name, doc_ids in document_sets.items():
-        for doc_id in doc_ids:
-            doc_to_set[doc_id] = set_name
-    
-    # Convert to pandas DataFrame for easier manipulation
-    all_events = []
-    for _, event in filtered_events.iterrows():
-        doc_info = df_folders[df_folders["id"] == event["document_id"]].iloc[0]
-        
-        all_events.append({
-            "date": event["date"],
-            "datetime": event["datetime"],
-            "end_date": event["end_date"] if pd.notna(event["end_date"]) and event["end_date"] != "None" else None,
-            "event": event["event"],
-            "party": event["party"],
-            "status": event["status"],
-            "argument": event["argument"],
-            "evidence": event["evidence"],
-            "document": doc_info["name"],
-            "document_party": doc_info["party"],
-            "document_set": doc_to_set.get(event["document_id"], "Other Documents")
-        })
-    
-    # Sort events by date
-    all_events = sorted(all_events, key=lambda x: x["datetime"])
-    
-    if not all_events:
-        st.info("No events match the current filters.")
-    else:
-        # Check which view mode is selected
-        if view_mode == "All Facts Together":
-            # Display all facts together in timeline format
-            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-            
-            # Sort all events by date
-            all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
-            
-            # Display each event in timeline format
-            for event in all_events_sorted:
-                # Format the date range
-                if event["end_date"]:
-                    date_display = f"{event['date']} to {event['end_date']}"
-                else:
-                    date_display = event["date"]
-                
-                # Format status
-                status_class = ""
-                if event["status"] == "Disputed":
-                    status_class = "disputed"
-                elif event["status"] == "Undisputed":
-                    status_class = "undisputed"
-                
-                # Format party
-                party_class = ""
-                if event["party"] == "Appellant":
-                    party_class = "appellant"
-                elif event["party"] == "Respondent":
-                    party_class = "respondent"
-                
-                # Create compact timeline item
-                timeline_html = f"""
-                <div class="timeline-event-compact">
-                    <div class="timeline-date-compact">{date_display}</div>
-                    <div class="timeline-content-compact">
-                        <strong>{event["event"]}</strong>
-                        <div style="margin-top: 2px;">
-                            <span class="party-tag {party_class}">{event["party"]}</span>
-                            <span class="status-tag {status_class}">{event["status"]}</span>
-                            <span class="evidence-tag">{event["evidence"]}</span>
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.9em;">
-                            {event["argument"]}
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
-                            Source: {event["document"]}
-                        </div>
-                    </div>
-                </div>
-                """
-                st.markdown(timeline_html, unsafe_allow_html=True)
-            
-            st.markdown("</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-        else:
-            # Document Sets View (original view)
-            # Group events by document set
-            events_by_set = {}
-            for event in all_events:
-                doc_set = event["document_set"]
-                if doc_set not in events_by_set:
-                    events_by_set[doc_set] = []
-                events_by_set[doc_set].append(event)
-            
-            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            
-            # Sort document sets by earliest event date
-            sorted_sets = sorted(
-                events_by_set.items(),
-                key=lambda x: min(e["datetime"] for e in x[1])
-            )
-            
-            for doc_set, events in sorted_sets:
-                # Force milder colors for document headers
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; 
-                margin-top: 15px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;">
-                {doc_set} ({len(events)} events)
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Group by document within the set
-                events_by_doc = {}
-                for event in events:
-                    doc_name = event["document"]
-                    if doc_name not in events_by_doc:
-                        events_by_doc[doc_name] = []
-                    events_by_doc[doc_name].append(event)
-                
-                for doc_name, doc_events in events_by_doc.items():
-                    # Get sample event to determine party
-                    sample_event = doc_events[0]
-                    doc_party = sample_event["document_party"]
-                    
-                    # Format document party for display
-                    party_class = ""
-                    if doc_party == "Appellant":
-                        party_class = "appellant"
-                    elif doc_party == "Respondent":
-                        party_class = "respondent"
-                    
-                st.markdown(f"""
-                <div style="background-color: #e8f0fe; color: #3c4043; padding: 8px 12px; border-radius: 4px; 
-                margin-top: 8px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;">
-                {doc_name} ({len(doc_events)} events) <span class='party-tag {party_class}'>{doc_party}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                    
-                    # Sort events by date
-                                        # Sort events by date
-                    doc_events = sorted(doc_events, key=lambda x: x["datetime"])
-                    
-                    # Display events for this document - always use compact mode
-                    st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
-                    for event in doc_events:
-                        # Format the date range
-                        if event["end_date"]:
-                            date_display = f"{event['date']} to {event['end_date']}"
-                        else:
-                            date_display = event["date"]
-                        
-                        # Format status
-                        status_class = ""
-                        if event["status"] == "Disputed":
-                            status_class = "disputed"
-                        elif event["status"] == "Undisputed":
-                            status_class = "undisputed"
-                        
-                        # Create compact timeline item
-                        timeline_html = f"""
-                        <div class="timeline-event-compact">
-                            <div class="timeline-date-compact">{date_display}</div>
-                            <div class="timeline-content-compact">
-                                <strong>{event["event"]}</strong>
-                                <div style="margin-top: 2px;">
-                                    <span class="status-tag {status_class}">{event["status"]}</span>
-                                    <span class="evidence-tag">{event["evidence"]}</span>
-                                </div>
-                                <div style="margin-top: 2px; font-size: 0.9em;">
-                                    {event["argument"]}
-                                </div>
-                            </div>
-                        </div>
-                        """
-                        st.markdown(timeline_html, unsafe_allow_html=True)
-                    st.markdown("</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-
-    # Add a download button for the filtered events
-    st.download_button(
-        "Download Filtered Events as CSV",
-        data=filtered_events.to_csv(index=False).encode('utf-8'),
-        file_name="filtered_case_events.csv",
-        mime="text/csv"
-    )
-
-# Add custom JavaScript to handle click events and update state
-st.markdown("""
-<script>
-// Listen for messages from Streamlit
-window.addEventListener('message', function(event) {
-    // Check if the message is from Streamlit
-    if (event.data.type === 'streamlit:componentReady') {
-        // Make folders clickable
-        const folders = document.querySelectorAll('.folder');
-        folders.forEach(folder => {
-            folder.addEventListener('click', function() {
-                // Get the folder ID from the data attribute
-                const folderId = this.getAttribute('data-id');
-                
-                // Update Streamlit state
-                window.parent.postMessage({
-                    type: 'streamlit:setComponentValue',
-                    value: folderId
-                }, '*');
-            });
-        });
-    }
-});
-</script>
-""", unsafe_allow_html=True)
+    /* Remove padding from controls */
+    .facts-controls, .timeline-controls {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !i

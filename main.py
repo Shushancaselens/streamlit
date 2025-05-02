@@ -164,164 +164,164 @@ df_events = pd.DataFrame(events)
 # Main content area
 st.markdown("# Summary of arguments")
 
-# Create two tabs
-tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
-
-# Add CSS to remove white container space under tabs
+# Create two tabs with custom styling to remove white container
 st.markdown("""
 <style>
+    /* Override Streamlit's default styling */
     .stTabs [data-baseweb="tab-panel"] {
-        padding-top: 0px;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: transparent !important;
     }
     
-    .streamlit-expanderHeader {
-        font-size: 1em;
-        font-weight: normal;
+    /* Remove white background from tab panels */
+    .stTabs [data-baseweb="tab-panel"] > div {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
     
-    /* Remove any extra white space */
+    /* Remove padding from tab list */
     .stTabs [data-baseweb="tab-list"] {
-        margin-bottom: 0;
+        margin-bottom: 0 !important;
     }
     
-    /* Adjust spacing after tabs */
-    .stTabs [data-baseweb="tab-panel"] > div:first-child {
-        margin-top: 0;
-        padding-top: 0;
+    /* Remove padding from controls */
+    .facts-controls, .timeline-controls {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Target any div wrapper that Streamlit might add */
+    .stTabs [data-baseweb="tab-panel"] > div > div {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Remove any shadow effects that could make it look like a white container */
+    .stTabs {
+        box-shadow: none !important;
+    }
+    
+    /* CSS for table and document styling */
+    .facts-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .facts-table th {
+        background-color: #f1f3f5;
+        padding: 10px;
+        text-align: left;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .facts-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .facts-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .date-column {
+        width: 120px;
+    }
+    .event-column {
+        width: 30%;
+    }
+    .party-column {
+        width: 100px;
+    }
+    .status-column {
+        width: 100px;
+    }
+    .argument-column {
+        width: 25%;
+    }
+    .evidence-column {
+        width: 80px;
+    }
+    .table-container {
+        max-height: 600px;
+        overflow-y: auto;
+        margin-top: 10px;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        margin-right: 8px;
+        background-color: #e9ecef;
+        font-size: 0.9em;
+        cursor: pointer;
+    }
+    .status-badge.active {
+        color: white;
+        font-weight: 500;
+    }
+    .status-badge.all.active {
+        background-color: #6c757d;
+    }
+    .status-badge.disputed.active {
+        background-color: #dc3545;
+    }
+    .status-badge.undisputed.active {
+        background-color: #28a745;
+    }
+    .sort-icon {
+        margin-left: 5px;
+        opacity: 0.5;
+    }
+    .sort-icon.active {
+        opacity: 1;
+    }
+    
+    /* Timeline and event styles */
+    .event-counter {
+        font-size: 0.8em;
+        color: #666;
+        margin-left: 5px;
+    }
+    .timeline-container {
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .compact-timeline .timeline-item {
+        padding-bottom: 8px;
+        margin-bottom: 5px;
+    }
+    .timeline-connector {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #ddd;
+        z-index: -1;
+    }
+    .timeline-event-compact {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 5px;
+    }
+    .timeline-date-compact {
+        width: 120px;
+        flex-shrink: 0;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+    .timeline-content-compact {
+        flex-grow: 1;
     }
 </style>
 """, unsafe_allow_html=True)
 
+tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
+
 with tab1:
-    # Add CSS for improved Facts tab
-    st.markdown("""
-    <style>
-        .facts-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .facts-table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        .facts-table th {
-            background-color: #f1f3f5;
-            padding: 10px;
-            text-align: left;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .facts-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .facts-table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .date-column {
-            width: 120px;
-        }
-        .event-column {
-            width: 30%;
-        }
-        .party-column {
-            width: 100px;
-        }
-        .status-column {
-            width: 100px;
-        }
-        .argument-column {
-            width: 25%;
-        }
-        .evidence-column {
-            width: 80px;
-        }
-        .table-container {
-            max-height: 600px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            margin-right: 8px;
-            background-color: #e9ecef;
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-        .status-badge.active {
-            color: white;
-            font-weight: 500;
-        }
-        .status-badge.all.active {
-            background-color: #6c757d;
-        }
-        .status-badge.disputed.active {
-            background-color: #dc3545;
-        }
-        .status-badge.undisputed.active {
-            background-color: #28a745;
-        }
-        .sort-icon {
-            margin-left: 5px;
-            opacity: 0.5;
-        }
-        .sort-icon.active {
-            opacity: 1;
-        }
-        .document-set-header {
-            background-color: #4285f4;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .document-subset-header {
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 8px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            border-left: 3px solid #4285f4;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Create control panel for filters - make background transparent
-    st.markdown("""
-    <style>
-        .facts-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
-        }
-        
-        /* Remove any extra white space */
-        .stTabs [data-baseweb="tab-panel"] {
-            padding: 0px !important;
-        }
-        
-        /* Make sure no white background is visible */
-        .stTabs [data-baseweb="tab-panel"] > div {
-            background-color: transparent !important;
-            padding: 0px !important;
-            margin: 0px !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Remove the div container or make it transparent
-    # st.markdown("<div class='facts-controls'>", unsafe_allow_html=True)
-    
     # Make sure filter display works without the containing div
     # Top filter section - now with more dropdowns
     col1, col2 = st.columns([2, 1])
@@ -357,9 +357,6 @@ with tab1:
             options=["Table View", "Document Sets View"],
             key="facts_view_mode"
         )
-    
-    # End of facts-controls div - removing this line
-    # st.markdown("</div>", unsafe_allow_html=True)  # End of facts-controls
     
     # Get the data and apply filters
     filtered_facts = df_events.copy()
@@ -475,7 +472,7 @@ with tab1:
                 if not facts:
                     continue
                 
-            st.markdown(f"<div style='background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; margin-top: 20px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;'>{doc_set} ({len(facts)} facts)</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background-color: #e8f0fe; color: #3c4043; padding: 10px 15px; border-radius: 4px; margin-top: 20px; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; border-left: 3px solid #4285f4;'>{doc_set} ({len(facts)} facts)</div>", unsafe_allow_html=True)
                 
                 # Group by document within the set
                 doc_ids = set([fact["Document ID"] for fact in facts])
@@ -527,93 +524,7 @@ with tab1:
     else:
         st.info("No facts match the current filters.")
 
-# Tab 2 is now Connected View (former tab3)
-
 with tab2:
-    
-    # Add additional CSS for the improved connected view
-    st.markdown("""
-    <style>
-        .document-set-header {
-            background-color: #4285f4;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .document-subset-header {
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-top: 8px;
-            margin-bottom: 5px;
-            font-weight: 500;
-            border-left: 3px solid #4285f4;
-        }
-        .timeline-controls {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .event-counter {
-            font-size: 0.8em;
-            color: #666;
-            margin-left: 5px;
-        }
-        .timeline-container {
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        .compact-timeline .timeline-item {
-            padding-bottom: 8px;
-            margin-bottom: 5px;
-        }
-        .timeline-connector {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: #ddd;
-            z-index: -1;
-        }
-        .timeline-event-compact {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 5px;
-        }
-        .timeline-date-compact {
-            width: 120px;
-            flex-shrink: 0;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
-        .timeline-content-compact {
-            flex-grow: 1;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Create control panel for filters - make background transparent
-    st.markdown("""
-    <style>
-        .timeline-controls {
-            background-color: transparent;
-            padding: 10px 0px 0px 0px;
-            margin: 0px;
-            border-radius: 0px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Remove the div container or make it transparent
-    # st.markdown("<div class='timeline-controls'>", unsafe_allow_html=True)
-    
     # Make sure filter display works without the containing div
     # Search and date filter row
     search_col, date_col = st.columns([1, 1])
@@ -663,9 +574,6 @@ with tab2:
     
     # Default to Compact mode (removing the filter as requested)
     display_mode = "Compact"
-    
-    # End of timeline-controls div - removing this line
-    # st.markdown("</div>", unsafe_allow_html=True)
     
     # Create a visualization showing documents and their connected events
     timeline_data = []

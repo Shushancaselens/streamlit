@@ -1802,7 +1802,7 @@ def main():
         """
         
         # Render the HTML component
-        st.title("Case Facts")
+        st.title("Case Facts - UPDATED VERSION")
         components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

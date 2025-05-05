@@ -1,9 +1,14 @@
 import streamlit as st
+import json
 import pandas as pd
 import base64
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
+
+# Initialize session state to track selected view
+if 'view' not in st.session_state:
+    st.session_state.view = "Facts"
 
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
@@ -14,7 +19,7 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Get all facts from the data
 def get_all_facts():
-    return [
+    facts = [
         {
             'point': "Continuous operation under same name since 1950",
             'date': "1950-present",
@@ -46,36 +51,6 @@ def get_all_facts():
             'argTitle': "Registration History"
         },
         {
-            'point': "Consistent use of blue and white since founding",
-            'date': "1950-present",
-            'isDisputed': True,
-            'party': "Appellant",
-            'paragraphs': "51-52",
-            'exhibits': ["C-4"],
-            'argId': "1.2",
-            'argTitle': "Club Colors Analysis"
-        },
-        {
-            'point': "Minor shade variations do not affect continuity",
-            'date': "1970-1980",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "56-57",
-            'exhibits': ["C-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Variations Analysis"
-        },
-        {
-            'point': "Temporary third color addition in 1980s",
-            'date': "1982-1988",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "58-59",
-            'exhibits': ["C-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Variations Analysis"
-        },
-        {
             'point': "Operations ceased between 1975-1976",
             'date': "1975-1976",
             'isDisputed': True,
@@ -104,41 +79,13 @@ def get_all_facts():
             'exhibits': ["R-2"],
             'argId': "1.1.1",
             'argTitle': "Registration Gap Evidence"
-        },
-        {
-            'point': "Significant color scheme change in 1976",
-            'date': "1976",
-            'isDisputed': True,
-            'party': "Respondent",
-            'paragraphs': "245-246",
-            'exhibits': ["R-4"],
-            'argId': "1.2",
-            'argTitle': "Club Colors Analysis Rebuttal"
-        },
-        {
-            'point': "Pre-1976 colors represented original city district",
-            'date': "1950-1975",
-            'isDisputed': False,
-            'party': "Respondent",
-            'paragraphs': "247",
-            'exhibits': ["R-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Changes Analysis"
-        },
-        {
-            'point': "Post-1976 colors represented new ownership region",
-            'date': "1976-present",
-            'isDisputed': True,
-            'party': "Respondent",
-            'paragraphs': "248-249",
-            'exhibits': ["R-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Changes Analysis"
         }
     ]
+    return facts
 
-# Function to create the sidebar
-def create_sidebar():
+# Main app - sidebar and facts page
+def main():
+    # Add Streamlit sidebar with navigation buttons only
     with st.sidebar:
         # Add the logo and CaseLens text
         st.markdown("""
@@ -177,10 +124,6 @@ def create_sidebar():
         </style>
         """, unsafe_allow_html=True)
         
-        # Initialize session state if not already done
-        if 'view' not in st.session_state:
-            st.session_state.view = "Arguments"
-        
         # Define button click handlers
         def set_arguments_view():
             st.session_state.view = "Arguments"
@@ -195,91 +138,91 @@ def create_sidebar():
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-
-# Function to create the facts page
-def create_facts_page():
+    
+    # Show facts page (assuming we're only implementing the Facts view)
     st.title("Case Facts")
     
     # Create tabs for different fact views
-    fact_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+    facts_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
     
-    # Get all facts
-    all_facts = get_all_facts()
+    # Get the facts data
+    facts_data = get_all_facts()
     
-    # Create dataframes for each tab
-    all_facts_df = pd.DataFrame(all_facts)
-    disputed_facts_df = pd.DataFrame([fact for fact in all_facts if fact['isDisputed']])
-    undisputed_facts_df = pd.DataFrame([fact for fact in all_facts if not fact['isDisputed']])
+    # Convert to DataFrame for easier manipulation
+    facts_df = pd.DataFrame(facts_data)
     
-    # Format facts for display
-    def format_facts_df(df):
-        # Create a copy to avoid modifying the original
-        formatted_df = df.copy()
+    # Process for different tabs
+    with facts_tabs[0]:  # All Facts
+        # Convert exhibits to string for display
+        facts_df_display = facts_df.copy()
+        facts_df_display['exhibits'] = facts_df_display['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        facts_df_display['Status'] = facts_df_display['isDisputed'].apply(lambda x: 'Disputed' if x else 'Undisputed')
         
-        # Format the exhibits column
-        formatted_df['exhibits'] = formatted_df['exhibits'].apply(lambda x: ', '.join(x) if x else 'None')
+        # Display the table
+        st.dataframe(
+            facts_df_display[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
+                columns={
+                    'date': 'Date', 
+                    'point': 'Event', 
+                    'party': 'Party', 
+                    'argId': 'Argument ID', 
+                    'argTitle': 'Argument Title',
+                    'exhibits': 'Exhibits'
+                }
+            ),
+            use_container_width=True
+        )
         
-        # Rename columns for display
-        formatted_df = formatted_df.rename(columns={
-            'point': 'Event',
-            'date': 'Date',
-            'party': 'Party',
-            'paragraphs': 'Paragraphs',
-            'exhibits': 'Exhibits',
-            'argId': 'Argument ID',
-            'argTitle': 'Argument Title'
-        })
+        # Add download link
+        st.markdown(get_csv_download_link(facts_df_display, "all_facts.csv", "Download All Facts CSV"), unsafe_allow_html=True)
+    
+    with facts_tabs[1]:  # Disputed Facts
+        # Filter for disputed facts
+        disputed_df = facts_df[facts_df['isDisputed'] == True].copy()
+        disputed_df['exhibits'] = disputed_df['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        disputed_df['Status'] = 'Disputed'
         
-        # Add a status column
-        formatted_df['Status'] = formatted_df.apply(lambda row: 'Disputed' if row['isDisputed'] else 'Undisputed', axis=1)
+        # Display the table
+        st.dataframe(
+            disputed_df[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
+                columns={
+                    'date': 'Date', 
+                    'point': 'Event', 
+                    'party': 'Party', 
+                    'argId': 'Argument ID', 
+                    'argTitle': 'Argument Title',
+                    'exhibits': 'Exhibits'
+                }
+            ),
+            use_container_width=True
+        )
         
-        # Select and order columns for display
-        return formatted_df[['Date', 'Event', 'Party', 'Status', 'Argument ID', 'Argument Title', 'Paragraphs', 'Exhibits']]
+        # Add download link
+        st.markdown(get_csv_download_link(disputed_df, "disputed_facts.csv", "Download Disputed Facts CSV"), unsafe_allow_html=True)
     
-    # Display dataframes in tabs
-    with fact_tabs[0]:
-        st.dataframe(format_facts_df(all_facts_df), use_container_width=True)
-        st.markdown(get_csv_download_link(format_facts_df(all_facts_df), "all_facts.csv", "Download All Facts"), unsafe_allow_html=True)
-    
-    with fact_tabs[1]:
-        st.dataframe(format_facts_df(disputed_facts_df), use_container_width=True)
-        st.markdown(get_csv_download_link(format_facts_df(disputed_facts_df), "disputed_facts.csv", "Download Disputed Facts"), unsafe_allow_html=True)
-    
-    with fact_tabs[2]:
-        st.dataframe(format_facts_df(undisputed_facts_df), use_container_width=True)
-        st.markdown(get_csv_download_link(format_facts_df(undisputed_facts_df), "undisputed_facts.csv", "Download Undisputed Facts"), unsafe_allow_html=True)
-    
-    # Add additional analysis section
-    st.header("Facts Analysis")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Count facts by party
-        party_counts = all_facts_df['party'].value_counts()
-        st.subheader("Facts by Party")
-        st.bar_chart(party_counts)
-    
-    with col2:
-        # Count disputed vs undisputed
-        dispute_counts = all_facts_df['isDisputed'].value_counts().rename(index={True: 'Disputed', False: 'Undisputed'})
-        st.subheader("Disputed vs Undisputed Facts")
-        st.bar_chart(dispute_counts)
-
-# Main function
-def main():
-    # Create the sidebar
-    create_sidebar()
-    
-    # Check which view to show
-    if st.session_state.view == "Facts":
-        create_facts_page()
-    elif st.session_state.view == "Arguments":
-        st.title("Arguments Section")
-        st.write("This is the Arguments Section. Select 'Facts' in the sidebar to view the Facts page.")
-    else:  # Exhibits
-        st.title("Exhibits Section")
-        st.write("This is the Exhibits Section. Select 'Facts' in the sidebar to view the Facts page.")
+    with facts_tabs[2]:  # Undisputed Facts
+        # Filter for undisputed facts
+        undisputed_df = facts_df[facts_df['isDisputed'] == False].copy()
+        undisputed_df['exhibits'] = undisputed_df['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        undisputed_df['Status'] = 'Undisputed'
+        
+        # Display the table
+        st.dataframe(
+            undisputed_df[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
+                columns={
+                    'date': 'Date', 
+                    'point': 'Event', 
+                    'party': 'Party', 
+                    'argId': 'Argument ID', 
+                    'argTitle': 'Argument Title',
+                    'exhibits': 'Exhibits'
+                }
+            ),
+            use_container_width=True
+        )
+        
+        # Add download link
+        st.markdown(get_csv_download_link(undisputed_df, "undisputed_facts.csv", "Download Undisputed Facts CSV"), unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

@@ -404,18 +404,46 @@ def get_timeline_data():
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
-        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
-        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
-        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
-        {"id": "4", "name": "4. Answer to PM", "party": "Respondent"},
-        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
-        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
-        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},
-        {"id": "8", "name": "8. Challenge", "party": "Appellant"},
-        {"id": "9", "name": "ChatGPT", "party": "Shared"},
-        {"id": "10", "name": "Jurisprudence", "party": "Shared"},
-        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent"},
-        {"id": "12", "name": "Swiss Court", "party": "Shared"}
+        {
+            "id": "admissibility",
+            "name": "Admissibility Submissions",
+            "party": "Mixed",
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent"}
+            ]
+        },
+        {
+            "id": "procedural",
+            "name": "Procedural Motions",
+            "party": "Mixed",
+            "documents": [
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},
+                {"id": "11", "name": "11. Objection to Admissibility", "party": "Respondent"}
+            ]
+        },
+        {
+            "id": "merits",
+            "name": "Merits",
+            "party": "Mixed",
+            "documents": [
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
+                {"id": "8", "name": "8. Challenge", "party": "Appellant"}
+            ]
+        },
+        {
+            "id": "references",
+            "name": "References",
+            "party": "Shared",
+            "documents": [
+                {"id": "9", "name": "ChatGPT", "party": "Shared"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared"}
+            ]
+        }
     ]
 
 # Function to create CSV download link
@@ -1678,4 +1706,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

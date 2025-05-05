@@ -12,131 +12,230 @@ if 'view' not in st.session_state:
 
 # Get all facts from the data
 def get_all_facts():
-    # This function would normally use argument data, we'll just provide a sample structure
-    facts = [
+    args_data = get_argument_data()
+    facts = []
+    
+    # Helper function to extract facts from arguments
+    def extract_facts(arg, party):
+        if not arg:
+            return
+            
+        if 'factualPoints' in arg and arg['factualPoints']:
+            for point in arg['factualPoints']:
+                fact = {
+                    'point': point['point'],
+                    'date': point['date'],
+                    'isDisputed': point['isDisputed'],
+                    'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
+                    'exhibits': point.get('exhibits', []),
+                    'argId': arg['id'],
+                    'argTitle': arg['title']
+                }
+                facts.append(fact)
+                
+        # Process children
+        if 'children' in arg and arg['children']:
+            for child_id, child in arg['children'].items():
+                extract_facts(child, party)
+    
+    # Extract from claimant args
+    for arg_id, arg in args_data['claimantArgs'].items():
+        extract_facts(arg, 'Appellant')
+        
+    # Extract from respondent args
+    for arg_id, arg in args_data['respondentArgs'].items():
+        extract_facts(arg, 'Respondent')
+        
+    return facts
+
+# Get argument data
+def get_argument_data():
+    claimant_args = {
+        "1": {
+            "id": "1",
+            "title": "Sporting Succession",
+            "paragraphs": "15-18",
+            "overview": {
+                "points": [
+                    "Analysis of multiple established criteria",
+                    "Focus on continuous use of identifying elements",
+                    "Public recognition assessment"
+                ],
+                "paragraphs": "15-16"
+            },
+            "factualPoints": [
+                {
+                    "point": "Continuous operation under same name since 1950",
+                    "date": "1950-present",
+                    "isDisputed": False,
+                    "paragraphs": "18-19",
+                    "exhibits": ["C-1"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-1",
+                    "title": "Historical Registration Documents",
+                    "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
+                    "citations": ["20", "21", "24"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "CAS 2016/A/4576",
+                    "title": "Criteria for sporting succession",
+                    "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
+                    "paragraphs": "45-48",
+                    "citedParagraphs": ["45", "46", "47"]
+                }
+            ],
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis",
+                    "paragraphs": "20-45",
+                    "overview": {
+                        "points": [
+                            "Historical continuity of name usage",
+                            "Legal protection of naming rights",
+                            "Public recognition of club name"
+                        ],
+                        "paragraphs": "20-21"
+                    },
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26",
+                                    "exhibits": ["C-2"]
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30",
+                                    "exhibits": ["C-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52",
+                            "exhibits": ["C-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57",
+                                    "exhibits": ["C-5"]
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59",
+                                    "exhibits": ["C-5"]
+                                }
+                            ],
+                            "children": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    respondent_args = {
+        "1": {
+            "id": "1",
+            "title": "Sporting Succession Rebuttal",
+            "paragraphs": "200-218",
+            "overview": {
+                "points": [
+                    "Challenge to claimed continuity of operations",
+                    "Analysis of discontinuities in club operations",
+                    "Dispute over public recognition factors"
+                ],
+                "paragraphs": "200-202"
+            },
+            "factualPoints": [
+                {
+                    "point": "Operations ceased between 1975-1976",
+                    "date": "1975-1976",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "206-207",
+                    "exhibits": ["R-1"]
+                }
+            ],
+            "children": {}
+        }
+    }
+    
+    topics = [
         {
-            'point': "Continuous operation under same name since 1950",
-            'date': "1950-present",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "18-19",
-            'exhibits': ["C-1"],
-            'argId': "1",
-            'argTitle': "Sporting Succession"
-        },
-        {
-            'point': "Initial registration in 1950",
-            'date': "1950",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "25-26",
-            'exhibits': ["C-2"],
-            'argId': "1.1.1",
-            'argTitle': "Registration History"
-        },
-        {
-            'point': "Brief administrative gap in 1975-1976",
-            'date': "1975-1976",
-            'isDisputed': True,
-            'party': "Appellant",
-            'paragraphs': "29-30",
-            'exhibits': ["C-2"],
-            'argId': "1.1.1",
-            'argTitle': "Registration History"
-        },
-        {
-            'point': "Consistent use of blue and white since founding",
-            'date': "1950-present",
-            'isDisputed': True,
-            'party': "Appellant",
-            'paragraphs': "51-52",
-            'exhibits': ["C-4"],
-            'argId': "1.2",
-            'argTitle': "Club Colors Analysis"
-        },
-        {
-            'point': "Minor shade variations do not affect continuity",
-            'date': "1970-1980",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "56-57",
-            'exhibits': ["C-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Variations Analysis"
-        },
-        {
-            'point': "Temporary third color addition in 1980s",
-            'date': "1982-1988",
-            'isDisputed': False,
-            'party': "Appellant",
-            'paragraphs': "58-59",
-            'exhibits': ["C-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Variations Analysis"
-        },
-        {
-            'point': "Operations ceased between 1975-1976",
-            'date': "1975-1976",
-            'isDisputed': True,
-            'party': "Respondent",
-            'paragraphs': "206-207",
-            'exhibits': ["R-1"],
-            'argId': "1",
-            'argTitle': "Sporting Succession Rebuttal"
-        },
-        {
-            'point': "Registration formally terminated on April 30, 1975",
-            'date': "April 30, 1975",
-            'isDisputed': False,
-            'party': "Respondent",
-            'paragraphs': "226-227",
-            'exhibits': ["R-2"],
-            'argId': "1.1.1",
-            'argTitle': "Registration Gap Evidence"
-        },
-        {
-            'point': "New entity registered on September 15, 1976",
-            'date': "September 15, 1976",
-            'isDisputed': False,
-            'party': "Respondent",
-            'paragraphs': "228-229",
-            'exhibits': ["R-2"],
-            'argId': "1.1.1",
-            'argTitle': "Registration Gap Evidence"
-        },
-        {
-            'point': "Significant color scheme change in 1976",
-            'date': "1976",
-            'isDisputed': True,
-            'party': "Respondent",
-            'paragraphs': "245-246",
-            'exhibits': ["R-4"],
-            'argId': "1.2",
-            'argTitle': "Club Colors Analysis Rebuttal"
-        },
-        {
-            'point': "Pre-1976 colors represented original city district",
-            'date': "1950-1975",
-            'isDisputed': False,
-            'party': "Respondent",
-            'paragraphs': "247",
-            'exhibits': ["R-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Changes Analysis"
-        },
-        {
-            'point': "Post-1976 colors represented new ownership region",
-            'date': "1976-present",
-            'isDisputed': True,
-            'party': "Respondent",
-            'paragraphs': "248-249",
-            'exhibits': ["R-5"],
-            'argId': "1.2.1",
-            'argTitle': "Color Changes Analysis"
+            "id": "topic-1",
+            "title": "Sporting Succession and Identity",
+            "description": "Questions of club identity, continuity, and succession rights",
+            "argumentIds": ["1"]
         }
     ]
     
-    return facts
+    return {
+        "claimantArgs": claimant_args,
+        "respondentArgs": respondent_args,
+        "topics": topics
+    }
 
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
@@ -147,9 +246,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Main app
 def main():
-    # Get facts data
-    facts_data = get_all_facts()
-    
     # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
         # Add the logo and CaseLens text
@@ -204,111 +300,52 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Facts page
+    # Facts page content
     if st.session_state.view == "Facts":
         st.title("Case Facts")
+        
+        # Get facts data
+        facts_data = get_all_facts()
         
         # Create tabs for filtering facts
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
         
-        # Convert facts list to dataframe
+        # Prepare dataframe
         facts_df = pd.DataFrame(facts_data)
         
-        # Create custom styling for the dataframe
-        def highlight_disputed(val):
-            if val == True:
-                return 'background-color: rgba(229, 62, 62, 0.1); color: #e53e3e;'
-            else:
-                return ''
+        # Add styling for disputed vs undisputed rows
+        def highlight_disputed(row):
+            if row['isDisputed']:
+                return ['background-color: rgba(229, 62, 62, 0.05)'] * len(row)
+            return [''] * len(row)
         
         with tab1:
-            # Display all facts
-            st.header("All Facts")
-            
-            # Create downloadable CSV link
-            st.markdown(get_csv_download_link(facts_df, "all_facts.csv", "Download All Facts CSV"), unsafe_allow_html=True)
-            
-            # Display dataframe with styled rows
-            styled_df = facts_df.style.applymap(lambda x: highlight_disputed(x), subset=['isDisputed'])
-            st.dataframe(styled_df)
-            
+            # Show all facts
+            if not facts_df.empty:
+                styled_df = facts_df.style.apply(highlight_disputed, axis=1)
+                st.dataframe(styled_df)
+                st.markdown(get_csv_download_link(facts_df, "facts.csv"), unsafe_allow_html=True)
+        
         with tab2:
-            # Display only disputed facts
-            st.header("Disputed Facts")
-            
-            # Filter for disputed facts
-            disputed_facts = facts_df[facts_df['isDisputed'] == True]
-            
-            # Create downloadable CSV link
-            st.markdown(get_csv_download_link(disputed_facts, "disputed_facts.csv", "Download Disputed Facts CSV"), unsafe_allow_html=True)
-            
-            # Display dataframe with styled rows
-            styled_disputed = disputed_facts.style.applymap(lambda x: highlight_disputed(x), subset=['isDisputed'])
-            st.dataframe(styled_disputed)
-            
+            # Show only disputed facts
+            if not facts_df.empty:
+                disputed_df = facts_df[facts_df['isDisputed'] == True]
+                if not disputed_df.empty:
+                    styled_disputed = disputed_df.style.apply(highlight_disputed, axis=1)
+                    st.dataframe(styled_disputed)
+                    st.markdown(get_csv_download_link(disputed_df, "disputed_facts.csv"), unsafe_allow_html=True)
+                else:
+                    st.info("No disputed facts found.")
+        
         with tab3:
-            # Display only undisputed facts
-            st.header("Undisputed Facts")
-            
-            # Filter for undisputed facts
-            undisputed_facts = facts_df[facts_df['isDisputed'] == False]
-            
-            # Create downloadable CSV link
-            st.markdown(get_csv_download_link(undisputed_facts, "undisputed_facts.csv", "Download Undisputed Facts CSV"), unsafe_allow_html=True)
-            
-            # Display dataframe with styled rows
-            st.dataframe(undisputed_facts)
-            
-        # Add a section to display facts by party
-        st.header("Facts by Party")
-        party_option = st.selectbox(
-            "Select Party", 
-            ["All", "Appellant", "Respondent"]
-        )
-        
-        if party_option == "All":
-            party_facts = facts_df
-        else:
-            party_facts = facts_df[facts_df['party'] == party_option]
-        
-        st.dataframe(party_facts)
-        
-        # Add a section for evidence analysis
-        st.header("Evidence Analysis")
-        
-        # Count facts by exhibit
-        exhibit_counts = {}
-        for fact in facts_data:
-            if 'exhibits' in fact and fact['exhibits']:
-                for exhibit in fact['exhibits']:
-                    if exhibit in exhibit_counts:
-                        exhibit_counts[exhibit] += 1
-                    else:
-                        exhibit_counts[exhibit] = 1
-        
-        # Convert to dataframe
-        exhibit_df = pd.DataFrame([{"Exhibit": k, "Fact Count": v} for k, v in exhibit_counts.items()])
-        st.dataframe(exhibit_df)
-        
-        # Visualize with a bar chart
-        st.bar_chart(exhibit_df.set_index('Exhibit'))
-        
-        # Add export buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            st.download_button(
-                label="Export as PDF",
-                data="PDF export would go here",
-                file_name="case_facts.pdf",
-                mime="application/pdf",
-            )
-        with col2:
-            st.download_button(
-                label="Export as Word",
-                data="Word export would go here",
-                file_name="case_facts.docx",
-                mime="application/msword",
-            )
+            # Show only undisputed facts
+            if not facts_df.empty:
+                undisputed_df = facts_df[facts_df['isDisputed'] == False]
+                if not undisputed_df.empty:
+                    st.dataframe(undisputed_df)
+                    st.markdown(get_csv_download_link(undisputed_df, "undisputed_facts.csv"), unsafe_allow_html=True)
+                else:
+                    st.info("No undisputed facts found.")
 
 if __name__ == "__main__":
     main()

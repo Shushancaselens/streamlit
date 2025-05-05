@@ -255,6 +255,58 @@ def get_all_facts():
         
     return facts
 
+def get_timeline_data():
+    return [
+        {
+            "date": "2023-01-15",
+            "appellantVersion": "Contract signed with Club",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-20",
+            "appellantVersion": "Player received notification of exclusion from team",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-03-22",
+            "appellantVersion": "Player requested explanation",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-01",
+            "appellantVersion": "Player sent termination letter",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-05",
+            "appellantVersion": "—",
+            "respondentVersion": "Club rejected termination as invalid",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-04-10",
+            "appellantVersion": "Player was denied access to training facilities",
+            "respondentVersion": "—",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-04-15",
+            "appellantVersion": "—",
+            "respondentVersion": "Club issued warning letter",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-05-01",
+            "appellantVersion": "Player filed claim with FIFA",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        }
+    ]
+
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
@@ -285,11 +337,13 @@ def main():
     args_data = get_argument_data()
     facts_data = get_all_facts()
     document_sets = get_document_sets()
+    timeline_data = get_timeline_data()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
+    timeline_json = json.dumps(timeline_data)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -652,6 +706,57 @@ def main():
                 .chevron.expanded {{
                     transform: rotate(90deg);
                 }}
+                
+                /* Timeline styling */
+                .timeline-container {{
+                    margin-top: 20px;
+                }}
+                
+                .timeline-card {{
+                    position: relative;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    border-left: 4px solid #4299e1;
+                }}
+                
+                .timeline-card.disputed {{
+                    border-left-color: #e53e3e;
+                }}
+                
+                .timeline-date {{
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    color: #4299e1;
+                }}
+                
+                .timeline-versions {{
+                    display: flex;
+                    gap: 20px;
+                }}
+                
+                .timeline-version {{
+                    flex: 1;
+                    padding: 12px;
+                    background-color: #f8f9fa;
+                    border-radius: 6px;
+                }}
+                
+                .timeline-version-title {{
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                }}
+                
+                .timeline-version-content {{
+                    color: #4a5568;
+                }}
+                
+                .timeline-status {{
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                }}
             </style>
         </head>
         <body>
@@ -689,6 +794,7 @@ def main():
                     
                     <div class="view-toggle">
                         <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Admissibility Submissions</button>
                     </div>
                     
@@ -715,6 +821,11 @@ def main():
                         </table>
                     </div>
                     
+                    <!-- Timeline View -->
+                    <div id="timeline-view-content" class="facts-content" style="display: none;">
+                        <div id="timeline-container"></div>
+                    </div>
+                    
                     <!-- Document Sets View -->
                     <div id="docset-view-content" class="facts-content" style="display: none;">
                         <div id="document-sets-container"></div>
@@ -726,23 +837,38 @@ def main():
                 // Initialize data
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
+                const timelineData = {timeline_json};
                 
-                // Switch view between table and document sets
+                // Switch view between table, timeline, and document sets
                 function switchView(viewType) {{
                     const tableBtn = document.getElementById('table-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
                     const docsetBtn = document.getElementById('docset-view-btn');
+                    
                     const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
+                    
+                    // Hide all content
+                    tableContent.style.display = 'none';
+                    timelineContent.style.display = 'none';
+                    docsetContent.style.display = 'none';
+                    
+                    // Activate the selected view
                     if (viewType === 'table') {{
                         tableBtn.classList.add('active');
-                        docsetBtn.classList.remove('active');
                         tableContent.style.display = 'block';
-                        docsetContent.style.display = 'none';
-                    }} else {{
-                        tableBtn.classList.remove('active');
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
+                        timelineContent.style.display = 'block';
+                        renderTimeline();
+                    }} else if (viewType === 'docset') {{
                         docsetBtn.classList.add('active');
-                        tableContent.style.display = 'none';
                         docsetContent.style.display = 'block';
                         renderDocumentSets();
                     }}
@@ -752,24 +878,65 @@ def main():
                 function copyAllContent() {{
                     let contentToCopy = '';
                     
-                    // Get the table data
-                    const table = document.querySelector('.table-view');
-                    const headers = Array.from(table.querySelectorAll('th'))
-                        .map(th => th.textContent.trim())
-                        .join('\\t');
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
                     
-                    contentToCopy += 'Case Facts\\n\\n';
-                    contentToCopy += headers + '\\n';
-                    
-                    // Get rows based on current view
-                    const rows = table.querySelectorAll('tbody tr');
-                    rows.forEach(row => {{
-                        const rowText = Array.from(row.querySelectorAll('td'))
-                            .map(td => td.textContent.trim())
+                    if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
                             .join('\\t');
                         
-                        contentToCopy += rowText + '\\n';
-                    }});
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Copy timeline data
+                        contentToCopy += 'Case Timeline\\n\\n';
+                        
+                        timelineData.forEach(item => {{
+                            contentToCopy += `Date: ${{item.date}}\\n`;
+                            contentToCopy += `Status: ${{item.status}}\\n`;
+                            if (item.appellantVersion && item.appellantVersion !== '—') {{
+                                contentToCopy += `Appellant Version: ${{item.appellantVersion}}\\n`;
+                            }}
+                            if (item.respondentVersion && item.respondentVersion !== '—') {{
+                                contentToCopy += `Respondent Version: ${{item.respondentVersion}}\\n`;
+                            }}
+                            contentToCopy += '\\n';
+                        }});
+                    }} else {{
+                        // Copy document sets data (just a basic representation)
+                        contentToCopy += 'Case Facts by Document\\n\\n';
+                        
+                        // This is a simplified version since the full structure would be complex
+                        const docsetContainers = document.querySelectorAll('.docset-container');
+                        docsetContainers.forEach(container => {{
+                            const header = container.querySelector('.docset-header');
+                            const title = header.querySelector('span').textContent;
+                            contentToCopy += `=== ${{title}} ===\\n`;
+                            
+                            // Get facts from this document
+                            const tableFacts = container.querySelectorAll('tbody tr');
+                            tableFacts.forEach(fact => {{
+                                const cells = Array.from(fact.querySelectorAll('td'));
+                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
+                            }});
+                            
+                            contentToCopy += '\\n';
+                        }});
+                    }}
                     
                     // Create a temporary textarea to copy the content
                     const textarea = document.createElement('textarea');
@@ -792,33 +959,58 @@ def main():
                 function exportAsCsv() {{
                     let contentToCsv = '';
                     
-                    // Get the table data
-                    const table = document.querySelector('.table-view');
-                    const headers = Array.from(table.querySelectorAll('th'))
-                        .map(th => th.textContent.trim())
-                        .join(',');
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
                     
-                    contentToCsv += headers + '\\n';
-                    
-                    // Get rows
-                    const rows = table.querySelectorAll('tbody tr');
-                    rows.forEach(row => {{
-                        const rowText = Array.from(row.querySelectorAll('td'))
-                            .map(td => '\"' + td.textContent.trim() + '\"')
+                    if (tableContent.style.display !== 'none') {{
+                        // Export table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
                             .join(',');
                         
-                        contentToCsv += rowText + '\\n';
-                    }});
-                    
-                    // Create link for CSV download
-                    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                    const encodedUri = csvContent;
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", "facts.csv");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                        contentToCsv += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => '\"' + td.textContent.trim() + '\"')
+                                .join(',');
+                            
+                            contentToCsv += rowText + '\\n';
+                        }});
+                        
+                        // Create link for CSV download
+                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
+                        const encodedUri = csvContent;
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "facts.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Export timeline data
+                        let headers = "Date,Appellant Version,Respondent Version,Status\\n";
+                        let rows = '';
+                        
+                        timelineData.forEach(item => {{
+                            rows += `"${{item.date}}","${{item.appellantVersion}}","${{item.respondentVersion}}","${{item.status}}"\\n`;
+                        }});
+                        
+                        const csvContent = headers + rows;
+                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "timeline.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else {{
+                        alert("CSV export for document sets view is not implemented yet.");
+                    }}
                 }}
                 
                 function exportAsPdf() {{
@@ -852,9 +1044,16 @@ def main():
                         renderFacts('undisputed');
                     }}
                     
-                    // Also update doc sets view if it's active
+                    // Update active view
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
-                    if (docsetContent.style.display !== 'none') {{
+                    
+                    if (tableContent.style.display !== 'none') {{
+                        renderFacts(tabType);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        renderTimeline(tabType);
+                    }} else if (docsetContent.style.display !== 'none') {{
                         renderDocumentSets(tabType);
                     }}
                 }}
@@ -909,6 +1108,84 @@ def main():
                     }} else {{
                         content.style.display = 'none';
                         chevron.style.transform = 'rotate(0deg)';
+                    }}
+                }}
+                
+                // Render timeline view
+                function renderTimeline(tabType = 'all') {{
+                    const container = document.getElementById('timeline-container');
+                    container.innerHTML = '';
+                    
+                    // Filter timeline data based on tab type
+                    let filteredData = timelineData;
+                    if (tabType === 'disputed') {{
+                        filteredData = timelineData.filter(item => item.status === 'Disputed');
+                    }} else if (tabType === 'undisputed') {{
+                        filteredData = timelineData.filter(item => item.status === 'Undisputed');
+                    }}
+                    
+                    // Sort by date
+                    filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    // Create timeline cards
+                    filteredData.forEach(item => {{
+                        const timelineCard = document.createElement('div');
+                        timelineCard.className = `timeline-card ${{item.status.toLowerCase()}}`;
+                        
+                        // Add date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'timeline-date';
+                        dateEl.textContent = item.date;
+                        timelineCard.appendChild(dateEl);
+                        
+                        // Add versions
+                        const versionsEl = document.createElement('div');
+                        versionsEl.className = 'timeline-versions';
+                        
+                        // Appellant version
+                        const appellantEl = document.createElement('div');
+                        appellantEl.className = 'timeline-version';
+                        appellantEl.innerHTML = `
+                            <div class="timeline-version-title">
+                                <span class="badge appellant-badge">Appellant</span>
+                            </div>
+                            <div class="timeline-version-content">
+                                ${{item.appellantVersion !== '—' ? item.appellantVersion : 'No version provided'}}
+                            </div>
+                        `;
+                        versionsEl.appendChild(appellantEl);
+                        
+                        // Respondent version
+                        const respondentEl = document.createElement('div');
+                        respondentEl.className = 'timeline-version';
+                        respondentEl.innerHTML = `
+                            <div class="timeline-version-title">
+                                <span class="badge respondent-badge">Respondent</span>
+                            </div>
+                            <div class="timeline-version-content">
+                                ${{item.respondentVersion !== '—' ? item.respondentVersion : 'No version provided'}}
+                            </div>
+                        `;
+                        versionsEl.appendChild(respondentEl);
+                        
+                        timelineCard.appendChild(versionsEl);
+                        
+                        // Add status
+                        const statusEl = document.createElement('div');
+                        statusEl.className = 'timeline-status';
+                        if (item.status === 'Disputed') {{
+                            statusEl.innerHTML = `<span class="badge disputed-badge">Disputed</span>`;
+                        }} else {{
+                            statusEl.textContent = 'Undisputed';
+                        }}
+                        timelineCard.appendChild(statusEl);
+                        
+                        container.appendChild(timelineCard);
+                    }});
+                    
+                    // If no events found
+                    if (filteredData.length === 0) {{
+                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
                     }}
                 }}
                 

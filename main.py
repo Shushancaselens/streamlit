@@ -418,7 +418,7 @@ def get_timeline_data():
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
-    # Return grouped document sets with combined folder names
+    # Return grouped document sets with individual document subfolders
     return [
         {
             "id": "appeal",
@@ -427,20 +427,10 @@ def get_document_sets():
             "category": "Appeal",
             "isGroup": True,
             "documents": [
-                {
-                    "id": "appeal_combined",
-                    "name": "1. Statement of Appeal and 2. Request for a Stay and 5. Appeal Brief",
-                    "party": "Appellant",
-                    "category": "Appeal",
-                    "combinedDocs": ["1", "2", "5"]
-                },
-                {
-                    "id": "jurisprudence",
-                    "name": "Jurisprudence",
-                    "party": "Shared",
-                    "category": "Appeal",
-                    "combinedDocs": ["10"]
-                }
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
             ]
         },
         {
@@ -450,13 +440,8 @@ def get_document_sets():
             "category": "provisional messier",
             "isGroup": True,
             "documents": [
-                {
-                    "id": "provisional_answers",
-                    "name": "3. Answer to Request for PM and 4. Answer to PM",
-                    "party": "Respondent",
-                    "category": "provisional messier",
-                    "combinedDocs": ["3", "4"]
-                }
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
             ]
         },
         {
@@ -466,13 +451,9 @@ def get_document_sets():
             "category": "admissibility",
             "isGroup": True,
             "documents": [
-                {
-                    "id": "admissibility_combined",
-                    "name": "6. Brief on Admissibility and 7. Reply to Objection to Admissibility and 11. Objection to Admissibility",
-                    "party": "Mixed",
-                    "category": "admissibility",
-                    "combinedDocs": ["6", "7", "11"]
-                }
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
             ]
         },
         {
@@ -482,13 +463,9 @@ def get_document_sets():
             "category": "challenge",
             "isGroup": True,
             "documents": [
-                {
-                    "id": "challenge_combined",
-                    "name": "8. Challenge and ChatGPT and Swiss Court",
-                    "party": "Mixed",
-                    "category": "challenge",
-                    "combinedDocs": ["8", "9", "12"]
-                }
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
             ]
         }
     ]

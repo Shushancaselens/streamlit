@@ -926,7 +926,7 @@ def main():
                     
                     // For demo purposes, distribute facts randomly among document sets
                     // In a real app, this would come from actual document data
-                    const docsWithFacts = {};
+                    const docsWithFacts = {{}};
                     
                     // Distribute facts to document sets (simulation)
                     filteredFacts.forEach((fact, index) => {{
@@ -941,10 +941,10 @@ def main():
                         if (possibleDocs.length > 0) {{
                             const selectedDoc = possibleDocs[index % possibleDocs.length];
                             if (!docsWithFacts[selectedDoc.id]) {{
-                                docsWithFacts[selectedDoc.id] = {
+                                docsWithFacts[selectedDoc.id] = {{
                                     docset: selectedDoc,
                                     facts: []
-                                };
+                                }};
                             }}
                             docsWithFacts[selectedDoc.id].facts.push(fact);
                         }}

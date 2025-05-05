@@ -273,43 +273,118 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* Timeline and event styles */
-    .event-counter {
-        font-size: 0.8em;
-        color: #666;
-        margin-left: 5px;
+    /* Visual Timeline Styles */
+    .visual-timeline-container {
+        position: relative;
+        margin: 40px 0;
+        overflow-x: auto;
+        overflow-y: visible;
+        min-height: 300px;
+        padding: 50px 0;
+        background-color: #fff;
     }
-    .timeline-container {
-        max-height: 600px;
-        overflow-y: auto;
-        padding-right: 10px;
-    }
-    .compact-timeline .timeline-item {
-        padding-bottom: 8px;
-        margin-bottom: 5px;
-    }
-    .timeline-connector {
+    
+    .timeline-axis {
         position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background-color: #ddd;
-        z-index: -1;
+        top: 150px;
+        left: 50px;
+        right: 50px;
+        height: 2px;
+        background-color: #4285f4;
+        border-radius: 2px;
     }
-    .timeline-event-compact {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 5px;
+    
+    .timeline-event {
+        position: absolute;
+        transform: translateX(-50%);
+        width: 200px;
+        cursor: pointer;
+        transition: z-index 0.3s ease;
     }
-    .timeline-date-compact {
-        width: 120px;
-        flex-shrink: 0;
+    
+    .timeline-event:hover {
+        z-index: 100;
+    }
+    
+    .timeline-event-dot {
+        position: absolute;
+        top: 144px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid #4285f4;
+        background-color: white;
+        z-index: 2;
+    }
+    
+    .timeline-event-content {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        font-size: 0.85em;
+        z-index: 1;
+    }
+    
+    .timeline-event-above {
+        bottom: 170px;
+    }
+    
+    .timeline-event-below {
+        top: 170px;
+    }
+    
+    .timeline-event-date {
+        font-weight: bold;
+        color: #4285f4;
+        margin-bottom: 4px;
+    }
+    
+    .timeline-event-title {
         font-weight: 500;
-        font-size: 0.9em;
+        margin-bottom: 4px;
     }
-    .timeline-content-compact {
-        flex-grow: 1;
+    
+    .timeline-event-details {
+        display: flex;
+        gap: 5px;
+        margin-top: 4px;
+    }
+    
+    .timeline-year-marker {
+        position: absolute;
+        top: 160px;
+        transform: translateX(-50%);
+        text-align: center;
+        font-weight: bold;
+        color: #666;
+    }
+    
+    .timeline-year-tick {
+        position: absolute;
+        top: 148px;
+        transform: translateX(-50%);
+        width: 1px;
+        height: 6px;
+        background-color: #666;
+    }
+    
+    .timeline-connector-line {
+        position: absolute;
+        bottom: 144px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 1px;
+        background-color: #ccc;
+    }
+    
+    .timeline-connector-line-below {
+        top: 156px;
+        bottom: auto;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -645,58 +720,89 @@ with tab2:
     else:
         # Check which view mode is selected
         if view_mode == "All Facts Together":
-            # Display all facts together in timeline format
-            st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
+            # Create visual timeline display
             
-            # Sort all events by date
-            all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
+            # Calculate timeline dimensions
+            earliest_date = min(all_events, key=lambda x: x["datetime"])["datetime"]
+            latest_date = max(all_events, key=lambda x: x["datetime"])["datetime"]
+            timeline_width = 1200  # Minimum width
             
-            # Display each event in timeline format
-            for event in all_events_sorted:
-                # Format the date range
-                if event["end_date"]:
-                    date_display = f"{event['date']} to {event['end_date']}"
-                else:
-                    date_display = event["date"]
+            # Calculate time span in days
+            time_span = (latest_date - earliest_date).days + 1
+            if time_span < 365:  # If less than a year, extend timeline to at least a year
+                time_span = 365
+            
+            # Scale the timeline 
+            pixel_per_day = timeline_width / time_span
+            
+            st.markdown(f"<div class='visual-timeline-container' style='width: {timeline_width}px;'>", unsafe_allow_html=True)
+            
+            # Add year markers
+            year_range = range(earliest_date.year, latest_date.year + 1)
+            for year in year_range:
+                year_date = pd.Timestamp(f"{year}-01-01")
+                if year_date >= earliest_date and year_date <= latest_date:
+                    year_pixel = (year_date - earliest_date).days * pixel_per_day + 50
+                    st.markdown(f"""
+                        <div class="timeline-year-tick" style="left: {year_pixel}px;"></div>
+                        <div class="timeline-year-marker" style="left: {year_pixel}px;">{year}</div>
+                    """, unsafe_allow_html=True)
+            
+            # Add the axis line
+            st.markdown('<div class="timeline-axis"></div>', unsafe_allow_html=True)
+            
+            # Sort events and add to timeline
+            events_with_position = []
+            for i, event in enumerate(sorted(all_events, key=lambda x: x["datetime"])):
+                event_position = (event["datetime"] - earliest_date).days * pixel_per_day + 50
+                events_with_position.append((event, event_position))
+            
+            # Alternate events above and below the timeline to prevent overlap
+            for i, (event, pos) in enumerate(events_with_position):
+                is_above = i % 2 == 0
+                position_class = "timeline-event-above" if is_above else "timeline-event-below"
+                connector_class = "" if is_above else "timeline-connector-line-below"
                 
-                # Format status
+                # Format the date
+                event_date = event["date"]
+                if event["end_date"]:
+                    event_date += f" - {event['end_date']}"
+                
+                # Format status and party
                 status_class = ""
                 if event["status"] == "Disputed":
                     status_class = "disputed"
                 elif event["status"] == "Undisputed":
                     status_class = "undisputed"
                 
-                # Format party
                 party_class = ""
                 if event["party"] == "Appellant":
                     party_class = "appellant"
                 elif event["party"] == "Respondent":
                     party_class = "respondent"
                 
-                # Create compact timeline item
-                timeline_html = f"""
-                <div class="timeline-event-compact">
-                    <div class="timeline-date-compact">{date_display}</div>
-                    <div class="timeline-content-compact">
-                        <strong>{event["event"]}</strong>
-                        <div style="margin-top: 2px;">
-                            <span class="party-tag {party_class}">{event["party"]}</span>
-                            <span class="status-tag {status_class}">{event["status"]}</span>
-                            <span class="evidence-tag">{event["evidence"]}</span>
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.9em;">
-                            {event["argument"]}
-                        </div>
-                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
-                            Source: {event["document"]}
+                content_height = 90 if is_above else 90
+                connector_height = 26 if is_above else 26
+                
+                st.markdown(f"""
+                    <div class="timeline-event" style="left: {pos}px;">
+                        <div class="timeline-event-dot"></div>
+                        <div class="timeline-connector-line {connector_class}" style="height: {connector_height}px;"></div>
+                        <div class="timeline-event-content {position_class}">
+                            <div class="timeline-event-date">{event_date}</div>
+                            <div class="timeline-event-title">{event["event"][:50]}{"..." if len(event["event"]) > 50 else ""}</div>
+                            <div class="timeline-event-details">
+                                <span class="party-tag {party_class}">{event["party"]}</span>
+                                <span class="status-tag {status_class}">{event["status"]}</span>
+                                <span class="evidence-tag">{event["evidence"]}</span>
+                            </div>
+                            <div style="margin-top: 4px; font-size: 0.8em; color: #666;">
+                                {event["document"][:40]}{"..." if len(event["document"]) > 40 else ""}
+                            </div>
                         </div>
                     </div>
-                </div>
-                """
-                st.markdown(timeline_html, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
             
-            st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             
         else:

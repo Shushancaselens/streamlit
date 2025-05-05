@@ -505,10 +505,10 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts HTML component
+            # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
-        html_content = f"""
+        html_content = """
         <!DOCTYPE html>
         <html>
         <head>
@@ -1039,9 +1039,9 @@ def main():
             
             <script>
                 // Initialize data
-                const factsData = {facts_json};
-                const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
+                const factsData = """ + json.dumps(facts_data) + """;
+                const documentSets = """ + json.dumps(document_sets) + """;
+                const timelineData = """ + json.dumps(timeline_data) + """;
                 
                 // Switch view between table, timeline, and document sets
                 function switchView(viewType) {{

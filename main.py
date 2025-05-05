@@ -273,7 +273,7 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* Vertical timeline with connecting lines */
+    /* Vertical timeline with events stacked completely vertically */
     .timeline-container {
         position: relative;
         max-height: 600px;
@@ -284,9 +284,7 @@ st.markdown("""
     
     .timeline-event-compact {
         position: relative;
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         padding-left: 20px;
     }
     
@@ -319,37 +317,44 @@ st.markdown("""
     }
     
     .timeline-date-compact {
-        width: 140px;
-        flex-shrink: 0;
-        font-weight: 500;
+        font-weight: bold;
+        color: #4285f4;
+        margin-bottom: 5px;
         font-size: 0.9em;
-        padding-right: 10px;
     }
     
     .timeline-content-compact {
-        flex-grow: 1;
         background-color: #f8f9fa;
-        padding: 8px 12px;
+        padding: 10px 15px;
         border-radius: 4px;
         border-left: 3px solid #4285f4;
     }
     
     .timeline-content-compact strong {
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        font-size: 1.05em;
     }
     
     .timeline-content-compact .details-row {
-        margin-top: 4px;
+        margin-top: 6px;
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .timeline-content-compact .argument-text {
+        margin-top: 6px;
+        font-size: 0.9em;
+        color: #555;
     }
     
     .timeline-content-compact .source-info {
-        margin-top: 4px;
-        font-size: 0.8em;
+        margin-top: 6px;
+        font-size: 0.85em;
         color: #666;
+        font-style: italic;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -713,7 +718,7 @@ with tab2:
                 elif event["party"] == "Respondent":
                     party_class = "respondent"
                 
-                # Create vertical timeline item with connecting lines
+                # Create vertical timeline item with everything stacked vertically
                 timeline_html = f"""
                 <div class="timeline-event-compact">
                     <div class="timeline-date-compact">{date_display}</div>
@@ -724,7 +729,7 @@ with tab2:
                             <span class="status-tag {status_class}">{event["status"]}</span>
                             <span class="evidence-tag">{event["evidence"]}</span>
                         </div>
-                        <div style="margin-top: 4px; font-size: 0.9em;">
+                        <div class="argument-text">
                             {event["argument"]}
                         </div>
                         <div class="source-info">

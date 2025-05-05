@@ -404,10 +404,18 @@ def get_timeline_data():
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
-        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
-        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
+        {
+            "id": "set1",
+            "name": "Appellant Admissibility Set",
+            "party": "Appellant",
+            "isSet": True,
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent"}
+            ]
+        },
         {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
-        {"id": "4", "name": "4. Answer to PM", "party": "Respondent"},
         {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
         {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
         {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},

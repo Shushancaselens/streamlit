@@ -404,8 +404,8 @@ def get_timeline_data():
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
-        # Grouped documents under "Admissibility Submissions"
-        {"id": "admissibility", "name": "Admissibility Submissions", "party": "Mixed", "isGroup": True, "documents": [
+        # Grouped documents under "Document Set Title"
+        {"id": "admissibility", "name": "Document Set Title", "party": "Mixed", "isGroup": True, "documents": [
             {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
             {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
             {"id": "4", "name": "4. Answer to PM", "party": "Respondent"}

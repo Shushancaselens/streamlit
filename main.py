@@ -1454,12 +1454,13 @@ def main():
                         factContent.textContent = fact.point;
                         bodyEl.appendChild(factContent);
                         
-                        // Related argument
+                        // Related argument and source
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
                         metaEl.innerHTML = `
                             <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
                             ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
+                            <span><strong>Source:</strong> ${{fact.source}}</span>
                         `;
                         bodyEl.appendChild(metaEl);
                         

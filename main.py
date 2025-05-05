@@ -371,70 +371,142 @@ st.markdown("""
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
 with tab1:
-    # Simple party filter buttons like in the screenshot
-    st.markdown("<div class='simple-filters'>", unsafe_allow_html=True)
-    
-    # Create a flex container for filters
+    # Improved filter section with better UX
     st.markdown("""
-    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
-        <div style='display: flex; gap: 10px;'>
+    <div class='filter-container'>
+        <div class='filter-row'>
+            <div style='flex: 1; max-width: 500px;'>
+                <div class='filter-label'>Filter by Party</div>
+                <div class='filter-group'>
     """, unsafe_allow_html=True)
     
-    # Party filter buttons
+    # Party filter buttons with improved styling
     col1, col2, col3 = st.columns([1, 1, 1], gap="small")
-    with col1:
-        both_parties = st.button("Both Parties", use_container_width=True, key="both1")
-    with col2:
-        appellant_only = st.button("Appellant Only", use_container_width=True, key="appellant1")
-    with col3:
-        respondent_only = st.button("Respondent Only", use_container_width=True, key="respondent1")
     
-    # Determine selected party
-    if appellant_only:
-        selected_party = "Appellant Only"
-    elif respondent_only:
-        selected_party = "Respondent Only"
-    else:
-        selected_party = "Both Parties"
-    
-    # Store selection
+    # Initialize session state for party selection
     if 'party_selection' not in st.session_state:
         st.session_state.party_selection = "Both Parties"
-    if both_parties or appellant_only or respondent_only:
-        st.session_state.party_selection = selected_party
+    
+    with col1:
+        if st.button("Both Parties", use_container_width=True, key="both1"):
+            st.session_state.party_selection = "Both Parties"
+    with col2:
+        if st.button("Appellant Only", use_container_width=True, key="appellant1"):
+            st.session_state.party_selection = "Appellant Only"
+    with col3:
+        if st.button("Respondent Only", use_container_width=True, key="respondent1"):
+            st.session_state.party_selection = "Respondent Only"
+    
     selected_party = st.session_state.party_selection
     
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # View mode buttons on the right
     st.markdown("""
-        <div class='view-mode-buttons'>
+                </div>
+            </div>
+            <div style='flex: 1; max-width: 300px;'>
+                <div class='filter-label'>Display Mode</div>
+                <div class='filter-group'>
     """, unsafe_allow_html=True)
     
-    # View mode toggle buttons
+    # View mode toggle buttons with improved styling
     col4, col5 = st.columns([1, 1], gap="small")
-    with col4:
-        detailed_view = st.button("Document Sets View", use_container_width=True, key="detailed1")
-    with col5:
-        table_view = st.button("Table View", use_container_width=True, key="table1")
     
-    # Determine selected view mode
-    if table_view:
-        view_mode = "Table View"
-    elif detailed_view:
-        view_mode = "Document Sets View"
-    else:
-        view_mode = "Table View"
-    
-    # Store selection
+    # Initialize session state for view mode
     if 'view_mode_selection' not in st.session_state:
         st.session_state.view_mode_selection = "Table View"
-    if detailed_view or table_view:
-        st.session_state.view_mode_selection = view_mode
+    
+    with col4:
+        if st.button("Document Sets", use_container_width=True, key="detailed1"):
+            st.session_state.view_mode_selection = "Document Sets View"
+    with col5:
+        if st.button("Table", use_container_width=True, key="table1"):
+            st.session_state.view_mode_selection = "Table View"
+    
     view_mode = st.session_state.view_mode_selection
     
-    st.markdown("</div></div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("""
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Visual feedback for selected buttons
+    if selected_party == "Both Parties":
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            let buttons = parent.document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Both Parties')) {
+                    btn.classList.add('selected-button');
+                } else if (btn.textContent.includes('Appellant Only') || btn.textContent.includes('Respondent Only')) {
+                    btn.classList.remove('selected-button');
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
+    elif selected_party == "Appellant Only":
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            let buttons = parent.document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Appellant Only')) {
+                    btn.classList.add('selected-button');
+                } else if (btn.textContent.includes('Both Parties') || btn.textContent.includes('Respondent Only')) {
+                    btn.classList.remove('selected-button');
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
+    elif selected_party == "Respondent Only":
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            let buttons = parent.document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Respondent Only')) {
+                    btn.classList.add('selected-button');
+                } else if (btn.textContent.includes('Both Parties') || btn.textContent.includes('Appellant Only')) {
+                    btn.classList.remove('selected-button');
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
+    
+    if view_mode == "Table View":
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            let buttons = parent.document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Table')) {
+                    btn.classList.add('selected-button');
+                } else if (btn.textContent.includes('Document Sets')) {
+                    btn.classList.remove('selected-button');
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            let buttons = parent.document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Document Sets')) {
+                    btn.classList.add('selected-button');
+                } else if (btn.textContent.includes('Table')) {
+                    btn.classList.remove('selected-button');
+                }
+            });
+        }, 100);
+        </script>
+        """, unsafe_allow_html=True)
     
     # Get the data and apply simple party filter
     filtered_facts = df_events.copy()
@@ -566,70 +638,64 @@ with tab1:
         st.info("No facts match the current filters.")
 
 with tab2:
-    # Simple party filter buttons like in the screenshot for Connected View
-    st.markdown("<div class='simple-filters'>", unsafe_allow_html=True)
-    
-    # Create a flex container for filters
+    # Improved filter section with better UX
     st.markdown("""
-    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
-        <div style='display: flex; gap: 10px;'>
+    <div class='filter-container'>
+        <div class='filter-row'>
+            <div style='flex: 1; max-width: 500px;'>
+                <div class='filter-label'>Filter by Party</div>
+                <div class='filter-group'>
     """, unsafe_allow_html=True)
     
-    # Party filter buttons
+    # Party filter buttons with improved styling
     col1, col2, col3 = st.columns([1, 1, 1], gap="small")
-    with col1:
-        both_parties = st.button("Both Parties", use_container_width=True, key="both2")
-    with col2:
-        appellant_only = st.button("Appellant Only", use_container_width=True, key="appellant2")
-    with col3:
-        respondent_only = st.button("Respondent Only", use_container_width=True, key="respondent2")
     
-    # Determine selected party
-    if appellant_only:
-        selected_party = "Appellant Only"
-    elif respondent_only:
-        selected_party = "Respondent Only"
-    else:
-        selected_party = "Both Parties"
-    
-    # Store selection
+    # Initialize session state for party selection
     if 'party_selection_tab2' not in st.session_state:
         st.session_state.party_selection_tab2 = "Both Parties"
-    if both_parties or appellant_only or respondent_only:
-        st.session_state.party_selection_tab2 = selected_party
+    
+    with col1:
+        if st.button("Both Parties", use_container_width=True, key="both2"):
+            st.session_state.party_selection_tab2 = "Both Parties"
+    with col2:
+        if st.button("Appellant Only", use_container_width=True, key="appellant2"):
+            st.session_state.party_selection_tab2 = "Appellant Only"
+    with col3:
+        if st.button("Respondent Only", use_container_width=True, key="respondent2"):
+            st.session_state.party_selection_tab2 = "Respondent Only"
+    
     selected_party = st.session_state.party_selection_tab2
     
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # View mode buttons on the right
     st.markdown("""
-        <div class='view-mode-buttons'>
+                </div>
+            </div>
+            <div style='flex: 1; max-width: 300px;'>
+                <div class='filter-label'>View Mode</div>
+                <div class='filter-group'>
     """, unsafe_allow_html=True)
     
-    # View mode toggle buttons
+    # View mode toggle buttons with improved styling
     col4, col5 = st.columns([1, 1], gap="small")
-    with col4:
-        detailed_view = st.button("Detailed View", use_container_width=True, key="detailed2")
-    with col5:
-        table_view = st.button("Table View", use_container_width=True, key="table2")
     
-    # Determine selected view mode
-    if table_view:
-        view_mode = "All Facts Together"
-    elif detailed_view:
-        view_mode = "By Document Sets"
-    else:
-        view_mode = "All Facts Together"
-    
-    # Store selection
+    # Initialize session state for view mode
     if 'view_mode_selection_tab2' not in st.session_state:
         st.session_state.view_mode_selection_tab2 = "All Facts Together"
-    if detailed_view or table_view:
-        st.session_state.view_mode_selection_tab2 = view_mode
+    
+    with col4:
+        if st.button("Document Sets", use_container_width=True, key="detailed2"):
+            st.session_state.view_mode_selection_tab2 = "By Document Sets"
+    with col5:
+        if st.button("Timeline", use_container_width=True, key="table2"):
+            st.session_state.view_mode_selection_tab2 = "All Facts Together"
+    
     view_mode = st.session_state.view_mode_selection_tab2
     
-    st.markdown("</div></div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("""
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Create a visualization showing documents and their connected events
     timeline_data = []

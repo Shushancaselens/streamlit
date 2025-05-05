@@ -1443,7 +1443,7 @@ def main():
                         metaEl.className = 'timeline-meta';
                         metaEl.innerHTML = `
                             <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? `<span><strong>Paragraphs:</strong> ${{fact.paragraphs}}</span>` : ''}
+                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
                         `;
                         bodyEl.appendChild(metaEl);
                         

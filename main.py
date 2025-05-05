@@ -1439,6 +1439,22 @@ def main():
                         factContent.textContent = fact.point;
                         bodyEl.appendChild(factContent);
                         
+                        // Source information
+                        const sourceEl = document.createElement('div');
+                        sourceEl.className = 'timeline-source';
+                        sourceEl.style.fontSize = '13px';
+                        sourceEl.style.color = '#4a5568';
+                        sourceEl.style.marginTop = '8px';
+                        sourceEl.style.fontStyle = 'italic';
+                        
+                        // Determine source based on exhibits and party
+                        let sourceText = `Source: ${fact.party}`;
+                        if (fact.exhibits && fact.exhibits.length > 0) {
+                            sourceText += ` (${fact.exhibits.join(', ')})`;
+                        }
+                        sourceEl.textContent = sourceText;
+                        bodyEl.appendChild(sourceEl);
+                        
                         // Related argument
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';

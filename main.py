@@ -255,16 +255,151 @@ def get_all_facts():
         
     return facts
 
-# Get fact timeline data
+# Get enhanced timeline data with additional events
 def get_timeline_data():
-    # Convert the facts to a timeline format
-    facts = get_all_facts()
+    # Create a richer set of timeline events
+    timeline_events = [
+        {
+            "point": "Club founded and officially registered in the Football Federation",
+            "date": "1950-01-12",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession"
+        },
+        {
+            "point": "First National Championship won",
+            "date": "1955-05-20",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-3"],
+            "argId": "1",
+            "argTitle": "Sporting Succession"
+        },
+        {
+            "point": "Club colors established as blue and white",
+            "date": "1956-03-10",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis"
+        },
+        {
+            "point": "First international competition participation",
+            "date": "1962-09-15",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-6"],
+            "argId": "1",
+            "argTitle": "Sporting Succession"
+        },
+        {
+            "point": "Minor variations in club color shades introduced",
+            "date": "1970-1980",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-5"],
+            "argId": "1.2.1",
+            "argTitle": "Color Variations Analysis"
+        },
+        {
+            "point": "Administrative operations halted due to financial difficulties",
+            "date": "1975-04-30",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence"
+        },
+        {
+            "point": "Operations ceased between 1975-1976",
+            "date": "1975-1976",
+            "isDisputed": True,
+            "party": "Respondent",
+            "exhibits": ["R-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession Rebuttal"
+        },
+        {
+            "point": "Club registration formally terminated",
+            "date": "1975-04-30",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence"
+        },
+        {
+            "point": "New entity registered with similar name",
+            "date": "1976-09-15",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence"
+        },
+        {
+            "point": "Significant color scheme change implemented",
+            "date": "1976-10-01",
+            "isDisputed": True,
+            "party": "Respondent",
+            "exhibits": ["R-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis Rebuttal"
+        },
+        {
+            "point": "Third color temporarily added to uniform",
+            "date": "1982-1988",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-5"],
+            "argId": "1.2.1",
+            "argTitle": "Color Variations Analysis"
+        },
+        {
+            "point": "Club won Continental Cup with post-1976 team",
+            "date": "1987-06-24",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-7"],
+            "argId": "1",
+            "argTitle": "Sporting Succession"
+        },
+        {
+            "point": "Return to original blue and white color scheme",
+            "date": "1989-08-12",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-8"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis"
+        },
+        {
+            "point": "Trademark registration for club name and emblem",
+            "date": "1995-11-30",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-9"],
+            "argId": "1.1",
+            "argTitle": "Club Name Analysis"
+        },
+        {
+            "point": "Federation officially recognizes club history spanning pre and post 1976",
+            "date": "2010-05-18",
+            "isDisputed": True,
+            "party": "Appellant",
+            "exhibits": ["C-10"],
+            "argId": "1",
+            "argTitle": "Sporting Succession"
+        }
+    ]
     
-    # Sort by date
-    facts.sort(key=lambda x: x['date'].split('-')[0])
+    # Sort events chronologically
+    timeline_events.sort(key=lambda x: x['date'])
     
-    # Return the facts (we'll use the same facts but just display them differently)
-    return facts
+    return timeline_events
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
@@ -672,97 +807,146 @@ def main():
                     transform: rotate(90deg);
                 }}
                 
-                /* Simple Timeline styling */
+                /* Enhanced Timeline styling */
+                .timeline-container {{
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 20px;
+                    position: relative;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }}
+                
                 .timeline-wrapper {{
                     position: relative;
-                    padding: 20px 0;
+                    margin-left: 20px;
                 }}
                 
                 .timeline-line {{
                     position: absolute;
+                    left: 0;
                     top: 0;
                     bottom: 0;
-                    left: 14px;
                     width: 4px;
-                    background-color: #e2e8f0;
-                    z-index: 1;
+                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
+                    border-radius: 4px;
                 }}
                 
                 .timeline-item {{
+                    display: flex;
+                    margin-bottom: 32px;
                     position: relative;
-                    padding-left: 50px;
-                    margin-bottom: 30px;
                 }}
                 
-                .timeline-dot {{
+                .timeline-point {{
                     position: absolute;
-                    left: 4px;
-                    top: 20px;
+                    left: -12px;
+                    top: 18px;
                     width: 24px;
                     height: 24px;
                     border-radius: 50%;
                     background-color: #4299e1;
-                    z-index: 2;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    border: 4px solid white;
+                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+                    z-index: 10;
                 }}
                 
-                .timeline-dot.disputed {{
+                .timeline-point.disputed {{
                     background-color: #e53e3e;
+                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
                 }}
                 
-                .timeline-dot::after {{
-                    content: "";
-                    display: block;
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 50%;
+                .timeline-content {{
+                    margin-left: 32px;
+                    flex-grow: 1;
                     background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+                    overflow: hidden;
+                    transition: all 0.2s;
+                }}
+                
+                .timeline-content:hover {{
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
+                }}
+                
+                .timeline-header {{
+                    padding: 12px 16px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: #f8fafc;
+                }}
+                
+                .timeline-header-disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
                 }}
                 
                 .timeline-date {{
-                    position: absolute;
-                    left: 40px;
-                    top: -10px;
+                    font-weight: 600;
+                    color: #1a202c;
+                }}
+                
+                .timeline-badges {{
+                    display: flex;
+                    gap: 6px;
+                }}
+                
+                .timeline-body {{
+                    padding: 16px;
+                }}
+                
+                .timeline-fact {{
+                    margin-bottom: 12px;
+                    font-size: 15px;
+                    color: #2d3748;
+                }}
+                
+                .timeline-footer {{
+                    padding: 12px 16px;
+                    background-color: #f8fafc;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    border-top: 1px solid #e2e8f0;
+                }}
+                
+                .timeline-meta {{
+                    font-size: 13px;
+                    color: #718096;
+                    margin-top: 8px;
+                }}
+                
+                .timeline-meta span {{
+                    display: inline-block;
+                    margin-right: 12px;
+                }}
+                
+                .timeline-year-marker {{
+                    display: flex;
+                    align-items: center;
+                    margin: 24px 0;
+                    position: relative;
+                }}
+                
+                .timeline-year {{
                     background-color: #4299e1;
                     color: white;
                     padding: 4px 12px;
                     border-radius: 16px;
-                    font-size: 14px;
-                    font-weight: 500;
-                    z-index: 2;
-                }}
-                
-                .timeline-date.disputed {{
-                    background-color: #e53e3e;
-                }}
-                
-                .timeline-content {{
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    padding: 20px;
-                    margin-top: 10px;
-                    border: 1px solid #e2e8f0;
-                }}
-                
-                .timeline-fact {{
-                    padding: 16px;
-                    margin-top: 10px;
+                    font-weight: 600;
                     position: relative;
+                    z-index: 10;
+                    margin-left: 32px;
                 }}
                 
-                .timeline-party {{
-                    position: absolute;
-                    top: 16px;
-                    right: 16px;
-                }}
-                
-                .timeline-exhibits {{
-                    margin-top: 12px;
-                    display: flex;
-                    gap: 6px;
+                .timeline-year-line {{
+                    flex-grow: 1;
+                    height: 2px;
+                    background-color: #e2e8f0;
+                    margin-left: 12px;
                 }}
             </style>
         </head>
@@ -830,9 +1014,11 @@ def main():
                     
                     <!-- Timeline View -->
                     <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div class="timeline-wrapper">
-                            <div class="timeline-line"></div>
-                            <div id="timeline-container"></div>
+                        <div class="timeline-container">
+                            <div class="timeline-wrapper">
+                                <div class="timeline-line"></div>
+                                <div id="timeline-events"></div>
+                            </div>
                         </div>
                     </div>
                     
@@ -917,9 +1103,17 @@ def main():
                         
                         const timelineItems = document.querySelectorAll('.timeline-item');
                         timelineItems.forEach(item => {{
-                            const date = item.querySelector('.timeline-date').textContent;
-                            const factText = item.querySelector('.timeline-fact').textContent.trim();
-                            contentToCopy += `${{date}}: ${{factText}}\\n\\n`;
+                            const dateEl = item.querySelector('.timeline-date');
+                            const factEl = item.querySelector('.timeline-fact');
+                            const partyEl = item.querySelector('.badge');
+                            
+                            if (dateEl && factEl) {{
+                                const date = dateEl.textContent.trim();
+                                const fact = factEl.textContent.trim();
+                                const party = partyEl ? partyEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
+                            }}
                         }});
                     }} else {{
                         // Copy document sets data (just a basic representation)
@@ -998,11 +1192,12 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Party,Status,Evidence\\n";
+                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
-                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{(item.exhibits || []).join(', ')}}"\\n`;
+                            const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
+                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1116,9 +1311,41 @@ def main():
                     }}
                 }}
                 
-                // Render simplified timeline view
+                // Format date for display
+                function formatDate(dateString) {{
+                    // If it's a range, just return it as is
+                    if (dateString.includes('-')) {{
+                        return dateString;
+                    }}
+                    
+                    // Try to parse as a date
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return dateString;
+                    }}
+                    
+                    // Format the date
+                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
+                    return date.toLocaleDateString(undefined, options);
+                }}
+                
+                // Helper to extract year from date
+                function getYear(dateString) {{
+                    if (dateString.includes('-')) {{
+                        return dateString.split('-')[0];
+                    }}
+                    
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return '';
+                    }}
+                    
+                    return date.getFullYear().toString();
+                }}
+                
+                // Render enhanced timeline view
                 function renderTimeline(tabType = 'all') {{
-                    const container = document.getElementById('timeline-container');
+                    const container = document.getElementById('timeline-events');
                     container.innerHTML = '';
                     
                     // Filter timeline data based on tab type
@@ -1137,70 +1364,108 @@ def main():
                         return new Date(dateA) - new Date(dateB);
                     }});
                     
+                    // Track years for year markers
+                    let currentYear = '';
+                    let prevYear = '';
+                    
                     // Create timeline items
                     filteredData.forEach(fact => {{
-                        const isDisputed = fact.isDisputed;
-                        
+                        // Get the year and check if we need a year marker
+                        currentYear = getYear(fact.date);
+                        if (currentYear && currentYear !== prevYear) {{
+                            // Add year marker
+                            const yearMarker = document.createElement('div');
+                            yearMarker.className = 'timeline-year-marker';
+                            yearMarker.innerHTML = `
+                                <div class="timeline-year">${{currentYear}}</div>
+                                <div class="timeline-year-line"></div>
+                            `;
+                            container.appendChild(yearMarker);
+                            prevYear = currentYear;
+                        }}
+                    
+                        // Create timeline item
                         const timelineItem = document.createElement('div');
                         timelineItem.className = 'timeline-item';
                         
-                        // Create timeline dot/marker
-                        const timelineDot = document.createElement('div');
-                        timelineDot.className = `timeline-dot ${{isDisputed ? 'disputed' : ''}}`;
-                        timelineItem.appendChild(timelineDot);
+                        // Create timeline point
+                        const timelinePoint = document.createElement('div');
+                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
+                        timelineItem.appendChild(timelinePoint);
                         
-                        // Create date badge
-                        const dateEl = document.createElement('div');
-                        dateEl.className = `timeline-date ${{isDisputed ? 'disputed' : ''}}`;
-                        dateEl.textContent = fact.date;
-                        timelineItem.appendChild(dateEl);
-                        
-                        // Create content container
+                        // Create timeline content
                         const contentEl = document.createElement('div');
                         contentEl.className = 'timeline-content';
                         
-                        // Create fact content
-                        const factContent = document.createElement('div');
-                        factContent.className = 'timeline-fact';
+                        // Create timeline header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
                         
-                        factContent.textContent = fact.point;
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'timeline-date';
+                        dateEl.textContent = formatDate(fact.date);
+                        headerEl.appendChild(dateEl);
                         
-                        // Add party badge
-                        const partyBadge = document.createElement('div');
-                        partyBadge.className = 'timeline-party';
-                        const badgeSpan = document.createElement('span');
-                        badgeSpan.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        badgeSpan.textContent = fact.party;
-                        partyBadge.appendChild(badgeSpan);
-                        factContent.appendChild(partyBadge);
+                        // Badges
+                        const badgesEl = document.createElement('div');
+                        badgesEl.className = 'timeline-badges';
                         
-                        // Add status badge if disputed
-                        if (isDisputed) {{
-                            const statusBadge = document.createElement('span');
-                            statusBadge.className = 'badge disputed-badge';
-                            statusBadge.style.marginLeft = '8px';
-                            statusBadge.textContent = 'Disputed';
-                            partyBadge.appendChild(statusBadge);
+                        // Party badge
+                        const partyBadge = document.createElement('span');
+                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                        partyBadge.textContent = fact.party;
+                        badgesEl.appendChild(partyBadge);
+                        
+                        // Disputed badge
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            badgesEl.appendChild(disputedBadge);
                         }}
                         
-                        // Add exhibits badges if any
+                        headerEl.appendChild(badgesEl);
+                        contentEl.appendChild(headerEl);
+                        
+                        // Create timeline body
+                        const bodyEl = document.createElement('div');
+                        bodyEl.className = 'timeline-body';
+                        
+                        // Fact content
+                        const factContent = document.createElement('div');
+                        factContent.className = 'timeline-fact';
+                        factContent.textContent = fact.point;
+                        bodyEl.appendChild(factContent);
+                        
+                        // Related argument
+                        const metaEl = document.createElement('div');
+                        metaEl.className = 'timeline-meta';
+                        metaEl.innerHTML = `
+                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
+                            ${{fact.paragraphs ? `<span><strong>Paragraphs:</strong> ${{fact.paragraphs}}</span>` : ''}
+                        `;
+                        bodyEl.appendChild(metaEl);
+                        
+                        contentEl.appendChild(bodyEl);
+                        
+                        // Add footer if there are exhibits
                         if (fact.exhibits && fact.exhibits.length > 0) {{
-                            const exhibitsDiv = document.createElement('div');
-                            exhibitsDiv.className = 'timeline-exhibits';
+                            const footerEl = document.createElement('div');
+                            footerEl.className = 'timeline-footer';
                             
+                            // Add exhibit badges
                             fact.exhibits.forEach(exhibitId => {{
                                 const exhibitBadge = document.createElement('span');
                                 exhibitBadge.className = 'badge exhibit-badge';
                                 exhibitBadge.textContent = exhibitId;
-                                exhibitsDiv.appendChild(exhibitBadge);
+                                footerEl.appendChild(exhibitBadge);
                             }});
                             
-                            factContent.appendChild(exhibitsDiv);
+                            contentEl.appendChild(footerEl);
                         }}
                         
-                        contentEl.appendChild(factContent);
                         timelineItem.appendChild(contentEl);
-                        
                         container.appendChild(timelineItem);
                     }});
                     

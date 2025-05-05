@@ -990,7 +990,7 @@ def main():
                     <div class="view-toggle">
                         <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
-                        <button id="docset-view-btn" onclick="switchView('docset')">Admissibility Submissions</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Set Title</button>
                     </div>
                     
                     <div class="facts-header">
@@ -1496,25 +1496,69 @@ def main():
                     // In a real app, this would come from actual document data
                     const docsWithFacts = {{}};
                     
-                    // Distribute facts to document sets (simulation)
+                    // First, distribute facts to individual documents
                     filteredFacts.forEach((fact, index) => {{
                         // Get a document set based on party
-                        let possibleDocs;
-                        if (fact.party === 'Appellant') {{
-                            possibleDocs = documentSets.filter(ds => ds.party === 'Appellant');
-                        }} else {{
-                            possibleDocs = documentSets.filter(ds => ds.party === 'Respondent');
-                        }}
+                        let possibleDocs = [];
+                        
+                        // Process group documents differently
+                        documentSets.forEach(ds => {{
+                            if (ds.isGroup) {{
+                                // Check documents in the group
+                                ds.documents.forEach(doc => {{
+                                    if ((fact.party === 'Appellant' && doc.party === 'Appellant') ||
+                                        (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
+                                        possibleDocs.push(doc);
+                                    }}
+                                }});
+                            }} else if ((fact.party === 'Appellant' && ds.party === 'Appellant') ||
+                                      (fact.party === 'Respondent' && ds.party === 'Respondent')) {{
+                                possibleDocs.push(ds);
+                            }}
+                        }});
                         
                         if (possibleDocs.length > 0) {{
                             const selectedDoc = possibleDocs[index % possibleDocs.length];
-                            if (!docsWithFacts[selectedDoc.id]) {{
-                                docsWithFacts[selectedDoc.id] = {{
-                                    docset: selectedDoc,
-                                    facts: []
-                                }};
+                            
+                            // Check if this document belongs to a group
+                            let groupDoc = null;
+                            documentSets.forEach(ds => {{
+                                if (ds.isGroup && ds.documents.some(d => d.id === selectedDoc.id)) {{
+                                    groupDoc = ds;
+                                }}
+                            }});
+                            
+                            if (groupDoc) {{
+                                // Add to group
+                                if (!docsWithFacts[groupDoc.id]) {{
+                                    docsWithFacts[groupDoc.id] = {{
+                                        docset: groupDoc,
+                                        isGroup: true,
+                                        documents: {{}},
+                                        facts: []
+                                    }};
+                                }}
+                                
+                                // Add to specific document within group
+                                if (!docsWithFacts[groupDoc.id].documents[selectedDoc.id]) {{
+                                    docsWithFacts[groupDoc.id].documents[selectedDoc.id] = {{
+                                        docset: selectedDoc,
+                                        facts: []
+                                    }};
+                                }}
+                                
+                                docsWithFacts[groupDoc.id].documents[selectedDoc.id].facts.push(fact);
+                                docsWithFacts[groupDoc.id].facts.push(fact);
+                            }} else {{
+                                // Add to individual document
+                                if (!docsWithFacts[selectedDoc.id]) {{
+                                    docsWithFacts[selectedDoc.id] = {{
+                                        docset: selectedDoc,
+                                        facts: []
+                                    }};
+                                }}
+                                docsWithFacts[selectedDoc.id].facts.push(fact);
                             }}
-                            docsWithFacts[selectedDoc.id].facts.push(fact);
                         }}
                     }});
                     
@@ -1528,49 +1572,133 @@ def main():
                         // Create document set container
                         const docsetEl = document.createElement('div');
                         docsetEl.className = 'docset-container';
-                        docsetEl.innerHTML = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span>${{docset.name}}</span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
+                        
+                        if (docWithFacts.isGroup) {{
+                            // Generate group folder
+                            const groupHeaderHtml = `
+                                <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                    <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                    <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span><strong>${{docset.name}}</strong></span>
+                                    <span style="margin-left: auto;">
+                                        <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                            ${{docset.party}}
+                                        </span>
+                                        <span class="badge">${{facts.length}} facts</span>
                                     </span>
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
-                                <table class="table-view">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Event</th>
-                                            <th>Status</th>
-                                            <th>Related Argument</th>
-                                            <th>Evidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.point}}</td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.argId}}. ${{fact.argTitle}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
+                                </div>
+                                <div id="docset-content-${{docset.id}}" class="docset-content">
+                            `;
+                            
+                            let groupContentHtml = '';
+                            
+                            // Add sub-documents
+                            Object.values(docWithFacts.documents).forEach(docWithSubFacts => {{
+                                const subDocset = docWithSubFacts.docset;
+                                const subFacts = docWithSubFacts.facts;
+                                
+                                if (subFacts.length === 0) return;
+                                
+                                groupContentHtml += `
+                                    <div class="sub-docset-container" style="margin-left: 20px; margin-bottom: 20px;">
+                                        <div class="docset-header" onclick="toggleDocSet('${{subDocset.id}}')" style="background-color: #f0f4f8;">
+                                            <svg id="chevron-${{subDocset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                            <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                            <span>${{subDocset.name}}</span>
+                                            <span style="margin-left: auto;">
+                                                <span class="badge ${{subDocset.party === 'Appellant' ? 'appellant-badge' : (subDocset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                                    ${{subDocset.party}}
+                                                </span>
+                                                <span class="badge">${{subFacts.length}} facts</span>
+                                            </span>
+                                        </div>
+                                        <div id="docset-content-${{subDocset.id}}" class="docset-content">
+                                            <table class="table-view">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Event</th>
+                                                        <th>Status</th>
+                                                        <th>Related Argument</th>
+                                                        <th>Evidence</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${{subFacts.map(fact => `
+                                                        <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                            <td>${{fact.date}}</td>
+                                                            <td>${{fact.point}}</td>
+                                                            <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                            <td>${{fact.argId}}. ${{fact.argTitle}}</td>
+                                                            <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                                ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                                : 'None'}}</td>
+                                                        </tr>
+                                                    `).join('')}}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                `;
+                            }});
+                            
+                            groupContentHtml += '</div>';
+                            docsetEl.innerHTML = groupHeaderHtml + groupContentHtml;
+                            
+                        }} else {{
+                            // Generate individual document folder
+                            docsetEl.innerHTML = `
+                                <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                    <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                    <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span>${{docset.name}}</span>
+                                    <span style="margin-left: auto;">
+                                        <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                            ${{docset.party}}
+                                        </span>
+                                        <span class="badge">${{facts.length}} facts</span>
+                                    </span>
+                                </div>
+                                <div id="docset-content-${{docset.id}}" class="docset-content">
+                                    <table class="table-view">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Event</th>
+                                                <th>Status</th>
+                                                <th>Related Argument</th>
+                                                <th>Evidence</th>
                                             </tr>
-                                        `).join('')}}
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                                        </thead>
+                                        <tbody>
+                                            ${{facts.map(fact => `
+                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                    <td>${{fact.date}}</td>
+                                                    <td>${{fact.point}}</td>
+                                                    <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                    <td>${{fact.argId}}. ${{fact.argTitle}}</td>
+                                                    <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                        ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                        : 'None'}}</td>
+                                                </tr>
+                                            `).join('')}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }}
                         
                         container.appendChild(docsetEl);
                     }});

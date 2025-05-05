@@ -418,7 +418,7 @@ def get_timeline_data():
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
-    # Return grouped document sets with subfolders
+    # Return grouped document sets
     return [
         {
             "id": "appeal",
@@ -426,35 +426,11 @@ def get_document_sets():
             "party": "Mixed",
             "category": "Appeal",
             "isGroup": True,
-            "subfolders": [
-                {
-                    "id": "official_statements",
-                    "name": "Official Statements",
-                    "documents": [
-                        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"}
-                    ]
-                },
-                {
-                    "id": "requests",
-                    "name": "Requests",
-                    "documents": [
-                        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"}
-                    ]
-                },
-                {
-                    "id": "briefs",
-                    "name": "Briefs",
-                    "documents": [
-                        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"}
-                    ]
-                },
-                {
-                    "id": "reference_materials",
-                    "name": "Reference Materials",
-                    "documents": [
-                        {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
-                    ]
-                }
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
             ]
         },
         {
@@ -463,15 +439,9 @@ def get_document_sets():
             "party": "Respondent",
             "category": "provisional messier",
             "isGroup": True,
-            "subfolders": [
-                {
-                    "id": "answers",
-                    "name": "Answers",
-                    "documents": [
-                        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
-                        {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
-                    ]
-                }
+            "documents": [
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
             ]
         },
         {
@@ -480,28 +450,10 @@ def get_document_sets():
             "party": "Mixed",
             "category": "admissibility",
             "isGroup": True,
-            "subfolders": [
-                {
-                    "id": "briefs",
-                    "name": "Briefs",
-                    "documents": [
-                        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"}
-                    ]
-                },
-                {
-                    "id": "replies",
-                    "name": "Replies",
-                    "documents": [
-                        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"}
-                    ]
-                },
-                {
-                    "id": "objections",
-                    "name": "Objections",
-                    "documents": [
-                        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
-                    ]
-                }
+            "documents": [
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
             ]
         },
         {
@@ -510,22 +462,10 @@ def get_document_sets():
             "party": "Mixed",
             "category": "challenge",
             "isGroup": True,
-            "subfolders": [
-                {
-                    "id": "main_challenges",
-                    "name": "Main Challenges",
-                    "documents": [
-                        {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"}
-                    ]
-                },
-                {
-                    "id": "external_references",
-                    "name": "External References",
-                    "documents": [
-                        {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
-                        {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
-                    ]
-                }
+            "documents": [
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
             ]
         }
     ]
@@ -1705,100 +1645,59 @@ def main():
                             
                             let groupContentHtml = '';
                             
-                            // Add subfolders if they exist
-                            if (docset.subfolders && docset.subfolders.length > 0) {{
-                                docset.subfolders.forEach(subfolder => {{
-                                    // Count facts for this subfolder
-                                    let subfolderFacts = [];
-                                    subfolder.documents.forEach(doc => {{
-                                        if (docWithFacts.documents[doc.id]) {{
-                                            subfolderFacts = subfolderFacts.concat(docWithFacts.documents[doc.id].facts);
-                                        }}
-                                    }});
-                                    
-                                    if (subfolderFacts.length > 0) {{
-                                        groupContentHtml += `
-                                            <div class="sub-docset-container" style="margin-left: 20px; margin-bottom: 20px;">
-                                                <div class="docset-header" onclick="toggleDocSet('${{subfolder.id}}')" style="background-color: #f0f4f8;">
-                                                    <svg id="chevron-${{subfolder.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                                    </svg>
-                                                    <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                                    </svg>
-                                                    <span>${{subfolder.name}}</span>
-                                                    <span style="margin-left: auto;">
-                                                        <span class="badge">${{subfolderFacts.length}} facts</span>
-                                                    </span>
-                                                </div>
-                                                <div id="docset-content-${{subfolder.id}}" class="docset-content">
-                                        `;
-                                        
-                                        // Add documents within subfolder
-                                        subfolder.documents.forEach(doc => {{
-                                            if (docWithFacts.documents[doc.id]) {{
-                                                const subDocset = docWithFacts.documents[doc.id].docset;
-                                                const subFacts = docWithFacts.documents[doc.id].facts;
-                                                
-                                                if (subFacts.length > 0) {{
+                            // Add sub-documents
+                            Object.values(docWithFacts.documents).forEach(docWithSubFacts => {{
+                                const subDocset = docWithSubFacts.docset;
+                                const subFacts = docWithSubFacts.facts;
                                 
-                                                                                    groupContentHtml += `
-                                                    <div class="sub-docset-container" style="margin-left: 40px; margin-bottom: 15px;">
-                                                        <div class="docset-header" onclick="toggleDocSet('${{subDocset.id}}')" style="background-color: #eef5f9;">
-                                                            <svg id="chevron-${{subDocset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <polyline points="9 18 15 12 9 6"></polyline>
-                                                            </svg>
-                                                            <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                                            </svg>
-                                                            <span>${{subDocset.name}}</span>
-                                                            <span style="margin-left: auto;">
-                                                                <span class="badge ${{subDocset.party === 'Appellant' ? 'appellant-badge' : (subDocset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                                                    ${{subDocset.party}}
-                                                                </span>
-                                                                <span class="badge">${{subFacts.length}} facts</span>
-                                                            </span>
-                                                        </div>
-                                                        <div id="docset-content-${{subDocset.id}}" class="docset-content">
-                                                            <table class="table-view">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Date</th>
-                                                                        <th>Event</th>
-                                                                        <th>Status</th>
-                                                                        <th>Related Argument</th>
-                                                                        <th>Evidence</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    ${{subFacts.map(fact => `
-                                                                        <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                                            <td>${{fact.date}}</td>
-                                                                            <td>${{fact.point}}</td>
-                                                                            <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                                            <td>${{fact.argId}}. ${{fact.argTitle}}</td>
-                                                                            <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                                                ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                                                : 'None'}}</td>
-                                                                        </tr>
-                                                                    `).join('')}}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                    `;
-                                                }}
-                                            }});
-                                        }});
-                                        
-                                        groupContentHtml += `</div></div>`;
-                                    }}
-                                }});
-                            }} else {{
-                                // Fall back to old logic if no subfolders
-                                Object.values(docWithFacts.documents).forEach(docWithSubFacts => {{
-                                    const subDocset = docWithSubFacts.docset;
-                                    const subFacts = docWithSubFacts.facts;
+                                if (subFacts.length === 0) return;
+                                
+                                groupContentHtml += `
+                                    <div class="sub-docset-container" style="margin-left: 20px; margin-bottom: 20px;">
+                                        <div class="docset-header" onclick="toggleDocSet('${{subDocset.id}}')" style="background-color: #f0f4f8;">
+                                            <svg id="chevron-${{subDocset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                            <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                            </svg>
+                                            <span>${{subDocset.name}}</span>
+                                            <span style="margin-left: auto;">
+                                                <span class="badge ${{subDocset.party === 'Appellant' ? 'appellant-badge' : (subDocset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                                    ${{subDocset.party}}
+                                                </span>
+                                                <span class="badge">${{subFacts.length}} facts</span>
+                                            </span>
+                                        </div>
+                                        <div id="docset-content-${{subDocset.id}}" class="docset-content">
+                                            <table class="table-view">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Event</th>
+                                                        <th>Status</th>
+                                                        <th>Related Argument</th>
+                                                        <th>Evidence</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${{subFacts.map(fact => `
+                                                        <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                            <td>${{fact.date}}</td>
+                                                            <td>${{fact.point}}</td>
+                                                            <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                            <td>${{fact.argId}}. ${{fact.argTitle}}</td>
+                                                            <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                                ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                                : 'None'}}</td>
+                                                        </tr>
+                                                    `).join('')}}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                `;
+                            }});
                             
                             groupContentHtml += '</div>';
                             docsetEl.innerHTML = groupHeaderHtml + groupContentHtml;

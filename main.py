@@ -255,6 +255,23 @@ def get_all_facts():
         
     return facts
 
+# Sample document sets for demonstrating the document set view
+def get_document_sets():
+    return [
+        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
+        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
+        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
+        {"id": "4", "name": "4. Answer to PM", "party": "Respondent"},
+        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
+        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
+        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},
+        {"id": "8", "name": "8. Challenge", "party": "Appellant"},
+        {"id": "9", "name": "ChatGPT", "party": "Shared"},
+        {"id": "10", "name": "Jurisprudence", "party": "Shared"},
+        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent"},
+        {"id": "12", "name": "Swiss Court", "party": "Shared"}
+    ]
+
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     csv = df.to_csv(index=False)
@@ -267,10 +284,12 @@ def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
     facts_data = get_all_facts()
+    document_sets = get_document_sets()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
+    document_sets_json = json.dumps(document_sets)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -330,7 +349,7 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts HTML component - this is exactly from the original code
+    # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
         html_content = f"""
@@ -381,6 +400,11 @@ def main():
                 .respondent-badge {{
                     background-color: rgba(229, 62, 62, 0.1);
                     color: #e53e3e;
+                }}
+                
+                .shared-badge {{
+                    background-color: rgba(128, 128, 128, 0.1);
+                    color: #666;
                 }}
                 
                 .exhibit-badge {{
@@ -555,6 +579,78 @@ def main():
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
                 }}
+                
+                /* View toggle */
+                .view-toggle {{
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 16px;
+                }}
+                
+                .view-toggle button {{
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                }}
+                
+                .view-toggle button.active {{
+                    background-color: #4299e1;
+                    color: white;
+                    border-color: #4299e1;
+                }}
+                
+                .view-toggle button:first-child {{
+                    border-radius: 4px 0 0 4px;
+                }}
+                
+                .view-toggle button:last-child {{
+                    border-radius: 0 4px 4px 0;
+                }}
+                
+                /* Document sets */
+                .docset-header {{
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                }}
+                
+                .docset-header:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .docset-content {{
+                    display: none;
+                    padding: 0 0 20px 0;
+                }}
+                
+                .docset-content.show {{
+                    display: block;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
             </style>
         </head>
         <body>
@@ -590,13 +686,19 @@ def main():
                 <div id="facts" class="content-section active">
                     <div class="section-title">Case Facts</div>
                     
+                    <div class="view-toggle">
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Sets View</button>
+                    </div>
+                    
                     <div class="facts-header">
                         <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
                         <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
-                    <div class="facts-content">
+                    <!-- Table View -->
+                    <div id="table-view-content" class="facts-content">
                         <table class="table-view">
                             <thead>
                                 <tr>
@@ -611,12 +713,39 @@ def main():
                             <tbody id="facts-table-body"></tbody>
                         </table>
                     </div>
+                    
+                    <!-- Document Sets View -->
+                    <div id="docset-view-content" class="facts-content" style="display: none;">
+                        <div id="document-sets-container"></div>
+                    </div>
                 </div>
             </div>
             
             <script>
-                // Initialize facts data
+                // Initialize data
                 const factsData = {facts_json};
+                const documentSets = {document_sets_json};
+                
+                // Switch view between table and document sets
+                function switchView(viewType) {{
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
+                    const tableContent = document.getElementById('table-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        docsetBtn.classList.remove('active');
+                        tableContent.style.display = 'block';
+                        docsetContent.style.display = 'none';
+                    }} else {{
+                        tableBtn.classList.remove('active');
+                        docsetBtn.classList.add('active');
+                        tableContent.style.display = 'none';
+                        docsetContent.style.display = 'block';
+                        renderDocumentSets();
+                    }}
+                }}
                 
                 // Copy all content function
                 function copyAllContent() {{
@@ -721,6 +850,12 @@ def main():
                         undisputedBtn.classList.add('active');
                         renderFacts('undisputed');
                     }}
+                    
+                    // Also update doc sets view if it's active
+                    const docsetContent = document.getElementById('docset-view-content');
+                    if (docsetContent.style.display !== 'none') {{
+                        renderDocumentSets(tabType);
+                    }}
                 }}
                 
                 // Sort table function
@@ -760,6 +895,122 @@ def main():
                     // Store current sort direction and column
                     table.setAttribute('data-sort-column', columnIndex);
                     table.setAttribute('data-sort-dir', dir);
+                }}
+                
+                // Toggle document set visibility
+                function toggleDocSet(docsetId) {{
+                    const content = document.getElementById(`docset-content-${{docsetId}}`);
+                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
+                    
+                    if (content.classList.contains('show')) {{
+                        content.classList.remove('show');
+                        chevron.classList.remove('expanded');
+                    }} else {{
+                        content.classList.add('show');
+                        chevron.classList.add('expanded');
+                    }}
+                }}
+                
+                // Render document sets view
+                function renderDocumentSets(tabType = 'all') {{
+                    const container = document.getElementById('document-sets-container');
+                    container.innerHTML = '';
+                    
+                    // Filter facts based on tab type
+                    let filteredFacts = factsData;
+                    if (tabType === 'disputed') {{
+                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // For demo purposes, distribute facts randomly among document sets
+                    // In a real app, this would come from actual document data
+                    const docsWithFacts = {};
+                    
+                    // Distribute facts to document sets (simulation)
+                    filteredFacts.forEach((fact, index) => {{
+                        // Get a document set based on party
+                        let possibleDocs;
+                        if (fact.party === 'Appellant') {{
+                            possibleDocs = documentSets.filter(ds => ds.party === 'Appellant');
+                        }} else {{
+                            possibleDocs = documentSets.filter(ds => ds.party === 'Respondent');
+                        }}
+                        
+                        if (possibleDocs.length > 0) {{
+                            const selectedDoc = possibleDocs[index % possibleDocs.length];
+                            if (!docsWithFacts[selectedDoc.id]) {{
+                                docsWithFacts[selectedDoc.id] = {
+                                    docset: selectedDoc,
+                                    facts: []
+                                };
+                            }}
+                            docsWithFacts[selectedDoc.id].facts.push(fact);
+                        }}
+                    }});
+                    
+                    // Create document sets UI
+                    Object.values(docsWithFacts).forEach(docWithFacts => {{
+                        const docset = docWithFacts.docset;
+                        const facts = docWithFacts.facts;
+                        
+                        if (facts.length === 0) return;
+                        
+                        // Create document set container
+                        const docsetEl = document.createElement('div');
+                        docsetEl.className = 'docset-container';
+                        docsetEl.innerHTML = `
+                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span>${{docset.name}}</span>
+                                <span style="margin-left: auto;">
+                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                        ${{docset.party}}
+                                    </span>
+                                    <span class="badge">${{facts.length}} facts</span>
+                                </span>
+                            </div>
+                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                                <table class="table-view">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Event</th>
+                                            <th>Status</th>
+                                            <th>Related Argument</th>
+                                            <th>Evidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${{facts.map(fact => `
+                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                <td>${{fact.date}}</td>
+                                                <td>${{fact.point}}</td>
+                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                <td>${{fact.argId}}. ${{fact.argTitle}}</td>
+                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                    : 'None'}}</td>
+                                            </tr>
+                                        `).join('')}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        
+                        container.appendChild(docsetEl);
+                    }});
+                    
+                    // If no facts found
+                    if (Object.keys(docsWithFacts).length === 0) {{
+                        container.innerHTML = '<p>No facts found matching the selected criteria.</p>';
+                    }}
                 }}
                 
                 // Render facts table

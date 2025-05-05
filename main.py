@@ -688,7 +688,7 @@ def main():
                     
                     <div class="view-toggle">
                         <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
-                        <button id="docset-view-btn" onclick="switchView('docset')">Document Sets View</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Admissibility Submissions</button>
                     </div>
                     
                     <div class="facts-header">

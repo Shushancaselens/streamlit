@@ -1564,30 +1564,26 @@ def main():
                         filteredFacts = factsData.filter(fact => !fact.isDisputed);
                     }}
                     
-                    // For demo purposes, distribute facts randomly among document sets
-                    // In a real app, this would come from actual document data
-                    const docsWithFacts = {{}};
-                    
-                    // First, distribute facts to individual documents
-                    filteredFacts.forEach((fact, index) => {{
-                        // Get a document set based on party
-                        let possibleDocs = [];
-                        
-                        // Process group documents differently
-                        documentSets.forEach(ds => {{
-                            if (ds.isGroup) {{
-                                // Check documents in the group
+                    // Create document sets even if no facts are found
+                    documentSets.forEach(ds => {{
+                        if (ds.isGroup) {{
+                            // Create document set container for each group
+                            const docsetEl = document.createElement('div');
+                            docsetEl.className = 'docset-container';
+                            
+                            // For each folder, count all facts that match its documents
+                            let folderFacts = 0;
+                            
+                            if (ds.documents && Array.isArray(ds.documents)) {{
                                 ds.documents.forEach(doc => {{
-                                    if ((fact.party === 'Appellant' && doc.party === 'Appellant') ||
-                                        (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
-                                        possibleDocs.push(doc);
-                                    }}
+                                    // Count facts that match this combined document set
+                                    const docFacts = filteredFacts.filter(fact => {{
+                                        // Check if fact belongs to this category and party
+                                        return fact.party === doc.party || (doc.party === 'Mixed' && (fact.party === 'Appellant' || fact.party === 'Respondent'));
+                                    }}).length;
+                                    folderFacts += docFacts;
                                 }});
-                            }} else if ((fact.party === 'Appellant' && ds.party === 'Appellant') ||
-                                      (fact.party === 'Respondent' && ds.party === 'Respondent')) {{
-                                possibleDocs.push(ds);
                             }}
-                        }});
                         
                         if (possibleDocs.length > 0) {{
                             const selectedDoc = possibleDocs[index % possibleDocs.length];

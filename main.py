@@ -5,77 +5,6 @@ import base64
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Initialize session state
-if 'view' not in st.session_state:
-    st.session_state.view = "Facts"
-
-# Function to get all facts from the data
-def get_all_facts():
-    # This is a simplified version with sample facts
-    facts = [
-        {
-            'point': 'Continuous operation under same name since 1950',
-            'date': '1950-present',
-            'isDisputed': False,
-            'party': 'Appellant',
-            'paragraphs': '18-19',
-            'exhibits': ['C-1'],
-            'argId': '1',
-            'argTitle': 'Sporting Succession'
-        },
-        {
-            'point': 'Operations ceased between 1975-1976',
-            'date': '1975-1976',
-            'isDisputed': True,
-            'party': 'Respondent',
-            'paragraphs': '206-207',
-            'exhibits': ['R-1'],
-            'argId': '1',
-            'argTitle': 'Sporting Succession Rebuttal'
-        },
-        {
-            'point': 'Initial registration in 1950',
-            'date': '1950',
-            'isDisputed': False,
-            'party': 'Appellant',
-            'paragraphs': '25-26',
-            'exhibits': ['C-2'],
-            'argId': '1.1.1',
-            'argTitle': 'Registration History'
-        },
-        {
-            'point': 'Brief administrative gap in 1975-1976',
-            'date': '1975-1976',
-            'isDisputed': True,
-            'party': 'Appellant',
-            'paragraphs': '29-30',
-            'exhibits': ['C-2'],
-            'argId': '1.1.1',
-            'argTitle': 'Registration History'
-        },
-        {
-            'point': 'Consistent use of blue and white since founding',
-            'date': '1950-present',
-            'isDisputed': True,
-            'party': 'Appellant',
-            'paragraphs': '51-52',
-            'exhibits': ['C-4'],
-            'argId': '1.2',
-            'argTitle': 'Club Colors Analysis'
-        },
-        {
-            'point': 'Significant color scheme change in 1976',
-            'date': '1976',
-            'isDisputed': True,
-            'party': 'Respondent',
-            'paragraphs': '245-246',
-            'exhibits': ['R-4'],
-            'argId': '1.2',
-            'argTitle': 'Club Colors Analysis Rebuttal'
-        }
-    ]
-    return facts
-
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     csv = df.to_csv(index=False)
@@ -83,9 +12,133 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
     return href
 
-# Main app
-def main():
-    # Add Streamlit sidebar with navigation buttons
+# Get all facts from the data
+def get_all_facts():
+    return [
+        {
+            'point': "Continuous operation under same name since 1950",
+            'date': "1950-present",
+            'isDisputed': False,
+            'party': "Appellant",
+            'paragraphs': "18-19",
+            'exhibits': ["C-1"],
+            'argId': "1",
+            'argTitle': "Sporting Succession"
+        },
+        {
+            'point': "Initial registration in 1950",
+            'date': "1950",
+            'isDisputed': False,
+            'party': "Appellant",
+            'paragraphs': "25-26",
+            'exhibits': ["C-2"],
+            'argId': "1.1.1",
+            'argTitle': "Registration History"
+        },
+        {
+            'point': "Brief administrative gap in 1975-1976",
+            'date': "1975-1976",
+            'isDisputed': True,
+            'party': "Appellant",
+            'paragraphs': "29-30",
+            'exhibits': ["C-2"],
+            'argId': "1.1.1",
+            'argTitle': "Registration History"
+        },
+        {
+            'point': "Consistent use of blue and white since founding",
+            'date': "1950-present",
+            'isDisputed': True,
+            'party': "Appellant",
+            'paragraphs': "51-52",
+            'exhibits': ["C-4"],
+            'argId': "1.2",
+            'argTitle': "Club Colors Analysis"
+        },
+        {
+            'point': "Minor shade variations do not affect continuity",
+            'date': "1970-1980",
+            'isDisputed': False,
+            'party': "Appellant",
+            'paragraphs': "56-57",
+            'exhibits': ["C-5"],
+            'argId': "1.2.1",
+            'argTitle': "Color Variations Analysis"
+        },
+        {
+            'point': "Temporary third color addition in 1980s",
+            'date': "1982-1988",
+            'isDisputed': False,
+            'party': "Appellant",
+            'paragraphs': "58-59",
+            'exhibits': ["C-5"],
+            'argId': "1.2.1",
+            'argTitle': "Color Variations Analysis"
+        },
+        {
+            'point': "Operations ceased between 1975-1976",
+            'date': "1975-1976",
+            'isDisputed': True,
+            'party': "Respondent",
+            'paragraphs': "206-207",
+            'exhibits': ["R-1"],
+            'argId': "1",
+            'argTitle': "Sporting Succession Rebuttal"
+        },
+        {
+            'point': "Registration formally terminated on April 30, 1975",
+            'date': "April 30, 1975",
+            'isDisputed': False,
+            'party': "Respondent",
+            'paragraphs': "226-227",
+            'exhibits': ["R-2"],
+            'argId': "1.1.1",
+            'argTitle': "Registration Gap Evidence"
+        },
+        {
+            'point': "New entity registered on September 15, 1976",
+            'date': "September 15, 1976",
+            'isDisputed': False,
+            'party': "Respondent",
+            'paragraphs': "228-229",
+            'exhibits': ["R-2"],
+            'argId': "1.1.1",
+            'argTitle': "Registration Gap Evidence"
+        },
+        {
+            'point': "Significant color scheme change in 1976",
+            'date': "1976",
+            'isDisputed': True,
+            'party': "Respondent",
+            'paragraphs': "245-246",
+            'exhibits': ["R-4"],
+            'argId': "1.2",
+            'argTitle': "Club Colors Analysis Rebuttal"
+        },
+        {
+            'point': "Pre-1976 colors represented original city district",
+            'date': "1950-1975",
+            'isDisputed': False,
+            'party': "Respondent",
+            'paragraphs': "247",
+            'exhibits': ["R-5"],
+            'argId': "1.2.1",
+            'argTitle': "Color Changes Analysis"
+        },
+        {
+            'point': "Post-1976 colors represented new ownership region",
+            'date': "1976-present",
+            'isDisputed': True,
+            'party': "Respondent",
+            'paragraphs': "248-249",
+            'exhibits': ["R-5"],
+            'argId': "1.2.1",
+            'argTitle': "Color Changes Analysis"
+        }
+    ]
+
+# Function to create the sidebar
+def create_sidebar():
     with st.sidebar:
         # Add the logo and CaseLens text
         st.markdown("""
@@ -121,29 +174,12 @@ def main():
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 24px;
-        }
-        .stTabs [data-baseweb="tab"] {
-            height: 50px;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        .stTabs [aria-selected="true"] {
-            background-color: #4D68F9;
-            color: white;
-        }
-        tr:hover td {
-            background-color: #f8f9fa;
-        }
-        th {
-            cursor: pointer;
-        }
-        th:hover {
-            background-color: #e9ecef;
-        }
         </style>
         """, unsafe_allow_html=True)
+        
+        # Initialize session state if not already done
+        if 'view' not in st.session_state:
+            st.session_state.view = "Arguments"
         
         # Define button click handlers
         def set_arguments_view():
@@ -159,53 +195,91 @@ def main():
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+
+# Function to create the facts page
+def create_facts_page():
+    st.title("Case Facts")
     
-    # Facts Section
+    # Create tabs for different fact views
+    fact_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+    
+    # Get all facts
+    all_facts = get_all_facts()
+    
+    # Create dataframes for each tab
+    all_facts_df = pd.DataFrame(all_facts)
+    disputed_facts_df = pd.DataFrame([fact for fact in all_facts if fact['isDisputed']])
+    undisputed_facts_df = pd.DataFrame([fact for fact in all_facts if not fact['isDisputed']])
+    
+    # Format facts for display
+    def format_facts_df(df):
+        # Create a copy to avoid modifying the original
+        formatted_df = df.copy()
+        
+        # Format the exhibits column
+        formatted_df['exhibits'] = formatted_df['exhibits'].apply(lambda x: ', '.join(x) if x else 'None')
+        
+        # Rename columns for display
+        formatted_df = formatted_df.rename(columns={
+            'point': 'Event',
+            'date': 'Date',
+            'party': 'Party',
+            'paragraphs': 'Paragraphs',
+            'exhibits': 'Exhibits',
+            'argId': 'Argument ID',
+            'argTitle': 'Argument Title'
+        })
+        
+        # Add a status column
+        formatted_df['Status'] = formatted_df.apply(lambda row: 'Disputed' if row['isDisputed'] else 'Undisputed', axis=1)
+        
+        # Select and order columns for display
+        return formatted_df[['Date', 'Event', 'Party', 'Status', 'Argument ID', 'Argument Title', 'Paragraphs', 'Exhibits']]
+    
+    # Display dataframes in tabs
+    with fact_tabs[0]:
+        st.dataframe(format_facts_df(all_facts_df), use_container_width=True)
+        st.markdown(get_csv_download_link(format_facts_df(all_facts_df), "all_facts.csv", "Download All Facts"), unsafe_allow_html=True)
+    
+    with fact_tabs[1]:
+        st.dataframe(format_facts_df(disputed_facts_df), use_container_width=True)
+        st.markdown(get_csv_download_link(format_facts_df(disputed_facts_df), "disputed_facts.csv", "Download Disputed Facts"), unsafe_allow_html=True)
+    
+    with fact_tabs[2]:
+        st.dataframe(format_facts_df(undisputed_facts_df), use_container_width=True)
+        st.markdown(get_csv_download_link(format_facts_df(undisputed_facts_df), "undisputed_facts.csv", "Download Undisputed Facts"), unsafe_allow_html=True)
+    
+    # Add additional analysis section
+    st.header("Facts Analysis")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Count facts by party
+        party_counts = all_facts_df['party'].value_counts()
+        st.subheader("Facts by Party")
+        st.bar_chart(party_counts)
+    
+    with col2:
+        # Count disputed vs undisputed
+        dispute_counts = all_facts_df['isDisputed'].value_counts().rename(index={True: 'Disputed', False: 'Undisputed'})
+        st.subheader("Disputed vs Undisputed Facts")
+        st.bar_chart(dispute_counts)
+
+# Main function
+def main():
+    # Create the sidebar
+    create_sidebar()
+    
+    # Check which view to show
     if st.session_state.view == "Facts":
-        st.title("Case Facts")
-        
-        # Get facts data
-        facts_data = get_all_facts()
-        
-        # Create tabs for facts view
-        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
-        
-        with tab1:  # All Facts
-            # Action buttons
-            col1, col2, col3 = st.columns([0.7, 0.15, 0.15])
-            with col2:
-                st.markdown("### ")  # Empty space for alignment
-                if st.button("Copy", use_container_width=True):
-                    st.info("Copy functionality would be implemented here")
-            with col3:
-                st.markdown("### ")  # Empty space for alignment
-                if st.button("Export", use_container_width=True):
-                    # Create DataFrame for export
-                    df = pd.DataFrame(facts_data)
-                    # Display download link
-                    st.markdown(get_csv_download_link(df, "all_facts.csv", "Download CSV"), unsafe_allow_html=True)
-            
-            # Display all facts in a table
-            df_all = pd.DataFrame(facts_data)
-            st.dataframe(df_all, use_container_width=True)
-        
-        with tab2:  # Disputed Facts
-            disputed_facts = [fact for fact in facts_data if fact['isDisputed']]
-            df_disputed = pd.DataFrame(disputed_facts)
-            st.dataframe(df_disputed, use_container_width=True)
-        
-        with tab3:  # Undisputed Facts
-            undisputed_facts = [fact for fact in facts_data if not fact['isDisputed']]
-            df_undisputed = pd.DataFrame(undisputed_facts)
-            st.dataframe(df_undisputed, use_container_width=True)
-    
+        create_facts_page()
     elif st.session_state.view == "Arguments":
-        st.title("Arguments")
-        st.markdown("Arguments functionality would be implemented here")
-    
-    elif st.session_state.view == "Exhibits":
-        st.title("Exhibits")
-        st.markdown("Exhibits functionality would be implemented here")
+        st.title("Arguments Section")
+        st.write("This is the Arguments Section. Select 'Facts' in the sidebar to view the Facts page.")
+    else:  # Exhibits
+        st.title("Exhibits Section")
+        st.write("This is the Exhibits Section. Select 'Facts' in the sidebar to view the Facts page.")
 
 if __name__ == "__main__":
     main()

@@ -658,6 +658,12 @@ def main():
                     border-radius: 4px 0 0 4px;
                 }}
                 
+                .view-toggle button:not(:first-child):not(:last-child) {{
+                    border-radius: 0;
+                    border-left: none;
+                    border-right: none;
+                }}
+                
                 .view-toggle button:last-child {{
                     border-radius: 0 4px 4px 0;
                 }}
@@ -707,28 +713,79 @@ def main():
                     transform: rotate(90deg);
                 }}
                 
-                /* Timeline styling */
-                .timeline-container {{
-                    margin-top: 20px;
-                }}
-                
-                .timeline-card {{
+                /* Enhanced Timeline styling */
+                .timeline-wrapper {{
                     position: relative;
-                    padding: 20px;
-                    margin-bottom: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    border-left: 4px solid #4299e1;
+                    padding: 20px 0;
                 }}
                 
-                .timeline-card.disputed {{
-                    border-left-color: #e53e3e;
+                .timeline-line {{
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 14px;
+                    width: 4px;
+                    background-color: #e2e8f0;
+                    z-index: 1;
+                }}
+                
+                .timeline-item {{
+                    position: relative;
+                    padding-left: 50px;
+                    margin-bottom: 30px;
+                }}
+                
+                .timeline-dot {{
+                    position: absolute;
+                    left: 4px;
+                    top: 20px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background-color: #4299e1;
+                    z-index: 2;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }}
+                
+                .timeline-dot.disputed {{
+                    background-color: #e53e3e;
+                }}
+                
+                .timeline-dot::after {{
+                    content: "";
+                    display: block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    background-color: white;
                 }}
                 
                 .timeline-date {{
-                    font-weight: 600;
-                    margin-bottom: 10px;
-                    color: #4299e1;
+                    position: absolute;
+                    left: 40px;
+                    top: -10px;
+                    background-color: #4299e1;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 16px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 2;
+                }}
+                
+                .timeline-date.disputed {{
+                    background-color: #e53e3e;
+                }}
+                
+                .timeline-content {{
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    padding: 20px;
+                    margin-top: 10px;
+                    border: 1px solid #e2e8f0;
                 }}
                 
                 .timeline-versions {{
@@ -738,24 +795,39 @@ def main():
                 
                 .timeline-version {{
                     flex: 1;
-                    padding: 12px;
-                    background-color: #f8f9fa;
-                    border-radius: 6px;
                 }}
                 
                 .timeline-version-title {{
-                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
                     margin-bottom: 8px;
                 }}
                 
                 .timeline-version-content {{
+                    padding: 10px;
+                    background-color: #f8fafc;
+                    border-radius: 6px;
                     color: #4a5568;
+                    border-left: 3px solid;
+                }}
+                
+                .appellant-version .timeline-version-content {{
+                    border-left-color: #3182ce;
+                }}
+                
+                .respondent-version .timeline-version-content {{
+                    border-left-color: #e53e3e;
                 }}
                 
                 .timeline-status {{
                     position: absolute;
-                    top: 20px;
-                    right: 20px;
+                    top: 10px;
+                    right: 10px;
+                }}
+                
+                .timeline-empty {{
+                    color: #a0aec0;
+                    font-style: italic;
                 }}
             </style>
         </head>
@@ -823,7 +895,10 @@ def main():
                     
                     <!-- Timeline View -->
                     <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div id="timeline-container"></div>
+                        <div class="timeline-wrapper">
+                            <div class="timeline-line"></div>
+                            <div id="timeline-container"></div>
+                        </div>
                     </div>
                     
                     <!-- Document Sets View -->
@@ -1111,7 +1186,7 @@ def main():
                     }}
                 }}
                 
-                // Render timeline view
+                // Render enhanced timeline view
                 function renderTimeline(tabType = 'all') {{
                     const container = document.getElementById('timeline-container');
                     container.innerHTML = '';
@@ -1127,60 +1202,86 @@ def main():
                     // Sort by date
                     filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
                     
-                    // Create timeline cards
+                    // Create timeline items
                     filteredData.forEach(item => {{
-                        const timelineCard = document.createElement('div');
-                        timelineCard.className = `timeline-card ${{item.status.toLowerCase()}}`;
+                        const disputed = item.status === 'Disputed';
                         
-                        // Add date
+                        const timelineItem = document.createElement('div');
+                        timelineItem.className = 'timeline-item';
+                        
+                        // Create timeline dot/marker
+                        const timelineDot = document.createElement('div');
+                        timelineDot.className = `timeline-dot ${{disputed ? 'disputed' : ''}}`;
+                        timelineItem.appendChild(timelineDot);
+                        
+                        // Create date badge
                         const dateEl = document.createElement('div');
-                        dateEl.className = 'timeline-date';
+                        dateEl.className = `timeline-date ${{disputed ? 'disputed' : ''}}`;
                         dateEl.textContent = item.date;
-                        timelineCard.appendChild(dateEl);
+                        timelineItem.appendChild(dateEl);
                         
-                        // Add versions
+                        // Create content container
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'timeline-content';
+                        
+                        // Add status badge if disputed
+                        if (disputed) {{
+                            const statusEl = document.createElement('div');
+                            statusEl.className = 'timeline-status';
+                            statusEl.innerHTML = '<span class="badge disputed-badge">Disputed</span>';
+                            contentEl.appendChild(statusEl);
+                        }}
+                        
+                        // Create versions container
                         const versionsEl = document.createElement('div');
                         versionsEl.className = 'timeline-versions';
                         
                         // Appellant version
                         const appellantEl = document.createElement('div');
-                        appellantEl.className = 'timeline-version';
-                        appellantEl.innerHTML = `
-                            <div class="timeline-version-title">
-                                <span class="badge appellant-badge">Appellant</span>
-                            </div>
-                            <div class="timeline-version-content">
-                                ${{item.appellantVersion !== '—' ? item.appellantVersion : 'No version provided'}}
-                            </div>
-                        `;
+                        appellantEl.className = 'timeline-version appellant-version';
+                        
+                        const appellantTitle = document.createElement('div');
+                        appellantTitle.className = 'timeline-version-title';
+                        appellantTitle.innerHTML = '<span class="badge appellant-badge">Appellant</span>';
+                        appellantEl.appendChild(appellantTitle);
+                        
+                        const appellantContent = document.createElement('div');
+                        appellantContent.className = 'timeline-version-content';
+                        if (item.appellantVersion && item.appellantVersion !== '—') {{
+                            appellantContent.textContent = item.appellantVersion;
+                        }} else {{
+                            appellantContent.className += ' timeline-empty';
+                            appellantContent.textContent = 'No version provided';
+                        }}
+                        appellantEl.appendChild(appellantContent);
+                        
                         versionsEl.appendChild(appellantEl);
                         
                         // Respondent version
                         const respondentEl = document.createElement('div');
-                        respondentEl.className = 'timeline-version';
-                        respondentEl.innerHTML = `
-                            <div class="timeline-version-title">
-                                <span class="badge respondent-badge">Respondent</span>
-                            </div>
-                            <div class="timeline-version-content">
-                                ${{item.respondentVersion !== '—' ? item.respondentVersion : 'No version provided'}}
-                            </div>
-                        `;
+                        respondentEl.className = 'timeline-version respondent-version';
+                        
+                        const respondentTitle = document.createElement('div');
+                        respondentTitle.className = 'timeline-version-title';
+                        respondentTitle.innerHTML = '<span class="badge respondent-badge">Respondent</span>';
+                        respondentEl.appendChild(respondentTitle);
+                        
+                        const respondentContent = document.createElement('div');
+                        respondentContent.className = 'timeline-version-content';
+                        if (item.respondentVersion && item.respondentVersion !== '—') {{
+                            respondentContent.textContent = item.respondentVersion;
+                        }} else {{
+                            respondentContent.className += ' timeline-empty';
+                            respondentContent.textContent = 'No version provided';
+                        }}
+                        respondentEl.appendChild(respondentContent);
+                        
                         versionsEl.appendChild(respondentEl);
                         
-                        timelineCard.appendChild(versionsEl);
+                        contentEl.appendChild(versionsEl);
+                        timelineItem.appendChild(contentEl);
                         
-                        // Add status
-                        const statusEl = document.createElement('div');
-                        statusEl.className = 'timeline-status';
-                        if (item.status === 'Disputed') {{
-                            statusEl.innerHTML = `<span class="badge disputed-badge">Disputed</span>`;
-                        }} else {{
-                            statusEl.textContent = 'Undisputed';
-                        }}
-                        timelineCard.appendChild(statusEl);
-                        
-                        container.appendChild(timelineCard);
+                        container.appendChild(timelineItem);
                     }});
                     
                     // If no events found

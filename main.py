@@ -407,16 +407,16 @@ def get_document_sets():
         # Individual documents with categories
         {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
         {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
-        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "Provisional Messier"},
-        {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "Provisional Messier"},
+        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+        {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"},
         {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
-        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "Admissibility"},
-        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "Admissibility"},
-        {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "Challenge"},
-        {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "Challenge"},
+        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+        {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+        {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
         {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"},
-        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "Admissibility"},
-        {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "Challenge"}
+        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"},
+        {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
     ]
 
 # Function to create CSV download link
@@ -1802,7 +1802,7 @@ def main():
         """
         
         # Render the HTML component
-        st.title("Case Facts - UPDATED VERSION")
+        st.title("Case Facts")
         components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":

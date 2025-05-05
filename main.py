@@ -273,29 +273,83 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* Vertical timeline styles */
+    /* Vertical timeline with connecting lines */
+    .timeline-container {
+        position: relative;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-left: 30px;
+        padding-right: 10px;
+    }
+    
     .timeline-event-compact {
+        position: relative;
         display: flex;
         align-items: flex-start;
-        margin-bottom: 5px;
+        margin-bottom: 20px;
+        padding-left: 20px;
     }
+    
+    .timeline-event-compact::before {
+        content: '';
+        position: absolute;
+        left: -30px;
+        top: 7px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: white;
+        border: 2px solid #4285f4;
+        z-index: 2;
+    }
+    
+    .timeline-event-compact::after {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 19px;
+        width: 2px;
+        height: calc(100% + 20px);
+        background-color: #ccc;
+        z-index: 1;
+    }
+    
+    .timeline-event-compact:last-child::after {
+        height: 0;
+    }
+    
     .timeline-date-compact {
-        width: 120px;
+        width: 140px;
         flex-shrink: 0;
         font-weight: 500;
         font-size: 0.9em;
-    }
-    .timeline-content-compact {
-        flex-grow: 1;
-    }
-    .timeline-container {
-        max-height: 600px;
-        overflow-y: auto;
         padding-right: 10px;
     }
-    .compact-timeline .timeline-item {
-        padding-bottom: 8px;
-        margin-bottom: 5px;
+    
+    .timeline-content-compact {
+        flex-grow: 1;
+        background-color: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border-left: 3px solid #4285f4;
+    }
+    
+    .timeline-content-compact strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+    
+    .timeline-content-compact .details-row {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .timeline-content-compact .source-info {
+        margin-top: 4px;
+        font-size: 0.8em;
+        color: #666;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -633,7 +687,6 @@ with tab2:
         if view_mode == "All Facts Together":
             # Display all facts together in vertical timeline format
             st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
-            st.markdown("<div class='compact-timeline'>", unsafe_allow_html=True)
             
             # Sort all events by date
             all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
@@ -660,21 +713,21 @@ with tab2:
                 elif event["party"] == "Respondent":
                     party_class = "respondent"
                 
-                # Create vertical timeline item
+                # Create vertical timeline item with connecting lines
                 timeline_html = f"""
                 <div class="timeline-event-compact">
                     <div class="timeline-date-compact">{date_display}</div>
                     <div class="timeline-content-compact">
                         <strong>{event["event"]}</strong>
-                        <div style="margin-top: 2px;">
+                        <div class="details-row">
                             <span class="party-tag {party_class}">{event["party"]}</span>
                             <span class="status-tag {status_class}">{event["status"]}</span>
                             <span class="evidence-tag">{event["evidence"]}</span>
                         </div>
-                        <div style="margin-top: 2px; font-size: 0.9em;">
+                        <div style="margin-top: 4px; font-size: 0.9em;">
                             {event["argument"]}
                         </div>
-                        <div style="margin-top: 2px; font-size: 0.8em; color: #666;">
+                        <div class="source-info">
                             Source: {event["document"]}
                         </div>
                     </div>
@@ -682,7 +735,6 @@ with tab2:
                 """
                 st.markdown(timeline_html, unsafe_allow_html=True)
             
-            st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             
         else:

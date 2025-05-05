@@ -420,14 +420,14 @@ def get_timeline_data():
 def get_document_sets():
     return [
         # Individual documents with categories
-        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
-        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
-        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
-        {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"},
-        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
-        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
-        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
-        {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+        {"id": "1", "name": "Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+        {"id": "2", "name": "Request for a Stay", "party": "Appellant", "category": "Appeal"},
+        {"id": "3", "name": "Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+        {"id": "4", "name": "Answer to PM", "party": "Respondent", "category": "provisional messier"},
+        {"id": "5", "name": "Appeal Brief", "party": "Appellant", "category": "Appeal"},
+        {"id": "6", "name": "Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+        {"id": "7", "name": "Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+        {"id": "8", "name": "Challenge", "party": "Appellant", "category": "challenge"},
         {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
         {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"},
         {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"},

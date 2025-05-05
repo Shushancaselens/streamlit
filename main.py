@@ -1449,10 +1449,15 @@ def main():
                         // Related argument
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = `
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? `<span><strong>Paragraphs:</strong> ${{fact.paragraphs}}</span>` : ''}
-                        `;
+                        // Create the HTML content for the meta element
+                        let metaHtml = `<span><strong>Argument:</strong> ${fact.argId}. ${fact.argTitle}</span>`;
+                        
+                        // Add paragraphs info if available
+                        if (fact.paragraphs) {
+                            metaHtml += ` <span><strong>Paragraphs:</strong> ${fact.paragraphs}</span>`;
+                        }
+                        
+                        metaEl.innerHTML = metaHtml;
                         bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);

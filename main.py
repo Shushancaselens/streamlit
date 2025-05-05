@@ -273,88 +273,97 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* Vertical timeline with events stacked completely vertically */
+    /* Vertical timeline with events connected by lines */
     .timeline-container {
         position: relative;
         max-height: 600px;
         overflow-y: auto;
-        padding-left: 30px;
+        padding-left: 35px;
         padding-right: 10px;
+    }
+    
+    .timeline-vertical-line {
+        position: absolute;
+        left: 24px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #4285f4;
+        opacity: 0.5;
     }
     
     .timeline-event-compact {
         position: relative;
-        margin-bottom: 25px;
-        padding-left: 20px;
+        margin-bottom: 30px;
+        padding-left: 40px;
     }
     
-    .timeline-event-compact::before {
-        content: '';
+    .timeline-event-dot {
         position: absolute;
-        left: -30px;
-        top: 7px;
-        width: 12px;
-        height: 12px;
+        left: -34px;
+        top: 8px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background-color: white;
-        border: 2px solid #4285f4;
+        border: 3px solid #4285f4;
         z-index: 2;
     }
     
-    .timeline-event-compact::after {
-        content: '';
+    .timeline-event-connector {
         position: absolute;
-        left: -26px;
-        top: 19px;
-        width: 2px;
-        height: calc(100% + 20px);
-        background-color: #ccc;
+        left: -27px;
+        top: 24px;
+        width: 8px;
+        height: 2px;
+        background-color: #4285f4;
         z-index: 1;
-    }
-    
-    .timeline-event-compact:last-child::after {
-        height: 0;
     }
     
     .timeline-date-compact {
         font-weight: bold;
         color: #4285f4;
-        margin-bottom: 5px;
-        font-size: 0.9em;
+        margin-bottom: 8px;
+        font-size: 1em;
     }
     
     .timeline-content-compact {
         background-color: #f8f9fa;
-        padding: 10px 15px;
-        border-radius: 4px;
+        padding: 12px 15px;
+        border-radius: 6px;
         border-left: 3px solid #4285f4;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
-    .timeline-content-compact strong {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 1.05em;
+    .timeline-content-compact .event-title {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #333;
     }
     
     .timeline-content-compact .details-row {
-        margin-top: 6px;
+        margin-top: 8px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex-wrap: wrap;
     }
     
     .timeline-content-compact .argument-text {
-        margin-top: 6px;
-        font-size: 0.9em;
+        margin-top: 8px;
+        font-size: 0.95em;
         color: #555;
+        padding: 6px 0;
     }
     
     .timeline-content-compact .source-info {
-        margin-top: 6px;
-        font-size: 0.85em;
+        margin-top: 8px;
+        font-size: 0.9em;
         color: #666;
         font-style: italic;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 6px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -693,6 +702,9 @@ with tab2:
             # Display all facts together in vertical timeline format
             st.markdown("<div class='timeline-container'>", unsafe_allow_html=True)
             
+            # Add the continuous vertical line
+            st.markdown("<div class='timeline-vertical-line'></div>", unsafe_allow_html=True)
+            
             # Sort all events by date
             all_events_sorted = sorted(all_events, key=lambda x: x["datetime"])
             
@@ -718,12 +730,14 @@ with tab2:
                 elif event["party"] == "Respondent":
                     party_class = "respondent"
                 
-                # Create vertical timeline item with everything stacked vertically
+                # Create vertical timeline item with connecting elements
                 timeline_html = f"""
                 <div class="timeline-event-compact">
+                    <div class="timeline-event-dot"></div>
+                    <div class="timeline-event-connector"></div>
                     <div class="timeline-date-compact">{date_display}</div>
                     <div class="timeline-content-compact">
-                        <strong>{event["event"]}</strong>
+                        <div class="event-title">{event["event"]}</div>
                         <div class="details-row">
                             <span class="party-tag {party_class}">{event["party"]}</span>
                             <span class="status-tag {status_class}">{event["status"]}</span>

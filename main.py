@@ -1564,31 +1564,53 @@ def main():
                         filteredFacts = factsData.filter(fact => !fact.isDisputed);
                     }}
                     
-                    // Create document sets even if no facts are found
+                    // Initialize docsWithFacts for all groups to ensure they appear even without facts
+                    const docsWithFacts = {{}};
+                    
+                    // Initialize all groups (categories)
                     documentSets.forEach(ds => {{
                         if (ds.isGroup) {{
-                            // Create document set container for each group
-                            const docsetEl = document.createElement('div');
-                            docsetEl.className = 'docset-container';
+                            docsWithFacts[ds.id] = {{
+                                docset: ds,
+                                isGroup: true,
+                                documents: {{}},
+                                facts: []
+                            }};
                             
-                            // For each folder, count all facts that match its documents
-                            let folderFacts = 0;
-                            
-                            if (ds.documents && Array.isArray(ds.documents)) {{
+                            // Initialize all documents within the group
+                            ds.documents.forEach(doc => {{
+                                docsWithFacts[ds.id].documents[doc.id] = {{
+                                    docset: doc,
+                                    facts: []
+                                }};
+                            }});
+                        }}
+                    }});
+                    
+                    // Distribute facts among document sets
+                    filteredFacts.forEach((fact, index) => {{
+                        // Get a document set based on party
+                        let possibleDocs = [];
+                        
+                        // Process all groups
+                        documentSets.forEach(ds => {{
+                            if (ds.isGroup) {{
+                                // Check documents in the group
                                 ds.documents.forEach(doc => {{
-                                    // Count facts that match this combined document set
-                                    const docFacts = filteredFacts.filter(fact => {{
-                                        // Check if fact belongs to this category and party
-                                        return fact.party === doc.party || (doc.party === 'Mixed' && (fact.party === 'Appellant' || fact.party === 'Respondent'));
-                                    }}).length;
-                                    folderFacts += docFacts;
+                                    // Include doc if party matches or if it's Mixed
+                                    if (doc.party === 'Mixed' || 
+                                        (fact.party === 'Appellant' && doc.party === 'Appellant') ||
+                                        (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
+                                        possibleDocs.push(doc);
+                                    }}
                                 }});
                             }}
+                        }});
                         
                         if (possibleDocs.length > 0) {{
                             const selectedDoc = possibleDocs[index % possibleDocs.length];
                             
-                            // Check if this document belongs to a group
+                            // Find the parent group
                             let groupDoc = null;
                             documentSets.forEach(ds => {{
                                 if (ds.isGroup && ds.documents.some(d => d.id === selectedDoc.id)) {{
@@ -1596,46 +1618,21 @@ def main():
                                 }}
                             }});
                             
-                            if (groupDoc) {{
-                                // Add to group
-                                if (!docsWithFacts[groupDoc.id]) {{
-                                    docsWithFacts[groupDoc.id] = {{
-                                        docset: groupDoc,
-                                        isGroup: true,
-                                        documents: {{}},
-                                        facts: []
-                                    }};
+                            if (groupDoc && docsWithFacts[groupDoc.id]) {{
+                                // Add fact to the specific document within group
+                                if (docsWithFacts[groupDoc.id].documents[selectedDoc.id]) {{
+                                    docsWithFacts[groupDoc.id].documents[selectedDoc.id].facts.push(fact);
                                 }}
-                                
-                                // Add to specific document within group
-                                if (!docsWithFacts[groupDoc.id].documents[selectedDoc.id]) {{
-                                    docsWithFacts[groupDoc.id].documents[selectedDoc.id] = {{
-                                        docset: selectedDoc,
-                                        facts: []
-                                    }};
-                                }}
-                                
-                                docsWithFacts[groupDoc.id].documents[selectedDoc.id].facts.push(fact);
+                                // Add fact to the group
                                 docsWithFacts[groupDoc.id].facts.push(fact);
-                            }} else {{
-                                // Add to individual document
-                                if (!docsWithFacts[selectedDoc.id]) {{
-                                    docsWithFacts[selectedDoc.id] = {{
-                                        docset: selectedDoc,
-                                        facts: []
-                                    }};
-                                }}
-                                docsWithFacts[selectedDoc.id].facts.push(fact);
                             }}
                         }}
                     }});
                     
-                    // Create document sets UI
+                    // Create document sets UI - render all groups regardless of fact count
                     Object.values(docsWithFacts).forEach(docWithFacts => {{
                         const docset = docWithFacts.docset;
                         const facts = docWithFacts.facts;
-                        
-                        if (facts.length === 0) return;
                         
                         // Create document set container
                         const docsetEl = document.createElement('div');
@@ -1669,8 +1666,6 @@ def main():
                                 const subDocset = docWithSubFacts.docset;
                                 const subFacts = docWithSubFacts.facts;
                                 
-                                if (subFacts.length === 0) return;
-                                
                                 groupContentHtml += `
                                     <div class="sub-docset-container" style="margin-left: 20px; margin-bottom: 20px;">
                                         <div class="docset-header" onclick="toggleDocSet('${{subDocset.id}}')" style="background-color: #f0f4f8;">
@@ -1689,6 +1684,10 @@ def main():
                                             </span>
                                         </div>
                                         <div id="docset-content-${{subDocset.id}}" class="docset-content">
+                            `;
+                            
+                                if (subFacts.length > 0) {{
+                                    groupContentHtml += `
                                             <table class="table-view">
                                                 <thead>
                                                     <tr>
@@ -1713,68 +1712,21 @@ def main():
                                                     `).join('')}}
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-                                `;
+                                    `;
+                                }} else {{
+                                    groupContentHtml += '<p style="padding: 12px;">No facts found</p>';
+                                }}
+                                
+                                groupContentHtml += '</div></div>';
                             }});
                             
                             groupContentHtml += '</div>';
                             docsetEl.innerHTML = groupHeaderHtml + groupContentHtml;
                             
-                        }} else {{
-                            // Generate individual document folder
-                            docsetEl.innerHTML = `
-                                <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                    <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                    <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span>${{docset.name}}</span>
-                                    <span style="margin-left: auto;">
-                                        <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                            ${{docset.party}}
-                                        </span>
-                                        <span class="badge">${{facts.length}} facts</span>
-                                    </span>
-                                </div>
-                                <div id="docset-content-${{docset.id}}" class="docset-content">
-                                    <table class="table-view">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Event</th>
-                                                <th>Status</th>
-                                                <th>Related Argument</th>
-                                                <th>Evidence</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${{facts.map(fact => `
-                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                    <td>${{fact.date}}</td>
-                                                    <td>${{fact.point}}</td>
-                                                    <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                    <td>${{fact.argId}}. ${{fact.argTitle}}</td>
-                                                    <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                        ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                        : 'None'}}</td>
-                                                </tr>
-                                            `).join('')}}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
                         }}
                         
                         container.appendChild(docsetEl);
                     }});
-                    
-                    // If no facts found
-                    if (Object.keys(docsWithFacts).length === 0) {{
-                        container.innerHTML = '<p>No facts found matching the selected criteria.</p>';
-                    }}
                 }}
                 
                 // Render facts table

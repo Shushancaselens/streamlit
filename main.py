@@ -111,7 +111,7 @@ st.markdown("""
 
 # Remove logo and title
 
-# Sidebar navigation - simplified
+# Sidebar navigation
 st.sidebar.markdown("## Legal Analysis")
 st.sidebar.button("📄 Arguments")
 st.sidebar.button("📊 Facts", type="primary")
@@ -484,6 +484,32 @@ with tab1:
         
         # DOCUMENT SETS VIEW
         else:
+            # Add title for document set overview
+            st.markdown("""
+            <div style='
+                background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+                padding: 20px 25px;
+                margin: 15px 0 30px 0;
+                border-radius: 8px;
+                border: 1px solid #dfe4ea;
+                text-align: center;
+            '>
+                <h2 style='
+                    color: #333;
+                    margin: 0;
+                    font-size: 1.8em;
+                    font-weight: 300;
+                    letter-spacing: 0.5px;
+                '>Document Set Overview</h2>
+                <p style='
+                    color: #666;
+                    margin: 8px 0 0 0;
+                    font-size: 1.1em;
+                    font-weight: normal;
+                '>Comprehensive view of all submissions and exhibits</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             # Define document sets (same as in Connected View)
             document_sets = {
                 "Initial Registration Materials": [1, 2],

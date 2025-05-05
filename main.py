@@ -111,72 +111,11 @@ st.markdown("""
 
 # Remove logo and title
 
-# Sidebar navigation - now with filters
-with st.sidebar:
-    st.markdown("## Legal Analysis")
-    st.button("📄 Arguments")
-    st.button("📊 Facts", type="primary")
-    st.button("📁 Exhibits")
-    
-    st.markdown("### Filters")
-    
-    # Document Set Selection
-    st.markdown("#### Document Sets")
-    doc_sets_available = [
-        "All Sets",
-        "Initial Registration Materials",
-        "Trademark Opposition Filings",
-        "Appeal Documentation",
-        "Procedural Challenges",
-        "Supporting Research"
-    ]
-    selected_doc_sets = st.multiselect(
-        "Select Document Sets",
-        options=doc_sets_available,
-        default=["All Sets"]
-    )
-    
-    # Status Filter
-    st.markdown("#### Status Filter")
-    status_filter = st.selectbox(
-        "Filter by status:",
-        options=["All", "Disputed", "Undisputed"],
-        key="sidebar_status_filter"
-    )
-    
-    # Party Filter
-    st.markdown("#### Party Filter")
-    party_filter = st.multiselect(
-        "Filter by Party:",
-        options=["All", "Appellant", "Respondent", "N/A"],
-        default=["All"],
-        key="sidebar_party_filter"
-    )
-    
-    # Date Range
-    st.markdown("#### Date Range")
-    min_date = pd.to_datetime(df_events["date"].min())
-    max_date = pd.to_datetime(df_events["date"].max())
-    
-    date_range = st.date_input(
-        "Date Range:",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
-        key="sidebar_date_range"
-    )
-    
-    # Search
-    st.markdown("#### Search")
-    search_term = st.text_input("Search Events:", placeholder="Enter keywords...", key="sidebar_search")
-    
-    # View Options
-    st.markdown("#### View Options")
-    view_mode = st.radio(
-        "View Mode:",
-        options=["Compact List", "Detailed Timeline", "Document Sets"],
-        key="sidebar_view_mode"
-    )
+# Sidebar navigation - simplified
+st.sidebar.markdown("## Legal Analysis")
+st.sidebar.button("📄 Arguments")
+st.sidebar.button("📊 Facts", type="primary")
+st.sidebar.button("📁 Exhibits")
 
 # Sample data - in a real app, this would come from a database
 document_folders = [

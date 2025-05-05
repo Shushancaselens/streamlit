@@ -371,206 +371,206 @@ st.markdown("""
 tab1, tab2 = st.tabs(["Case Facts", "Connected View"])
 
 with tab1:
-    # Make sure filter display works without the containing div
-    # Top filter section - now with more dropdowns
-    col1, col2 = st.columns([2, 1])
+    # Facts page redesigned to match Arguments page
+    st.markdown("### Summary of Facts")
+    
+    # Add control bar with party filters and view options
+    col1, col2 = st.columns([3, 2])
     
     with col1:
-        search_term = st.text_input("Search Facts:", placeholder="Search by keyword...", key="facts_search")
-    
-    # Create a row of dropdown filters
-    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
-    
-    with filter_col1:
-        sort_by = st.selectbox("Sort by:", 
-                              ["Date", "Event", "Party", "Status", "Related Argument", "Evidence"],
-                              key="facts_sort")
-    
-    with filter_col2:
-        sort_order = st.selectbox("Order:", 
-                                 ["Ascending", "Descending"], 
-                                 key="facts_order")
-    
-    with filter_col3:
-        # Status filter dropdown
-        status_filter = st.selectbox(
-            "Filter by status:",
-            options=["All", "Disputed", "Undisputed"],
-            key="status_filter"
-        )
-    
-    with filter_col4:
-        # View mode dropdown
-        view_mode = st.selectbox(
-            "View Mode:",
-            options=["Table View", "Document Sets View"],
-            key="facts_view_mode"
-        )
-    
-    # Get the data and apply filters
-    filtered_facts = df_events.copy()
-    
-    # Apply status filter if needed
-    if status_filter != "All":
-        filtered_facts = filtered_facts[filtered_facts["status"] == status_filter]
-    
-    # Apply search filter if needed
-    if search_term:
-        filtered_facts = filtered_facts[
-            filtered_facts["event"].str.lower().str.contains(search_term.lower()) | 
-            filtered_facts["argument"].str.lower().str.contains(search_term.lower())
-        ]
-    
-    # Convert to a formatted DataFrame for display
-    facts_df = filtered_facts[["date", "event", "party", "status", "argument", "evidence", "document_id"]].copy()
-    facts_df = facts_df.rename(columns={
-        "date": "Date", 
-        "event": "Event", 
-        "party": "Party", 
-        "status": "Status", 
-        "argument": "Related Argument", 
-        "evidence": "Evidence",
-        "document_id": "Document ID"
-    })
-    
-    # Sort the data
-    sort_col = sort_by
-    is_ascending = sort_order == "Ascending"
-    facts_df = facts_df.sort_values(by=sort_col, ascending=is_ascending)
-    
-    # Format the data for display
-    def format_party(party):
-        if party == "Appellant":
-            return f'<span class="party-tag appellant">{party}</span>'
-        elif party == "Respondent":
-            return f'<span class="party-tag respondent">{party}</span>'
-        else:
-            return party
-    
-    def format_status(status):
-        if status == "Disputed":
-            return f'<span class="status-tag disputed">{status}</span>'
-        elif status == "Undisputed":
-            return f'<span class="status-tag undisputed">{status}</span>'
-        else:
-            return status
-    
-    def format_evidence(evidence):
-        return f'<span class="evidence-tag">{evidence}</span>'
-    
-    # Apply formatting
-    facts_df["Party"] = facts_df["Party"].apply(format_party)
-    facts_df["Status"] = facts_df["Status"].apply(format_status)
-    facts_df["Evidence"] = facts_df["Evidence"].apply(format_evidence)
-    
-    # Display facts count
-    st.write(f"**Found {len(facts_df)} facts**")
-    
-    if len(facts_df) > 0:
-        # TABLE VIEW
-        if view_mode == "Table View":
-            # Display the table with classes for styling
-            display_df = facts_df.drop(columns=["Document ID"])  # Don't show document ID in table view
-            html_table = display_df.to_html(escape=False, index=False)
-            html_table = html_table.replace('<table', '<table class="facts-table"')
-            html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
-            html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
-            html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
-            html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
-            html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
-            html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
-            
-            st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
-        
-        # DOCUMENT SETS VIEW
-        else:
-            # Define document sets (same as in Connected View)
-            document_sets = {
-                "Initial Registration Materials": [1, 2],
-                "Trademark Opposition Filings": [3, 4, 11],
-                "Appeal Documentation": [5, 6, 7],
-                "Procedural Challenges": [8, 12],
-                "Supporting Research": [9, 10]
+        # Party filter buttons - styled like Arguments page
+        st.markdown("""
+        <style>
+            .party-filter-btn {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 4px;
+                margin-right: 8px;
+                cursor: pointer;
+                font-size: 0.9em;
+                transition: all 0.3s ease;
             }
-            
-            # Create document set mapping for lookup
-            doc_to_set = {}
-            for set_name, doc_ids in document_sets.items():
-                for doc_id in doc_ids:
-                    doc_to_set[doc_id] = set_name
-            
-            # Group facts by document ID and prepare for display
-            facts_by_doc = {}
-            for _, fact in facts_df.iterrows():
-                doc_id = fact["Document ID"]
-                if doc_id not in facts_by_doc:
-                    facts_by_doc[doc_id] = []
-                facts_by_doc[doc_id].append(fact)
-            
-            # Create a flat list of all documents with their facts
-            all_documents = []
-            for doc_id, doc_facts in facts_by_doc.items():
-                doc_info = df_folders[df_folders["id"] == doc_id].iloc[0]
-                doc_set = doc_to_set.get(doc_id, "Other Documents")
-                all_documents.append({
-                    "id": doc_id,
-                    "name": doc_info["name"],
-                    "party": doc_info["party"],
-                    "set": doc_set,
-                    "facts": doc_facts
-                })
-            
-            # Sort documents by ID
-            all_documents.sort(key=lambda x: x["id"])
-            
-            # Display all documents in a flat list
-            for doc in all_documents:
-                # Format document set as a category tag
-                set_class = doc["set"].lower().replace(" ", "-")
-                
-                # Format document party for display
-                party_class = ""
-                if doc["party"] == "Appellant":
-                    party_class = "appellant"
-                elif doc["party"] == "Respondent":
-                    party_class = "respondent"
-                
-                st.markdown(f"""
-                    <div style='background-color: #f8f9fa; padding: 10px 15px; border-radius: 4px; margin-top: 10px; margin-bottom: 5px; font-weight: 500; border-left: 3px solid #4285f4;'>
-                        {doc["name"]} 
-                        <span style='margin-left: 8px; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; background-color: #e8f0fe; color: #3c4043;'>{doc["set"]}</span>
-                        <span class='party-tag {party_class}'>{doc["party"]}</span>
-                        <span style='margin-left: 8px; color: #666; font-size: 0.9em;'>({len(doc["facts"])} facts)</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                # Create DataFrame for this document
-                doc_df = pd.DataFrame(doc["facts"])
-                doc_df = doc_df.drop(columns=["Document ID"])  # Don't need to show this column
-                
-                # Display the document facts table
-                html_table = doc_df.to_html(escape=False, index=False)
-                html_table = html_table.replace('<table', '<table class="facts-table"')
-                html_table = html_table.replace('<th>Date</th>', '<th class="date-column">Date</th>')
-                html_table = html_table.replace('<th>Event</th>', '<th class="event-column">Event</th>')
-                html_table = html_table.replace('<th>Party</th>', '<th class="party-column">Party</th>')
-                html_table = html_table.replace('<th>Status</th>', '<th class="status-column">Status</th>')
-                html_table = html_table.replace('<th>Related Argument</th>', '<th class="argument-column">Related Argument</th>')
-                html_table = html_table.replace('<th>Evidence</th>', '<th class="evidence-column">Evidence</th>')
-                
-                st.markdown(f"<div class='table-container'>{html_table}</div>", unsafe_allow_html=True)
+            .party-filter-btn.active {
+                background-color: #4285f4;
+                color: white;
+            }
+            .party-filter-btn:not(.active) {
+                background-color: #f1f3f5;
+                color: #666;
+            }
+            .party-filter-btn:hover:not(.active) {
+                background-color: #e9ecef;
+                color: #333;
+            }
+        </style>
+        """, unsafe_allow_html=True)
         
-        # Add download button for the filtered data
-        csv = facts_df.drop(columns=["Document ID"]).to_csv(index=False).encode('utf-8')
-        status_label = f"{status_filter}_" if status_filter != "All" else ""
-        st.download_button(
-            label=f"Download {status_label}Facts",
-            data=csv,
-            file_name=f"{status_label.lower()}facts.csv",
-            mime="text/csv",
+        party_filter = st.radio("",
+            options=["Both Parties", "Appellant Only", "Respondent Only"],
+            horizontal=True,
+            key="facts_party_filter",
+            label_visibility="collapsed"
         )
-    else:
-        st.info("No facts match the current filters.")
+    
+    with col2:
+        view_options = st.columns(2)
+        with view_options[0]:
+            st.button("📋 Copy")
+        with view_options[1]:
+            st.button("📥 Export")
+    
+    st.divider()
+    
+    # Main content area
+    st.markdown("""
+    <style>
+        .issues-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 15px 0;
+        }
+        .fact-section {
+            margin-bottom: 20px;
+        }
+        .position-header {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .appellant-header {
+            color: #4285f4;
+        }
+        .respondent-header {
+            color: #dc3545;
+        }
+        .fact-item {
+            display: flex;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+        .fact-number {
+            width: 30px;
+            flex-shrink: 0;
+            color: #666;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .fact-content {
+            flex-grow: 1;
+            color: #333;
+        }
+        .fact-reference {
+            width: 50px;
+            flex-shrink: 0;
+            text-align: right;
+            color: #4285f4;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        .fact-indent-1 {
+            margin-left: 30px;
+        }
+        .fact-indent-2 {
+            margin-left: 60px;
+        }
+        .two-column-wrapper {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .column {
+            flex: 1;
+            min-width: 400px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+        .status-disputed {
+            background-color: #fff5f5;
+            color: #e53e3e;
+        }
+        .status-undisputed {
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Organize facts by topic and create hierarchical structure
+    st.markdown('<div class="issues-header">Registration and Identity</div>', unsafe_allow_html=True)
+    
+    # Display facts in two columns by party
+    st.markdown('<div class="two-column-wrapper">', unsafe_allow_html=True)
+    
+    # Filter facts based on party selection
+    filtered_facts = df_events.copy()
+    if party_filter == "Appellant Only":
+        filtered_facts = filtered_facts[filtered_facts["party"] == "Appellant"]
+    elif party_filter == "Respondent Only":  
+        filtered_facts = filtered_facts[filtered_facts["party"] == "Respondent"]
+    
+    # Appellant's Facts
+    st.markdown('<div class="column">', unsafe_allow_html=True)
+    st.markdown('<div class="position-header appellant-header">Appellant\'s Position</div>', unsafe_allow_html=True)
+    
+    appellant_facts = filtered_facts[filtered_facts["party"] == "Appellant"]
+    for idx, (_, fact) in enumerate(appellant_facts.iterrows(), 1):
+        status_class = "status-disputed" if fact["status"] == "Disputed" else "status-undisputed"
+        
+        # Determine indentation level based on argument hierarchy
+        indent_class = ""
+        if "1.1" in fact["argument"]:
+            indent_class = "fact-indent-1"
+        elif "1.1.1" in fact["argument"]:
+            indent_class = "fact-indent-2"
+        
+        st.markdown(f"""
+        <div class="fact-item {indent_class}">
+            <div class="fact-number">{idx}.</div>
+            <div class="fact-content">
+                {fact["event"]}
+                <span class="status-badge {status_class}">{fact["status"]}</span>
+            </div>
+            <div class="fact-reference">{fact["evidence"]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Respondent's Facts
+    st.markdown('<div class="column">', unsafe_allow_html=True)
+    st.markdown('<div class="position-header respondent-header">Respondent\'s Position</div>', unsafe_allow_html=True)
+    
+    respondent_facts = filtered_facts[filtered_facts["party"] == "Respondent"]
+    for idx, (_, fact) in enumerate(respondent_facts.iterrows(), 1):
+        status_class = "status-disputed" if fact["status"] == "Disputed" else "status-undisputed"
+        
+        # Determine indentation level based on argument hierarchy
+        indent_class = ""
+        if "1.1" in fact["argument"]:
+            indent_class = "fact-indent-1"
+        elif "1.1.1" in fact["argument"]:
+            indent_class = "fact-indent-2"
+        
+        st.markdown(f"""
+        <div class="fact-item {indent_class}">
+            <div class="fact-number">{idx}.</div>
+            <div class="fact-content">
+                {fact["event"]}
+                <span class="status-badge {status_class}">{fact["status"]}</span>
+            </div>
+            <div class="fact-reference">{fact["evidence"]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
     # Make sure filter display works without the containing div

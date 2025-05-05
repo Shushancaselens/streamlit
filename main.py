@@ -347,7 +347,7 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to PM"
+            "source": "provisional messier - Answer to Request for PM"
         },
         {
             "point": "Significant color scheme change implemented",

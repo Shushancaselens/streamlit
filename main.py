@@ -1448,9 +1448,9 @@ def main():
                         sourceEl.style.fontStyle = 'italic';
                         
                         // Determine source based on exhibits and party
-                        let sourceText = `Source: ${fact.party}`;
+                        let sourceText = "Source: " + fact.party;
                         if (fact.exhibits && fact.exhibits.length > 0) {
-                            sourceText += ` (${fact.exhibits.join(', ')})`;
+                            sourceText += " (" + fact.exhibits.join(', ') + ")";
                         }
                         sourceEl.textContent = sourceText;
                         bodyEl.appendChild(sourceEl);

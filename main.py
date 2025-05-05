@@ -255,57 +255,16 @@ def get_all_facts():
         
     return facts
 
+# Get fact timeline data
 def get_timeline_data():
-    return [
-        {
-            "date": "2023-01-15",
-            "appellantVersion": "Contract signed with Club",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-03-20",
-            "appellantVersion": "Player received notification of exclusion from team",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-03-22",
-            "appellantVersion": "Player requested explanation",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-01",
-            "appellantVersion": "Player sent termination letter",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-05",
-            "appellantVersion": "—",
-            "respondentVersion": "Club rejected termination as invalid",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-10",
-            "appellantVersion": "Player was denied access to training facilities",
-            "respondentVersion": "—",
-            "status": "Disputed"
-        },
-        {
-            "date": "2023-04-15",
-            "appellantVersion": "—",
-            "respondentVersion": "Club issued warning letter",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-05-01",
-            "appellantVersion": "Player filed claim with FIFA",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        }
-    ]
+    # Convert the facts to a timeline format
+    facts = get_all_facts()
+    
+    # Sort by date
+    facts.sort(key=lambda x: x['date'].split('-')[0])
+    
+    # Return the facts (we'll use the same facts but just display them differently)
+    return facts
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
@@ -713,7 +672,7 @@ def main():
                     transform: rotate(90deg);
                 }}
                 
-                /* Enhanced Timeline styling */
+                /* Simple Timeline styling */
                 .timeline-wrapper {{
                     position: relative;
                     padding: 20px 0;
@@ -788,46 +747,22 @@ def main():
                     border: 1px solid #e2e8f0;
                 }}
                 
-                .timeline-versions {{
-                    display: flex;
-                    gap: 20px;
+                .timeline-fact {{
+                    padding: 16px;
+                    margin-top: 10px;
+                    position: relative;
                 }}
                 
-                .timeline-version {{
-                    flex: 1;
-                }}
-                
-                .timeline-version-title {{
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 8px;
-                }}
-                
-                .timeline-version-content {{
-                    padding: 10px;
-                    background-color: #f8fafc;
-                    border-radius: 6px;
-                    color: #4a5568;
-                    border-left: 3px solid;
-                }}
-                
-                .appellant-version .timeline-version-content {{
-                    border-left-color: #3182ce;
-                }}
-                
-                .respondent-version .timeline-version-content {{
-                    border-left-color: #e53e3e;
-                }}
-                
-                .timeline-status {{
+                .timeline-party {{
                     position: absolute;
-                    top: 10px;
-                    right: 10px;
+                    top: 16px;
+                    right: 16px;
                 }}
                 
-                .timeline-empty {{
-                    color: #a0aec0;
-                    font-style: italic;
+                .timeline-exhibits {{
+                    margin-top: 12px;
+                    display: flex;
+                    gap: 6px;
                 }}
             </style>
         </head>
@@ -980,16 +915,11 @@ def main():
                         // Copy timeline data
                         contentToCopy += 'Case Timeline\\n\\n';
                         
-                        timelineData.forEach(item => {{
-                            contentToCopy += `Date: ${{item.date}}\\n`;
-                            contentToCopy += `Status: ${{item.status}}\\n`;
-                            if (item.appellantVersion && item.appellantVersion !== '—') {{
-                                contentToCopy += `Appellant Version: ${{item.appellantVersion}}\\n`;
-                            }}
-                            if (item.respondentVersion && item.respondentVersion !== '—') {{
-                                contentToCopy += `Respondent Version: ${{item.respondentVersion}}\\n`;
-                            }}
-                            contentToCopy += '\\n';
+                        const timelineItems = document.querySelectorAll('.timeline-item');
+                        timelineItems.forEach(item => {{
+                            const date = item.querySelector('.timeline-date').textContent;
+                            const factText = item.querySelector('.timeline-fact').textContent.trim();
+                            contentToCopy += `${{date}}: ${{factText}}\\n\\n`;
                         }});
                     }} else {{
                         // Copy document sets data (just a basic representation)
@@ -1068,11 +998,11 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Appellant Version,Respondent Version,Status\\n";
+                        let headers = "Date,Event,Party,Status,Evidence\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
-                            rows += `"${{item.date}}","${{item.appellantVersion}}","${{item.respondentVersion}}","${{item.status}}"\\n`;
+                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{(item.exhibits || []).join(', ')}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1186,7 +1116,7 @@ def main():
                     }}
                 }}
                 
-                // Render enhanced timeline view
+                // Render simplified timeline view
                 function renderTimeline(tabType = 'all') {{
                     const container = document.getElementById('timeline-container');
                     container.innerHTML = '';
@@ -1194,91 +1124,81 @@ def main():
                     // Filter timeline data based on tab type
                     let filteredData = timelineData;
                     if (tabType === 'disputed') {{
-                        filteredData = timelineData.filter(item => item.status === 'Disputed');
+                        filteredData = timelineData.filter(item => item.isDisputed);
                     }} else if (tabType === 'undisputed') {{
-                        filteredData = timelineData.filter(item => item.status === 'Undisputed');
+                        filteredData = timelineData.filter(item => !item.isDisputed);
                     }}
                     
                     // Sort by date
-                    filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    filteredData.sort((a, b) => {{
+                        // Handle date ranges like "1950-present"
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
                     
                     // Create timeline items
-                    filteredData.forEach(item => {{
-                        const disputed = item.status === 'Disputed';
+                    filteredData.forEach(fact => {{
+                        const isDisputed = fact.isDisputed;
                         
                         const timelineItem = document.createElement('div');
                         timelineItem.className = 'timeline-item';
                         
                         // Create timeline dot/marker
                         const timelineDot = document.createElement('div');
-                        timelineDot.className = `timeline-dot ${{disputed ? 'disputed' : ''}}`;
+                        timelineDot.className = `timeline-dot ${{isDisputed ? 'disputed' : ''}}`;
                         timelineItem.appendChild(timelineDot);
                         
                         // Create date badge
                         const dateEl = document.createElement('div');
-                        dateEl.className = `timeline-date ${{disputed ? 'disputed' : ''}}`;
-                        dateEl.textContent = item.date;
+                        dateEl.className = `timeline-date ${{isDisputed ? 'disputed' : ''}}`;
+                        dateEl.textContent = fact.date;
                         timelineItem.appendChild(dateEl);
                         
                         // Create content container
                         const contentEl = document.createElement('div');
                         contentEl.className = 'timeline-content';
                         
+                        // Create fact content
+                        const factContent = document.createElement('div');
+                        factContent.className = 'timeline-fact';
+                        
+                        factContent.textContent = fact.point;
+                        
+                        // Add party badge
+                        const partyBadge = document.createElement('div');
+                        partyBadge.className = 'timeline-party';
+                        const badgeSpan = document.createElement('span');
+                        badgeSpan.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                        badgeSpan.textContent = fact.party;
+                        partyBadge.appendChild(badgeSpan);
+                        factContent.appendChild(partyBadge);
+                        
                         // Add status badge if disputed
-                        if (disputed) {{
-                            const statusEl = document.createElement('div');
-                            statusEl.className = 'timeline-status';
-                            statusEl.innerHTML = '<span class="badge disputed-badge">Disputed</span>';
-                            contentEl.appendChild(statusEl);
+                        if (isDisputed) {{
+                            const statusBadge = document.createElement('span');
+                            statusBadge.className = 'badge disputed-badge';
+                            statusBadge.style.marginLeft = '8px';
+                            statusBadge.textContent = 'Disputed';
+                            partyBadge.appendChild(statusBadge);
                         }}
                         
-                        // Create versions container
-                        const versionsEl = document.createElement('div');
-                        versionsEl.className = 'timeline-versions';
-                        
-                        // Appellant version
-                        const appellantEl = document.createElement('div');
-                        appellantEl.className = 'timeline-version appellant-version';
-                        
-                        const appellantTitle = document.createElement('div');
-                        appellantTitle.className = 'timeline-version-title';
-                        appellantTitle.innerHTML = '<span class="badge appellant-badge">Appellant</span>';
-                        appellantEl.appendChild(appellantTitle);
-                        
-                        const appellantContent = document.createElement('div');
-                        appellantContent.className = 'timeline-version-content';
-                        if (item.appellantVersion && item.appellantVersion !== '—') {{
-                            appellantContent.textContent = item.appellantVersion;
-                        }} else {{
-                            appellantContent.className += ' timeline-empty';
-                            appellantContent.textContent = 'No version provided';
+                        // Add exhibits badges if any
+                        if (fact.exhibits && fact.exhibits.length > 0) {{
+                            const exhibitsDiv = document.createElement('div');
+                            exhibitsDiv.className = 'timeline-exhibits';
+                            
+                            fact.exhibits.forEach(exhibitId => {{
+                                const exhibitBadge = document.createElement('span');
+                                exhibitBadge.className = 'badge exhibit-badge';
+                                exhibitBadge.textContent = exhibitId;
+                                exhibitsDiv.appendChild(exhibitBadge);
+                            }});
+                            
+                            factContent.appendChild(exhibitsDiv);
                         }}
-                        appellantEl.appendChild(appellantContent);
                         
-                        versionsEl.appendChild(appellantEl);
-                        
-                        // Respondent version
-                        const respondentEl = document.createElement('div');
-                        respondentEl.className = 'timeline-version respondent-version';
-                        
-                        const respondentTitle = document.createElement('div');
-                        respondentTitle.className = 'timeline-version-title';
-                        respondentTitle.innerHTML = '<span class="badge respondent-badge">Respondent</span>';
-                        respondentEl.appendChild(respondentTitle);
-                        
-                        const respondentContent = document.createElement('div');
-                        respondentContent.className = 'timeline-version-content';
-                        if (item.respondentVersion && item.respondentVersion !== '—') {{
-                            respondentContent.textContent = item.respondentVersion;
-                        }} else {{
-                            respondentContent.className += ' timeline-empty';
-                            respondentContent.textContent = 'No version provided';
-                        }}
-                        respondentEl.appendChild(respondentContent);
-                        
-                        versionsEl.appendChild(respondentEl);
-                        
-                        contentEl.appendChild(versionsEl);
+                        contentEl.appendChild(factContent);
                         timelineItem.appendChild(contentEl);
                         
                         container.appendChild(timelineItem);

@@ -1,9 +1,7 @@
 import streamlit as st
 import json
-import streamlit.components.v1 as components
 import pandas as pd
 import base64
-import os
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -38,25 +36,8 @@ def get_document_sets():
     }
 
 # Get all facts from the data
-def get_all_facts(uploaded_files=None):
-    # If there are uploaded files, extract facts from them
-    if uploaded_files:
-        facts = []
-        for file in uploaded_files:
-            # Determine which document set the file belongs to
-            set_name = determine_document_set(file.name)
-            party = determine_party(set_name)
-            
-            # Read the file content
-            content = file.getvalue().decode("utf-8")
-            
-            # Extract facts from the content (simple example - would need to be more sophisticated)
-            file_facts = extract_facts_from_content(content, file.name, set_name, party)
-            facts.extend(file_facts)
-        
-        return facts
-    
-    # If no uploaded files, return sample facts
+def get_all_facts():
+    # Return sample facts
     return [
         {
             'point': "Continuous operation under same name since 1950",
@@ -114,75 +95,6 @@ def get_all_facts(uploaded_files=None):
             'document_set': "Jurisprudence"
         }
     ]
-
-# Helper function to determine which document set a file belongs to
-def determine_document_set(filename):
-    doc_sets = get_document_sets()
-    
-    # Flatten all document sets
-    all_sets = []
-    for category, sets in doc_sets.items():
-        all_sets.extend(sets)
-    
-    # Find the matching document set
-    for set_name in all_sets:
-        if set_name in filename:
-            return set_name
-    
-    return "Other"
-
-# Helper function to determine which party a document set belongs to
-def determine_party(set_name):
-    doc_sets = get_document_sets()
-    
-    if set_name in doc_sets["claimant"]:
-        return "Claimant"
-    elif set_name in doc_sets["respondent"]:
-        return "Respondent"
-    else:
-        return "Other"
-
-# Helper function to extract facts from content
-def extract_facts_from_content(content, filename, set_name, party):
-    # This would be a more sophisticated parser in a real application
-    # Here we'll just return some dummy facts based on the filename
-    
-    facts = []
-    lines = content.split('\n')
-    
-    for i, line in enumerate(lines):
-        if "fact:" in line.lower() or ":" in line:
-            # Simple heuristic - lines with "fact:" or containing a colon might be facts
-            parts = line.split(":", 1)
-            if len(parts) > 1:
-                fact = {
-                    'point': parts[1].strip(),
-                    'date': "N/A",  # Would need more sophisticated extraction
-                    'isDisputed': "disputed" in line.lower(),
-                    'party': party,
-                    'paragraphs': f"{i+1}",
-                    'exhibits': [],
-                    'argId': "N/A",
-                    'argTitle': parts[0].strip(),
-                    'document_set': set_name
-                }
-                facts.append(fact)
-    
-    # If no facts found, add a placeholder
-    if not facts:
-        facts.append({
-            'point': f"Content from {filename}",
-            'date': "N/A",
-            'isDisputed': False,
-            'party': party,
-            'paragraphs': "N/A",
-            'exhibits': [],
-            'argId': "N/A",
-            'argTitle': "Document Content",
-            'document_set': set_name
-        })
-    
-    return facts
 
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
@@ -251,25 +163,27 @@ def main():
     if st.session_state.view == "Facts":
         st.title("Case Facts")
         
-        # File uploader for document sets
-        uploaded_files = st.file_uploader("Upload documents", accept_multiple_files=True)
-        
         # Get facts data
-        facts_data = get_all_facts(uploaded_files)
+        facts_data = get_all_facts()
         
-        # View selector
-        col1, col2 = st.columns([3, 1])
+        # View selector buttons
+        col1, col2 = st.columns([2, 1])
         with col1:
             st.subheader("Facts View")
         with col2:
-            view_mode = st.radio(
-                "View Mode:",
-                ["Table View", "Document Sets View"],
-                horizontal=True,
-                key="view_mode",
-                label_visibility="collapsed"
-            )
-            st.session_state.facts_view_mode = "table" if view_mode == "Table View" else "sets"
+            cols = st.columns(2)
+            with cols[0]:
+                # Button for Table View
+                btn_style = "primary" if st.session_state.facts_view_mode == "table" else "secondary"
+                if st.button("Table View", type=btn_style, use_container_width=True):
+                    st.session_state.facts_view_mode = "table"
+                    st.rerun()
+            with cols[1]:
+                # Button for Document Sets View
+                btn_style = "primary" if st.session_state.facts_view_mode == "sets" else "secondary"
+                if st.button("Document Sets View", type=btn_style, use_container_width=True):
+                    st.session_state.facts_view_mode = "sets"
+                    st.rerun()
         
         # Create tabs for filtering facts
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

@@ -266,7 +266,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-1"],
             "argId": "1",
-            "argTitle": "Sporting Succession"
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "First National Championship won",
@@ -275,7 +276,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-3"],
             "argId": "1",
-            "argTitle": "Sporting Succession"
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Club colors established as blue and white",
@@ -284,7 +286,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-4"],
             "argId": "1.2",
-            "argTitle": "Club Colors Analysis"
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "First international competition participation",
@@ -293,7 +296,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-6"],
             "argId": "1",
-            "argTitle": "Sporting Succession"
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Minor variations in club color shades introduced",
@@ -302,7 +306,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-5"],
             "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis"
+            "argTitle": "Color Variations Analysis",
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Administrative operations halted due to financial difficulties",
@@ -311,7 +316,8 @@ def get_timeline_data():
             "party": "Respondent",
             "exhibits": ["R-2"],
             "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence"
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to Request for PM"
         },
         {
             "point": "Operations ceased between 1975-1976",
@@ -320,7 +326,8 @@ def get_timeline_data():
             "party": "Respondent",
             "exhibits": ["R-1"],
             "argId": "1",
-            "argTitle": "Sporting Succession Rebuttal"
+            "argTitle": "Sporting Succession Rebuttal",
+            "source": "provisional messier - Answer to PM"
         },
         {
             "point": "Club registration formally terminated",
@@ -329,7 +336,8 @@ def get_timeline_data():
             "party": "Respondent",
             "exhibits": ["R-2"],
             "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence"
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to Request for PM"
         },
         {
             "point": "New entity registered with similar name",
@@ -338,7 +346,8 @@ def get_timeline_data():
             "party": "Respondent",
             "exhibits": ["R-2"],
             "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence"
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to PM"
         },
         {
             "point": "Significant color scheme change implemented",
@@ -347,7 +356,8 @@ def get_timeline_data():
             "party": "Respondent",
             "exhibits": ["R-4"],
             "argId": "1.2",
-            "argTitle": "Club Colors Analysis Rebuttal"
+            "argTitle": "Club Colors Analysis Rebuttal",
+            "source": "admissibility - Brief on Admissibility"
         },
         {
             "point": "Third color temporarily added to uniform",
@@ -356,7 +366,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-5"],
             "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis"
+            "argTitle": "Color Variations Analysis",
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Club won Continental Cup with post-1976 team",
@@ -365,7 +376,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-7"],
             "argId": "1",
-            "argTitle": "Sporting Succession"
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Return to original blue and white color scheme",
@@ -374,7 +386,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-8"],
             "argId": "1.2",
-            "argTitle": "Club Colors Analysis"
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Trademark registration for club name and emblem",
@@ -383,7 +396,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-9"],
             "argId": "1.1",
-            "argTitle": "Club Name Analysis"
+            "argTitle": "Club Name Analysis",
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Federation officially recognizes club history spanning pre and post 1976",
@@ -392,7 +406,8 @@ def get_timeline_data():
             "party": "Appellant",
             "exhibits": ["C-10"],
             "argId": "1",
-            "argTitle": "Sporting Succession"
+            "argTitle": "Sporting Succession",
+            "source": "admissibility - Reply to Objection to Admissibility"
         }
     ]
     

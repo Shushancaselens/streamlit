@@ -404,18 +404,10 @@ def get_timeline_data():
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
-        {
-            "id": "set1",
-            "name": "Appellant Admissibility Set",
-            "party": "Appellant",
-            "isSet": True,
-            "documents": [
-                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
-                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
-                {"id": "4", "name": "4. Answer to PM", "party": "Respondent"}
-            ]
-        },
+        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
+        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
         {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
+        {"id": "4", "name": "4. Answer to PM", "party": "Respondent"},
         {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
         {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
         {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},
@@ -505,10 +497,10 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-            # Create the facts HTML component
+    # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
-        html_content = """
+        html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -1039,9 +1031,9 @@ def main():
             
             <script>
                 // Initialize data
-                const factsData = """ + json.dumps(facts_data) + """;
-                const documentSets = """ + json.dumps(document_sets) + """;
-                const timelineData = """ + json.dumps(timeline_data) + """;
+                const factsData = {facts_json};
+                const documentSets = {document_sets_json};
+                const timelineData = {timeline_json};
                 
                 // Switch view between table, timeline, and document sets
                 function switchView(viewType) {{
@@ -1449,15 +1441,10 @@ def main():
                         // Related argument
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
-                        // Create the HTML content for the meta element
-                        let metaHtml = `<span><strong>Argument:</strong> ${fact.argId}. ${fact.argTitle}</span>`;
-                        
-                        // Add paragraphs info if available
-                        if (fact.paragraphs) {
-                            metaHtml += ` <span><strong>Paragraphs:</strong> ${fact.paragraphs}</span>`;
-                        }
-                        
-                        metaEl.innerHTML = metaHtml;
+                        metaEl.innerHTML = `
+                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
+                            ${{fact.paragraphs ? `<span><strong>Paragraphs:</strong> ${{fact.paragraphs}}</span>` : ''}
+                        `;
                         bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);

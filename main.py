@@ -404,22 +404,19 @@ def get_timeline_data():
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     return [
-        # Grouped documents under "Document Set Title"
-        {"id": "admissibility", "name": "Document Set Title", "party": "Mixed", "isGroup": True, "documents": [
-            {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant"},
-            {"id": "2", "name": "2. Request for a Stay", "party": "Appellant"},
-            {"id": "4", "name": "4. Answer to PM", "party": "Respondent"}
-        ]},
-        # Individual documents
-        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent"},
-        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant"},
-        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent"},
-        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant"},
-        {"id": "8", "name": "8. Challenge", "party": "Appellant"},
-        {"id": "9", "name": "ChatGPT", "party": "Shared"},
-        {"id": "10", "name": "Jurisprudence", "party": "Shared"},
-        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent"},
-        {"id": "12", "name": "Swiss Court", "party": "Shared"}
+        # Individual documents with categories
+        {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+        {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+        {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "Provisional Messier"},
+        {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "Provisional Messier"},
+        {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+        {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "Admissibility"},
+        {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "Admissibility"},
+        {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "Challenge"},
+        {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "Challenge"},
+        {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"},
+        {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "Admissibility"},
+        {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "Challenge"}
     ]
 
 # Function to create CSV download link
@@ -990,7 +987,7 @@ def main():
                     <div class="view-toggle">
                         <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
-                        <button id="docset-view-btn" onclick="switchView('docset')">Document Set Title</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                     </div>
                     
                     <div class="facts-header">

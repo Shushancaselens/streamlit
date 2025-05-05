@@ -142,87 +142,215 @@ def main():
     # Show facts page (assuming we're only implementing the Facts view)
     st.title("Case Facts")
     
-    # Create tabs for different fact views
-    facts_tabs = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+    # Create the facts header/tabs
+    col1, col2, col3 = st.columns([1, 1, 1])
+    
+    with col1:
+        all_facts_btn = st.button("All Facts", key="all_facts_btn", use_container_width=True)
+    with col2:
+        disputed_facts_btn = st.button("Disputed Facts", key="disputed_facts_btn", use_container_width=True)
+    with col3:
+        undisputed_facts_btn = st.button("Undisputed Facts", key="undisputed_facts_btn", use_container_width=True)
+    
+    # Initialize view in session state if not present
+    if 'facts_view' not in st.session_state:
+        st.session_state.facts_view = "all"
+    
+    # Update view based on button clicks
+    if disputed_facts_btn:
+        st.session_state.facts_view = "disputed"
+    elif undisputed_facts_btn:
+        st.session_state.facts_view = "undisputed"
+    elif all_facts_btn:
+        st.session_state.facts_view = "all"
     
     # Get the facts data
     facts_data = get_all_facts()
     
-    # Convert to DataFrame for easier manipulation
-    facts_df = pd.DataFrame(facts_data)
+    # Define column styles for the table
+    table_css = """
+    <style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th {
+        text-align: left;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        position: sticky;
+        top: 0;
+        cursor: pointer;
+    }
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    tr:hover {
+        background-color: #f8f9fa;
+    }
+    tr.disputed {
+        background-color: rgba(229, 62, 62, 0.05);
+    }
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .appellant-badge {
+        background-color: rgba(49, 130, 206, 0.1);
+        color: #3182ce;
+    }
+    .respondent-badge {
+        background-color: rgba(229, 62, 62, 0.1);
+        color: #e53e3e;
+    }
+    .exhibit-badge {
+        background-color: rgba(221, 107, 32, 0.1);
+        color: #dd6b20;
+        margin-right: 5px;
+    }
+    .disputed-badge {
+        background-color: rgba(229, 62, 62, 0.1);
+        color: #e53e3e;
+    }
+    </style>
+    """
     
-    # Process for different tabs
-    with facts_tabs[0]:  # All Facts
-        # Convert exhibits to string for display
-        facts_df_display = facts_df.copy()
-        facts_df_display['exhibits'] = facts_df_display['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
-        facts_df_display['Status'] = facts_df_display['isDisputed'].apply(lambda x: 'Disputed' if x else 'Undisputed')
+    st.markdown(table_css, unsafe_allow_html=True)
+    
+    # Filter facts based on selected view
+    if st.session_state.facts_view == "disputed":
+        filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
+    elif st.session_state.facts_view == "undisputed":
+        filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
+    else:
+        filtered_facts = facts_data
+    
+    # Create the table HTML
+    table_html = """
+    <table class="table-view">
+        <thead>
+            <tr>
+                <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+            </tr>
+        </thead>
+        <tbody id="facts-table-body">
+    """
+    
+    # Add rows to table
+    for fact in filtered_facts:
+        # Create party badge HTML
+        if fact['party'] == "Appellant":
+            party_badge = f'<span class="badge appellant-badge">{fact["party"]}</span>'
+        else:
+            party_badge = f'<span class="badge respondent-badge">{fact["party"]}</span>'
         
-        # Display the table
-        st.dataframe(
-            facts_df_display[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
-                columns={
-                    'date': 'Date', 
-                    'point': 'Event', 
-                    'party': 'Party', 
-                    'argId': 'Argument ID', 
-                    'argTitle': 'Argument Title',
-                    'exhibits': 'Exhibits'
+        # Create status cell content
+        if fact['isDisputed']:
+            status_cell = '<span class="badge disputed-badge">Disputed</span>'
+            row_class = 'class="disputed"'
+        else:
+            status_cell = 'Undisputed'
+            row_class = ''
+        
+        # Create exhibits badges
+        exhibits_badges = ""
+        if 'exhibits' in fact and fact['exhibits']:
+            for exhibit in fact['exhibits']:
+                exhibits_badges += f'<span class="badge exhibit-badge">{exhibit}</span>'
+        
+        # Add row to table
+        table_html += f"""
+        <tr {row_class}>
+            <td>{fact['date']}</td>
+            <td>{fact['point']}</td>
+            <td>{party_badge}</td>
+            <td>{status_cell}</td>
+            <td>{fact['argId']}. {fact['argTitle']}</td>
+            <td>{exhibits_badges if exhibits_badges else 'None'}</td>
+        </tr>
+        """
+    
+    # Close the table
+    table_html += """
+        </tbody>
+    </table>
+    """
+    
+    # Add script for sorting
+    table_html += """
+    <script>
+    function sortTable(tableId, columnIndex) {
+        const table = document.getElementById(tableId);
+        const rows = Array.from(table.rows);
+        let dir = 1; // 1 for ascending, -1 for descending
+        
+        // Check if already sorted in this direction
+        if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+            table.getAttribute('data-sort-dir') === '1') {
+            dir = -1;
+        }
+        
+        // Sort the rows
+        rows.sort((a, b) => {
+            const cellA = a.cells[columnIndex].textContent.trim();
+            const cellB = b.cells[columnIndex].textContent.trim();
+            
+            // Handle date sorting
+            if (columnIndex === 0) {
+                // Attempt to parse as dates
+                const dateA = new Date(cellA);
+                const dateB = new Date(cellB);
+                
+                if (!isNaN(dateA) && !isNaN(dateB)) {
+                    return dir * (dateA - dateB);
                 }
-            ),
-            use_container_width=True
+            }
+            
+            return dir * cellA.localeCompare(cellB);
+        });
+        
+        // Remove existing rows and append in new order
+        rows.forEach(row => table.appendChild(row));
+        
+        // Store current sort direction and column
+        table.setAttribute('data-sort-column', columnIndex);
+        table.setAttribute('data-sort-dir', dir);
+    }
+    </script>
+    """
+    
+    # Display the table
+    st.markdown(table_html, unsafe_allow_html=True)
+    
+    # Create a dataframe for CSV download
+    df = pd.DataFrame(filtered_facts)
+    if not df.empty:
+        df['exhibits'] = df['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
+        df['Status'] = df['isDisputed'].apply(lambda x: 'Disputed' if x else 'Undisputed')
+        df_csv = df[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
+            columns={
+                'date': 'Date', 
+                'point': 'Event', 
+                'party': 'Party', 
+                'argId': 'Argument ID', 
+                'argTitle': 'Argument Title',
+                'exhibits': 'Exhibits'
+            }
         )
         
         # Add download link
-        st.markdown(get_csv_download_link(facts_df_display, "all_facts.csv", "Download All Facts CSV"), unsafe_allow_html=True)
-    
-    with facts_tabs[1]:  # Disputed Facts
-        # Filter for disputed facts
-        disputed_df = facts_df[facts_df['isDisputed'] == True].copy()
-        disputed_df['exhibits'] = disputed_df['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
-        disputed_df['Status'] = 'Disputed'
-        
-        # Display the table
-        st.dataframe(
-            disputed_df[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
-                columns={
-                    'date': 'Date', 
-                    'point': 'Event', 
-                    'party': 'Party', 
-                    'argId': 'Argument ID', 
-                    'argTitle': 'Argument Title',
-                    'exhibits': 'Exhibits'
-                }
-            ),
-            use_container_width=True
-        )
-        
-        # Add download link
-        st.markdown(get_csv_download_link(disputed_df, "disputed_facts.csv", "Download Disputed Facts CSV"), unsafe_allow_html=True)
-    
-    with facts_tabs[2]:  # Undisputed Facts
-        # Filter for undisputed facts
-        undisputed_df = facts_df[facts_df['isDisputed'] == False].copy()
-        undisputed_df['exhibits'] = undisputed_df['exhibits'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
-        undisputed_df['Status'] = 'Undisputed'
-        
-        # Display the table
-        st.dataframe(
-            undisputed_df[['date', 'point', 'party', 'Status', 'argId', 'argTitle', 'exhibits']].rename(
-                columns={
-                    'date': 'Date', 
-                    'point': 'Event', 
-                    'party': 'Party', 
-                    'argId': 'Argument ID', 
-                    'argTitle': 'Argument Title',
-                    'exhibits': 'Exhibits'
-                }
-            ),
-            use_container_width=True
-        )
-        
-        # Add download link
-        st.markdown(get_csv_download_link(undisputed_df, "undisputed_facts.csv", "Download Undisputed Facts CSV"), unsafe_allow_html=True)
+        view_name = st.session_state.facts_view
+        st.markdown(get_csv_download_link(df_csv, f"{view_name}_facts.csv", f"Download {view_name.capitalize()} Facts CSV"), unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-import streamlit.components.v1 as components
 import pandas as pd
 import base64
 
@@ -10,8 +9,6 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
     st.session_state.view = "Facts"
-if 'facts_view_mode' not in st.session_state:
-    st.session_state.facts_view_mode = "table"
 
 # Get all facts from the data
 def get_all_facts():
@@ -33,8 +30,7 @@ def get_all_facts():
                     'paragraphs': point.get('paragraphs', ''),
                     'exhibits': point.get('exhibits', []),
                     'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    'document_set': get_document_set_for_point(point['point'], party)
+                    'argTitle': arg['title']
                 }
                 facts.append(fact)
                 
@@ -52,49 +48,6 @@ def get_all_facts():
         extract_facts(arg, 'Respondent')
         
     return facts
-
-# Helper function to assign document sets to facts
-def get_document_set_for_point(point, party):
-    # This is a simplified mapping - in a real app would be more sophisticated
-    doc_sets = get_document_sets()
-    
-    if party == "Appellant":
-        if "1950" in point:
-            return doc_sets["claimant"][2]  # "5. Appeal Brief"
-        elif "administrative gap" in point:
-            return doc_sets["claimant"][0]  # "1. Statement of Appeal"
-        else:
-            return doc_sets["claimant"][1]  # "3. Answer to Request for PM"
-    else:  # Respondent
-        if "operations ceased" in point:
-            return doc_sets["respondent"][2]  # "6. Brief on Admissibility"
-        elif "terminated" in point:
-            return doc_sets["respondent"][4]  # "Objection to Admissibility"
-        else:
-            return doc_sets["respondent"][1]  # "4. Answer to PM"
-
-# Get document sets
-def get_document_sets():
-    return {
-        "claimant": [
-            "1. Statement of Appeal",
-            "3. Answer to Request for PM",
-            "5. Appeal Brief",
-            "7. Reply to Objection to Admissibility"
-        ],
-        "respondent": [
-            "2. Request for a Stay", 
-            "4. Answer to PM",
-            "6. Brief on Admissibility",
-            "8. Challenge",
-            "Objection to Admissibility"
-        ],
-        "other": [
-            "ChatGPT",
-            "Jurisprudence",
-            "Swiss Court"
-        ]
-    }
 
 # Get argument data
 def get_argument_data():
@@ -213,7 +166,30 @@ def get_argument_data():
                             "citations": ["53", "54", "55"]
                         }
                     ],
-                    "children": {}
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57",
+                                    "exhibits": ["C-5"]
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59",
+                                    "exhibits": ["C-5"]
+                                }
+                            ],
+                            "children": {}
+                        }
+                    }
                 }
             }
         }
@@ -242,47 +218,7 @@ def get_argument_data():
                     "exhibits": ["R-1"]
                 }
             ],
-            "evidence": [
-                {
-                    "id": "R-1",
-                    "title": "Federation Records",
-                    "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
-                    "citations": ["208", "209", "210"]
-                }
-            ],
-            "caseLaw": [
-                {
-                    "caseNumber": "CAS 2017/A/5465",
-                    "title": "Operational continuity requirement",
-                    "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
-                    "paragraphs": "211-213",
-                    "citedParagraphs": ["212"]
-                }
-            ],
-            "children": {
-                "1.1": {
-                    "id": "1.1.1",
-                    "title": "Registration Gap Evidence",
-                    "paragraphs": "226-230",
-                    "factualPoints": [
-                        {
-                            "point": "Registration formally terminated on April 30, 1975",
-                            "date": "April 30, 1975",
-                            "isDisputed": False,
-                            "paragraphs": "226-227",
-                            "exhibits": ["R-2"]
-                        }
-                    ],
-                    "evidence": [
-                        {
-                            "id": "R-2",
-                            "title": "Termination Certificate",
-                            "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
-                            "citations": ["226", "227"]
-                        }
-                    ]
-                }
-            }
+            "children": {}
         }
     }
     
@@ -310,17 +246,7 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
 
 # Main app
 def main():
-    # Get the data for JavaScript
-    facts_data = get_all_facts()
-    
-    # Convert data to JSON for JavaScript use
-    facts_json = json.dumps(facts_data)
-    
-    # Initialize session state if not already done
-    if 'view' not in st.session_state:
-        st.session_state.view = "Facts"
-    
-    # Add Streamlit sidebar with navigation buttons only
+    # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
         # Add the logo and CaseLens text
         st.markdown("""
@@ -378,968 +304,46 @@ def main():
     if st.session_state.view == "Facts":
         st.title("Case Facts")
         
-        # View selector buttons
-        cols = st.columns([4, 1, 1])
-        with cols[1]:
-            # Button for Table View
-            btn_style = "primary" if st.session_state.facts_view_mode == "table" else "secondary"
-            if st.button("Table View", type=btn_style, use_container_width=True):
-                st.session_state.facts_view_mode = "table"
-                st.rerun()
-        with cols[2]:
-            # Button for Document Sets View
-            btn_style = "primary" if st.session_state.facts_view_mode == "sets" else "secondary"
-            if st.button("Document Sets View", type=btn_style, use_container_width=True):
-                st.session_state.facts_view_mode = "sets"
-                st.rerun()
+        # Get facts data
+        facts_data = get_all_facts()
         
-        # Table view (original HTML component)
-        if st.session_state.facts_view_mode == "table":
-            # Create HTML component with the facts table
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    /* Minimalistic base styling */
-                    body {{
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                        line-height: 1.5;
-                        color: #333;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
-                    }}
-                    
-                    /* Simple container */
-                    .container {{
-                        max-width: 1200px;
-                        margin: 0 auto;
-                        padding: 20px;
-                    }}
-                    
-                    /* Content sections */
-                    .content-section {{
-                        display: none;
-                    }}
-                    
-                    .content-section.active {{
-                        display: block;
-                    }}
-                    
-                    /* Badge styling */
-                    .badge {{
-                        display: inline-block;
-                        padding: 3px 8px;
-                        border-radius: 12px;
-                        font-size: 12px;
-                        font-weight: 500;
-                    }}
-                    
-                    .appellant-badge {{
-                        background-color: rgba(49, 130, 206, 0.1);
-                        color: #3182ce;
-                    }}
-                    
-                    .respondent-badge {{
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }}
-                    
-                    .exhibit-badge {{
-                        background-color: rgba(221, 107, 32, 0.1);
-                        color: #dd6b20;
-                    }}
-                    
-                    .disputed-badge {{
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }}
-                    
-                    /* Tables */
-                    table {{
-                        width: 100%;
-                        border-collapse: collapse;
-                    }}
-                    
-                    th {{
-                        text-align: left;
-                        padding: 12px;
-                        background-color: #fafafa;
-                        border-bottom: 1px solid #f0f0f0;
-                    }}
-                    
-                    td {{
-                        padding: 12px;
-                        border-bottom: 1px solid #f0f0f0;
-                    }}
-                    
-                    tr.disputed {{
-                        background-color: rgba(229, 62, 62, 0.05);
-                    }}
-                    
-                    /* Facts styling */
-                    .facts-container {{
-                        margin-top: 20px;
-                    }}
-                    
-                    .facts-header {{
-                        display: flex;
-                        margin-bottom: 20px;
-                        border-bottom: 1px solid #dee2e6;
-                    }}
-                    
-                    .tab-button {{
-                        padding: 10px 20px;
-                        background: none;
-                        border: none;
-                        cursor: pointer;
-                    }}
-                    
-                    .tab-button.active {{
-                        border-bottom: 2px solid #4299e1;
-                        color: #4299e1;
-                        font-weight: 500;
-                    }}
-                    
-                    .facts-content {{
-                        margin-top: 20px;
-                    }}
-                    
-                    /* Section title */
-                    .section-title {{
-                        font-size: 1.5rem;
-                        font-weight: 600;
-                        margin-bottom: 1rem;
-                        padding-bottom: 0.5rem;
-                        border-bottom: 1px solid #eaeaea;
-                    }}
-                    
-                    /* Table view */
-                    .table-view {{
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin-top: 20px;
-                    }}
-                    
-                    .table-view th {{
-                        padding: 12px;
-                        text-align: left;
-                        background-color: #f8f9fa;
-                        border-bottom: 2px solid #dee2e6;
-                        position: sticky;
-                        top: 0;
-                        cursor: pointer;
-                    }}
-                    
-                    .table-view th:hover {{
-                        background-color: #e9ecef;
-                    }}
-                    
-                    .table-view td {{
-                        padding: 12px;
-                        border-bottom: 1px solid #dee2e6;
-                    }}
-                    
-                    .table-view tr:hover {{
-                        background-color: #f8f9fa;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div id="facts" class="content-section active">
-                        <div class="facts-header">
-                            <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                            <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                            <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                        </div>
-                        
-                        <div class="facts-content">
-                            <table class="table-view">
-                                <thead>
-                                    <tr>
-                                        <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                        <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                        <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                        <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                        <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                        <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="facts-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                
-                <script>
-                    // Initialize facts data
-                    const factsData = {facts_json};
-                    
-                    // Switch facts tab
-                    function switchFactsTab(tabType) {{
-                        const allBtn = document.getElementById('all-facts-btn');
-                        const disputedBtn = document.getElementById('disputed-facts-btn');
-                        const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                        
-                        // Remove active class from all
-                        allBtn.classList.remove('active');
-                        disputedBtn.classList.remove('active');
-                        undisputedBtn.classList.remove('active');
-                        
-                        // Add active to selected
-                        if (tabType === 'all') {{
-                            allBtn.classList.add('active');
-                            renderFacts('all');
-                        }} else if (tabType === 'disputed') {{
-                            disputedBtn.classList.add('active');
-                            renderFacts('disputed');
-                        }} else {{
-                            undisputedBtn.classList.add('active');
-                            renderFacts('undisputed');
-                        }}
-                    }}
-                    
-                    // Sort table function
-                    function sortTable(tableId, columnIndex) {{
-                        const table = document.getElementById(tableId);
-                        const rows = Array.from(table.rows);
-                        let dir = 1; // 1 for ascending, -1 for descending
-                        
-                        // Check if already sorted in this direction
-                        if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                            table.getAttribute('data-sort-dir') === '1') {{
-                            dir = -1;
-                        }}
-                        
-                        // Sort the rows
-                        rows.sort((a, b) => {{
-                            const cellA = a.cells[columnIndex].textContent.trim();
-                            const cellB = b.cells[columnIndex].textContent.trim();
-                            
-                            // Handle date sorting
-                            if (columnIndex === 0) {{
-                                // Attempt to parse as dates
-                                const dateA = new Date(cellA);
-                                const dateB = new Date(cellB);
-                                
-                                if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                    return dir * (dateA - dateB);
-                                }}
-                            }}
-                            
-                            return dir * cellA.localeCompare(cellB);
-                        }});
-                        
-                        // Remove existing rows and append in new order
-                        rows.forEach(row => table.appendChild(row));
-                        
-                        // Store current sort direction and column
-                        table.setAttribute('data-sort-column', columnIndex);
-                        table.setAttribute('data-sort-dir', dir);
-                    }}
-                    
-                    // Render facts table
-                    function renderFacts(type = 'all') {{
-                        const tableBody = document.getElementById('facts-table-body');
-                        tableBody.innerHTML = '';
-                        
-                        // Filter by type
-                        let filteredFacts = factsData;
-                        
-                        if (type === 'disputed') {{
-                            filteredFacts = factsData.filter(fact => fact.isDisputed);
-                        }} else if (type === 'undisputed') {{
-                            filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                        }}
-                        
-                        // Sort by date
-                        filteredFacts.sort((a, b) => {{
-                            // Handle date ranges like "1950-present"
-                            const dateA = a.date.split('-')[0];
-                            const dateB = b.date.split('-')[0];
-                            return new Date(dateA) - new Date(dateB);
-                        }});
-                        
-                        // Render rows
-                        filteredFacts.forEach(fact => {{
-                            const row = document.createElement('tr');
-                            
-                            // Date column
-                            const dateCell = document.createElement('td');
-                            dateCell.textContent = fact.date;
-                            row.appendChild(dateCell);
-                            
-                            // Event column
-                            const eventCell = document.createElement('td');
-                            eventCell.textContent = fact.point;
-                            row.appendChild(eventCell);
-                            
-                            // Party column
-                            const partyCell = document.createElement('td');
-                            const partyBadge = document.createElement('span');
-                            partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                            partyBadge.textContent = fact.party;
-                            partyCell.appendChild(partyBadge);
-                            row.appendChild(partyCell);
-                            
-                            // Status column
-                            const statusCell = document.createElement('td');
-                            if (fact.isDisputed) {{
-                                const disputedBadge = document.createElement('span');
-                                disputedBadge.className = 'badge disputed-badge';
-                                disputedBadge.textContent = 'Disputed';
-                                statusCell.appendChild(disputedBadge);
-                            }} else {{
-                                statusCell.textContent = 'Undisputed';
-                            }}
-                            row.appendChild(statusCell);
-                            
-                            // Related argument
-                            const argCell = document.createElement('td');
-                            argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                            row.appendChild(argCell);
-                            
-                            // Evidence column
-                            const evidenceCell = document.createElement('td');
-                            if (fact.exhibits && fact.exhibits.length > 0) {{
-                                fact.exhibits.forEach(exhibitId => {{
-                                    const exhibitBadge = document.createElement('span');
-                                    exhibitBadge.className = 'badge exhibit-badge';
-                                    exhibitBadge.textContent = exhibitId;
-                                    exhibitBadge.style.marginRight = '4px';
-                                    evidenceCell.appendChild(exhibitBadge);
-                                }});
-                            }} else {{
-                                evidenceCell.textContent = 'None';
-                            }}
-                            row.appendChild(evidenceCell);
-                            
-                            tableBody.appendChild(row);
-                        }});
-                    }}
-                    
-                    // Initialize facts on page load
-                    document.addEventListener('DOMContentLoaded', function() {{
-                        renderFacts('all');
-                    }});
-                    
-                    // Initialize facts immediately
-                    renderFacts('all');
-                </script>
-            </body>
-            </html>
-            """
-            
-            # Render the HTML component
-            components.html(html_content, height=600, scrolling=True)
-            
-        # Document Sets View
-        else:
-            # Create a dataframe of the facts data 
-            facts_df = pd.DataFrame(facts_data)
-            
-            # Create tabs for filtering facts
-            tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
-            
-            with tab1:
-                # Group by document set
-                doc_sets = sorted(facts_df['document_set'].unique())
-                
-                for doc_set in doc_sets:
-                    st.subheader(doc_set)
-                    
-                    # Filter facts by document set
-                    set_facts = facts_df[facts_df['document_set'] == doc_set]
-                    
-                    # Create HTML for document set facts
-                    set_facts_json = json.dumps(set_facts.to_dict('records'))
-                    set_html = f"""
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>
-                            body {{
-                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                                line-height: 1.5;
-                                color: #333;
-                                margin: 0;
-                                padding: 0;
-                            }}
-                            
-                            /* Badge styling */
-                            .badge {{
-                                display: inline-block;
-                                padding: 3px 8px;
-                                border-radius: 12px;
-                                font-size: 12px;
-                                font-weight: 500;
-                            }}
-                            
-                            .appellant-badge {{
-                                background-color: rgba(49, 130, 206, 0.1);
-                                color: #3182ce;
-                            }}
-                            
-                            .respondent-badge {{
-                                background-color: rgba(229, 62, 62, 0.1);
-                                color: #e53e3e;
-                            }}
-                            
-                            .exhibit-badge {{
-                                background-color: rgba(221, 107, 32, 0.1);
-                                color: #dd6b20;
-                            }}
-                            
-                            .disputed-badge {{
-                                background-color: rgba(229, 62, 62, 0.1);
-                                color: #e53e3e;
-                            }}
-                            
-                            /* Tables */
-                            table {{
-                                width: 100%;
-                                border-collapse: collapse;
-                            }}
-                            
-                            th {{
-                                text-align: left;
-                                padding: 12px;
-                                background-color: #fafafa;
-                                border-bottom: 1px solid #f0f0f0;
-                            }}
-                            
-                            td {{
-                                padding: 12px;
-                                border-bottom: 1px solid #f0f0f0;
-                            }}
-                            
-                            tr.disputed {{
-                                background-color: rgba(229, 62, 62, 0.05);
-                            }}
-                            
-                            /* Table view */
-                            .table-view {{
-                                width: 100%;
-                                border-collapse: collapse;
-                            }}
-                            
-                            .table-view th {{
-                                padding: 12px;
-                                text-align: left;
-                                background-color: #f8f9fa;
-                                border-bottom: 2px solid #dee2e6;
-                                position: sticky;
-                                top: 0;
-                                cursor: pointer;
-                            }}
-                            
-                            .table-view th:hover {{
-                                background-color: #e9ecef;
-                            }}
-                            
-                            .table-view td {{
-                                padding: 12px;
-                                border-bottom: 1px solid #dee2e6;
-                            }}
-                            
-                            .table-view tr:hover {{
-                                background-color: #f8f9fa;
-                            }}
-                        </style>
-                    </head>
-                    <body>
-                        <table class="table-view">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Event</th>
-                                    <th>Party</th>
-                                    <th>Status</th>
-                                    <th>Related Argument</th>
-                                    <th>Evidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="set-facts-body"></tbody>
-                        </table>
-                        
-                        <script>
-                            // Initialize facts data
-                            const setFactsData = {set_facts_json};
-                            
-                            // Render facts table
-                            function renderSetFacts() {{
-                                const tableBody = document.getElementById('set-facts-body');
-                                tableBody.innerHTML = '';
-                                
-                                // Sort by date
-                                setFactsData.sort((a, b) => {{
-                                    // Handle date ranges like "1950-present"
-                                    const dateA = a.date.split('-')[0];
-                                    const dateB = b.date.split('-')[0];
-                                    return new Date(dateA) - new Date(dateB);
-                                }});
-                                
-                                // Render rows
-                                setFactsData.forEach(fact => {{
-                                    const row = document.createElement('tr');
-                                    if (fact.isDisputed) {{
-                                        row.classList.add('disputed');
-                                    }}
-                                    
-                                    // Date column
-                                    const dateCell = document.createElement('td');
-                                    dateCell.textContent = fact.date;
-                                    row.appendChild(dateCell);
-                                    
-                                    // Event column
-                                    const eventCell = document.createElement('td');
-                                    eventCell.textContent = fact.point;
-                                    row.appendChild(eventCell);
-                                    
-                                    // Party column
-                                    const partyCell = document.createElement('td');
-                                    const partyBadge = document.createElement('span');
-                                    partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                    partyBadge.textContent = fact.party;
-                                    partyCell.appendChild(partyBadge);
-                                    row.appendChild(partyCell);
-                                    
-                                    // Status column
-                                    const statusCell = document.createElement('td');
-                                    if (fact.isDisputed) {{
-                                        const disputedBadge = document.createElement('span');
-                                        disputedBadge.className = 'badge disputed-badge';
-                                        disputedBadge.textContent = 'Disputed';
-                                        statusCell.appendChild(disputedBadge);
-                                    }} else {{
-                                        statusCell.textContent = 'Undisputed';
-                                    }}
-                                    row.appendChild(statusCell);
-                                    
-                                    // Related argument
-                                    const argCell = document.createElement('td');
-                                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                                    row.appendChild(argCell);
-                                    
-                                    // Evidence column
-                                    const evidenceCell = document.createElement('td');
-                                    if (fact.exhibits && fact.exhibits.length > 0) {{
-                                        fact.exhibits.forEach(exhibitId => {{
-                                            const exhibitBadge = document.createElement('span');
-                                            exhibitBadge.className = 'badge exhibit-badge';
-                                            exhibitBadge.textContent = exhibitId;
-                                            exhibitBadge.style.marginRight = '4px';
-                                            evidenceCell.appendChild(exhibitBadge);
-                                        }});
-                                    }} else {{
-                                        evidenceCell.textContent = 'None';
-                                    }}
-                                    row.appendChild(evidenceCell);
-                                    
-                                    tableBody.appendChild(row);
-                                }});
-                            }}
-                            
-                            // Initialize immediately
-                            renderSetFacts();
-                        </script>
-                    </body>
-                    </html>
-                    """
-                    
-                    # Display the HTML component
-                    components.html(set_html, height=400, scrolling=True)
-                    
-                    # CSV download link
-                    st.markdown(get_csv_download_link(set_facts, f"{doc_set.replace(' ', '_')}_facts.csv", f"Download {doc_set} Facts CSV"), unsafe_allow_html=True)
-                    st.markdown("---")
-
-            with tab2:
-                # Filter for disputed facts
-                disputed_facts = facts_df[facts_df['isDisputed'] == True]
-                
-                # Group disputed facts by document set
-                if not disputed_facts.empty:
-                    doc_sets = sorted(disputed_facts['document_set'].unique())
-                    
-                    for doc_set in doc_sets:
-                        st.subheader(doc_set)
-                        
-                        # Filter facts by document set
-                        set_facts = disputed_facts[disputed_facts['document_set'] == doc_set]
-                        
-                        # Create HTML for document set facts
-                        set_facts_json = json.dumps(set_facts.to_dict('records'))
-                        set_html = f"""
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <style>
-                                body {{
-                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                                    line-height: 1.5;
-                                    color: #333;
-                                    margin: 0;
-                                    padding: 0;
-                                }}
-                                
-                                /* Badge styling */
-                                .badge {{
-                                    display: inline-block;
-                                    padding: 3px 8px;
-                                    border-radius: 12px;
-                                    font-size: 12px;
-                                    font-weight: 500;
-                                }}
-                                
-                                .appellant-badge {{
-                                    background-color: rgba(49, 130, 206, 0.1);
-                                    color: #3182ce;
-                                }}
-                                
-                                .respondent-badge {{
-                                    background-color: rgba(229, 62, 62, 0.1);
-                                    color: #e53e3e;
-                                }}
-                                
-                                .exhibit-badge {{
-                                    background-color: rgba(221, 107, 32, 0.1);
-                                    color: #dd6b20;
-                                }}
-                                
-                                .disputed-badge {{
-                                    background-color: rgba(229, 62, 62, 0.1);
-                                    color: #e53e3e;
-                                }}
-                                
-                                /* Tables */
-                                table {{
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                }}
-                                
-                                th {{
-                                    text-align: left;
-                                    padding: 12px;
-                                    background-color: #fafafa;
-                                    border-bottom: 1px solid #f0f0f0;
-                                }}
-                                
-                                td {{
-                                    padding: 12px;
-                                    border-bottom: 1px solid #f0f0f0;
-                                }}
-                                
-                                tr.disputed {{
-                                    background-color: rgba(229, 62, 62, 0.05);
-                                }}
-                                
-                                /* Table view */
-                                .table-view {{
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                }}
-                                
-                                .table-view th {{
-                                    padding: 12px;
-                                    text-align: left;
-                                    background-color: #f8f9fa;
-                                    border-bottom: 2px solid #dee2e6;
-                                    position: sticky;
-                                    top: 0;
-                                }}
-                                
-                                .table-view td {{
-                                    padding: 12px;
-                                    border-bottom: 1px solid #dee2e6;
-                                }}
-                                
-                                .table-view tr:hover {{
-                                    background-color: #f8f9fa;
-                                }}
-                            </style>
-                        </head>
-                        <body>
-                            <table class="table-view">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Event</th>
-                                        <th>Party</th>
-                                        <th>Status</th>
-                                        <th>Related Argument</th>
-                                        <th>Evidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="disputed-set-facts-body"></tbody>
-                            </table>
-                            
-                            <script>
-                                // Initialize facts data
-                                const disputedSetFactsData = {set_facts_json};
-                                
-                                // Render facts table
-                                function renderDisputedSetFacts() {{
-                                    const tableBody = document.getElementById('disputed-set-facts-body');
-                                    tableBody.innerHTML = '';
-                                    
-                                    // Render rows
-                                    disputedSetFactsData.forEach(fact => {{
-                                        const row = document.createElement('tr');
-                                        row.classList.add('disputed');
-                                        
-                                        // Date column
-                                        const dateCell = document.createElement('td');
-                                        dateCell.textContent = fact.date;
-                                        row.appendChild(dateCell);
-                                        
-                                        // Event column
-                                        const eventCell = document.createElement('td');
-                                        eventCell.textContent = fact.point;
-                                        row.appendChild(eventCell);
-                                        
-                                        // Party column
-                                        const partyCell = document.createElement('td');
-                                        const partyBadge = document.createElement('span');
-                                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                        partyBadge.textContent = fact.party;
-                                        partyCell.appendChild(partyBadge);
-                                        row.appendChild(partyCell);
-                                        
-                                        // Status column
-                                        const statusCell = document.createElement('td');
-                                        const disputedBadge = document.createElement('span');
-                                        disputedBadge.className = 'badge disputed-badge';
-                                        disputedBadge.textContent = 'Disputed';
-                                        statusCell.appendChild(disputedBadge);
-                                        row.appendChild(statusCell);
-                                        
-                                        // Related argument
-                                        const argCell = document.createElement('td');
-                                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                                        row.appendChild(argCell);
-                                        
-                                        // Evidence column
-                                        const evidenceCell = document.createElement('td');
-                                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                                            fact.exhibits.forEach(exhibitId => {{
-                                                const exhibitBadge = document.createElement('span');
-                                                exhibitBadge.className = 'badge exhibit-badge';
-                                                exhibitBadge.textContent = exhibitId;
-                                                exhibitBadge.style.marginRight = '4px';
-                                                evidenceCell.appendChild(exhibitBadge);
-                                            }});
-                                        }} else {{
-                                            evidenceCell.textContent = 'None';
-                                        }}
-                                        row.appendChild(evidenceCell);
-                                        
-                                        tableBody.appendChild(row);
-                                    }});
-                                }}
-                                
-                                // Initialize immediately
-                                renderDisputedSetFacts();
-                            </script>
-                        </body>
-                        </html>
-                        """
-                        
-                        # Display the HTML component
-                        components.html(set_html, height=400, scrolling=True)
-                        
-                        # CSV download link
-                        st.markdown(get_csv_download_link(set_facts, f"disputed_{doc_set.replace(' ', '_')}_facts.csv", f"Download Disputed {doc_set} Facts CSV"), unsafe_allow_html=True)
-                        st.markdown("---")
+        # Create tabs for filtering facts
+        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+        
+        # Prepare dataframe
+        facts_df = pd.DataFrame(facts_data)
+        
+        # Add styling for disputed vs undisputed rows
+        def highlight_disputed(row):
+            if row['isDisputed']:
+                return ['background-color: rgba(229, 62, 62, 0.05)'] * len(row)
+            return [''] * len(row)
+        
+        with tab1:
+            # Show all facts
+            if not facts_df.empty:
+                styled_df = facts_df.style.apply(highlight_disputed, axis=1)
+                st.dataframe(styled_df)
+                st.markdown(get_csv_download_link(facts_df, "facts.csv"), unsafe_allow_html=True)
+        
+        with tab2:
+            # Show only disputed facts
+            if not facts_df.empty:
+                disputed_df = facts_df[facts_df['isDisputed'] == True]
+                if not disputed_df.empty:
+                    styled_disputed = disputed_df.style.apply(highlight_disputed, axis=1)
+                    st.dataframe(styled_disputed)
+                    st.markdown(get_csv_download_link(disputed_df, "disputed_facts.csv"), unsafe_allow_html=True)
                 else:
                     st.info("No disputed facts found.")
-
-            with tab3:
-                # Filter for undisputed facts
-                undisputed_facts = facts_df[facts_df['isDisputed'] == False]
-                
-                # Group undisputed facts by document set
-                if not undisputed_facts.empty:
-                    doc_sets = sorted(undisputed_facts['document_set'].unique())
-                    
-                    for doc_set in doc_sets:
-                        st.subheader(doc_set)
-                        
-                        # Filter facts by document set
-                        set_facts = undisputed_facts[undisputed_facts['document_set'] == doc_set]
-                        
-                        # Create HTML for document set facts
-                        set_facts_json = json.dumps(set_facts.to_dict('records'))
-                        set_html = f"""
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <style>
-                                body {{
-                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                                    line-height: 1.5;
-                                    color: #333;
-                                    margin: 0;
-                                    padding: 0;
-                                }}
-                                
-                                /* Badge styling */
-                                .badge {{
-                                    display: inline-block;
-                                    padding: 3px 8px;
-                                    border-radius: 12px;
-                                    font-size: 12px;
-                                    font-weight: 500;
-                                }}
-                                
-                                .appellant-badge {{
-                                    background-color: rgba(49, 130, 206, 0.1);
-                                    color: #3182ce;
-                                }}
-                                
-                                .respondent-badge {{
-                                    background-color: rgba(229, 62, 62, 0.1);
-                                    color: #e53e3e;
-                                }}
-                                
-                                .exhibit-badge {{
-                                    background-color: rgba(221, 107, 32, 0.1);
-                                    color: #dd6b20;
-                                }}
-                                
-                                /* Tables */
-                                table {{
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                }}
-                                
-                                th {{
-                                    text-align: left;
-                                    padding: 12px;
-                                    background-color: #fafafa;
-                                    border-bottom: 1px solid #f0f0f0;
-                                }}
-                                
-                                td {{
-                                    padding: 12px;
-                                    border-bottom: 1px solid #f0f0f0;
-                                }}
-                                
-                                /* Table view */
-                                .table-view {{
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                }}
-                                
-                                .table-view th {{
-                                    padding: 12px;
-                                    text-align: left;
-                                    background-color: #f8f9fa;
-                                    border-bottom: 2px solid #dee2e6;
-                                    position: sticky;
-                                    top: 0;
-                                }}
-                                
-                                .table-view td {{
-                                    padding: 12px;
-                                    border-bottom: 1px solid #dee2e6;
-                                }}
-                                
-                                .table-view tr:hover {{
-                                    background-color: #f8f9fa;
-                                }}
-                            </style>
-                        </head>
-                        <body>
-                            <table class="table-view">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Event</th>
-                                        <th>Party</th>
-                                        <th>Status</th>
-                                        <th>Related Argument</th>
-                                        <th>Evidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="undisputed-set-facts-body"></tbody>
-                            </table>
-                            
-                            <script>
-                                // Initialize facts data
-                                const undisputedSetFactsData = {set_facts_json};
-                                
-                                // Render facts table
-                                function renderUndisputedSetFacts() {{
-                                    const tableBody = document.getElementById('undisputed-set-facts-body');
-                                    tableBody.innerHTML = '';
-                                    
-                                    // Render rows
-                                    undisputedSetFactsData.forEach(fact => {{
-                                        const row = document.createElement('tr');
-                                        
-                                        // Date column
-                                        const dateCell = document.createElement('td');
-                                        dateCell.textContent = fact.date;
-                                        row.appendChild(dateCell);
-                                        
-                                        // Event column
-                                        const eventCell = document.createElement('td');
-                                        eventCell.textContent = fact.point;
-                                        row.appendChild(eventCell);
-                                        
-                                        // Party column
-                                        const partyCell = document.createElement('td');
-                                        const partyBadge = document.createElement('span');
-                                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                        partyBadge.textContent = fact.party;
-                                        partyCell.appendChild(partyBadge);
-                                        row.appendChild(partyCell);
-                                        
-                                        // Status column
-                                        const statusCell = document.createElement('td');
-                                        statusCell.textContent = 'Undisputed';
-                                        row.appendChild(statusCell);
-                                        
-                                        // Related argument
-                                        const argCell = document.createElement('td');
-                                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                                        row.appendChild(argCell);
-                                        
-                                        // Evidence column
-                                        const evidenceCell = document.createElement('td');
-                                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                                            fact.exhibits.forEach(exhibitId => {{
-                                                const exhibitBadge = document.createElement('span');
-                                                exhibitBadge.className = 'badge exhibit-badge';
-                                                exhibitBadge.textContent = exhibitId;
-                                                exhibitBadge.style.marginRight = '4px';
-                                                evidenceCell.appendChild(exhibitBadge);
-                                            }});
-                                        }} else {{
-                                            evidenceCell.textContent = 'None';
-                                        }}
-                                        row.appendChild(evidenceCell);
-                                        
-                                        tableBody.appendChild(row);
-                                    }});
-                                }}
-                                
-                                // Initialize immediately
-                                renderUndisputedSetFacts();
-                            </script>
-                        </body>
-                        </html>
-                        """
-                        
-                        # Display the HTML component
-                        components.html(set_html, height=400, scrolling=True)
-                        
-                        # CSV download link
-                        st.markdown(get_csv_download_link(set_facts, f"undisputed_{doc_set.replace(' ', '_')}_facts.csv", f"Download Undisputed {doc_set} Facts CSV"), unsafe_allow_html=True)
-                        st.markdown("---")
+        
+        with tab3:
+            # Show only undisputed facts
+            if not facts_df.empty:
+                undisputed_df = facts_df[facts_df['isDisputed'] == False]
+                if not undisputed_df.empty:
+                    st.dataframe(undisputed_df)
+                    st.markdown(get_csv_download_link(undisputed_df, "undisputed_facts.csv"), unsafe_allow_html=True)
                 else:
                     st.info("No undisputed facts found.")
 

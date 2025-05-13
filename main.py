@@ -836,7 +836,7 @@ def main():
                 }}
                 
                 .docset-content {{
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
+                    display: none; /* Folders closed by default */
                     padding: 0 0 20px 0;
                 }}
                 
@@ -852,7 +852,7 @@ def main():
                 .chevron {{
                     transition: transform 0.2s;
                     margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
+                    transform: rotate(0deg); /* Start collapsed by default */
                 }}
                 
                 .chevron.expanded {{
@@ -1354,7 +1354,7 @@ def main():
                     const content = document.getElementById(`docset-content-${{docsetId}}`);
                     const chevron = document.getElementById(`chevron-${{docsetId}}`);
                     
-                    if (content.style.display === 'none') {{
+                    if (content.style.display === 'none' || content.style.display === '') {{
                         content.style.display = 'block';
                         chevron.style.transform = 'rotate(90deg)';
                     }} else {{
@@ -1608,7 +1608,7 @@ def main():
                         // Create folder header
                         const headerHtml = `
                             <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                                 <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1622,7 +1622,7 @@ def main():
                                     <span class="badge">${{facts.length}} facts</span>
                                 </span>
                             </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                            <div id="docset-content-${{docset.id}}" class="docset-content" style="display: none;">
                         `;
                         
                         let contentHtml = '';

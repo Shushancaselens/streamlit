@@ -1036,7 +1036,7 @@ def main():
                     <div class="section-title">Case Facts</div>
                     
                     <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Document List</button>
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">All Combined View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>

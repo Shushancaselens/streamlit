@@ -1047,10 +1047,8 @@ def main():
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
-                    <!-- Table View (Document List) -->
+                    <!-- Table View -->
                     <div id="table-view-content" class="facts-content">
-                        <div class="section-title">Document List</div>
-                        <p>Comprehensive list of all case facts from all documents.</p>
                         <table class="table-view">
                             <thead>
                                 <tr>
@@ -1076,10 +1074,8 @@ def main():
                         </div>
                     </div>
                     
-                    <!-- Document Categories View -->
+                    <!-- Document Sets View -->
                     <div id="docset-view-content" class="facts-content" style="display: none;">
-                        <div class="section-title">Document Categories</div>
-                        <p class="mb-3">Click on folders to expand document categories and view associated facts.</p>
                         <div id="document-sets-container"></div>
                     </div>
                 </div>

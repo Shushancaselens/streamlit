@@ -9,22 +9,6 @@ from datetime import datetime
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Initialize session state to track selected view
-if 'view' not in st.session_state:
-    st.session_state.view = "Facts"
-
-# Initialize document sets in session state if not already there
-if 'document_sets' not in st.session_state:
-    st.session_state.document_sets = get_document_sets()
-
-# Initialize uploaded files in session state
-if 'uploaded_files' not in st.session_state:
-    st.session_state.uploaded_files = {}
-
-# Initialize selected document set
-if 'selected_set' not in st.session_state:
-    st.session_state.selected_set = None
-
 # Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
@@ -565,6 +549,76 @@ def save_uploaded_file(uploaded_file, set_id, doc_id):
     }
     
     return True
+
+# Sample document sets for demonstrating the document set view
+def get_document_sets():
+    # Return grouped document sets with individual document subfolders
+    return [
+        {
+            "id": "appeal",
+            "name": "Appeal",
+            "party": "Mixed",
+            "category": "Appeal",
+            "isGroup": True,
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
+            ]
+        },
+        {
+            "id": "provisional_messier",
+            "name": "provisional messier",
+            "party": "Respondent",
+            "category": "provisional messier",
+            "isGroup": True,
+            "documents": [
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
+            ]
+        },
+        {
+            "id": "admissibility",
+            "name": "admissibility",
+            "party": "Mixed",
+            "category": "admissibility",
+            "isGroup": True,
+            "documents": [
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
+            ]
+        },
+        {
+            "id": "challenge",
+            "name": "challenge",
+            "party": "Mixed",
+            "category": "challenge",
+            "isGroup": True,
+            "documents": [
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
+            ]
+        }
+    ]
+
+# Initialize session state to track selected view
+if 'view' not in st.session_state:
+    st.session_state.view = "Facts"
+
+# Initialize document sets in session state if not already there
+if 'document_sets' not in st.session_state:
+    st.session_state.document_sets = get_document_sets()
+
+# Initialize uploaded files in session state
+if 'uploaded_files' not in st.session_state:
+    st.session_state.uploaded_files = {}
+
+# Initialize selected document set
+if 'selected_set' not in st.session_state:
+    st.session_state.selected_set = None
 
 # Main app
 def main():

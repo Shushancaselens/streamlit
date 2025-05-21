@@ -9,8 +9,9 @@ from datetime import datetime
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Function to get document sets
+# Sample document sets for demonstrating the document set view
 def get_document_sets():
+    # Return grouped document sets with individual document subfolders
     return [
         {
             "id": "appeal",
@@ -77,8 +78,7 @@ if 'selected_set' not in st.session_state:
 
 if 'creating_set' not in st.session_state:
     st.session_state.creating_set = False
-    
-# Initialize viewing_set for document set details
+
 if 'viewing_set' not in st.session_state:
     st.session_state.viewing_set = None
 
@@ -160,74 +160,14 @@ def save_uploaded_file(uploaded_file, set_id, doc_id):
         st.error(f"Error saving file: {e}")
         return False
 
-# Get all facts from the data (needed for facts view)
-def get_all_facts():
-    args_data = get_argument_data()
-    facts = []
-    
-    # Helper function to extract facts from arguments
-    def extract_facts(arg, party):
-        if not arg:
-            return
-            
-        if 'factualPoints' in arg and arg['factualPoints']:
-            for point in arg['factualPoints']:
-                fact = {
-                    'point': point['point'],
-                    'date': point['date'],
-                    'isDisputed': point['isDisputed'],
-                    'party': party,
-                    'paragraphs': point.get('paragraphs', ''),
-                    'exhibits': point.get('exhibits', []),
-                    'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    'source': point.get('source', party)
-                }
-                facts.append(fact)
-                
-        # Process children
-        if 'children' in arg and arg['children']:
-            for child_id, child in arg['children'].items():
-                extract_facts(child, party)
-    
-    # Extract from claimant args
-    for arg_id, arg in args_data['claimantArgs'].items():
-        extract_facts(arg, 'Appellant')
-        
-    # Extract from respondent args
-    for arg_id, arg in args_data['respondentArgs'].items():
-        extract_facts(arg, 'Respondent')
-        
-    return facts
+# Function to get CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
 
-# Function to get timeline data (needed for facts view)
-def get_timeline_data():
-    # Create a set of timeline events
-    return [
-        {
-            "point": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
-        },
-        # More timeline events would be here
-    ]
-
-# Function to get argument data (needed for facts view)
+# Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
         "1": {
@@ -268,7 +208,108 @@ def get_argument_data():
                     "citedParagraphs": ["45", "46", "47"]
                 }
             ],
-            "children": {}
+            "children": {
+                "1.1": {
+                    "id": "1.1",
+                    "title": "Club Name Analysis",
+                    "paragraphs": "20-45",
+                    "overview": {
+                        "points": [
+                            "Historical continuity of name usage",
+                            "Legal protection of naming rights",
+                            "Public recognition of club name"
+                        ],
+                        "paragraphs": "20-21"
+                    },
+                    "children": {
+                        "1.1.1": {
+                            "id": "1.1.1",
+                            "title": "Registration History",
+                            "paragraphs": "25-30",
+                            "factualPoints": [
+                                {
+                                    "point": "Initial registration in 1950",
+                                    "date": "1950",
+                                    "isDisputed": False,
+                                    "paragraphs": "25-26",
+                                    "exhibits": ["C-2"]
+                                },
+                                {
+                                    "point": "Brief administrative gap in 1975-1976",
+                                    "date": "1975-1976",
+                                    "isDisputed": True,
+                                    "source": "Respondent",
+                                    "paragraphs": "29-30",
+                                    "exhibits": ["C-2"]
+                                }
+                            ],
+                            "evidence": [
+                                {
+                                    "id": "C-2",
+                                    "title": "Registration Records",
+                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
+                                    "citations": ["25", "26", "28"]
+                                }
+                            ]
+                        }
+                    }
+                },
+                "1.2": {
+                    "id": "1.2",
+                    "title": "Club Colors Analysis",
+                    "paragraphs": "46-65",
+                    "overview": {
+                        "points": [
+                            "Consistent use of club colors",
+                            "Minor variations analysis",
+                            "Color trademark protection"
+                        ],
+                        "paragraphs": "46-47"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Consistent use of blue and white since founding",
+                            "date": "1950-present",
+                            "isDisputed": True,
+                            "source": "Respondent",
+                            "paragraphs": "51-52",
+                            "exhibits": ["C-4"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-4",
+                            "title": "Historical Photographs",
+                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
+                            "citations": ["53", "54", "55"]
+                        }
+                    ],
+                    "children": {
+                        "1.2.1": {
+                            "id": "1.2.1",
+                            "title": "Color Variations Analysis",
+                            "paragraphs": "56-60",
+                            "factualPoints": [
+                                {
+                                    "point": "Minor shade variations do not affect continuity",
+                                    "date": "1970-1980",
+                                    "isDisputed": False,
+                                    "paragraphs": "56-57",
+                                    "exhibits": ["C-5"]
+                                },
+                                {
+                                    "point": "Temporary third color addition in 1980s",
+                                    "date": "1982-1988",
+                                    "isDisputed": False,
+                                    "paragraphs": "58-59",
+                                    "exhibits": ["C-5"]
+                                }
+                            ],
+                            "children": {}
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -331,6 +372,88 @@ def get_argument_data():
         "topics": topics
     }
 
+# Get all facts from the data
+def get_all_facts():
+    args_data = get_argument_data()
+    facts = []
+    
+    # Helper function to extract facts from arguments
+    def extract_facts(arg, party):
+        if not arg:
+            return
+            
+        if 'factualPoints' in arg and arg['factualPoints']:
+            for point in arg['factualPoints']:
+                fact = {
+                    'point': point['point'],
+                    'date': point['date'],
+                    'isDisputed': point['isDisputed'],
+                    'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
+                    'exhibits': point.get('exhibits', []),
+                    'argId': arg['id'],
+                    'argTitle': arg['title'],
+                    'source': point.get('source', party)
+                }
+                facts.append(fact)
+                
+        # Process children
+        if 'children' in arg and arg['children']:
+            for child_id, child in arg['children'].items():
+                extract_facts(child, party)
+    
+    # Extract from claimant args
+    for arg_id, arg in args_data['claimantArgs'].items():
+        extract_facts(arg, 'Appellant')
+        
+    # Extract from respondent args
+    for arg_id, arg in args_data['respondentArgs'].items():
+        extract_facts(arg, 'Respondent')
+        
+    return facts
+
+# Get enhanced timeline data with additional events
+def get_timeline_data():
+    # Create a richer set of timeline events
+    timeline_events = [
+        {
+            "point": "Club founded and officially registered in the Football Federation",
+            "date": "1950-01-12",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Statement of Appeal"
+        },
+        {
+            "point": "First National Championship won",
+            "date": "1955-05-20",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-3"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Appeal Brief"
+        },
+        {
+            "point": "Operations ceased between 1975-1976",
+            "date": "1975-1976",
+            "isDisputed": True,
+            "party": "Respondent",
+            "exhibits": ["R-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession Rebuttal",
+            "source": "provisional messier - Answer to PM"
+        },
+        # More timeline events would be here
+    ]
+    
+    # Sort events chronologically
+    timeline_events.sort(key=lambda x: x['date'])
+    
+    return timeline_events
+
 # Main application
 def main():
     # Get data for JavaScript in facts view
@@ -339,7 +462,7 @@ def main():
     document_sets = st.session_state.document_sets
     timeline_data = get_timeline_data()
     
-    # Add Streamlit sidebar with navigation buttons only
+    # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
         # Add the logo and CaseLens text (original design)
         st.markdown("""
@@ -361,7 +484,7 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for subtle UI improvements while maintaining original structure
+        # Custom CSS for button styling and UI improvements
         st.markdown("""
         <style>
         /* Button styling - keep original structure but enhance appearance */
@@ -531,17 +654,16 @@ def main():
 
 # Function to render the upload page
 def render_upload_page():
-    # Page header with subtle improvement
-    st.markdown("<h1 style='color: #111927; margin-bottom: 25px;'>Document Management</h1>", unsafe_allow_html=True)
+    st.title("Document Management")
     
-    # Create tabs with enhanced styling but same structure
+    # Create tabs for upload functionality
     tab1, tab2, tab3 = st.tabs(["📄 Upload Documents", "📁 Manage Document Sets", "🕒 Recent Uploads"])
     
     with tab1:
-        # Upload interface
-        st.markdown("<h3 style='color: #111927; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;'>Upload Documents</h3>", unsafe_allow_html=True)
+        # Upload interface with subtle improvements
+        st.subheader("Upload Documents")
         
-        # Action buttons with better appearance but same layout
+        # Two buttons for the main actions
         col1, col2 = st.columns(2)
         with col1:
             if st.button("➕ New Document Set", use_container_width=True):
@@ -554,20 +676,20 @@ def render_upload_page():
         
         # Display appropriate form based on user selection
         if st.session_state.creating_set:
-            # Document set creation form with subtle enhancements
-            st.markdown("<h4 style='color: #111927; margin-bottom: 15px;'>Create Document Set</h4>", unsafe_allow_html=True)
+            # Document set creation form
+            st.markdown("### Create Document Set")
             
             with st.form("new_set_form"):
-                # Set name field with better style
+                # Set name field
                 st.markdown("<p style='font-weight: 500; margin-bottom: 5px;'>Set Name</p>", unsafe_allow_html=True)
                 set_name = st.text_input("", placeholder="e.g., Witness Statements, Expert Reports", label_visibility="collapsed")
                 
-                # Party selection with better label
+                # Party selection
                 st.markdown("<p style='font-weight: 500; margin: 15px 0 5px 0;'>Party</p>", unsafe_allow_html=True)
                 party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
                 set_party = st.selectbox("", party_options, label_visibility="collapsed")
                 
-                # Submit button with better style
+                # Submit button
                 col1, col2, col3 = st.columns([1, 2, 1])
                 with col2:
                     create_btn = st.form_submit_button("Create Document Set", use_container_width=True)
@@ -581,20 +703,14 @@ def render_upload_page():
                         st.session_state.selected_set = set_id
                         st.session_state.creating_set = False
                         
-                        # Better success message
-                        st.markdown(f"""
-                        <div style="background-color: #ecfdf5; border-left: 4px solid #10b981; padding: 15px; border-radius: 4px; margin: 20px 0;">
-                            <p style="margin: 0; color: #065f46; font-weight: 500;">✅ Successfully created document set</p>
-                            <p style="margin: 5px 0 0 0; color: #047857;">{set_name}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        
+                        # Success message
+                        st.success(f"Created: {set_name}")
                         st.rerun()
         else:
-            # Document upload form with subtle improvements
-            st.markdown("<h4 style='color: #111927; margin-bottom: 15px;'>Upload Document</h4>", unsafe_allow_html=True)
+            # Document upload form
+            st.markdown("### Upload Document")
             
-            # Document set selection with better styling
+            # Document set selection
             if not st.session_state.document_sets:
                 st.warning("No document sets exist. Please create a document set first.")
             else:
@@ -613,7 +729,7 @@ def render_upload_page():
                             st.session_state.selected_set = ds["id"]
                             break
                     
-                    # Show selected set info with better style
+                    # Show selected set info
                     party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
                                         "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
                     
@@ -628,9 +744,9 @@ def render_upload_page():
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Form for document upload with better styling
+                    # Form for document upload
                     with st.form("upload_form"):
-                        # Document name field with better label
+                        # Document name field
                         st.markdown("<p style='font-weight: 500; margin-bottom: 5px;'>Document Name</p>", unsafe_allow_html=True)
                         doc_name = st.text_input("", placeholder="Enter document name or title", label_visibility="collapsed")
                         
@@ -641,17 +757,17 @@ def render_upload_page():
                         default_index = party_options.index(default_party) if default_party in party_options else 0
                         doc_party = st.selectbox("", party_options, index=default_index, label_visibility="collapsed")
                         
-                        # File uploader with better style
+                        # File uploader
                         st.markdown("<p style='font-weight: 500; margin: 15px 0 5px 0;'>Upload File</p>", unsafe_allow_html=True)
                         
-                        # Enhanced file uploader with same functionality
+                        # File uploader
                         uploaded_file = st.file_uploader(
                             "Drag files here or click to browse",
                             type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
                             help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
                         )
                         
-                        # Submit button with better style
+                        # Submit button
                         col1, col2, col3 = st.columns([1, 2, 1])
                         with col2:
                             submit_btn = st.form_submit_button("Upload Document", use_container_width=True)
@@ -667,15 +783,14 @@ def render_upload_page():
                                 if doc_id:
                                     # Save the uploaded file
                                     if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                        # Enhanced success message with document details
-                                        st.markdown(f"""
-                                        <div style="background-color: #ecfdf5; border-left: 4px solid #10b981; padding: 15px; border-radius: 4px; margin: 20px 0;">
-                                            <p style="margin: 0; color: #065f46; font-weight: 500;">✅ Document successfully uploaded</p>
-                                            <p style="margin: 5px 0 0 0; color: #047857;">{doc_name}</p>
-                                        </div>
+                                        # Success message with document details
+                                        st.success(f"Uploaded: {doc_name}")
                                         
-                                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 20px; border: 1px solid #e2e8f0;">
-                                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                        # Show document details
+                                        st.markdown(f"""
+                                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                                            <p style="margin:0; color: #0f172a; font-weight: 500;">Document Details:</p>
+                                            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px;">
                                                 <div>
                                                     <p style="margin: 0; font-size: 13px; color: #64748b;">Document Name</p>
                                                     <p style="margin: 0; font-weight: 500; color: #0f172a;">{doc_name}</p>
@@ -701,118 +816,148 @@ def render_upload_page():
                                     st.error("Error adding document")
     
     with tab2:
-        # Improved Document Set Management Tab
-        st.markdown("<h3>Manage Document Sets</h3>", unsafe_allow_html=True)
-        
-        # Add search functionality
-        search = st.text_input("🔍 Search document sets", placeholder="Search by name or category...")
+        # Document set management with improvements
+        st.subheader("Manage Document Sets")
         
         if not st.session_state.document_sets:
-            st.warning("No document sets found. Please create a document set first.")
+            # Empty state message
+            st.markdown("""
+            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <p style="margin: 0; color: #64748b; font-size: 16px;">No document sets exist yet</p>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Create your first document set in the Upload Documents tab</p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            # Filter sets if search is provided
-            filtered_sets = st.session_state.document_sets
-            if search:
-                filtered_sets = [ds for ds in st.session_state.document_sets 
-                                if search.lower() in ds['name'].lower() or 
-                                   search.lower() in ds['category'].lower()]
-                if not filtered_sets:
-                    st.warning(f"No document sets match your search: '{search}'")
+            # Search for document sets
+            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
+                                     help="Filter document sets by name or category")
             
-            # Display sets in a cleaner layout
+            # Filter document sets if search is provided
+            filtered_sets = st.session_state.document_sets
+            if search_term:
+                filtered_sets = [ds for ds in st.session_state.document_sets 
+                                if search_term.lower() in ds['name'].lower() or 
+                                   search_term.lower() in ds['category'].lower()]
+                
+                if not filtered_sets:
+                    st.warning(f"No document sets found matching '{search_term}'")
+            
+            # Display all document sets
             for doc_set in filtered_sets:
-                # Start with a nice header for each set
-                col1, col2 = st.columns([3, 1])
-                
-                with col1:
-                    st.markdown(f"### {doc_set['name']}")
+                # Create an expander for each document set
+                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                    # Show set details
+                    party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
+                                       "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
                     
-                    # Show badges using st.markdown for more reliable rendering
-                    party_badge = ""
-                    if doc_set["party"] == "Appellant":
-                        party_badge = f"<span style='background-color: rgba(49, 130, 206, 0.1); color: #3182ce; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;'>{doc_set['party']}</span>"
-                    elif doc_set["party"] == "Respondent":
-                        party_badge = f"<span style='background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;'>{doc_set['party']}</span>"
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div>
+                            <span class="badge {party_badge_class}">{doc_set["party"]}</span>
+                            <span class="badge shared-badge">{doc_set["category"]}</span>
+                        </div>
+                        <div>
+                            <span style="color: #64748b; font-size: 13px;">ID: {doc_set["id"]}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Show documents in this set
+                    if doc_set["documents"]:
+                        # Create a table of documents
+                        doc_data = []
+                        for doc in doc_set["documents"]:
+                            # Check if the file is in our uploaded files
+                            file_key = f"{doc_set['id']}-{doc['id']}"
+                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            
+                            # Get file size if available
+                            file_size = ""
+                            if file_key in st.session_state.uploaded_files:
+                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
+                            
+                            doc_data.append({
+                                "ID": doc["id"],
+                                "Name": doc["name"],
+                                "Party": doc["party"],
+                                "Status": file_status,
+                                "Size": file_size
+                            })
+                        
+                        if doc_data:
+                            # Use native Streamlit dataframe
+                            df = pd.DataFrame(doc_data)
+                            st.dataframe(df, use_container_width=True, height=None)
+                            
+                            # Action buttons
+                            col1, col2, col3 = st.columns(3)
+                            
+                            with col1:
+                                # Button to add documents to this set
+                                if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
+                                    st.session_state.selected_set = doc_set["id"]
+                                    st.session_state.creating_set = False
+                                    st.session_state.view = "Upload"
+                                    st.rerun()
+                            
+                            with col2:
+                                # Export to CSV button
+                                csv = df.to_csv(index=False).encode('utf-8')
+                                st.download_button(
+                                    label="📥 Export CSV",
+                                    data=csv,
+                                    file_name=f"{doc_set['name']}_documents.csv",
+                                    mime='text/csv',
+                                    key=f"export_{doc_set['id']}"
+                                )
+                            
+                            with col3:
+                                # View details button
+                                if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
+                                    if st.session_state.viewing_set == doc_set["id"]:
+                                        st.session_state.viewing_set = None  # Toggle off
+                                    else:
+                                        st.session_state.viewing_set = doc_set["id"]  # Toggle on
+                            
+                            # If viewing this set, show additional details
+                            if st.session_state.get('viewing_set') == doc_set["id"]:
+                                st.markdown("""
+                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
+                                """, unsafe_allow_html=True)
+                                
+                                # Show document stats
+                                total_docs = len(doc_set["documents"])
+                                uploaded_docs = sum(1 for doc in doc_set["documents"] 
+                                                   if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
+                                
+                                col1, col2, col3 = st.columns(3)
+                                col1.metric("Total Documents", total_docs)
+                                col2.metric("Uploaded", uploaded_docs)
+                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
+                                
+                                st.markdown("</div>", unsafe_allow_html=True)
                     else:
-                        party_badge = f"<span style='background-color: rgba(128, 128, 128, 0.1); color: #666; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;'>{doc_set['party']}</span>"
-                    
-                    st.markdown(f"{party_badge} <span style='background-color: rgba(128, 128, 128, 0.1); color: #666; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;'>{len(doc_set['documents'])} documents</span>", unsafe_allow_html=True)
-                
-                with col2:
-                    # Add buttons to add documents to this set
-                    st.button(f"➕ Add Document", key=f"add_{doc_set['id']}", 
-                              help=f"Add documents to the {doc_set['name']} set",
-                              on_click=lambda set_id=doc_set['id']: set_selected_set(set_id))
-                
-                # Create metrics for this document set
-                if doc_set["documents"]:
-                    uploaded_count = sum(1 for doc in doc_set["documents"] 
-                                        if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                    
-                    # Show metrics in columns
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric("Total Documents", len(doc_set["documents"]))
-                    col2.metric("Uploaded", uploaded_count)
-                    
-                    # Calculate percentage
-                    percentage = int((uploaded_count / len(doc_set["documents"])) * 100) if doc_set["documents"] else 0
-                    col3.metric("Completion", f"{percentage}%")
-                
-                # Create a nice table of documents
-                if doc_set["documents"]:
-                    # Prepare data for the table
-                    data = []
-                    for doc in doc_set["documents"]:
-                        file_key = f"{doc_set['id']}-{doc['id']}"
-                        status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                        # Empty state for documents
+                        st.markdown("""
+                        <div style="padding: 15px; background-color: #f8fafc; border-radius: 4px; text-align: center;">
+                            <p style="margin: 0; color: #64748b;">No documents in this set yet</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
-                        # Get file size if available
-                        file_size = ""
-                        if file_key in st.session_state.uploaded_files:
-                            file_size = f"{st.session_state.uploaded_files[file_key].get('size', 0)/1024:.1f} KB"
-                        
-                        data.append({
-                            "ID": doc["id"],
-                            "Document Name": doc["name"],
-                            "Party": doc["party"],
-                            "Status": status,
-                            "Size": file_size
-                        })
-                    
-                    # Show dataframe with enhanced styling
-                    df = pd.DataFrame(data)
-                    st.dataframe(df, use_container_width=True)
-                    
-                    # Add export options
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        # Download as CSV
-                        csv = df.to_csv(index=False).encode('utf-8')
-                        st.download_button(
-                            label="📥 Export CSV",
-                            data=csv,
-                            file_name=f"{doc_set['name']}_documents.csv",
-                            mime='text/csv',
-                            key=f"csv_{doc_set['id']}"
-                        )
-                else:
-                    st.info(f"No documents in the {doc_set['name']} set yet.")
-                
-                # Add a separator between sets
-                st.markdown("---")
-
-# Helper function to set selected set and redirect to upload
-def set_selected_set(set_id):
-    st.session_state.selected_set = set_id
-    st.session_state.creating_set = False
-    st.session_state.view = "Upload"
+                        # Add first document button
+                        if st.button(f"Add First Document", key=f"add_first_{doc_set['id']}"):
+                            st.session_state.selected_set = doc_set["id"]
+                            st.session_state.creating_set = False
+                            st.session_state.view = "Upload"
+                            st.rerun()
     
     with tab3:
-        # Recent uploads with better styling
-        st.markdown("<h3 style='color: #111927; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;'>Recent Uploads</h3>", unsafe_allow_html=True)
+        # Recent uploads tab
+        st.subheader("Recent Uploads")
         
         if not st.session_state.uploaded_files:
-            # Better empty state
+            # Empty state message
             st.markdown("""
             <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
                 <p style="margin: 0; color: #64748b; font-size: 16px;">No documents have been uploaded yet</p>
@@ -844,16 +989,16 @@ def set_selected_set(set_id):
                             "Time": upload_time
                         })
             
-            # Display uploads in a styled table
+            # Sort uploads by time (most recent first)
+            uploads = sorted(uploads, key=lambda x: x.get("Time", ""), reverse=True)
+            
+            # Display uploads in a table
             if uploads:
-                # Sort by most recent first (assuming upload_time is available)
-                uploads = sorted(uploads, key=lambda x: x.get("Time", ""), reverse=True)
-                
-                # Create styled HTML cards for recent uploads
+                # Create styled upload cards
                 for upload in uploads:
                     # Determine party badge class
                     party_badge_class = "appellant-badge" if upload["Party"] == "Appellant" else \
-                                        "respondent-badge" if upload["Party"] == "Respondent" else "shared-badge"
+                                       "respondent-badge" if upload["Party"] == "Respondent" else "shared-badge"
                     
                     # Create card for each upload
                     st.markdown(f"""
@@ -885,7 +1030,7 @@ def set_selected_set(set_id):
             else:
                 st.info("No upload information available.")
 
-# Function to render the facts page (simplified placeholder)
+# Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):
     # Convert data to JSON for JavaScript
     args_json = json.dumps(args_data)
@@ -893,7 +1038,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
     document_sets_json = json.dumps(document_sets)
     timeline_json = json.dumps(timeline_data)
     
-    # Create HTML content similar to original design
+    # Create HTML content for the Facts view
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -981,6 +1126,76 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 background-color: rgba(229, 62, 62, 0.05);
             }}
             
+            /* Action buttons */
+            .action-buttons {{
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                display: flex;
+                gap: 10px;
+            }}
+            
+            .action-button {{
+                padding: 8px 16px;
+                background-color: #f9f9f9;
+                border: 1px solid #e1e4e8;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+            }}
+            
+            .action-button:hover {{
+                background-color: #f1f1f1;
+            }}
+            
+            /* Copy notification */
+            .copy-notification {{
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: #2d3748;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }}
+            
+            .copy-notification.show {{
+                opacity: 1;
+            }}
+            
+            /* Facts styling */
+            .facts-container {{
+                margin-top: 20px;
+            }}
+            
+            .facts-header {{
+                display: flex;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .tab-button {{
+                padding: 10px 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }}
+            
+            .tab-button.active {{
+                border-bottom: 2px solid #4299e1;
+                color: #4299e1;
+                font-weight: 500;
+            }}
+            
+            .facts-content {{
+                margin-top: 20px;
+            }}
+            
             /* Section title */
             .section-title {{
                 font-size: 1.5rem;
@@ -990,14 +1205,126 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 border-bottom: 1px solid #eaeaea;
             }}
             
-            /* More styles would go here */
+            /* Table view */
+            .table-view {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }}
+            
+            .table-view th {{
+                padding: 12px;
+                text-align: left;
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+                position: sticky;
+                top: 0;
+                cursor: pointer;
+            }}
+            
+            .table-view th:hover {{
+                background-color: #e9ecef;
+            }}
+            
+            .table-view td {{
+                padding: 12px;
+                border-bottom: 1px solid #dee2e6;
+            }}
+            
+            .table-view tr:hover {{
+                background-color: #f8f9fa;
+            }}
+            
+            /* View toggle */
+            .view-toggle {{
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 16px;
+            }}
+            
+            .view-toggle button {{
+                padding: 8px 16px;
+                border: 1px solid #e2e8f0;
+                background-color: #f7fafc;
+                cursor: pointer;
+            }}
+            
+            .view-toggle button.active {{
+                background-color: #4299e1;
+                color: white;
+                border-color: #4299e1;
+            }}
+            
+            .view-toggle button:first-child {{
+                border-radius: 4px 0 0 4px;
+            }}
+            
+            .view-toggle button:not(:first-child):not(:last-child) {{
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }}
+            
+            .view-toggle button:last-child {{
+                border-radius: 0 4px 4px 0;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
+            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+            
+            <div class="action-buttons">
+                <button class="action-button" onclick="copyAllContent()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+            </div>
+            
+            <!-- Facts Section -->
             <div id="facts" class="content-section active">
                 <div class="section-title">Case Facts</div>
-                <div id="facts-content">Facts content would display here</div>
+                
+                <div class="view-toggle">
+                    <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                    <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
+                    <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
+                </div>
+                
+                <div class="facts-header">
+                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                </div>
+                
+                <!-- Table View -->
+                <div id="table-view-content" class="facts-content">
+                    <table class="table-view">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facts-table-body"></tbody>
+                    </table>
+                </div>
+                
+                <!-- Other views would go here -->
+                <div id="timeline-view-content" class="facts-content" style="display: none;">
+                    Timeline content would go here
+                </div>
+                
+                <div id="docset-view-content" class="facts-content" style="display: none;">
+                    Document categories content would go here
+                </div>
             </div>
         </div>
         
@@ -1007,7 +1334,151 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
             const documentSets = {document_sets_json};
             const timelineData = {timeline_json};
             
-            // JavaScript for Facts view would go here
+            // Switch view between table, timeline, and document sets
+            function switchView(viewType) {{
+                const tableBtn = document.getElementById('table-view-btn');
+                const timelineBtn = document.getElementById('timeline-view-btn');
+                const docsetBtn = document.getElementById('docset-view-btn');
+                
+                const tableContent = document.getElementById('table-view-content');
+                const timelineContent = document.getElementById('timeline-view-content');
+                const docsetContent = document.getElementById('docset-view-content');
+                
+                // Remove active class from all buttons
+                tableBtn.classList.remove('active');
+                timelineBtn.classList.remove('active');
+                docsetBtn.classList.remove('active');
+                
+                // Hide all content
+                tableContent.style.display = 'none';
+                timelineContent.style.display = 'none';
+                docsetContent.style.display = 'none';
+                
+                // Activate the selected view
+                if (viewType === 'table') {{
+                    tableBtn.classList.add('active');
+                    tableContent.style.display = 'block';
+                    renderFacts();
+                }} else if (viewType === 'timeline') {{
+                    timelineBtn.classList.add('active');
+                    timelineContent.style.display = 'block';
+                    // Timeline rendering would go here
+                }} else if (viewType === 'docset') {{
+                    docsetBtn.classList.add('active');
+                    docsetContent.style.display = 'block';
+                    // Document set rendering would go here
+                }}
+            }}
+            
+            // Switch facts tab
+            function switchFactsTab(tabType) {{
+                const allBtn = document.getElementById('all-facts-btn');
+                const disputedBtn = document.getElementById('disputed-facts-btn');
+                const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                
+                // Remove active class from all
+                allBtn.classList.remove('active');
+                disputedBtn.classList.remove('active');
+                undisputedBtn.classList.remove('active');
+                
+                // Add active to selected
+                if (tabType === 'all') {{
+                    allBtn.classList.add('active');
+                }} else if (tabType === 'disputed') {{
+                    disputedBtn.classList.add('active');
+                }} else {{
+                    undisputedBtn.classList.add('active');
+                }}
+                
+                // Update active view with filtered facts
+                renderFacts(tabType);
+            }}
+            
+            // Copy content function
+            function copyAllContent() {{
+                const notification = document.getElementById('copy-notification');
+                notification.classList.add('show');
+                
+                setTimeout(() => {{
+                    notification.classList.remove('show');
+                }}, 2000);
+            }}
+            
+            // Sort table function
+            function sortTable(tableId, columnIndex) {{
+                // Sorting logic would go here
+            }}
+            
+            // Render facts table
+            function renderFacts(type = 'all') {{
+                const tableBody = document.getElementById('facts-table-body');
+                tableBody.innerHTML = '';
+                
+                // Filter by type
+                let filteredFacts = factsData;
+                
+                if (type === 'disputed') {{
+                    filteredFacts = factsData.filter(fact => fact.isDisputed);
+                }} else if (type === 'undisputed') {{
+                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                }}
+                
+                // Render rows
+                filteredFacts.forEach(fact => {{
+                    const row = document.createElement('tr');
+                    if (fact.isDisputed) {{
+                        row.classList.add('disputed');
+                    }}
+                    
+                    // Date column
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = fact.date;
+                    row.appendChild(dateCell);
+                    
+                    // Event column
+                    const eventCell = document.createElement('td');
+                    eventCell.textContent = fact.point;
+                    row.appendChild(eventCell);
+                    
+                    // Party column
+                    const partyCell = document.createElement('td');
+                    partyCell.innerHTML = `<span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">${{fact.party}}</span>`;
+                    row.appendChild(partyCell);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    statusCell.innerHTML = fact.isDisputed ? 
+                        '<span class="badge disputed-badge">Disputed</span>' : 
+                        'Undisputed';
+                    row.appendChild(statusCell);
+                    
+                    // Related argument
+                    const argCell = document.createElement('td');
+                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                    row.appendChild(argCell);
+                    
+                    // Evidence column
+                    const evidenceCell = document.createElement('td');
+                    if (fact.exhibits && fact.exhibits.length > 0) {{
+                        evidenceCell.innerHTML = fact.exhibits.map(ex => 
+                            `<span class="badge exhibit-badge">${{ex}}</span>`
+                        ).join(' ');
+                    }} else {{
+                        evidenceCell.textContent = 'None';
+                    }}
+                    row.appendChild(evidenceCell);
+                    
+                    tableBody.appendChild(row);
+                }});
+            }}
+            
+            // Initialize facts on page load
+            document.addEventListener('DOMContentLoaded', function() {{
+                renderFacts('all');
+            }});
+            
+            // Initialize facts immediately
+            renderFacts('all');
         </script>
     </body>
     </html>

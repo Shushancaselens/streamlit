@@ -709,8 +709,22 @@ def render_upload_page():
             </div>
             """, unsafe_allow_html=True)
         else:
+            # Optional: Add search for document sets
+            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter...", 
+                                     help="Filter document sets by name or category")
+            
+            # Filter document sets if search is provided
+            filtered_sets = st.session_state.document_sets
+            if search_term:
+                filtered_sets = [ds for ds in st.session_state.document_sets 
+                                if search_term.lower() in ds['name'].lower() or 
+                                   search_term.lower() in ds['category'].lower()]
+                
+                if not filtered_sets:
+                    st.warning(f"No document sets found matching '{search_term}'")
+            
             # Display all document sets with enhanced styling
-            for doc_set in st.session_state.document_sets:
+            for doc_set in filtered_sets:
                 # Create an expander for each document set with better styling
                 with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
                     # Show set details with enhanced appearance
@@ -731,53 +745,76 @@ def render_upload_page():
                     
                     # Show documents in this set with better styling
                     if doc_set["documents"]:
-                        # Create a table of documents with enhanced status indicators
+                        # Create a table of documents with enhanced appearance
                         doc_data = []
                         for doc in doc_set["documents"]:
                             # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
+                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            
+                            # Get file size if available
+                            file_size = ""
                             if file_key in st.session_state.uploaded_files:
-                                file_status = "✅ Uploaded"
-                                status_class = "status-success"
-                            else:
-                                file_status = "❌ Missing"
-                                status_class = "status-error"
+                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
                             
                             doc_data.append({
                                 "ID": doc["id"],
                                 "Name": doc["name"],
                                 "Party": doc["party"],
-                                "Status": f'<span class="status-badge {status_class}">{file_status}</span>'
+                                "Status": file_status,
+                                "Size": file_size
                             })
                         
                         if doc_data:
-                            # Convert to DataFrame and display with HTML for status badges
+                            # Use native Streamlit dataframe with enhanced appearance
                             df = pd.DataFrame(doc_data)
-                            # Convert Status column to HTML
-                            st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
+                            st.dataframe(df, use_container_width=True, height=None)
                             
-                            # Add action buttons with better styling
-                            col1, col2 = st.columns(2)
+                            # Add action buttons with better styling and layout
+                            col1, col2, col3 = st.columns(3)
+                            
                             with col1:
-                                if st.button(f"Add Document to Set", key=f"add_to_{doc_set['id']}"):
+                                # Button to add documents to this set
+                                if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
                                     st.session_state.selected_set = doc_set["id"]
                                     st.session_state.creating_set = False
                                     st.session_state.view = "Upload"
                                     st.rerun()
+                            
                             with col2:
-                                # Generate CSV download
-                                csv = pd.DataFrame({
-                                    "ID": [doc["id"] for doc in doc_set["documents"]],
-                                    "Name": [doc["name"] for doc in doc_set["documents"]],
-                                    "Party": [doc["party"] for doc in doc_set["documents"]]
-                                }).to_csv(index=False).encode('utf-8')
-                                
+                                # Export to CSV button
+                                csv = df.to_csv(index=False).encode('utf-8')
                                 st.download_button(
-                                    label="Export Document List",
+                                    label="📥 Export CSV",
                                     data=csv,
                                     file_name=f"{doc_set['name']}_documents.csv",
                                     mime='text/csv',
+                                    key=f"export_{doc_set['id']}"
                                 )
+                            
+                            with col3:
+                                # View metadata button - could lead to a more detailed view
+                                if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
+                                    st.session_state.viewing_set = doc_set["id"]
+                            
+                            # If viewing this set, show additional details
+                            if st.session_state.get('viewing_set') == doc_set["id"]:
+                                st.markdown("""
+                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
+                                """, unsafe_allow_html=True)
+                                
+                                # Show document stats
+                                total_docs = len(doc_set["documents"])
+                                uploaded_docs = sum(1 for doc in doc_set["documents"] 
+                                                    if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
+                                
+                                col1, col2, col3 = st.columns(3)
+                                col1.metric("Total Documents", total_docs)
+                                col2.metric("Uploaded", uploaded_docs)
+                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
+                                
+                                st.markdown("</div>", unsafe_allow_html=True)
                     else:
                         # Better empty state for documents
                         st.markdown("""
@@ -785,6 +822,13 @@ def render_upload_page():
                             <p style="margin: 0; color: #64748b;">No documents in this set yet</p>
                         </div>
                         """, unsafe_allow_html=True)
+                        
+                        # Add a button to add documents
+                        if st.button(f"Add First Document", key=f"add_first_{doc_set['id']}"):
+                            st.session_state.selected_set = doc_set["id"]
+                            st.session_state.creating_set = False
+                            st.session_state.view = "Upload"
+                            st.rerun()
     
     with tab3:
         # Recent uploads with better styling

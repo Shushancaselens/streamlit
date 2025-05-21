@@ -260,135 +260,180 @@ def main():
 def render_upload_page():
     st.title("Document Management")
     
-    # Single-screen upload interface
-    left_col, right_col = st.columns([1, 1])
+    # Create tabs for upload functionality
+    tab1, tab2, tab3 = st.tabs(["Upload Documents", "Manage Document Sets", "Recent Uploads"])
     
-    with left_col:
-        # Document set creation on the left
-        st.subheader("1. Create Document Set")
+    with tab1:
+        # Simple upload interface
+        st.subheader("Upload Documents")
         
-        # Simple form for creating a document set
-        with st.form("new_set_form"):
-            set_name = st.text_input("Set Name", placeholder="e.g., Witness Statements")
+        # Two buttons at the top for main actions
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("➕ New Document Set", use_container_width=True):
+                st.session_state.creating_set = True
+        with col2:
+            if st.button("📄 Upload Document", use_container_width=True):
+                st.session_state.creating_set = False
+        
+        st.markdown("---")
+        
+        # Display appropriate form based on user selection
+        if st.session_state.creating_set:
+            # Document set creation form
+            st.markdown("### Create Document Set")
             
-            # Party selection
-            party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-            set_party = st.selectbox("Party", party_options)
-            
-            # Submit button
-            if st.form_submit_button("Create Set", use_container_width=True):
-                if not set_name:
-                    st.error("Please provide a set name")
-                else:
-                    # Add new set (category is auto-generated)
-                    set_id = add_document_set(set_name, set_party)
-                    st.session_state.selected_set = set_id
-                    st.success(f"✓ Created: {set_name}")
-        
-        # Document sets listing on the left (below creation form)
-        st.subheader("Your Document Sets")
-        
-        if not st.session_state.document_sets:
-            st.info("No document sets yet. Create your first set above.")
-        else:
-            # Display document sets as clickable buttons
-            for idx, doc_set in enumerate(st.session_state.document_sets):
-                # Create a button for each set
-                if st.button(f"{doc_set['name']} ({len(doc_set['documents'])} docs)", key=f"set_{idx}"):
-                    st.session_state.selected_set = doc_set["id"]
-                    st.rerun()
-    
-    with right_col:
-        # Document upload on the right
-        st.subheader("2. Upload Document")
-        
-        # Simple message at the top
-        if not st.session_state.document_sets:
-            st.warning("Create a document set first, then upload documents")
-        else:
-            # Get selected set
-            selected_set = None
-            if st.session_state.selected_set:
-                selected_set = next((ds for ds in st.session_state.document_sets if ds["id"] == st.session_state.selected_set), None)
-            
-            # Show selected set or dropdown
-            if selected_set:
-                st.info(f"Uploading to: **{selected_set['name']}** ({selected_set['party']})")
-            else:
-                # Simple dropdown to select a set
-                set_options = [ds["name"] for ds in st.session_state.document_sets]
-                if set_options:
-                    selected_set_name = st.selectbox("Select Document Set", set_options)
-                    selected_set = next((ds for ds in st.session_state.document_sets if ds["name"] == selected_set_name), None)
-                    if selected_set:
-                        st.session_state.selected_set = selected_set["id"]
-            
-            # If a set is selected, show the upload form
-            if selected_set:
-                with st.form("upload_form"):
-                    # Document name field
-                    doc_name = st.text_input("Document Name")
-                    
-                    # Party selection (default to the set's party if not Mixed)
-                    party_options = ["Appellant", "Respondent", "Shared"]
-                    default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
-                    default_index = party_options.index(default_party) if default_party in party_options else 0
-                    doc_party = st.selectbox("Party", party_options, index=default_index)
-                    
-                    # File uploader
-                    uploaded_file = st.file_uploader("Select File", 
-                                                  type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"])
-                    
-                    # Submit button
-                    if st.form_submit_button("Upload Document", use_container_width=True):
-                        if not doc_name:
-                            st.error("Please provide a document name")
-                        elif not uploaded_file:
-                            st.error("Please select a file")
-                        else:
-                            # Add document to set
-                            doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
-                            if doc_id:
-                                # Save the uploaded file
-                                if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                    st.success(f"✓ Uploaded: {doc_name}")
-                                else:
-                                    st.error("Error saving file")
-                            else:
-                                st.error("Error adding document")
-    
-    # Document list at the bottom (full width)
-    st.markdown("---")
-    st.subheader("Documents")
-    
-    # Show documents from selected set
-    if st.session_state.selected_set:
-        selected_set = next((ds for ds in st.session_state.document_sets if ds["id"] == st.session_state.selected_set), None)
-        
-        if selected_set:
-            if not selected_set["documents"]:
-                st.info(f"No documents in set: {selected_set['name']}")
-            else:
-                # Build document data for display
-                doc_data = []
-                for doc in selected_set["documents"]:
-                    # Check if the file is in our uploaded files
-                    file_key = f"{selected_set['id']}-{doc['id']}"
-                    file_status = "✓ Uploaded" if file_key in st.session_state.uploaded_files else "× Missing"
-                    file_size = ""
-                    if file_key in st.session_state.uploaded_files:
-                        file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
-                    
-                    doc_data.append({
-                        "Name": doc["name"],
-                        "Party": doc["party"],
-                        "Status": file_status,
-                        "Size": file_size
-                    })
+            with st.form("new_set_form"):
+                # Simple set name field
+                set_name = st.text_input("Set Name (e.g., Witness Statements, Expert Reports)")
                 
-                # Display as a simple table
-                if doc_data:
-                    st.dataframe(pd.DataFrame(doc_data), use_container_width=True)
+                # Party selection
+                party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
+                set_party = st.selectbox("Party", party_options)
+                
+                # Submit button
+                if st.form_submit_button("Create Set"):
+                    if not set_name:
+                        st.error("Please provide a set name")
+                    else:
+                        # Add new set (category is auto-generated)
+                        set_id = add_document_set(set_name, set_party)
+                        st.session_state.selected_set = set_id
+                        st.session_state.creating_set = False
+                        st.success(f"Created: {set_name}")
+                        st.rerun()
+        else:
+            # Document upload form
+            st.markdown("### Upload Document")
+            
+            # Simple dropdown to select document set
+            if not st.session_state.document_sets:
+                st.warning("No document sets exist. Please create a document set first.")
+            else:
+                set_options = ["--Select a document set--"] + [ds["name"] for ds in st.session_state.document_sets]
+                selected_set_name = st.selectbox("Document Set", set_options)
+                
+                if selected_set_name == "--Select a document set--":
+                    st.warning("Please select a document set first")
+                else:
+                    # Find the selected set
+                    selected_set = None
+                    for ds in st.session_state.document_sets:
+                        if ds["name"] == selected_set_name:
+                            selected_set = ds
+                            st.session_state.selected_set = ds["id"]
+                            break
+                    
+                    # Simple form for document upload
+                    with st.form("upload_form"):
+                        # Document name field
+                        doc_name = st.text_input("Document Name")
+                        
+                        # Party selection (default to the set's party if not Mixed)
+                        party_options = ["Appellant", "Respondent", "Shared"]
+                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
+                        default_index = party_options.index(default_party) if default_party in party_options else 0
+                        doc_party = st.selectbox("Party", party_options, index=default_index)
+                        
+                        # File uploader
+                        uploaded_file = st.file_uploader("Select File", 
+                                                       type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"])
+                        
+                        # Submit button
+                        if st.form_submit_button("Upload"):
+                            if not doc_name:
+                                st.error("Please provide a document name")
+                            elif not uploaded_file:
+                                st.error("Please select a file")
+                            else:
+                                # Add document to set
+                                doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
+                                if doc_id:
+                                    # Save the uploaded file
+                                    if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
+                                        st.success(f"Uploaded: {doc_name}")
+                                    else:
+                                        st.error("Error saving file")
+                                else:
+                                    st.error("Error adding document")
+    
+    with tab2:
+        st.subheader("Manage Document Sets")
+        
+        # Simple document set management
+        if not st.session_state.document_sets:
+            st.warning("No document sets exist yet. Create your first document set in the Upload Documents tab.")
+        else:
+            # Display all document sets
+            for doc_set in st.session_state.document_sets:
+                # Create an expander for each document set
+                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                    # Show set details
+                    party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
+                                       "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
+                    
+                    st.markdown(f"""
+                    <div style="margin-bottom: 15px;">
+                        <span class="badge {party_badge_class}">{doc_set["party"]}</span>
+                        <span class="badge shared-badge">{doc_set["category"]}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Show documents in this set
+                    if doc_set["documents"]:
+                        # Create a table of documents
+                        doc_data = []
+                        for doc in doc_set["documents"]:
+                            # Check if the file is in our uploaded files
+                            file_key = f"{doc_set['id']}-{doc['id']}"
+                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            
+                            doc_data.append({
+                                "ID": doc["id"],
+                                "Name": doc["name"],
+                                "Party": doc["party"],
+                                "Status": file_status
+                            })
+                        
+                        if doc_data:
+                            df = pd.DataFrame(doc_data)
+                            st.dataframe(df, use_container_width=True)
+                    else:
+                        st.info("No documents in this set yet.")
+    
+    with tab3:
+        st.subheader("Recent Uploads")
+        
+        # Display recent uploads
+        if not st.session_state.uploaded_files:
+            st.info("No documents have been uploaded yet.")
+        else:
+            # Get list of uploaded files
+            uploads = []
+            for file_key, file_info in st.session_state.uploaded_files.items():
+                set_id, doc_id = file_key.split("-")
+                
+                # Find document set and document
+                doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
+                
+                if doc_set:
+                    doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
+                    
+                    if doc:
+                        uploads.append({
+                            "Name": doc["name"],
+                            "Set": doc_set["name"],
+                            "Party": doc["party"],
+                            "Type": file_info.get("type", "Unknown"),
+                            "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
+                            "Time": file_info.get("upload_time", "Unknown")
+                        })
+            
+            # Display uploads in a table
+            if uploads:
+                st.dataframe(pd.DataFrame(uploads), use_container_width=True)
+            else:
+                st.info("No upload information available.")
 
 # Function to render the facts page (simplified placeholder)
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):
@@ -440,4 +485,3 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
 # Run the main app
 if __name__ == "__main__":
     main()
-

@@ -1934,115 +1934,186 @@ def main():
         tab1, tab2, tab3 = st.tabs(["Upload New Documents", "Manage Document Sets", "Recent Uploads"])
         
         with tab1:
-            st.subheader("Upload and Organize Documents")
+            st.subheader("Upload Documents to Case")
+            
+            # Clear instructions at the top
+            st.info("""
+            ### How to Upload Documents:
+            1. First **select or create a document set** (a collection of related documents)
+            2. Then **upload individual documents** to that set
+            3. Each document will be organized in your selected set
+            """)
             
             # Step 1: Select document set or create a new one
-            st.markdown("### Step 1: Select Document Set")
+            st.markdown("### Step 1: Choose a Document Set")
             
-            # Option to create a new document set
-            create_new = st.checkbox("Create a new document set", False)
+            # Option to create a new document set - made more prominent
+            create_new = st.radio(
+                "Document Set Selection:",
+                ["Select an existing document set", "Create a new document set"],
+                index=0,
+                help="Select an existing document set or create a new one to organize your documents"
+            )
             
-            if create_new:
-                # Form to create a new document set
+            if create_new == "Create a new document set":
+                # Form to create a new document set with clear instructions
+                st.markdown("#### Create New Document Set")
+                st.write("A document set helps organize related documents (e.g., Witness Statements, Expert Reports)")
+                
                 with st.form("new_set_form"):
                     col1, col2 = st.columns(2)
                     with col1:
-                        set_name = st.text_input("Set Name", placeholder="e.g., Witness Statements")
+                        set_name = st.text_input(
+                            "**Document Set Name**", 
+                            placeholder="e.g., Witness Statements, Expert Reports, Exhibits",
+                            help="Give your document set a descriptive name"
+                        )
                     
                     with col2:
-                        # Party selection
+                        # Party selection with help text
                         party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-                        set_party = st.selectbox("Party", party_options)
+                        set_party = st.selectbox(
+                            "**Party Association**", 
+                            party_options,
+                            help="Select which party these documents are associated with"
+                        )
                     
-                    # Category input (default to set name if not provided)
-                    set_category = st.text_input("Category", placeholder="e.g., witness_statements (optional)")
+                    # Category input with better explanation
+                    set_category = st.text_input(
+                        "**Category** (optional)", 
+                        placeholder="e.g., witness_statements, exhibits",
+                        help="Optional technical identifier - will default to a simplified version of the name if left blank"
+                    )
                     
-                    submit_button = st.form_submit_button("Create Document Set")
+                    # Example of what's being created
+                    st.markdown("##### Preview:")
+                    preview_name = set_name if set_name else "[Document Set Name]"
+                    preview_party = set_party
+                    st.markdown(f"""
+                    You are creating: **{preview_name}** ({preview_party})
+                    """)
                     
-                    if submit_button and set_name:
-                        if not set_category:
-                            set_category = set_name.lower().replace(' ', '_')
-                        
-                        # Add the new set
-                        set_id = add_document_set(set_name, set_party, set_category)
-                        st.session_state.selected_set = set_id
-                        st.success(f"Created new document set: {set_name}")
-                        # Use st.rerun() instead of experimental_rerun
-                        st.rerun()
+                    submit_button = st.form_submit_button("✅ CREATE DOCUMENT SET", use_container_width=True)
+                    
+                    if submit_button:
+                        if not set_name:
+                            st.error("Please provide a name for your document set")
+                        else:
+                            if not set_category:
+                                set_category = set_name.lower().replace(' ', '_')
+                            
+                            # Add the new set
+                            set_id = add_document_set(set_name, set_party, set_category)
+                            st.session_state.selected_set = set_id
+                            st.success(f"✅ Successfully created document set: **{set_name}**")
+                            # Use st.rerun() instead of experimental_rerun
+                            st.rerun()
             else:
-                # Select an existing document set
-                set_options = ["Select a document set..."] + [ds["name"] for ds in st.session_state.document_sets]
-                selected_set_name = st.selectbox("Select Document Set", set_options)
+                # Select an existing document set with better UI
+                st.markdown("#### Select an Existing Document Set")
                 
-                if selected_set_name != "Select a document set...":
-                    # Find the selected set ID
-                    for ds in st.session_state.document_sets:
-                        if ds["name"] == selected_set_name:
-                            st.session_state.selected_set = ds["id"]
-                            break
+                # Get list of document sets with counts
+                set_options_display = [f"{ds['name']} ({len(ds['documents'])} docs)" for ds in st.session_state.document_sets]
+                set_options_values = [ds["id"] for ds in st.session_state.document_sets]
+                
+                if not set_options_values:
+                    st.warning("No document sets exist yet. Please create your first document set.")
+                else:
+                    selected_index = st.selectbox(
+                        "**Choose a document set to upload to:**",
+                        range(len(set_options_display)),
+                        format_func=lambda i: set_options_display[i],
+                        help="Select the document set you want to add documents to"
+                    )
+                    
+                    selected_set_id = set_options_values[selected_index]
+                    st.session_state.selected_set = selected_set_id
+                    
+                    # Show the selected set details
+                    selected_set = next((ds for ds in st.session_state.document_sets if ds['id'] == selected_set_id), None)
+                    if selected_set:
+                        party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
+                                          "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
+                        
+                        st.markdown(f"""
+                        ##### Selected: **{selected_set['name']}**
+                        <span class="badge {party_badge_class}">{selected_set["party"]}</span>
+                        <span class="badge shared-badge">{selected_set["category"]}</span>
+                        <span class="badge shared-badge">{len(selected_set["documents"])} existing documents</span>
+                        """, unsafe_allow_html=True)
             
             # Only proceed if a set is selected
             if st.session_state.selected_set:
                 # Find the selected set
-                selected_set = None
-                for ds in st.session_state.document_sets:
-                    if ds["id"] == st.session_state.selected_set:
-                        selected_set = ds
-                        break
+                selected_set = next((ds for ds in st.session_state.document_sets if ds['id'] == st.session_state.selected_set), None)
                 
                 if selected_set:
                     st.markdown("---")
                     st.markdown(f"### Step 2: Upload Document to '{selected_set['name']}'")
                     
-                    # Show badge for the party
-                    party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
-                                       "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
+                    # Example of what documents look like in this set
+                    if selected_set["documents"]:
+                        with st.expander("See existing documents in this set"):
+                            for doc in selected_set["documents"]:
+                                st.markdown(f"- **{doc['name']}** ({doc['party']})")
                     
-                    st.markdown(f"""
-                    <div>
-                        <span class="badge {party_badge_class}">{selected_set["party"]}</span>
-                        <span class="badge shared-badge">{selected_set["category"]}</span>
-                        <span class="badge shared-badge">{len(selected_set["documents"])} existing documents</span>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Form to upload a new document with better organization
+                    st.markdown("#### Add New Document")
+                    st.write("Fill in document details and upload the file:")
                     
-                    # Form to upload a new document
                     with st.form("upload_form"):
-                        col1, col2 = st.columns([2, 1])
-                        
-                        with col1:
-                            # Document name
-                            doc_name = st.text_input("Document Name", placeholder="e.g., Expert Report on Damages")
-                        
-                        with col2:
-                            # Party selection (default to the set's party if not Mixed)
-                            party_options = ["Appellant", "Respondent", "Shared"]
-                            default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
-                            default_index = party_options.index(default_party) if default_party in party_options else 0
-                            doc_party = st.selectbox("Document Party", party_options, index=default_index)
-                        
-                        # File upload with a more descriptive label and expanded area
-                        st.markdown("##### Upload Document File")
-                        uploaded_file = st.file_uploader(
-                            "Drop files here or click to browse",
-                            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
-                            help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
+                        # Document name with better explanation
+                        doc_name = st.text_input(
+                            "**Document Name/Title**", 
+                            placeholder="e.g., Expert Report on Damages by Dr. Smith, Witness Statement of John Doe",
+                            help="Enter a descriptive name for this document"
                         )
-                        
-                        # Optional description
-                        doc_description = st.text_area("Document Description (optional)", 
-                                                      placeholder="Add any notes or description about this document...",
-                                                      max_chars=500)
-                        
-                        # Add tags
-                        doc_tags = st.text_input("Tags (optional, comma separated)", 
-                                               placeholder="e.g., expert, damages, financial",
-                                               help="Add tags to make it easier to find documents later")
                         
                         col1, col2 = st.columns(2)
                         
                         with col1:
-                            submit_button = st.form_submit_button("📤 Upload Document")
+                            # Party selection with inheritance from set
+                            party_options = ["Appellant", "Respondent", "Shared"]
+                            default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
+                            default_index = party_options.index(default_party) if default_party in party_options else 0
+                            doc_party = st.selectbox(
+                                "**Document Party**", 
+                                party_options, 
+                                index=default_index,
+                                help="Select which party this document belongs to"
+                            )
+                        
+                        with col2:
+                            # Add document type selection
+                            doc_type_options = [
+                                "Pleading", "Exhibit", "Witness Statement", 
+                                "Expert Report", "Legal Authority", "Correspondence", "Other"
+                            ]
+                            doc_type = st.selectbox(
+                                "**Document Type**",
+                                doc_type_options,
+                                help="Select the type of document you're uploading"
+                            )
+                        
+                        # File upload with a more descriptive label and expanded area
+                        st.markdown("##### Upload Document File")
+                        uploaded_file = st.file_uploader(
+                            "**Drop file here or click to browse**",
+                            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
+                            help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
+                        )
+                        
+                        # Example of what will be created
+                        if doc_name and doc_party:
+                            st.markdown("##### Preview:")
+                            st.markdown(f"""
+                            You are adding: **{doc_name}** ({doc_party}, {doc_type}) to **{selected_set['name']}**
+                            """)
+                        
+                        # Submit button
+                        submit_col1, submit_col2 = st.columns([3, 1])
+                        with submit_col1:
+                            submit_button = st.form_submit_button("📄 UPLOAD DOCUMENT", use_container_width=True)
                         
                         if submit_button:
                             if not doc_name:
@@ -2055,17 +2126,37 @@ def main():
                                 if doc_id:
                                     # Save the uploaded file
                                     if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                        st.success(f"✅ Successfully uploaded: {doc_name}")
+                                        st.success(f"✅ Successfully uploaded: **{doc_name}**")
                                         
-                                        # Show document details
-                                        st.info(f"""
-                                        **Document Details:**
-                                        - **Name:** {doc_name}
-                                        - **Set:** {selected_set['name']}
-                                        - **Party:** {doc_party}
-                                        - **File Type:** {uploaded_file.type}
-                                        - **File Size:** {uploaded_file.size/1024:.1f} KB
+                                        # Show document details in a more organized way
+                                        st.markdown("""
+                                        ##### Document Successfully Added
                                         """)
+                                        
+                                        col1, col2 = st.columns(2)
+                                        with col1:
+                                            st.markdown(f"""
+                                            **Document Name:** {doc_name}  
+                                            **Document Type:** {doc_type}  
+                                            **Party:** {doc_party}  
+                                            """)
+                                            
+                                        with col2:
+                                            st.markdown(f"""
+                                            **Document Set:** {selected_set['name']}  
+                                            **File Type:** {uploaded_file.type}  
+                                            **File Size:** {uploaded_file.size/1024:.1f} KB  
+                                            """)
+                                        
+                                        # Offer to upload another or view document sets
+                                        st.markdown("---")
+                                        col1, col2 = st.columns(2)
+                                        with col1:
+                                            st.markdown("**What would you like to do next?**")
+                                        with col2:
+                                            if st.button("View All Document Sets"):
+                                                st.session_state.active_tab = 1  # Switch to "Manage Document Sets" tab
+                                                st.rerun()
                                     else:
                                         st.error("Error saving the file.")
                                 else:

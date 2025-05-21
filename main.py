@@ -9,421 +9,14 @@ from datetime import datetime
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Create data structures as JSON for embedded components
-def get_argument_data():
-    claimant_args = {
-        "1": {
-            "id": "1",
-            "title": "Sporting Succession",
-            "paragraphs": "15-18",
-            "overview": {
-                "points": [
-                    "Analysis of multiple established criteria",
-                    "Focus on continuous use of identifying elements",
-                    "Public recognition assessment"
-                ],
-                "paragraphs": "15-16"
-            },
-            "factualPoints": [
-                {
-                    "point": "Continuous operation under same name since 1950",
-                    "date": "1950-present",
-                    "isDisputed": False,
-                    "paragraphs": "18-19",
-                    "exhibits": ["C-1"]
-                }
-            ],
-            "evidence": [
-                {
-                    "id": "C-1",
-                    "title": "Historical Registration Documents",
-                    "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
-                    "citations": ["20", "21", "24"]
-                }
-            ],
-            "caseLaw": [
-                {
-                    "caseNumber": "CAS 2016/A/4576",
-                    "title": "Criteria for sporting succession",
-                    "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
-                    "paragraphs": "45-48",
-                    "citedParagraphs": ["45", "46", "47"]
-                }
-            ],
-            "children": {
-                "1.1": {
-                    "id": "1.1",
-                    "title": "Club Name Analysis",
-                    "paragraphs": "20-45",
-                    "overview": {
-                        "points": [
-                            "Historical continuity of name usage",
-                            "Legal protection of naming rights",
-                            "Public recognition of club name"
-                        ],
-                        "paragraphs": "20-21"
-                    },
-                    "children": {
-                        "1.1.1": {
-                            "id": "1.1.1",
-                            "title": "Registration History",
-                            "paragraphs": "25-30",
-                            "factualPoints": [
-                                {
-                                    "point": "Initial registration in 1950",
-                                    "date": "1950",
-                                    "isDisputed": False,
-                                    "paragraphs": "25-26",
-                                    "exhibits": ["C-2"]
-                                },
-                                {
-                                    "point": "Brief administrative gap in 1975-1976",
-                                    "date": "1975-1976",
-                                    "isDisputed": True,
-                                    "source": "Respondent",
-                                    "paragraphs": "29-30",
-                                    "exhibits": ["C-2"]
-                                }
-                            ],
-                            "evidence": [
-                                {
-                                    "id": "C-2",
-                                    "title": "Registration Records",
-                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
-                                    "citations": ["25", "26", "28"]
-                                }
-                            ]
-                        }
-                    }
-                },
-                "1.2": {
-                    "id": "1.2",
-                    "title": "Club Colors Analysis",
-                    "paragraphs": "46-65",
-                    "overview": {
-                        "points": [
-                            "Consistent use of club colors",
-                            "Minor variations analysis",
-                            "Color trademark protection"
-                        ],
-                        "paragraphs": "46-47"
-                    },
-                    "factualPoints": [
-                        {
-                            "point": "Consistent use of blue and white since founding",
-                            "date": "1950-present",
-                            "isDisputed": True,
-                            "source": "Respondent",
-                            "paragraphs": "51-52",
-                            "exhibits": ["C-4"]
-                        }
-                    ],
-                    "evidence": [
-                        {
-                            "id": "C-4",
-                            "title": "Historical Photographs",
-                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
-                            "citations": ["53", "54", "55"]
-                        }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57",
-                                    "exhibits": ["C-5"]
-                                },
-                                {
-                                    "point": "Temporary third color addition in 1980s",
-                                    "date": "1982-1988",
-                                    "isDisputed": False,
-                                    "paragraphs": "58-59",
-                                    "exhibits": ["C-5"]
-                                }
-                            ],
-                            "children": {}
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    respondent_args = {
-        "1": {
-            "id": "1",
-            "title": "Sporting Succession Rebuttal",
-            "paragraphs": "200-218",
-            "overview": {
-                "points": [
-                    "Challenge to claimed continuity of operations",
-                    "Analysis of discontinuities in club operations",
-                    "Dispute over public recognition factors"
-                ],
-                "paragraphs": "200-202"
-            },
-            "factualPoints": [
-                {
-                    "point": "Operations ceased between 1975-1976",
-                    "date": "1975-1976",
-                    "isDisputed": True,
-                    "source": "Claimant",
-                    "paragraphs": "206-207",
-                    "exhibits": ["R-1"]
-                }
-            ],
-            "evidence": [
-                {
-                    "id": "R-1",
-                    "title": "Federation Records",
-                    "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
-                    "citations": ["208", "209", "210"]
-                }
-            ],
-            "caseLaw": [
-                {
-                    "caseNumber": "CAS 2017/A/5465",
-                    "title": "Operational continuity requirement",
-                    "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
-                    "paragraphs": "211-213",
-                    "citedParagraphs": ["212"]
-                }
-            ],
-            "children": {}
-        }
-    }
-    
-    topics = [
-        {
-            "id": "topic-1",
-            "title": "Sporting Succession and Identity",
-            "description": "Questions of club identity, continuity, and succession rights",
-            "argumentIds": ["1"]
-        }
-    ]
-    
-    return {
-        "claimantArgs": claimant_args,
-        "respondentArgs": respondent_args,
-        "topics": topics
-    }
-
-# Get all facts from the data
-def get_all_facts():
-    args_data = get_argument_data()
-    facts = []
-    
-    # Helper function to extract facts from arguments
-    def extract_facts(arg, party):
-        if not arg:
-            return
-            
-        if 'factualPoints' in arg and arg['factualPoints']:
-            for point in arg['factualPoints']:
-                fact = {
-                    'point': point['point'],
-                    'date': point['date'],
-                    'isDisputed': point['isDisputed'],
-                    'party': party,
-                    'paragraphs': point.get('paragraphs', ''),
-                    'exhibits': point.get('exhibits', []),
-                    'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    'source': point.get('source', party)
-                }
-                facts.append(fact)
-                
-        # Process children
-        if 'children' in arg and arg['children']:
-            for child_id, child in arg['children'].items():
-                extract_facts(child, party)
-    
-    # Extract from claimant args
-    for arg_id, arg in args_data['claimantArgs'].items():
-        extract_facts(arg, 'Appellant')
-        
-    # Extract from respondent args
-    for arg_id, arg in args_data['respondentArgs'].items():
-        extract_facts(arg, 'Respondent')
-        
-    return facts
-
-# Get enhanced timeline data with additional events
-def get_timeline_data():
-    # Create a richer set of timeline events
-    timeline_events = [
-        {
-            "point": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "First international competition participation",
-            "date": "1962-09-15",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-6"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Minor variations in club color shades introduced",
-            "date": "1970-1980",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Administrative operations halted due to financial difficulties",
-            "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
-            "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession Rebuttal",
-            "source": "provisional messier - Answer to PM"
-        },
-        {
-            "point": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "New entity registered with similar name",
-            "date": "1976-09-15",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "Significant color scheme change implemented",
-            "date": "1976-10-01",
-            "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis Rebuttal",
-            "source": "admissibility - Brief on Admissibility"
-        },
-        {
-            "point": "Third color temporarily added to uniform",
-            "date": "1982-1988",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Club won Continental Cup with post-1976 team",
-            "date": "1987-06-24",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-7"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Return to original blue and white color scheme",
-            "date": "1989-08-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-8"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Trademark registration for club name and emblem",
-            "date": "1995-11-30",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-9"],
-            "argId": "1.1",
-            "argTitle": "Club Name Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Federation officially recognizes club history spanning pre and post 1976",
-            "date": "2010-05-18",
-            "isDisputed": True,
-            "party": "Appellant",
-            "exhibits": ["C-10"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility"
-        }
-    ]
-    
-    # Sort events chronologically
-    timeline_events.sort(key=lambda x: x['date'])
-    
-    return timeline_events
-
-# Sample document sets for demonstrating the document set view
+# Function to get document sets
 def get_document_sets():
-    # Return grouped document sets with individual document subfolders
     return [
         {
             "id": "appeal",
             "name": "Appeal",
             "party": "Mixed",
-            "category": "Appeal",
+            "category": "appeal",
             "isGroup": True,
             "documents": [
                 {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
@@ -436,7 +29,7 @@ def get_document_sets():
             "id": "provisional_messier",
             "name": "provisional messier",
             "party": "Respondent",
-            "category": "provisional messier",
+            "category": "provisional_messier",
             "isGroup": True,
             "documents": [
                 {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
@@ -469,25 +62,34 @@ def get_document_sets():
         }
     ]
 
-# Function to create CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
+# Initialize session state
+if 'view' not in st.session_state:
+    st.session_state.view = "Upload"  # Start with Upload view
 
-# Function to add a new document set
+if 'document_sets' not in st.session_state:
+    st.session_state.document_sets = get_document_sets()
+
+if 'uploaded_files' not in st.session_state:
+    st.session_state.uploaded_files = {}
+
+if 'selected_set' not in st.session_state:
+    st.session_state.selected_set = None
+
+if 'creating_set' not in st.session_state:
+    st.session_state.creating_set = False
+
+# Function to add a document set (auto-generates category)
 def add_document_set(set_name, set_party):
     # Create a unique ID based on the set name
     set_id = set_name.lower().replace(' ', '_')
     
-    # Auto-generate category from the set name (always)
+    # Auto-generate category from set name
     set_category = set_name.lower().replace(' ', '_')
     
-    # Check if this ID already exists
+    # Check if ID already exists
     existing_ids = [ds["id"] for ds in st.session_state.document_sets]
     if set_id in existing_ids:
-        # Add a timestamp to make it unique
+        # Add timestamp to make it unique
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         set_id = f"{set_id}_{timestamp}"
     
@@ -504,7 +106,6 @@ def add_document_set(set_name, set_party):
     # Add to session state
     st.session_state.document_sets.append(new_set)
     
-    # Return the ID for convenience
     return set_id
 
 # Function to add a document to a set
@@ -536,110 +137,51 @@ def add_document_to_set(doc_name, doc_party, set_id):
 
 # Function to save uploaded file
 def save_uploaded_file(uploaded_file, set_id, doc_id):
-    # In a real application, you would save the file to a storage system
-    # For this demo, we'll just store it in session state
-    
-    # Read the file content
-    file_content = uploaded_file.read()
-    
-    # Store in session state (in a real app, you'd save to disk or database)
-    file_key = f"{set_id}-{doc_id}"
-    st.session_state.uploaded_files[file_key] = {
-        "filename": uploaded_file.name,
-        "content": file_content,
-        "type": uploaded_file.type,
-        "size": uploaded_file.size
-    }
-    
-    return True
-
-# Sample document sets for demonstrating the document set view
-def get_document_sets():
-    # Return grouped document sets with individual document subfolders
-    return [
-        {
-            "id": "appeal",
-            "name": "Appeal",
-            "party": "Mixed",
-            "category": "Appeal",
-            "isGroup": True,
-            "documents": [
-                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
-                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
-                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
-                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
-            ]
-        },
-        {
-            "id": "provisional_messier",
-            "name": "provisional messier",
-            "party": "Respondent",
-            "category": "provisional messier",
-            "isGroup": True,
-            "documents": [
-                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
-                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
-            ]
-        },
-        {
-            "id": "admissibility",
-            "name": "admissibility",
-            "party": "Mixed",
-            "category": "admissibility",
-            "isGroup": True,
-            "documents": [
-                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
-                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
-                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
-            ]
-        },
-        {
-            "id": "challenge",
-            "name": "challenge",
-            "party": "Mixed",
-            "category": "challenge",
-            "isGroup": True,
-            "documents": [
-                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
-                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
-                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
-            ]
+    try:
+        # Read file content
+        file_content = uploaded_file.read()
+        
+        # Store in session state
+        file_key = f"{set_id}-{doc_id}"
+        st.session_state.uploaded_files[file_key] = {
+            "filename": uploaded_file.name,
+            "content": file_content,
+            "type": uploaded_file.type,
+            "size": uploaded_file.size,
+            "upload_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-    ]
+        
+        return True
+    except Exception as e:
+        st.error(f"Error saving file: {e}")
+        return False
 
-# Initialize session state to track selected view
-if 'view' not in st.session_state:
-    st.session_state.view = "Upload"  # Start with Upload view as default
+# Function to get all facts (needed for facts view)
+def get_all_facts():
+    # This is a placeholder - in a real app this would get actual facts
+    return []
 
-# Initialize document sets in session state if not already there
-if 'document_sets' not in st.session_state:
-    st.session_state.document_sets = get_document_sets()
+# Function to get timeline data (needed for facts view)
+def get_timeline_data():
+    # This is a placeholder - in a real app this would get actual timeline data
+    return []
 
-# Initialize uploaded files in session state
-if 'uploaded_files' not in st.session_state:
-    st.session_state.uploaded_files = {}
+# Function to get argument data (needed for facts view)
+def get_argument_data():
+    # This is a placeholder - in a real app this would get actual argument data
+    return {"claimantArgs": {}, "respondentArgs": {}, "topics": []}
 
-# Initialize selected document set
-if 'selected_set' not in st.session_state:
-    st.session_state.selected_set = None
-
-# Main app
+# Main application
 def main():
-    # Get the data for JavaScript
+    # Get data for JavaScript in facts view
     args_data = get_argument_data()
     facts_data = get_all_facts()
     document_sets = st.session_state.document_sets
     timeline_data = get_timeline_data()
     
-    # Convert data to JSON for JavaScript use
-    args_json = json.dumps(args_data)
-    facts_json = json.dumps(facts_data)
-    document_sets_json = json.dumps(document_sets)
-    timeline_json = json.dumps(timeline_data)
-    
-    # Add Streamlit sidebar with navigation buttons only
+    # Sidebar navigation
     with st.sidebar:
-        # Add the logo and CaseLens text
+        # Logo and title
         st.markdown("""
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
@@ -647,9 +189,7 @@ def main():
                 <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
               </mask>
               <g mask="url(#whatsapp-mask)">
-                <!-- Rounded square background -->
                 <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
-                <!-- WhatsApp phone icon -->
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
               </g>
             </svg>
@@ -659,7 +199,7 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling
+        # Button styling
         st.markdown("""
         <style>
         .stButton > button {
@@ -673,1315 +213,103 @@ def main():
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .uploaded-file-card {
-            border: 1px solid #e6e6e6;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 5px;
         }
-        .document-set-header {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
+        .appellant-badge {
+            background-color: rgba(49, 130, 206, 0.1);
+            color: #3182ce;
         }
-        .document-set-content {
-            margin-left: 20px;
-            margin-bottom: 20px;
-            padding: 10px;
-            border-left: 2px solid #e0e0e0;
+        .respondent-badge {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: #e53e3e;
+        }
+        .shared-badge {
+            background-color: rgba(128, 128, 128, 0.1);
+            color: #666;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Define button click handlers
+        # Navigation buttons
         def set_view(view_name):
             st.session_state.view = view_name
-            
-        # Create buttons with names and icons - Upload Documents first
+        
+        # Upload Documents button first in navigation
         st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
         st.button("📑 Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
     
-    # Create the facts HTML component when Facts view is selected
-    if st.session_state.view == "Facts":
-        # Create a single HTML component containing the Facts UI
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                /* Minimalistic base styling */
-                body {{
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                    line-height: 1.5;
-                    color: #333;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #fff;
-                }}
-                
-                /* Simple container */
-                .container {{
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }}
-                
-                /* Content sections */
-                .content-section {{
-                    display: none;
-                }}
-                
-                .content-section.active {{
-                    display: block;
-                }}
-                
-                /* Badge styling */
-                .badge {{
-                    display: inline-block;
-                    padding: 3px 8px;
-                    border-radius: 12px;
-                    font-size: 12px;
-                    font-weight: 500;
-                }}
-                
-                .appellant-badge {{
-                    background-color: rgba(49, 130, 206, 0.1);
-                    color: #3182ce;
-                }}
-                
-                .respondent-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                .shared-badge {{
-                    background-color: rgba(128, 128, 128, 0.1);
-                    color: #666;
-                }}
-                
-                .exhibit-badge {{
-                    background-color: rgba(221, 107, 32, 0.1);
-                    color: #dd6b20;
-                }}
-                
-                .disputed-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                /* Tables */
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                }}
-                
-                th {{
-                    text-align: left;
-                    padding: 12px;
-                    background-color: #fafafa;
-                    border-bottom: 1px solid #f0f0f0;
-                }}
-                
-                td {{
-                    padding: 12px;
-                    border-bottom: 1px solid #f0f0f0;
-                }}
-                
-                tr.disputed {{
-                    background-color: rgba(229, 62, 62, 0.05);
-                }}
-                
-                /* Action buttons */
-                .action-buttons {{
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    display: flex;
-                    gap: 10px;
-                }}
-                
-                .action-button {{
-                    padding: 8px 16px;
-                    background-color: #f9f9f9;
-                    border: 1px solid #e1e4e8;
-                    border-radius: 4px;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    cursor: pointer;
-                }}
-                
-                .action-button:hover {{
-                    background-color: #f1f1f1;
-                }}
-                
-                .export-dropdown {{
-                    position: relative;
-                    display: inline-block;
-                }}
-                
-                .export-dropdown-content {{
-                    display: none;
-                    position: absolute;
-                    right: 0;
-                    background-color: #f9f9f9;
-                    min-width: 160px;
-                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                    z-index: 1;
-                    border-radius: 4px;
-                }}
-                
-                .export-dropdown-content a {{
-                    color: black;
-                    padding: 12px 16px;
-                    text-decoration: none;
-                    display: block;
-                    cursor: pointer;
-                }}
-                
-                .export-dropdown-content a:hover {{
-                    background-color: #f1f1f1;
-                }}
-                
-                .export-dropdown:hover .export-dropdown-content {{
-                    display: block;
-                }}
-                
-                /* Copy notification */
-                .copy-notification {{
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background-color: #2d3748;
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 4px;
-                    z-index: 1000;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                }}
-                
-                .copy-notification.show {{
-                    opacity: 1;
-                }}
-                
-                /* Facts styling */
-                .facts-container {{
-                    margin-top: 20px;
-                }}
-                
-                .facts-header {{
-                    display: flex;
-                    margin-bottom: 20px;
-                    border-bottom: 1px solid #dee2e6;
-                }}
-                
-                .tab-button {{
-                    padding: 10px 20px;
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                }}
-                
-                .tab-button.active {{
-                    border-bottom: 2px solid #4299e1;
-                    color: #4299e1;
-                    font-weight: 500;
-                }}
-                
-                .facts-content {{
-                    margin-top: 20px;
-                }}
-                
-                /* Section title */
-                .section-title {{
-                    font-size: 1.5rem;
-                    font-weight: 600;
-                    margin-bottom: 1rem;
-                    padding-bottom: 0.5rem;
-                    border-bottom: 1px solid #eaeaea;
-                }}
-                
-                /* Table view */
-                .table-view {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                
-                .table-view th {{
-                    padding: 12px;
-                    text-align: left;
-                    background-color: #f8f9fa;
-                    border-bottom: 2px solid #dee2e6;
-                    position: sticky;
-                    top: 0;
-                    cursor: pointer;
-                }}
-                
-                .table-view th:hover {{
-                    background-color: #e9ecef;
-                }}
-                
-                .table-view td {{
-                    padding: 12px;
-                    border-bottom: 1px solid #dee2e6;
-                }}
-                
-                .table-view tr:hover {{
-                    background-color: #f8f9fa;
-                }}
-                
-                /* View toggle */
-                .view-toggle {{
-                    display: flex;
-                    justify-content: flex-end;
-                    margin-bottom: 16px;
-                }}
-                
-                .view-toggle button {{
-                    padding: 8px 16px;
-                    border: 1px solid #e2e8f0;
-                    background-color: #f7fafc;
-                    cursor: pointer;
-                }}
-                
-                .view-toggle button.active {{
-                    background-color: #4299e1;
-                    color: white;
-                    border-color: #4299e1;
-                }}
-                
-                .view-toggle button:first-child {{
-                    border-radius: 4px 0 0 4px;
-                }}
-                
-                .view-toggle button:not(:first-child):not(:last-child) {{
-                    border-radius: 0;
-                    border-left: none;
-                    border-right: none;
-                }}
-                
-                .view-toggle button:last-child {{
-                    border-radius: 0 4px 4px 0;
-                }}
-                
-                /* Document sets */
-                .docset-header {{
-                    display: flex;
-                    align-items: center;
-                    padding: 10px 15px;
-                    background-color: #f8f9fa;
-                    border: 1px solid #e9ecef;
-                    border-radius: 4px;
-                    margin-bottom: 10px;
-                    cursor: pointer;
-                }}
-                
-                .docset-header:hover {{
-                    background-color: #e9ecef;
-                }}
-                
-                .docset-icon {{
-                    margin-right: 10px;
-                    color: #4299e1;
-                }}
-                
-                .docset-content {{
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
-                    padding: 0 0 20px 0;
-                }}
-                
-                .docset-content.show {{
-                    display: block;
-                }}
-                
-                .folder-icon {{
-                    color: #4299e1;
-                    margin-right: 8px;
-                }}
-                
-                .chevron {{
-                    transition: transform 0.2s;
-                    margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
-                }}
-                
-                .chevron.expanded {{
-                    transform: rotate(90deg);
-                }}
-                
-                /* Enhanced Timeline styling */
-                .timeline-container {{
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 20px;
-                    position: relative;
-                    max-width: 1000px;
-                    margin: 0 auto;
-                }}
-                
-                .timeline-wrapper {{
-                    position: relative;
-                    margin-left: 20px;
-                }}
-                
-                .timeline-line {{
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
-                    width: 4px;
-                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
-                    border-radius: 4px;
-                }}
-                
-                .timeline-item {{
-                    display: flex;
-                    margin-bottom: 32px;
-                    position: relative;
-                }}
-                
-                .timeline-point {{
-                    position: absolute;
-                    left: -12px;
-                    top: 18px;
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    background-color: #4299e1;
-                    border: 4px solid white;
-                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-                    z-index: 10;
-                }}
-                
-                .timeline-point.disputed {{
-                    background-color: #e53e3e;
-                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
-                }}
-                
-                .timeline-content {{
-                    margin-left: 32px;
-                    flex-grow: 1;
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-                    overflow: hidden;
-                    transition: all 0.2s;
-                }}
-                
-                .timeline-content:hover {{
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-                    transform: translateY(-2px);
-                }}
-                
-                .timeline-header {{
-                    padding: 12px 16px;
-                    border-bottom: 1px solid #e2e8f0;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    background-color: #f8fafc;
-                }}
-                
-                .timeline-header-disputed {{
-                    background-color: rgba(229, 62, 62, 0.05);
-                }}
-                
-                .timeline-date {{
-                    font-weight: 600;
-                    color: #1a202c;
-                }}
-                
-                .timeline-badges {{
-                    display: flex;
-                    gap: 6px;
-                }}
-                
-                .timeline-body {{
-                    padding: 16px;
-                }}
-                
-                .timeline-fact {{
-                    margin-bottom: 12px;
-                    font-size: 15px;
-                    color: #2d3748;
-                }}
-                
-                .timeline-footer {{
-                    padding: 12px 16px;
-                    background-color: #f8fafc;
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                    border-top: 1px solid #e2e8f0;
-                }}
-                
-                .timeline-meta {{
-                    font-size: 13px;
-                    color: #718096;
-                    margin-top: 8px;
-                }}
-                
-                .timeline-meta span {{
-                    display: inline-block;
-                    margin-right: 12px;
-                }}
-                
-                .timeline-year-marker {{
-                    display: flex;
-                    align-items: center;
-                    margin: 24px 0;
-                    position: relative;
-                }}
-                
-                .timeline-year {{
-                    background-color: #4299e1;
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 16px;
-                    font-weight: 600;
-                    position: relative;
-                    z-index: 10;
-                    margin-left: 32px;
-                }}
-                
-                .timeline-year-line {{
-                    flex-grow: 1;
-                    height: 2px;
-                    background-color: #e2e8f0;
-                    margin-left: 12px;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-                
-                <div class="action-buttons">
-                    <button class="action-button" onclick="copyAllContent()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        Copy
-                    </button>
-                    <div class="export-dropdown">
-                        <button class="action-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            Export
-                        </button>
-                        <div class="export-dropdown-content">
-                            <a onclick="exportAsCsv()">CSV</a>
-                            <a onclick="exportAsPdf()">PDF</a>
-                            <a onclick="exportAsWord()">Word</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Facts Section -->
-                <div id="facts" class="content-section active">
-                    <div class="section-title">Case Facts</div>
-                    
-                    <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
-                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
-                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
-                    </div>
-                    
-                    <div class="facts-header">
-                        <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                    </div>
-                    
-                    <!-- Table View -->
-                    <div id="table-view-content" class="facts-content">
-                        <table class="table-view">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facts-table-body"></tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Timeline View -->
-                    <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div class="timeline-container">
-                            <div class="timeline-wrapper">
-                                <div class="timeline-line"></div>
-                                <div id="timeline-events"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Document Sets View -->
-                    <div id="docset-view-content" class="facts-content" style="display: none;">
-                        <div id="document-sets-container"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <script>
-                // Initialize data
-                const factsData = {facts_json};
-                const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
-                
-                // Switch view between table, timeline, and document sets
-                function switchView(viewType) {{
-                    const tableBtn = document.getElementById('table-view-btn');
-                    const timelineBtn = document.getElementById('timeline-view-btn');
-                    const docsetBtn = document.getElementById('docset-view-btn');
-                    
-                    const tableContent = document.getElementById('table-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    // Remove active class from all buttons
-                    tableBtn.classList.remove('active');
-                    timelineBtn.classList.remove('active');
-                    docsetBtn.classList.remove('active');
-                    
-                    // Hide all content
-                    tableContent.style.display = 'none';
-                    timelineContent.style.display = 'none';
-                    docsetContent.style.display = 'none';
-                    
-                    // Activate the selected view
-                    if (viewType === 'table') {{
-                        tableBtn.classList.add('active');
-                        tableContent.style.display = 'block';
-                    }} else if (viewType === 'timeline') {{
-                        timelineBtn.classList.add('active');
-                        timelineContent.style.display = 'block';
-                        renderTimeline();
-                    }} else if (viewType === 'docset') {{
-                        docsetBtn.classList.add('active');
-                        docsetContent.style.display = 'block';
-                        renderDocumentSets();
-                    }}
-                }}
-                
-                // Copy all content function
-                function copyAllContent() {{
-                    let contentToCopy = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    
-                    if (tableContent.style.display !== 'none') {{
-                        // Copy table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join('\\t');
-                        
-                        contentToCopy += 'Case Facts\\n\\n';
-                        contentToCopy += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => td.textContent.trim())
-                                .join('\\t');
-                            
-                            contentToCopy += rowText + '\\n';
-                        }});
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        // Copy timeline data
-                        contentToCopy += 'Case Timeline\\n\\n';
-                        
-                        const timelineItems = document.querySelectorAll('.timeline-item');
-                        timelineItems.forEach(item => {{
-                            const dateEl = item.querySelector('.timeline-date');
-                            const factEl = item.querySelector('.timeline-fact');
-                            const partyEl = item.querySelector('.badge');
-                            
-                            if (dateEl && factEl) {{
-                                const date = dateEl.textContent.trim();
-                                const fact = factEl.textContent.trim();
-                                const party = partyEl ? partyEl.textContent.trim() : '';
-                                
-                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
-                            }}
-                        }});
-                    }} else {{
-                        // Copy document sets data (just a basic representation)
-                        contentToCopy += 'Case Facts by Document\\n\\n';
-                        
-                        // This is a simplified version since the full structure would be complex
-                        const docsetContainers = document.querySelectorAll('.docset-container');
-                        docsetContainers.forEach(container => {{
-                            const header = container.querySelector('.docset-header');
-                            const title = header.querySelector('span').textContent;
-                            contentToCopy += `=== ${{title}} ===\\n`;
-                            
-                            // Get facts from this document
-                            const tableFacts = container.querySelectorAll('tbody tr');
-                            tableFacts.forEach(fact => {{
-                                const cells = Array.from(fact.querySelectorAll('td'));
-                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
-                            }});
-                            
-                            contentToCopy += '\\n';
-                        }});
-                    }}
-                    
-                    // Create a temporary textarea to copy the content
-                    const textarea = document.createElement('textarea');
-                    textarea.value = contentToCopy;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    
-                    // Show notification
-                    const notification = document.getElementById('copy-notification');
-                    notification.classList.add('show');
-                    
-                    setTimeout(() => {{
-                        notification.classList.remove('show');
-                    }}, 2000);
-                }}
-                
-                // Export functions
-                function exportAsCsv() {{
-                    let contentToCsv = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    
-                    if (tableContent.style.display !== 'none') {{
-                        // Export table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join(',');
-                        
-                        contentToCsv += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim() + '\"')
-                                .join(',');
-                            
-                            contentToCsv += rowText + '\\n';
-                        }});
-                        
-                        // Create link for CSV download
-                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                        const encodedUri = csvContent;
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "facts.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        // Export timeline data
-                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
-                        let rows = '';
-                        
-                        timelineData.forEach(item => {{
-                            const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
-                        }});
-                        
-                        const csvContent = headers + rows;
-                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "timeline.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else {{
-                        alert("CSV export for document sets view is not implemented yet.");
-                    }}
-                }}
-                
-                function exportAsPdf() {{
-                    alert("PDF export functionality would be implemented here");
-                }}
-                
-                function exportAsWord() {{
-                    alert("Word export functionality would be implemented here");
-                }}
-                
-                // Switch facts tab
-                function switchFactsTab(tabType) {{
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    // Remove active class from all
-                    allBtn.classList.remove('active');
-                    disputedBtn.classList.remove('active');
-                    undisputedBtn.classList.remove('active');
-                    
-                    // Add active to selected
-                    if (tabType === 'all') {{
-                        allBtn.classList.add('active');
-                        renderFacts('all');
-                    }} else if (tabType === 'disputed') {{
-                        disputedBtn.classList.add('active');
-                        renderFacts('disputed');
-                    }} else {{
-                        undisputedBtn.classList.add('active');
-                        renderFacts('undisputed');
-                    }}
-                    
-                    // Update active view
-                    const tableContent = document.getElementById('table-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    if (tableContent.style.display !== 'none') {{
-                        renderFacts(tabType);
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        renderTimeline(tabType);
-                    }} else if (docsetContent.style.display !== 'none') {{
-                        renderDocumentSets(tabType);
-                    }}
-                }}
-                
-                // Sort table function
-                function sortTable(tableId, columnIndex) {{
-                    const table = document.getElementById(tableId);
-                    const rows = Array.from(table.rows);
-                    let dir = 1; // 1 for ascending, -1 for descending
-                    
-                    // Check if already sorted in this direction
-                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                        table.getAttribute('data-sort-dir') === '1') {{
-                        dir = -1;
-                    }}
-                    
-                    // Sort the rows
-                    rows.sort((a, b) => {{
-                        const cellA = a.cells[columnIndex].textContent.trim();
-                        const cellB = b.cells[columnIndex].textContent.trim();
-                        
-                        // Handle date sorting
-                        if (columnIndex === 0) {{
-                            // Attempt to parse as dates
-                            const dateA = new Date(cellA);
-                            const dateB = new Date(cellB);
-                            
-                            if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                return dir * (dateA - dateB);
-                            }}
-                        }}
-                        
-                        return dir * cellA.localeCompare(cellB);
-                    }});
-                    
-                    // Remove existing rows and append in new order
-                    rows.forEach(row => table.appendChild(row));
-                    
-                    // Store current sort direction and column
-                    table.setAttribute('data-sort-column', columnIndex);
-                    table.setAttribute('data-sort-dir', dir);
-                }}
-                
-                // Toggle document set visibility
-                function toggleDocSet(docsetId) {{
-                    const content = document.getElementById(`docset-content-${{docsetId}}`);
-                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
-                    
-                    if (content.style.display === 'none') {{
-                        content.style.display = 'block';
-                        chevron.style.transform = 'rotate(90deg)';
-                    }} else {{
-                        content.style.display = 'none';
-                        chevron.style.transform = 'rotate(0deg)';
-                    }}
-                }}
-                
-                // Format date for display
-                function formatDate(dateString) {{
-                    // If it's a range, just return it as is
-                    if (dateString.includes('-')) {{
-                        return dateString;
-                    }}
-                    
-                    // Try to parse as a date
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return dateString;
-                    }}
-                    
-                    // Format the date
-                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
-                    return date.toLocaleDateString(undefined, options);
-                }}
-                
-                // Helper to extract year from date
-                function getYear(dateString) {{
-                    if (dateString.includes('-')) {{
-                        return dateString.split('-')[0];
-                    }}
-                    
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return '';
-                    }}
-                    
-                    return date.getFullYear().toString();
-                }}
-                
-                // Render enhanced timeline view
-                function renderTimeline(tabType = 'all') {{
-                    const container = document.getElementById('timeline-events');
-                    container.innerHTML = '';
-                    
-                    // Filter timeline data based on tab type
-                    let filteredData = timelineData;
-                    if (tabType === 'disputed') {{
-                        filteredData = timelineData.filter(item => item.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredData = timelineData.filter(item => !item.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredData.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Track years for year markers
-                    let currentYear = '';
-                    let prevYear = '';
-                    
-                    // Create timeline items
-                    filteredData.forEach(fact => {{
-                        // Get the year and check if we need a year marker
-                        currentYear = getYear(fact.date);
-                        if (currentYear && currentYear !== prevYear) {{
-                            // Add year marker
-                            const yearMarker = document.createElement('div');
-                            yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = `
-                                <div class="timeline-year">${{currentYear}}</div>
-                                <div class="timeline-year-line"></div>
-                            `;
-                            container.appendChild(yearMarker);
-                            prevYear = currentYear;
-                        }}
-                    
-                        // Create timeline item
-                        const timelineItem = document.createElement('div');
-                        timelineItem.className = 'timeline-item';
-                        
-                        // Create timeline point
-                        const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                        timelineItem.appendChild(timelinePoint);
-                        
-                        // Create timeline content
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'timeline-content';
-                        
-                        // Create timeline header
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
-                        
-                        // Date
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'timeline-date';
-                        dateEl.textContent = formatDate(fact.date);
-                        headerEl.appendChild(dateEl);
-                        
-                        // Badges
-                        const badgesEl = document.createElement('div');
-                        badgesEl.className = 'timeline-badges';
-                        
-                        // Party badge
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        badgesEl.appendChild(partyBadge);
-                        
-                        // Disputed badge
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
-                        
-                        headerEl.appendChild(badgesEl);
-                        contentEl.appendChild(headerEl);
-                        
-                        // Create timeline body
-                        const bodyEl = document.createElement('div');
-                        bodyEl.className = 'timeline-body';
-                        
-                        // Fact content
-                        const factContent = document.createElement('div');
-                        factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.point;
-                        bodyEl.appendChild(factContent);
-                        
-                        // Related argument and source
-                        const metaEl = document.createElement('div');
-                        metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = `
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            <span><strong>Source:</strong> ${{fact.source}}</span>
-                        `;
-                        bodyEl.appendChild(metaEl);
-                        
-                        contentEl.appendChild(bodyEl);
-                        
-                        // Add footer if there are exhibits
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            const footerEl = document.createElement('div');
-                            footerEl.className = 'timeline-footer';
-                            
-                            // Add exhibit badges
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                footerEl.appendChild(exhibitBadge);
-                            }});
-                            
-                            contentEl.appendChild(footerEl);
-                        }}
-                        
-                        timelineItem.appendChild(contentEl);
-                        container.appendChild(timelineItem);
-                    }});
-                    
-                    // If no events found
-                    if (filteredData.length === 0) {{
-                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
-                    }}
-                }}
-                
-                // Render document sets view
-                function renderDocumentSets(tabType = 'all') {{
-                    const container = document.getElementById('document-sets-container');
-                    container.innerHTML = '';
-                    
-                    // Filter facts based on tab type
-                    let filteredFacts = factsData;
-                    if (tabType === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Initialize docsWithFacts for all groups
-                    const docsWithFacts = {{}};
-                    
-                    // Initialize all groups
-                    documentSets.forEach(ds => {{
-                        if (ds.isGroup) {{
-                            docsWithFacts[ds.id] = {{
-                                docset: ds,
-                                facts: []
-                            }};
-                        }}
-                    }});
-                    
-                    // Distribute facts to categories based on document
-                    filteredFacts.forEach((fact, index) => {{
-                        // Find which document this fact belongs to based on source
-                        let factAssigned = false;
-                        
-                        documentSets.forEach(ds => {{
-                            if (ds.isGroup) {{
-                                ds.documents.forEach(doc => {{
-                                    // Check if the fact's source contains the document number
-                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
-                                        docsWithFacts[ds.id].facts.push({{ 
-                                            ...fact, 
-                                            documentName: doc.name
-                                        }});
-                                        factAssigned = true;
-                                    }}
-                                }});
-                            }}
-                        }});
-                        
-                        // If not assigned by source, assign by party matching
-                        if (!factAssigned) {{
-                            documentSets.forEach(ds => {{
-                                if (ds.isGroup) {{
-                                    ds.documents.forEach(doc => {{
-                                        if (doc.party === 'Mixed' || 
-                                            (fact.party === 'Appellant' && doc.party === 'Appellant') ||
-                                            (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
-                                            docsWithFacts[ds.id].facts.push({{ 
-                                                ...fact, 
-                                                documentName: doc.name
-                                            }});
-                                            factAssigned = true;
-                                            return;
-                                        }}
-                                    }});
-                                    if (factAssigned) return;
-                                }}
-                            }});
-                        }}
-                    }});
-                    
-                    // Create document sets UI with direct table display
-                    Object.values(docsWithFacts).forEach(docWithFacts => {{
-                        const docset = docWithFacts.docset;
-                        const facts = docWithFacts.facts;
-                        
-                        // Create document set container
-                        const docsetEl = document.createElement('div');
-                        docsetEl.className = 'docset-container';
-                        
-                        // Create folder header
-                        const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span><strong>${{docset.name}}</strong></span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
-                                    </span>
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
-                        `;
-                        
-                        let contentHtml = '';
-                        
-                        if (facts.length > 0) {{
-                            // Create a single table for all facts in this category
-                            contentHtml += `
-                                <table class="table-view">
-                                    <thead>
-                                        <tr>
-                                            <th>Document</th>
-                                            <th>Date</th>
-                                            <th>Event</th>
-                                            <th>Party</th>
-                                            <th>Status</th>
-                                            <th>Evidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td><strong>${{fact.documentName}}</strong></td>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.point}}</td>
-                                                <td>
-                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                        ${{fact.party}}
-                                                    </span>
-                                                </td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
-                                            </tr>
-                                        `).join('')}}
-                                    </tbody>
-                                </table>
-                            `;
-                        }} else {{
-                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
-                        }}
-                        
-                        contentHtml += '</div>';
-                        docsetEl.innerHTML = headerHtml + contentHtml;
-                        
-                        container.appendChild(docsetEl);
-                    }});
-                }}
-                
-                // Render facts table
-                function renderFacts(type = 'all') {{
-                    const tableBody = document.getElementById('facts-table-body');
-                    tableBody.innerHTML = '';
-                    
-                    // Filter by type
-                    let filteredFacts = factsData;
-                    
-                    if (type === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
-                    }} else if (type === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredFacts.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Render rows
-                    filteredFacts.forEach(fact => {{
-                        const row = document.createElement('tr');
-                        if (fact.isDisputed) {{
-                            row.classList.add('disputed');
-                        }}
-                        
-                        // Date column
-                        const dateCell = document.createElement('td');
-                        dateCell.textContent = fact.date;
-                        row.appendChild(dateCell);
-                        
-                        // Event column
-                        const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.point;
-                        row.appendChild(eventCell);
-                        
-                        // Party column
-                        const partyCell = document.createElement('td');
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        partyCell.appendChild(partyBadge);
-                        row.appendChild(partyCell);
-                        
-                        // Status column
-                        const statusCell = document.createElement('td');
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            statusCell.appendChild(disputedBadge);
-                        }} else {{
-                            statusCell.textContent = 'Undisputed';
-                        }}
-                        row.appendChild(statusCell);
-                        
-                        // Related argument
-                        const argCell = document.createElement('td');
-                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                        row.appendChild(argCell);
-                        
-                        // Evidence column
-                        const evidenceCell = document.createElement('td');
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                exhibitBadge.style.marginRight = '4px';
-                                evidenceCell.appendChild(exhibitBadge);
-                            }});
-                        }} else {{
-                            evidenceCell.textContent = 'None';
-                        }}
-                        row.appendChild(evidenceCell);
-                        
-                        tableBody.appendChild(row);
-                    }});
-                }}
-                
-                // Initialize facts on page load
-                document.addEventListener('DOMContentLoaded', function() {{
-                    renderFacts('all');
-                }});
-                
-                // Initialize facts immediately
-                renderFacts('all');
-            </script>
-        </body>
-        </html>
-        """
-        
-        # Render the HTML component
-        st.title("Case Facts")
-        components.html(html_content, height=800, scrolling=True)
+    # Render the appropriate view based on session state
+    if st.session_state.view == "Upload":
+        render_upload_page()
+    elif st.session_state.view == "Facts":
+        render_facts_page(facts_data, document_sets, timeline_data, args_data)
+    else:
+        # Placeholder for other views
+        st.title(f"{st.session_state.view} View")
+        st.info(f"This is a placeholder for the {st.session_state.view} view.")
+
+# Function to render the upload page
+def render_upload_page():
+    st.title("Document Management")
     
-    # Create the Upload documents view
-    elif st.session_state.view == "Upload":
-        # Display the upload page
-        st.title("📤 Document Management")
+    # Create tabs for upload functionality
+    tab1, tab2, tab3 = st.tabs(["Upload Documents", "Manage Document Sets", "Recent Uploads"])
+    
+    with tab1:
+        # Simple upload interface
+        st.subheader("Upload Documents")
         
-        # Create tabs for different upload functions
-        tab1, tab2, tab3 = st.tabs(["Upload New Documents", "Manage Document Sets", "Recent Uploads"])
-        
-        with tab1:
-            # Very simple, direct interface
-            st.subheader("Upload Documents")
-            
-            # Two simple buttons at the top
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("➕ New Document Set", use_container_width=True):
-                    st.session_state.creating_set = True
-            with col2:
-                if st.button("📄 Upload Document", use_container_width=True):
-                    st.session_state.creating_set = False
-            
-            # Initialize the state if not present
-            if 'creating_set' not in st.session_state:
+        # Two buttons at the top for main actions
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("➕ New Document Set", use_container_width=True):
+                st.session_state.creating_set = True
+        with col2:
+            if st.button("📄 Upload Document", use_container_width=True):
                 st.session_state.creating_set = False
-                
-            st.markdown("---")
+        
+        st.markdown("---")
+        
+        # Display appropriate form based on user selection
+        if st.session_state.creating_set:
+            # Document set creation form
+            st.markdown("### Create Document Set")
             
-            # Show appropriate form based on selection
-            if st.session_state.creating_set:
-                # Simple document set creation form
-                st.markdown("### Create Document Set")
+            with st.form("new_set_form"):
+                # Simple set name field
+                set_name = st.text_input("Set Name (e.g., Witness Statements, Expert Reports)")
                 
-                with st.form("new_set_form"):
-                    set_name = st.text_input("Set Name (e.g., Witness Statements, Expert Reports)")
-                    
-                    # Simple party selection
-                    party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-                    set_party = st.selectbox("Party", party_options)
-                    
-                    if st.form_submit_button("Create Set"):
-                        if not set_name:
-                            st.error("Please provide a set name")
-                        else:
-                            # Add the new set (category is auto-generated)
-                            set_id = add_document_set(set_name, set_party)
-                            st.session_state.selected_set = set_id
-                            st.session_state.creating_set = False
-                            st.success(f"Created: {set_name}")
-                            st.rerun()
+                # Party selection
+                party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
+                set_party = st.selectbox("Party", party_options)
+                
+                # Submit button
+                if st.form_submit_button("Create Set"):
+                    if not set_name:
+                        st.error("Please provide a set name")
+                    else:
+                        # Add new set (category is auto-generated)
+                        set_id = add_document_set(set_name, set_party)
+                        st.session_state.selected_set = set_id
+                        st.session_state.creating_set = False
+                        st.success(f"Created: {set_name}")
+                        st.rerun()
+        else:
+            # Document upload form
+            st.markdown("### Upload Document")
+            
+            # Simple dropdown to select document set
+            if not st.session_state.document_sets:
+                st.warning("No document sets exist. Please create a document set first.")
             else:
-                # Simple document upload form
-                st.markdown("### Upload Document")
-                
-                # Simple dropdown to select document set
                 set_options = ["--Select a document set--"] + [ds["name"] for ds in st.session_state.document_sets]
                 selected_set_name = st.selectbox("Document Set", set_options)
                 
@@ -1996,27 +324,29 @@ def main():
                             st.session_state.selected_set = ds["id"]
                             break
                     
-                    # Simple upload form for documents
+                    # Simple form for document upload
                     with st.form("upload_form"):
-                        # Simple document name
+                        # Document name field
                         doc_name = st.text_input("Document Name")
                         
-                        # Party selection
+                        # Party selection (default to the set's party if not Mixed)
                         party_options = ["Appellant", "Respondent", "Shared"]
                         default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
                         default_index = party_options.index(default_party) if default_party in party_options else 0
                         doc_party = st.selectbox("Party", party_options, index=default_index)
                         
-                        # Simple file uploader
-                        uploaded_file = st.file_uploader("Select File", type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"])
+                        # File uploader
+                        uploaded_file = st.file_uploader("Select File", 
+                                                       type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"])
                         
+                        # Submit button
                         if st.form_submit_button("Upload"):
                             if not doc_name:
                                 st.error("Please provide a document name")
                             elif not uploaded_file:
                                 st.error("Please select a file")
                             else:
-                                # Add document to the set
+                                # Add document to set
                                 doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
                                 if doc_id:
                                     # Save the uploaded file
@@ -2026,40 +356,16 @@ def main():
                                         st.error("Error saving file")
                                 else:
                                     st.error("Error adding document")
+    
+    with tab2:
+        st.subheader("Manage Document Sets")
         
-        with tab2:
-            st.subheader("Manage Document Sets")
-            
-            # Add a search box for document sets
-            search_term = st.text_input("🔍 Search Document Sets", placeholder="Type to filter document sets...")
-            
-            # Filter document sets based on search term
-            filtered_sets = st.session_state.document_sets
-            if search_term:
-                filtered_sets = [ds for ds in st.session_state.document_sets 
-                                if search_term.lower() in ds['name'].lower() or 
-                                   search_term.lower() in ds['category'].lower()]
-                
-            if not filtered_sets:
-                st.warning(f"No document sets found matching '{search_term}'")
-            
-            # Add document set sorting options
-            col1, col2 = st.columns([3, 1])
-            with col2:
-                sort_option = st.selectbox("Sort by:", ["Name (A-Z)", "Name (Z-A)", "Most Documents", "Party"])
-            
-            # Sort the document sets based on selection
-            if sort_option == "Name (A-Z)":
-                filtered_sets.sort(key=lambda ds: ds['name'])
-            elif sort_option == "Name (Z-A)":
-                filtered_sets.sort(key=lambda ds: ds['name'], reverse=True)
-            elif sort_option == "Most Documents":
-                filtered_sets.sort(key=lambda ds: len(ds['documents']), reverse=True)
-            elif sort_option == "Party":
-                filtered_sets.sort(key=lambda ds: ds['party'])
-            
-            # Display all document sets with their documents
-            for doc_set in filtered_sets:
+        # Simple document set management
+        if not st.session_state.document_sets:
+            st.warning("No document sets exist yet. Create your first document set in the Upload Documents tab.")
+        else:
+            # Display all document sets
+            for doc_set in st.session_state.document_sets:
                 # Create an expander for each document set
                 with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
                     # Show set details
@@ -2070,29 +376,8 @@ def main():
                     <div style="margin-bottom: 15px;">
                         <span class="badge {party_badge_class}">{doc_set["party"]}</span>
                         <span class="badge shared-badge">{doc_set["category"]}</span>
-                        <span class="badge shared-badge">ID: {doc_set["id"]}</span>
                     </div>
                     """, unsafe_allow_html=True)
-                    
-                    # Add edit and delete buttons
-                    col1, col2, col3 = st.columns([2, 1, 1])
-                    with col1:
-                        if st.button(f"✏️ Edit Set Details", key=f"edit_{doc_set['id']}"):
-                            st.session_state.editing_set = doc_set['id']
-                    with col2:
-                        if st.button(f"➕ Add Document", key=f"add_{doc_set['id']}"):
-                            st.session_state.selected_set = doc_set['id']
-                            st.session_state.view = "Upload"
-                            st.rerun()
-                    with col3:
-                        if st.button(f"🗑️ Delete Set", key=f"delete_{doc_set['id']}"):
-                            # In a real app, show confirmation dialog
-                            st.warning(f"Are you sure you want to delete '{doc_set['name']}' and all its documents? This cannot be undone.")
-                            if st.button("Confirm Delete", key=f"confirm_delete_{doc_set['id']}"):
-                                # Remove the set from session state
-                                st.session_state.document_sets = [ds for ds in st.session_state.document_sets if ds['id'] != doc_set['id']]
-                                st.success(f"Deleted document set: {doc_set['name']}")
-                                st.rerun()
                     
                     # Show documents in this set
                     if doc_set["documents"]:
@@ -2102,81 +387,100 @@ def main():
                             # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
                             file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
-                            file_size = ""
-                            if file_key in st.session_state.uploaded_files:
-                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
-                            
-                            # Get the time uploaded (for demonstration, use current time)
-                            upload_time = "Just now" if file_key in st.session_state.uploaded_files else "-"
                             
                             doc_data.append({
                                 "ID": doc["id"],
                                 "Name": doc["name"],
                                 "Party": doc["party"],
-                                "Status": file_status,
-                                "Size": file_size,
-                                "Uploaded": upload_time
+                                "Status": file_status
                             })
                         
                         if doc_data:
                             df = pd.DataFrame(doc_data)
                             st.dataframe(df, use_container_width=True)
-                            
-                            # Export options
-                            if st.button("Export Document List as CSV", key=f"export_{doc_set['id']}"):
-                                csv = df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label="Download CSV",
-                                    data=csv,
-                                    file_name=f"{doc_set['name']}_documents.csv",
-                                    mime='text/csv',
-                                )
                     else:
                         st.info("No documents in this set yet.")
+    
+    with tab3:
+        st.subheader("Recent Uploads")
         
-        with tab3:
-            st.subheader("Recent Uploads")
-            
-            # Display most recent uploads across all sets
-            recent_uploads = []
-            for set_id, doc_id in st.session_state.uploaded_files.keys():
-                # Find the document set and document
-                doc_set = next((ds for ds in st.session_state.document_sets if ds['id'] == set_id), None)
+        # Display recent uploads
+        if not st.session_state.uploaded_files:
+            st.info("No documents have been uploaded yet.")
+        else:
+            # Get list of uploaded files
+            uploads = []
+            for file_key, file_info in st.session_state.uploaded_files.items():
+                set_id, doc_id = file_key.split("-")
+                
+                # Find document set and document
+                doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
+                
                 if doc_set:
-                    doc = next((d for d in doc_set['documents'] if d['id'] == doc_id), None)
+                    doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
+                    
                     if doc:
-                        # File details
-                        file_info = st.session_state.uploaded_files[f"{set_id}-{doc_id}"]
-                        
-                        recent_uploads.append({
+                        uploads.append({
                             "Name": doc["name"],
-                            "Document Set": doc_set["name"],
+                            "Set": doc_set["name"],
                             "Party": doc["party"],
-                            "File Type": file_info["type"],
-                            "Size": f"{file_info['size']/1024:.1f} KB",
-                            "Status": "✅ Uploaded"
+                            "Type": file_info.get("type", "Unknown"),
+                            "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
+                            "Time": file_info.get("upload_time", "Unknown")
                         })
             
-            if recent_uploads:
-                # Show recent uploads in a table
-                st.dataframe(pd.DataFrame(recent_uploads), use_container_width=True)
-                
-                # Option to clear all uploads (in a real app)
-                if st.button("Clear All Uploads History"):
-                    st.warning("This will clear the upload history but not delete the actual files. Continue?")
-                    if st.button("Confirm Clear History"):
-                        # Clear the uploads dictionary (in a real app you'd keep the files)
-                        st.session_state.uploaded_files = {}
-                        st.success("Upload history cleared.")
-                        st.rerun()
+            # Display uploads in a table
+            if uploads:
+                st.dataframe(pd.DataFrame(uploads), use_container_width=True)
             else:
-                st.info("No documents have been uploaded yet.")
-                st.write("Upload documents in the 'Upload New Documents' tab to see them listed here.")
+                st.info("No upload information available.")
+
+# Function to render the facts page (simplified placeholder)
+def render_facts_page(facts_data, document_sets, timeline_data, args_data):
+    # Convert data to JSON for JavaScript
+    args_json = json.dumps(args_data)
+    facts_json = json.dumps(facts_data)
+    document_sets_json = json.dumps(document_sets)
+    timeline_json = json.dumps(timeline_data)
     
-    # For other views, you would add the appropriate rendering code
-    elif st.session_state.view == "Arguments" or st.session_state.view == "Exhibits":
-        st.title(f"{st.session_state.view} View")
-        st.info(f"This is a placeholder for the {st.session_state.view} view. Implementation would follow the same pattern as the Facts view.")
+    # Create HTML content similar to your original
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            /* Your CSS here */
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.5;
+                color: #333;
+            }}
+            /* More styles would go here */
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div id="facts" class="content-section active">
+                <div class="section-title">Case Facts</div>
+                <div id="facts-content">Facts content would display here</div>
+            </div>
+        </div>
+        
+        <script>
+            // Initialize data
+            const factsData = {facts_json};
+            const documentSets = {document_sets_json};
+            const timelineData = {timeline_json};
+            
+            // JavaScript for Facts view would go here
+        </script>
+    </body>
+    </html>
+    """
+    
+    # Render the HTML component
+    st.title("Case Facts")
+    components.html(html_content, height=800, scrolling=True)
 
 # Run the main app
 if __name__ == "__main__":

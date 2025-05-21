@@ -622,6 +622,10 @@ if 'selected_set' not in st.session_state:
 
 # Main app
 def main():
+    # Initialize default view to Upload if not already set
+    if 'view' not in st.session_state or st.session_state.view == "Facts":
+        st.session_state.view = "Upload"
+        
     # Get the data for JavaScript
     args_data = get_argument_data()
     facts_data = get_all_facts()
@@ -697,11 +701,11 @@ def main():
         def set_view(view_name):
             st.session_state.view = view_name
             
-        # Create buttons with names and icons
+        # Create buttons with names and icons - Upload Documents first
+        st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
         st.button("📑 Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
-        st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
     
     # Create the facts HTML component when Facts view is selected
     if st.session_state.view == "Facts":
@@ -1928,10 +1932,10 @@ def main():
     # Create the Upload documents view
     elif st.session_state.view == "Upload":
         # Display the upload page
-        st.title("📤 Upload Documents")
+        st.title("📤 Document Management")
         
         # Create tabs for different upload functions
-        tab1, tab2 = st.tabs(["Upload New Documents", "Manage Document Sets"])
+        tab1, tab2, tab3 = st.tabs(["Upload New Documents", "Manage Document Sets", "Recent Uploads"])
         
         with tab1:
             st.subheader("Upload and Organize Documents")
@@ -1945,16 +1949,19 @@ def main():
             if create_new:
                 # Form to create a new document set
                 with st.form("new_set_form"):
-                    set_name = st.text_input("Set Name", placeholder="e.g., Witness Statements")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        set_name = st.text_input("Set Name", placeholder="e.g., Witness Statements")
                     
-                    # Party selection
-                    party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-                    set_party = st.selectbox("Party", party_options)
+                    with col2:
+                        # Party selection
+                        party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
+                        set_party = st.selectbox("Party", party_options)
                     
                     # Category input (default to set name if not provided)
                     set_category = st.text_input("Category", placeholder="e.g., witness_statements (optional)")
                     
-                    submit_button = st.form_submit_button("Create Set")
+                    submit_button = st.form_submit_button("Create Document Set")
                     
                     if submit_button and set_name:
                         if not set_category:
@@ -1998,42 +2005,108 @@ def main():
                     <div>
                         <span class="badge {party_badge_class}">{selected_set["party"]}</span>
                         <span class="badge shared-badge">{selected_set["category"]}</span>
+                        <span class="badge shared-badge">{len(selected_set["documents"])} existing documents</span>
                     </div>
                     """, unsafe_allow_html=True)
                     
                     # Form to upload a new document
                     with st.form("upload_form"):
-                        # Document name
-                        doc_name = st.text_input("Document Name", placeholder="e.g., Expert Report on Damages")
+                        col1, col2 = st.columns([2, 1])
                         
-                        # Party selection (default to the set's party if not Mixed)
-                        party_options = ["Appellant", "Respondent", "Shared"]
-                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
-                        default_index = party_options.index(default_party) if default_party in party_options else 0
-                        doc_party = st.selectbox("Document Party", party_options, index=default_index)
+                        with col1:
+                            # Document name
+                            doc_name = st.text_input("Document Name", placeholder="e.g., Expert Report on Damages")
                         
-                        # File upload
-                        uploaded_file = st.file_uploader("Choose a file", type=["pdf", "docx", "txt", "jpg", "png"])
+                        with col2:
+                            # Party selection (default to the set's party if not Mixed)
+                            party_options = ["Appellant", "Respondent", "Shared"]
+                            default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
+                            default_index = party_options.index(default_party) if default_party in party_options else 0
+                            doc_party = st.selectbox("Document Party", party_options, index=default_index)
                         
-                        submit_button = st.form_submit_button("Upload Document")
+                        # File upload with a more descriptive label and expanded area
+                        st.markdown("##### Upload Document File")
+                        uploaded_file = st.file_uploader(
+                            "Drop files here or click to browse",
+                            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
+                            help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
+                        )
                         
-                        if submit_button and doc_name and uploaded_file:
-                            # Add document to the set
-                            doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
-                            if doc_id:
-                                # Save the uploaded file
-                                if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                    st.success(f"Successfully uploaded: {doc_name}")
-                                else:
-                                    st.error("Error saving the file.")
+                        # Optional description
+                        doc_description = st.text_area("Document Description (optional)", 
+                                                      placeholder="Add any notes or description about this document...",
+                                                      max_chars=500)
+                        
+                        # Add tags
+                        doc_tags = st.text_input("Tags (optional, comma separated)", 
+                                               placeholder="e.g., expert, damages, financial",
+                                               help="Add tags to make it easier to find documents later")
+                        
+                        col1, col2 = st.columns(2)
+                        
+                        with col1:
+                            submit_button = st.form_submit_button("📤 Upload Document")
+                        
+                        if submit_button:
+                            if not doc_name:
+                                st.error("Please provide a document name")
+                            elif not uploaded_file:
+                                st.error("Please upload a file")
                             else:
-                                st.error("Error adding document to the set.")
+                                # Add document to the set
+                                doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
+                                if doc_id:
+                                    # Save the uploaded file
+                                    if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
+                                        st.success(f"✅ Successfully uploaded: {doc_name}")
+                                        
+                                        # Show document details
+                                        st.info(f"""
+                                        **Document Details:**
+                                        - **Name:** {doc_name}
+                                        - **Set:** {selected_set['name']}
+                                        - **Party:** {doc_party}
+                                        - **File Type:** {uploaded_file.type}
+                                        - **File Size:** {uploaded_file.size/1024:.1f} KB
+                                        """)
+                                    else:
+                                        st.error("Error saving the file.")
+                                else:
+                                    st.error("Error adding document to the set.")
         
         with tab2:
             st.subheader("Manage Document Sets")
             
+            # Add a search box for document sets
+            search_term = st.text_input("🔍 Search Document Sets", placeholder="Type to filter document sets...")
+            
+            # Filter document sets based on search term
+            filtered_sets = st.session_state.document_sets
+            if search_term:
+                filtered_sets = [ds for ds in st.session_state.document_sets 
+                                if search_term.lower() in ds['name'].lower() or 
+                                   search_term.lower() in ds['category'].lower()]
+                
+            if not filtered_sets:
+                st.warning(f"No document sets found matching '{search_term}'")
+            
+            # Add document set sorting options
+            col1, col2 = st.columns([3, 1])
+            with col2:
+                sort_option = st.selectbox("Sort by:", ["Name (A-Z)", "Name (Z-A)", "Most Documents", "Party"])
+            
+            # Sort the document sets based on selection
+            if sort_option == "Name (A-Z)":
+                filtered_sets.sort(key=lambda ds: ds['name'])
+            elif sort_option == "Name (Z-A)":
+                filtered_sets.sort(key=lambda ds: ds['name'], reverse=True)
+            elif sort_option == "Most Documents":
+                filtered_sets.sort(key=lambda ds: len(ds['documents']), reverse=True)
+            elif sort_option == "Party":
+                filtered_sets.sort(key=lambda ds: ds['party'])
+            
             # Display all document sets with their documents
-            for doc_set in st.session_state.document_sets:
+            for doc_set in filtered_sets:
                 # Create an expander for each document set
                 with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
                     # Show set details
@@ -2048,6 +2121,26 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
                     
+                    # Add edit and delete buttons
+                    col1, col2, col3 = st.columns([2, 1, 1])
+                    with col1:
+                        if st.button(f"✏️ Edit Set Details", key=f"edit_{doc_set['id']}"):
+                            st.session_state.editing_set = doc_set['id']
+                    with col2:
+                        if st.button(f"➕ Add Document", key=f"add_{doc_set['id']}"):
+                            st.session_state.selected_set = doc_set['id']
+                            st.session_state.view = "Upload"
+                            st.experimental_rerun()
+                    with col3:
+                        if st.button(f"🗑️ Delete Set", key=f"delete_{doc_set['id']}"):
+                            # In a real app, show confirmation dialog
+                            st.warning(f"Are you sure you want to delete '{doc_set['name']}' and all its documents? This cannot be undone.")
+                            if st.button("Confirm Delete", key=f"confirm_delete_{doc_set['id']}"):
+                                # Remove the set from session state
+                                st.session_state.document_sets = [ds for ds in st.session_state.document_sets if ds['id'] != doc_set['id']]
+                                st.success(f"Deleted document set: {doc_set['name']}")
+                                st.experimental_rerun()
+                    
                     # Show documents in this set
                     if doc_set["documents"]:
                         # Create a table of documents
@@ -2055,28 +2148,77 @@ def main():
                         for doc in doc_set["documents"]:
                             # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            file_status = "Uploaded" if file_key in st.session_state.uploaded_files else "Missing"
+                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            file_size = ""
+                            if file_key in st.session_state.uploaded_files:
+                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
+                            
+                            # Get the time uploaded (for demonstration, use current time)
+                            upload_time = "Just now" if file_key in st.session_state.uploaded_files else "-"
                             
                             doc_data.append({
                                 "ID": doc["id"],
                                 "Name": doc["name"],
                                 "Party": doc["party"],
-                                "Status": file_status
+                                "Status": file_status,
+                                "Size": file_size,
+                                "Uploaded": upload_time
                             })
                         
                         if doc_data:
                             df = pd.DataFrame(doc_data)
                             st.dataframe(df, use_container_width=True)
-                        
-                        # Allow renaming or deleting documents (in a real app)
-                        st.markdown("---")
-                        st.info("Document modification features would be implemented here in a production app.")
+                            
+                            # Export options
+                            if st.button("Export Document List as CSV", key=f"export_{doc_set['id']}"):
+                                csv = df.to_csv(index=False).encode('utf-8')
+                                st.download_button(
+                                    label="Download CSV",
+                                    data=csv,
+                                    file_name=f"{doc_set['name']}_documents.csv",
+                                    mime='text/csv',
+                                )
                     else:
                         st.info("No documents in this set yet.")
+        
+        with tab3:
+            st.subheader("Recent Uploads")
             
-            # Option to delete a document set (in a real app)
-            st.markdown("---")
-            st.warning("Document set deletion would be implemented here in a production app.")
+            # Display most recent uploads across all sets
+            recent_uploads = []
+            for set_id, doc_id in st.session_state.uploaded_files.keys():
+                # Find the document set and document
+                doc_set = next((ds for ds in st.session_state.document_sets if ds['id'] == set_id), None)
+                if doc_set:
+                    doc = next((d for d in doc_set['documents'] if d['id'] == doc_id), None)
+                    if doc:
+                        # File details
+                        file_info = st.session_state.uploaded_files[f"{set_id}-{doc_id}"]
+                        
+                        recent_uploads.append({
+                            "Name": doc["name"],
+                            "Document Set": doc_set["name"],
+                            "Party": doc["party"],
+                            "File Type": file_info["type"],
+                            "Size": f"{file_info['size']/1024:.1f} KB",
+                            "Status": "✅ Uploaded"
+                        })
+            
+            if recent_uploads:
+                # Show recent uploads in a table
+                st.dataframe(pd.DataFrame(recent_uploads), use_container_width=True)
+                
+                # Option to clear all uploads (in a real app)
+                if st.button("Clear All Uploads History"):
+                    st.warning("This will clear the upload history but not delete the actual files. Continue?")
+                    if st.button("Confirm Clear History"):
+                        # Clear the uploads dictionary (in a real app you'd keep the files)
+                        st.session_state.uploaded_files = {}
+                        st.success("Upload history cleared.")
+                        st.experimental_rerun()
+            else:
+                st.info("No documents have been uploaded yet.")
+                st.write("Upload documents in the 'Upload New Documents' tab to see them listed here.")
     
     # For other views, you would add the appropriate rendering code
     elif st.session_state.view == "Arguments" or st.session_state.view == "Exhibits":

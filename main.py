@@ -606,7 +606,7 @@ def get_document_sets():
 
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
-    st.session_state.view = "Facts"
+    st.session_state.view = "Upload"  # Start with Upload view as default
 
 # Initialize document sets in session state if not already there
 if 'document_sets' not in st.session_state:
@@ -622,10 +622,6 @@ if 'selected_set' not in st.session_state:
 
 # Main app
 def main():
-    # Initialize default view to Upload if not already set
-    if 'view' not in st.session_state or st.session_state.view == "Facts":
-        st.session_state.view = "Upload"
-        
     # Get the data for JavaScript
     args_data = get_argument_data()
     facts_data = get_all_facts()
@@ -1971,7 +1967,8 @@ def main():
                         set_id = add_document_set(set_name, set_party, set_category)
                         st.session_state.selected_set = set_id
                         st.success(f"Created new document set: {set_name}")
-                        st.experimental_rerun()
+                        # Use st.rerun() instead of experimental_rerun
+                        st.rerun()
             else:
                 # Select an existing document set
                 set_options = ["Select a document set..."] + [ds["name"] for ds in st.session_state.document_sets]
@@ -2130,7 +2127,7 @@ def main():
                         if st.button(f"➕ Add Document", key=f"add_{doc_set['id']}"):
                             st.session_state.selected_set = doc_set['id']
                             st.session_state.view = "Upload"
-                            st.experimental_rerun()
+                            st.rerun()
                     with col3:
                         if st.button(f"🗑️ Delete Set", key=f"delete_{doc_set['id']}"):
                             # In a real app, show confirmation dialog
@@ -2139,7 +2136,7 @@ def main():
                                 # Remove the set from session state
                                 st.session_state.document_sets = [ds for ds in st.session_state.document_sets if ds['id'] != doc_set['id']]
                                 st.success(f"Deleted document set: {doc_set['name']}")
-                                st.experimental_rerun()
+                                st.rerun()
                     
                     # Show documents in this set
                     if doc_set["documents"]:
@@ -2215,7 +2212,7 @@ def main():
                         # Clear the uploads dictionary (in a real app you'd keep the files)
                         st.session_state.uploaded_files = {}
                         st.success("Upload history cleared.")
-                        st.experimental_rerun()
+                        st.rerun()
             else:
                 st.info("No documents have been uploaded yet.")
                 st.write("Upload documents in the 'Upload New Documents' tab to see them listed here.")

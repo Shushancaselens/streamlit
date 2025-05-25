@@ -214,6 +214,12 @@ def get_argument_data():
                     "title": "Federation Records",
                     "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
                     "citations": ["208", "209", "210"]
+                },
+                {
+                    "id": "R-2", 
+                    "title": "Registration Termination Documents",
+                    "summary": "Complete set of official documents confirming the formal termination of Athletic Club United's registration on April 30, 1975, and subsequent registration of a new entity 'Athletic Club United FC' on September 15, 1976. Demonstrates clear legal discontinuity between entities.",
+                    "citations": ["158", "162", "165"]
                 }
             ],
             "caseLaw": [
@@ -436,7 +442,7 @@ def get_timeline_data():
             "isDisputed": True,
             "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
             "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
-            "exhibits": ["R-2"],
+            "exhibits": ["R-2", "C-4", "R-1"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
             "source": "provisional messier - Answer to Request for PM",
@@ -2030,22 +2036,21 @@ def main():
                                 <div class="card-detail-value">None</div>
                             `;
                         }} else {{
-                            const evidenceCount = evidenceContent.length;
                             evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence (${{evidenceCount}} item${{evidenceCount > 1 ? 's' : ''}})</div>
+                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})</div>
                                 <div class="card-detail-value">
                                     ${{evidenceContent.map((evidence, index) => `
-                                        <div style="margin-bottom: 12px; padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0; position: relative;">
-                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                                <div style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                                <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;">${{index + 1}}</div>
+                                        <div style="margin-bottom: 12px; padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0; border: 1px solid rgba(221, 107, 32, 0.1);">
+                                            <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                                <span style="background-color: #dd6b20; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-right: 8px;">${{index + 1}}</span>
+                                                <span style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</span>
                                             </div>
-                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4; padding-left: 2px;">${{evidence.summary}}</div>
                                         </div>
                                     `).join('')}}
                                 </div>
                             `;
-                        }}
+                        }
                         statusExhibitsEl.appendChild(evidenceSection);
                         
                         contentEl.appendChild(statusExhibitsEl);
@@ -2207,22 +2212,25 @@ def main():
                             footerEl.className = 'timeline-footer';
                             footerEl.style.cssText = 'padding: 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
                             
-                            const evidenceCount = evidenceContent.length;
                             footerEl.innerHTML = `
-                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
-                                    <span>Evidence (${{evidenceCount}} item${{evidenceCount > 1 ? 's' : ''}})</span>
-                                    <div style="height: 1px; background-color: #e2e8f0; flex-grow: 1;"></div>
+                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                    Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})
                                 </div>
                                 <div style="display: grid; gap: 12px;">
                                     ${{evidenceContent.map((evidence, index) => `
-                                        <div style="padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 8px 8px 0; position: relative;">
-                                            <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                                <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0;">${{index + 1}}</div>
-                                                <div style="flex-grow: 1;">
-                                                    <div style="font-weight: 600; color: #dd6b20; font-size: 14px; margin-bottom: 4px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                                    <div style="font-size: 13px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
-                                                </div>
+                                        <div style="padding: 12px; background-color: white; border-left: 4px solid #dd6b20; border-radius: 0 8px 8px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                                <span style="background-color: #dd6b20; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 10px;">№${{index + 1}}</span>
+                                                <span style="font-weight: 600; color: #dd6b20; font-size: 14px;">${{evidence.id}}: ${{evidence.title}}</span>
                                             </div>
+                                            <div style="font-size: 13px; color: #4a5568; line-height: 1.5; padding-left: 4px;">${{evidence.summary}}</div>
                                         </div>
                                     `).join('')}}
                                 </div>
@@ -2375,16 +2383,17 @@ def main():
                                                     if (evidenceContent === 'None') {{
                                                         return 'None';
                                                     }}
-                                                    const evidenceCount = evidenceContent.length;
                                                     return `
-                                                        <div style="font-size: 9px; font-weight: 600; color: #666; margin-bottom: 3px;">${{evidenceCount}} Item${{evidenceCount > 1 ? 's' : ''}}</div>
+                                                        <div style="font-size: 10px; font-weight: 600; color: #dd6b20; margin-bottom: 4px;">
+                                                            Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})
+                                                        </div>
                                                         ${{evidenceContent.map((evidence, index) => `
-                                                            <div style="margin-bottom: 4px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 9px;">
-                                                                <div style="display: flex; align-items: center; gap: 3px; margin-bottom: 1px;">
-                                                                    <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 600;">${{index + 1}}</div>
-                                                                    <div style="font-weight: 600; color: #dd6b20; line-height: 1.1;">${{evidence.id}}: ${{evidence.title}}</div>
+                                                            <div style="margin-bottom: 6px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 9px;">
+                                                                <div style="display: flex; align-items: center; margin-bottom: 2px;">
+                                                                    <span style="background-color: #dd6b20; color: white; padding: 1px 3px; border-radius: 2px; font-size: 8px; margin-right: 3px;">${{index + 1}}</span>
+                                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 9px;">${{evidence.id}}: ${{evidence.title}}</span>
                                                                 </div>
-                                                                <div style="color: #666; line-height: 1.2; margin-left: 15px;">${{evidence.summary.length > 80 ? evidence.summary.substring(0, 80) + '...' : evidence.summary}}</div>
+                                                                <div style="color: #666; line-height: 1.2; padding-left: 1px;">${{evidence.summary.length > 80 ? evidence.summary.substring(0, 80) + '...' : evidence.summary}}</div>
                                                             </div>
                                                         `).join('')}}
                                                     `;
@@ -2513,22 +2522,24 @@ def main():
                         if (evidenceContent === 'None') {{
                             evidenceCell.textContent = 'None';
                         }} else {{
-                            const evidenceCount = evidenceContent.length;
+                            // Create a compact but clear display for multiple evidence
                             evidenceCell.innerHTML = `
-                                <div style="font-size: 10px; font-weight: 600; color: #666; margin-bottom: 4px;">${{evidenceCount}} Evidence Item${{evidenceCount > 1 ? 's' : ''}}</div>
+                                <div style="font-size: 11px; font-weight: 600; color: #dd6b20; margin-bottom: 4px;">
+                                    Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})
+                                </div>
                                 ${{evidenceContent.map((evidence, index) => `
-                                    <div style="margin-bottom: 6px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 10px; position: relative;">
-                                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
-                                            <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; flex-shrink: 0;">${{index + 1}}</div>
-                                            <div style="font-weight: 600; color: #dd6b20; line-height: 1.2;">${{evidence.id}}: ${{evidence.title}}</div>
+                                    <div style="margin-bottom: 8px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 10px;">
+                                        <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                                            <span style="background-color: #dd6b20; color: white; padding: 1px 4px; border-radius: 2px; font-size: 9px; margin-right: 4px;">${{index + 1}}</span>
+                                            <span style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</span>
                                         </div>
-                                        <div style="color: #666; line-height: 1.3; margin-left: 18px;">${{evidence.summary.length > 100 ? evidence.summary.substring(0, 100) + '...' : evidence.summary}}</div>
+                                        <div style="color: #666; line-height: 1.3; padding-left: 2px;">${{evidence.summary.length > 100 ? evidence.summary.substring(0, 100) + '...' : evidence.summary}}</div>
                                     </div>
-                                `).join('')}}
+                                `).join('')}
                             `;
                             evidenceCell.style.maxWidth = '350px';
                             evidenceCell.style.fontSize = '10px';
-                            evidenceCell.style.verticalAlign = 'top';
+                            evidenceCell.style.lineHeight = '1.3';
                         }}
                         row.appendChild(evidenceCell);
                         

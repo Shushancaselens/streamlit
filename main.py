@@ -1404,6 +1404,65 @@ def main():
                     background-color: rgba(221, 107, 32, 0.2);
                 }}
                 
+                /* Event and Document preview styling */
+                .expandable-preview {{
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 4px 0;
+                    transition: background-color 0.2s ease;
+                    border-radius: 4px;
+                }}
+                
+                .expandable-preview:hover {{
+                    background-color: rgba(0, 0, 0, 0.05);
+                }}
+                
+                .preview-icon {{
+                    width: 16px;
+                    height: 16px;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    margin-left: 8px;
+                    transition: transform 0.2s ease;
+                }}
+                
+                .event-preview-icon {{
+                    background-color: #4299e1;
+                }}
+                
+                .document-preview-icon {{
+                    background-color: #38a169;
+                }}
+                
+                .preview-content {{
+                    display: none;
+                    margin-top: 6px;
+                    padding: 8px;
+                    border-radius: 0 4px 4px 0;
+                    font-size: 12px;
+                    line-height: 1.4;
+                    animation: slideDown 0.2s ease;
+                }}
+                
+                .event-preview-content {{
+                    background-color: rgba(66, 153, 225, 0.05);
+                    border-left: 3px solid #4299e1;
+                }}
+                
+                .document-preview-content {{
+                    background-color: rgba(56, 161, 105, 0.05);
+                    border-left: 3px solid #38a169;
+                    font-style: italic;
+                    color: #666;
+                }}
+                
                 @keyframes slideDown {{
                     from {{
                         opacity: 0;
@@ -1591,10 +1650,10 @@ def main():
                     return evidenceContent;
                 }}
                 
-                // Toggle evidence expansion
-                function toggleEvidence(evidenceId, factIndex) {{
-                    const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
-                    const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
+                // Toggle content expansion for different content types
+                function toggleContent(contentType, contentId, factIndex) {{
+                    const content = document.getElementById(`${{contentType}}-content-${{contentId}}-${{factIndex}}`);
+                    const icon = document.getElementById(`${{contentType}}-icon-${{contentId}}-${{factIndex}}`);
                     
                     if (content.style.display === 'none' || content.style.display === '') {{
                         content.style.display = 'block';
@@ -1605,6 +1664,21 @@ def main():
                         icon.textContent = '+';
                         icon.style.transform = 'rotate(0deg)';
                     }}
+                }}
+                
+                // Toggle evidence expansion
+                function toggleEvidence(evidenceId, factIndex) {{
+                    toggleContent('evidence', evidenceId, factIndex);
+                }}
+                
+                // Toggle event expansion  
+                function toggleEvent(factIndex) {{
+                    toggleContent('event', 'preview', factIndex);
+                }}
+                
+                // Toggle document expansion
+                function toggleDocument(factIndex) {{
+                    toggleContent('document', 'preview', factIndex);
                 }}
                 
                 // Standardize timeline data to match facts structure

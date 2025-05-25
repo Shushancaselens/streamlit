@@ -32,11 +32,7 @@ def get_argument_data():
                     "date": "1950-present",
                     "isDisputed": False,
                     "paragraphs": "18-19",
-                    "exhibits": ["C-1"],
-                    "source_text": "The Club has maintained continuous operations under the same registered name 'Athletic Club United' since its original incorporation on January 12, 1950, without any interruption in its legal status or operational capacity.",
-                    "page": "18",
-                    "doc_name": "Statement of Appeal",
-                    "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                    "exhibits": ["C-1"]
                 }
             ],
             "evidence": [
@@ -80,11 +76,7 @@ def get_argument_data():
                                     "date": "1950",
                                     "isDisputed": False,
                                     "paragraphs": "25-26",
-                                    "exhibits": ["C-2"],
-                                    "source_text": "The club was officially registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-047.",
-                                    "page": "25",
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                                    "exhibits": ["C-2"]
                                 },
                                 {
                                     "point": "Brief administrative gap in 1975-1976",
@@ -92,11 +84,7 @@ def get_argument_data():
                                     "isDisputed": True,
                                     "source": "Respondent",
                                     "paragraphs": "29-30",
-                                    "exhibits": ["C-2"],
-                                    "source_text": "While administrative challenges arose during the 1975-1976 period due to financial restructuring, the club's core operations and identity remained intact throughout this transitional phase.",
-                                    "page": "29",
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                                    "exhibits": ["C-2"]
                                 }
                             ],
                             "evidence": [
@@ -129,11 +117,7 @@ def get_argument_data():
                             "isDisputed": True,
                             "source": "Respondent",
                             "paragraphs": "51-52",
-                            "exhibits": ["C-4"],
-                            "source_text": "The club has consistently utilized the blue and white color scheme as its primary identity markers since its founding in 1950, with only minor shade variations that do not affect the overall visual identity.",
-                            "page": "51",
-                            "doc_name": "Statement of Appeal",
-                            "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                            "exhibits": ["C-4"]
                         }
                     ],
                     "evidence": [
@@ -155,22 +139,14 @@ def get_argument_data():
                                     "date": "1970-1980",
                                     "isDisputed": False,
                                     "paragraphs": "56-57",
-                                    "exhibits": ["C-5"],
-                                    "source_text": "The minor variations in blue shade intensity during the 1970-1980 period were purely technical adjustments due to fabric manufacturing changes and do not constitute a break in visual identity continuity.",
-                                    "page": "56",
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                                    "exhibits": ["C-5"]
                                 },
                                 {
                                     "point": "Temporary third color addition in 1980s",
                                     "date": "1982-1988",
                                     "isDisputed": False,
                                     "paragraphs": "58-59",
-                                    "exhibits": ["C-5"],
-                                    "source_text": "A red accent color was temporarily incorporated into the uniform design between 1982-1988 for commemorative purposes, while maintaining the core blue and white identity elements.",
-                                    "page": "58",
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+                                    "exhibits": ["C-5"]
                                 }
                             ],
                             "children": {}
@@ -201,11 +177,7 @@ def get_argument_data():
                     "isDisputed": True,
                     "source": "Claimant",
                     "paragraphs": "206-207",
-                    "exhibits": ["R-1"],
-                    "source_text": "Official federation records demonstrate a complete cessation of competitive activities during the 1975-1976 season, with no registered players, no match participation, and formal withdrawal from all competitions.",
-                    "page": "206",
-                    "doc_name": "Answer to Request for Provisional Measures",
-                    "doc_summary": "Respondent's primary response document challenging the appellant's claims and presenting counter-evidence"
+                    "exhibits": ["R-1"]
                 }
             ],
             "evidence": [
@@ -264,11 +236,7 @@ def get_all_facts():
                     'paragraphs': point.get('paragraphs', ''),
                     'exhibits': point.get('exhibits', []),
                     'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    'source_text': point.get('source_text', ''),
-                    'page': point.get('page', ''),
-                    'doc_name': point.get('doc_name', ''),
-                    'doc_summary': point.get('doc_summary', '')
+                    'argTitle': arg['title']
                 }
                 facts.append(fact)
                 
@@ -299,11 +267,7 @@ def get_timeline_data():
             "exhibits": ["C-1"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United was officially incorporated and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal competitive existence.",
-            "page": "15",
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "First National Championship won",
@@ -313,11 +277,7 @@ def get_timeline_data():
             "exhibits": ["C-3"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United achieved its first major sporting success by winning the National Championship on May 20, 1955, establishing its competitive credentials and public recognition.",
-            "page": "22",
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive legal brief supporting the appellant's arguments with detailed evidence and case law analysis"
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Club colors established as blue and white",
@@ -327,11 +287,7 @@ def get_timeline_data():
             "exhibits": ["C-4"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The official club colors of blue and white were formally registered and established as the club's visual identity on March 10, 1956, following the successful championship season.",
-            "page": "46",
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's case for sporting succession and continuous club identity"
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "First international competition participation",
@@ -361,11 +317,7 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "Due to severe financial constraints, the club was forced to suspend administrative operations on April 30, 1975, leading to temporary cessation of competitive activities.",
-            "page": "145",
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's primary response document challenging the appellant's claims and presenting counter-evidence"
+            "source": "provisional messier - Answer to Request for PM"
         },
         {
             "point": "Operations ceased between 1975-1976",
@@ -375,11 +327,7 @@ def get_timeline_data():
             "exhibits": ["R-1"],
             "argId": "1",
             "argTitle": "Sporting Succession Rebuttal",
-            "source": "provisional messier - Answer to PM",
-            "source_text": "Official federation records demonstrate a complete cessation of competitive activities during the 1975-1976 season, with no registered players, no match participation, and formal withdrawal from all competitions.",
-            "page": "206",
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's primary response document challenging the appellant's claims and presenting counter-evidence"
+            "source": "provisional messier - Answer to PM"
         },
         {
             "point": "Club registration formally terminated",
@@ -459,11 +407,7 @@ def get_timeline_data():
             "exhibits": ["C-10"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility",
-            "source_text": "The National Football Federation issued Official Recognition Letter NFF-2010-REG-047 acknowledging the continuous sporting succession and historical continuity of Athletic Club United spanning both pre-1976 and post-1976 periods.",
-            "page": "89",
-            "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's admissibility objections, providing additional supporting evidence and legal arguments"
+            "source": "admissibility - Reply to Objection to Admissibility"
         }
     ]
     
@@ -573,9 +517,6 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Show current view for debugging
-        st.write(f"Current view: {st.session_state.view}")
-        
         # Custom CSS for button styling
         st.markdown("""
         <style>
@@ -608,13 +549,7 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Debug information
-    st.write("Debug Info:")
-    st.write(f"- Session state view: {st.session_state.view}")
-    st.write(f"- Facts data length: {len(get_all_facts())}")
-    st.write(f"- Timeline data length: {len(get_timeline_data())}")
-    
-    # Create the main content based on selected view
+    # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
         html_content = f"""
@@ -1119,12 +1054,10 @@ def main():
                                 <tr>
                                     <th onclick="sortTable('facts-table-body', 0)">Date</th>
                                     <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1154,65 +1087,38 @@ def main():
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
                 
-                // Debug: Log data to console
-                console.log('Facts Data:', factsData);
-                console.log('Document Sets:', documentSets);
-                console.log('Timeline Data:', timelineData);
-                
-                // Initialize facts immediately when script loads
-                document.addEventListener('DOMContentLoaded', function() {{
-                    console.log('DOM Content Loaded');
-                    renderFacts('all');
-                }});
-                
-                // Also try to initialize immediately
-                setTimeout(function() {{
-                    console.log('Initializing facts with timeout');
-                    renderFacts('all');
-                }}, 100);
-                
                 // Switch view between table, timeline, and document sets
                 function switchView(viewType) {{
-                    try {{
-                        console.log('Switching to view:', viewType);
-                        const tableBtn = document.getElementById('table-view-btn');
-                        const timelineBtn = document.getElementById('timeline-view-btn');
-                        const docsetBtn = document.getElementById('docset-view-btn');
-                        
-                        const tableContent = document.getElementById('table-view-content');
-                        const timelineContent = document.getElementById('timeline-view-content');
-                        const docsetContent = document.getElementById('docset-view-content');
-                        
-                        if (!tableBtn || !timelineBtn || !docsetBtn || !tableContent || !timelineContent || !docsetContent) {{
-                            console.error('Required elements not found');
-                            return;
-                        }}
-                        
-                        // Remove active class from all buttons
-                        tableBtn.classList.remove('active');
-                        timelineBtn.classList.remove('active');
-                        docsetBtn.classList.remove('active');
-                        
-                        // Hide all content
-                        tableContent.style.display = 'none';
-                        timelineContent.style.display = 'none';
-                        docsetContent.style.display = 'none';
-                        
-                        // Activate the selected view
-                        if (viewType === 'table') {{
-                            tableBtn.classList.add('active');
-                            tableContent.style.display = 'block';
-                        }} else if (viewType === 'timeline') {{
-                            timelineBtn.classList.add('active');
-                            timelineContent.style.display = 'block';
-                            renderTimeline();
-                        }} else if (viewType === 'docset') {{
-                            docsetBtn.classList.add('active');
-                            docsetContent.style.display = 'block';
-                            renderDocumentSets();
-                        }}
-                    }} catch (error) {{
-                        console.error('Error in switchView:', error);
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
+                    
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
+                    
+                    // Hide all content
+                    tableContent.style.display = 'none';
+                    timelineContent.style.display = 'none';
+                    docsetContent.style.display = 'none';
+                    
+                    // Activate the selected view
+                    if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        tableContent.style.display = 'block';
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
+                        timelineContent.style.display = 'block';
+                        renderTimeline();
+                    }} else if (viewType === 'docset') {{
+                        docsetBtn.classList.add('active');
+                        docsetContent.style.display = 'block';
+                        renderDocumentSets();
                     }}
                 }}
                 
@@ -1258,7 +1164,7 @@ def main():
                                 const fact = factEl.textContent.trim();
                                 const party = partyEl ? partyEl.textContent.trim() : '';
                                 
-                                contentToCopy += date + ' - ' + fact + ' (' + party + ')\\n\\n';
+                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
                             }}
                         }});
                     }} else {{
@@ -1270,13 +1176,13 @@ def main():
                         docsetContainers.forEach(container => {{
                             const header = container.querySelector('.docset-header');
                             const title = header.querySelector('span').textContent;
-                            contentToCopy += '=== ' + title + ' ===\\n';
+                            contentToCopy += `=== ${{title}} ===\\n`;
                             
                             // Get facts from this document
                             const tableFacts = container.querySelectorAll('tbody tr');
                             tableFacts.forEach(fact => {{
                                 const cells = Array.from(fact.querySelectorAll('td'));
-                                contentToCopy += '- ' + cells[0].textContent + ' | ' + cells[1].textContent + '\\n';
+                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
                             }});
                             
                             contentToCopy += '\\n';
@@ -1338,14 +1244,12 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Source Text,Page,Document,Document Summary,Party,Status,Evidence,Argument\\n";
+                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            const sourceText = (item.source_text || '').replace(/"/g, '""');
-                            const docSummary = (item.doc_summary || '').replace(/"/g, '""');
-                            rows += '"' + item.date + '","' + item.point + '","' + sourceText + '","' + (item.page || 'N/A') + '","' + (item.doc_name || 'N/A') + '","' + docSummary + '","' + item.party + '","' + (item.isDisputed ? 'Disputed' : 'Undisputed') + '","' + exhibits + '","' + item.argId + '. ' + item.argTitle + '"\\n';
+                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1447,8 +1351,8 @@ def main():
                 
                 // Toggle document set visibility
                 function toggleDocSet(docsetId) {{
-                    const content = document.getElementById('docset-content-' + docsetId);
-                    const chevron = document.getElementById('chevron-' + docsetId);
+                    const content = document.getElementById(`docset-content-${{docsetId}}`);
+                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
                     
                     if (content.style.display === 'none') {{
                         content.style.display = 'block';
@@ -1524,9 +1428,10 @@ def main():
                             // Add year marker
                             const yearMarker = document.createElement('div');
                             yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = 
-                                '<div class="timeline-year">' + currentYear + '</div>' +
-                                '<div class="timeline-year-line"></div>';
+                            yearMarker.innerHTML = `
+                                <div class="timeline-year">${{currentYear}}</div>
+                                <div class="timeline-year-line"></div>
+                            `;
                             container.appendChild(yearMarker);
                             prevYear = currentYear;
                         }}
@@ -1585,30 +1490,14 @@ def main():
                         factContent.textContent = fact.point;
                         bodyEl.appendChild(factContent);
                         
-                        // Source text
-                        if (fact.source_text) {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.fontSize = '14px';
-                            sourceTextEl.style.color = '#4a5568';
-                            sourceTextEl.style.fontStyle = 'italic';
-                            sourceTextEl.style.marginTop = '8px';
-                            sourceTextEl.style.padding = '8px';
-                            sourceTextEl.style.backgroundColor = '#f7fafc';
-                            sourceTextEl.style.borderRadius = '4px';
-                            sourceTextEl.textContent = '"' + fact.source_text + '"';
-                            bodyEl.appendChild(sourceTextEl);
-                        }}
-                        
                         // Related argument and source
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = 
-                            '<span><strong>Document:</strong> ' + (fact.doc_name || 'N/A') + '</span>' +
-                            '<span><strong>Page:</strong> ' + (fact.page || 'N/A') + '</span>' +
-                            '<span><strong>Argument:</strong> ' + fact.argId + '. ' + fact.argTitle + '</span>' +
-                            (fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : '') +
-                            '<span><strong>Source:</strong> ' + fact.source + '</span>';
+                        metaEl.innerHTML = `
+                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
+                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
+                            <span><strong>Source:</strong> ${{fact.source}}</span>
+                        `;
                         bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);
@@ -1717,67 +1606,61 @@ def main():
                         docsetEl.className = 'docset-container';
                         
                         // Create folder header
-                        const headerHtml = 
-                            '<div class="docset-header" onclick="toggleDocSet(\'' + docset.id + '\')">' +
-                                '<svg id="chevron-' + docset.id + '" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                    '<polyline points="9 18 15 12 9 6"></polyline>' +
-                                '</svg>' +
-                                '<svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                    '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>' +
-                                '</svg>' +
-                                '<span><strong>' + docset.name + '</strong></span>' +
-                                '<span style="margin-left: auto;">' +
-                                    '<span class="badge ' + (docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')) + '">' +
-                                        docset.party +
-                                    '</span>' +
-                                    '<span class="badge">' + facts.length + ' facts</span>' +
-                                '</span>' +
-                            '</div>' +
-                            '<div id="docset-content-' + docset.id + '" class="docset-content">';
+                        const headerHtml = `
+                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span><strong>${{docset.name}}</strong></span>
+                                <span style="margin-left: auto;">
+                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                        ${{docset.party}}
+                                    </span>
+                                    <span class="badge">${{facts.length}} facts</span>
+                                </span>
+                            </div>
+                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                        `;
                         
                         let contentHtml = '';
                         
                         if (facts.length > 0) {{
                             // Create a single table for all facts in this category
-                            contentHtml += 
-                                '<table class="table-view">' +
-                                    '<thead>' +
-                                        '<tr>' +
-                                            '<th>Date</th>' +
-                                            '<th>Event</th>' +
-                                            '<th>Source Text</th>' +
-                                            '<th>Page</th>' +
-                                            '<th>Document</th>' +
-                                            '<th>Party</th>' +
-                                            '<th>Status</th>' +
-                                            '<th>Evidence</th>' +
-                                        '</tr>' +
-                                    '</thead>' +
-                                    '<tbody>';
-                            
-                            facts.forEach(fact => {{
-                                const sourceTextTruncated = (fact.source_text || 'N/A').substring(0, 100) + ((fact.source_text || '').length > 100 ? '...' : '');
-                                const exhibitBadges = fact.exhibits && fact.exhibits.length > 0 
-                                    ? fact.exhibits.map(ex => '<span class="badge exhibit-badge">' + ex + '</span>').join(' ')
-                                    : 'None';
-                                
-                                contentHtml += '<tr' + (fact.isDisputed ? ' class="disputed"' : '') + '>' +
-                                    '<td>' + fact.date + '</td>' +
-                                    '<td>' + fact.point + '</td>' +
-                                    '<td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="' + (fact.source_text || 'N/A') + '">' + sourceTextTruncated + '</td>' +
-                                    '<td>' + (fact.page || 'N/A') + '</td>' +
-                                    '<td><strong>' + (fact.doc_name || 'N/A') + '</strong></td>' +
-                                    '<td>' +
-                                        '<span class="badge ' + (fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge') + '">' +
-                                            fact.party +
-                                        '</span>' +
-                                    '</td>' +
-                                    '<td>' + (fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed') + '</td>' +
-                                    '<td>' + exhibitBadges + '</td>' +
-                                '</tr>';
-                            }});
-                            
-                            contentHtml += '</tbody></table>';
+                            contentHtml += `
+                                <table class="table-view">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Date</th>
+                                            <th>Event</th>
+                                            <th>Party</th>
+                                            <th>Status</th>
+                                            <th>Evidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${{facts.map(fact => `
+                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                <td><strong>${{fact.documentName}}</strong></td>
+                                                <td>${{fact.date}}</td>
+                                                <td>${{fact.point}}</td>
+                                                <td>
+                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
+                                                        ${{fact.party}}
+                                                    </span>
+                                                </td>
+                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                    : 'None'}}</td>
+                                            </tr>
+                                        `).join('')}}
+                                    </tbody>
+                                </table>
+                            `;
                         }} else {{
                             contentHtml += '<p style="padding: 12px;">No facts found</p>';
                         }}
@@ -1828,26 +1711,6 @@ def main():
                         eventCell.textContent = fact.point;
                         row.appendChild(eventCell);
                         
-                        // Source Text column
-                        const sourceTextCell = document.createElement('td');
-                        sourceTextCell.textContent = fact.source_text || 'N/A';
-                        sourceTextCell.style.maxWidth = '300px';
-                        sourceTextCell.style.overflow = 'hidden';
-                        sourceTextCell.style.textOverflow = 'ellipsis';
-                        sourceTextCell.title = fact.source_text || 'N/A';
-                        row.appendChild(sourceTextCell);
-                        
-                        // Page column
-                        const pageCell = document.createElement('td');
-                        pageCell.textContent = fact.page || 'N/A';
-                        row.appendChild(pageCell);
-                        
-                        // Document column
-                        const docCell = document.createElement('td');
-                        docCell.innerHTML = '<strong>' + (fact.doc_name || 'N/A') + '</strong>';
-                        docCell.title = fact.doc_summary || 'N/A';
-                        row.appendChild(docCell);
-                        
                         // Party column
                         const partyCell = document.createElement('td');
                         const partyBadge = document.createElement('span');
@@ -1870,7 +1733,7 @@ def main():
                         
                         // Related argument
                         const argCell = document.createElement('td');
-                        argCell.textContent = fact.argId + '. ' + fact.argTitle;
+                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
                         row.appendChild(argCell);
                         
                         // Evidence column
@@ -1906,78 +1769,7 @@ def main():
         
         # Render the HTML component
         st.title("Case Facts")
-        
-        # Add a simple test button to verify Streamlit is working
-        if st.button("Test Button - Click to verify Streamlit is working"):
-            st.success("Streamlit buttons are working!")
-            st.write("Current session state:", st.session_state.view)
-        
-        # Render the main HTML component
-        components.html(html_content, height=900, scrolling=True)
-    
-    elif st.session_state.view == "Arguments":
-        st.title("Legal Arguments")
-        
-        # Arguments view placeholder - you can implement detailed argument analysis here
-        st.info("Arguments view - Under development")
-        
-        # Show basic argument structure
-        args_data = get_argument_data()
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Appellant Arguments")
-            for arg_id, arg in args_data['claimantArgs'].items():
-                with st.expander(f"{arg['id']}. {arg['title']}"):
-                    st.write(f"**Paragraphs:** {arg['paragraphs']}")
-                    if 'overview' in arg:
-                        st.write("**Key Points:**")
-                        for point in arg['overview']['points']:
-                            st.write(f"• {point}")
-        
-        with col2:
-            st.subheader("Respondent Arguments")
-            for arg_id, arg in args_data['respondentArgs'].items():
-                with st.expander(f"{arg['id']}. {arg['title']}"):
-                    st.write(f"**Paragraphs:** {arg['paragraphs']}")
-                    if 'overview' in arg:
-                        st.write("**Key Points:**")
-                        for point in arg['overview']['points']:
-                            st.write(f"• {point}")
-    
-    elif st.session_state.view == "Exhibits":
-        st.title("Case Exhibits")
-        
-        # Exhibits view placeholder
-        st.info("Exhibits view - Under development")
-        
-        # Show basic exhibit information
-        args_data = get_argument_data()
-        all_exhibits = []
-        
-        # Collect all exhibits
-        def collect_exhibits(args_dict, party):
-            for arg_id, arg in args_dict.items():
-                if 'evidence' in arg:
-                    for evidence in arg['evidence']:
-                        exhibit_info = {
-                            'id': evidence['id'],
-                            'title': evidence['title'],
-                            'summary': evidence['summary'],
-                            'party': party,
-                            'argument': f"{arg['id']}. {arg['title']}"
-                        }
-                        all_exhibits.append(exhibit_info)
-        
-        collect_exhibits(args_data['claimantArgs'], 'Appellant')
-        collect_exhibits(args_data['respondentArgs'], 'Respondent')
-        
-        if all_exhibits:
-            exhibit_df = pd.DataFrame(all_exhibits)
-            st.dataframe(exhibit_df, use_container_width=True)
-        else:
-            st.write("No exhibits found.")
+        components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()

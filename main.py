@@ -33,10 +33,10 @@ def get_argument_data():
                     "isDisputed": False,
                     "paragraphs": "18-19",
                     "exhibits": ["C-1"],
-                    "source_text": "The club has maintained continuous operation under the same name 'Athletic Club United' since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.",
-                    "page": 23,
-                    "doc_name": "Statement of Appeal",
-                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                    "source_text": "The Club has maintained continuous operation under the same name since its founding in 1950, as evidenced by uninterrupted registration records and consistent participation in league competitions.",
+                    "page": "18",
+                    "doc_name": "Appeal Brief",
+                    "doc_summary": "Appellant's comprehensive brief outlining the argument for sporting succession based on continuous club identity and operations."
                 }
             ],
             "evidence": [
@@ -81,10 +81,10 @@ def get_argument_data():
                                     "isDisputed": False,
                                     "paragraphs": "25-26",
                                     "exhibits": ["C-2"],
-                                    "source_text": "The club was initially registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a sporting entity.",
-                                    "page": 31,
+                                    "source_text": "The Club was initially registered with the National Football Federation on January 12, 1950, under Certificate No. NFR-1950-0012, establishing its legal identity and right to participate in organized competitions.",
+                                    "page": "25",
                                     "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                                    "doc_summary": "Primary filing document establishing the appellant's position on club succession and identity rights."
                                 },
                                 {
                                     "point": "Brief administrative gap in 1975-1976",
@@ -93,10 +93,10 @@ def get_argument_data():
                                     "source": "Respondent",
                                     "paragraphs": "29-30",
                                     "exhibits": ["C-2"],
-                                    "source_text": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
-                                    "page": 35,
+                                    "source_text": "While there was a brief administrative hiatus during the 1975-1976 season due to financial restructuring, the Club maintained its core identity elements and resumed full operations without loss of continuity.",
+                                    "page": "29",
                                     "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                                    "doc_summary": "Primary filing document establishing the appellant's position on club succession and identity rights."
                                 }
                             ],
                             "evidence": [
@@ -130,10 +130,10 @@ def get_argument_data():
                             "source": "Respondent",
                             "paragraphs": "51-52",
                             "exhibits": ["C-4"],
-                            "source_text": "The club has consistently utilized blue and white as its primary colors since its founding in 1950, with these colors being integral to the club's visual identity and fan recognition throughout its history.",
-                            "page": 58,
-                            "doc_name": "Statement of Appeal",
-                            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                            "source_text": "Historical photographic evidence demonstrates the Club's unwavering commitment to its traditional blue and white color scheme, with only minor shade variations that do not alter the fundamental visual identity.",
+                            "page": "51",
+                            "doc_name": "Appeal Brief",
+                            "doc_summary": "Appellant's comprehensive brief outlining the argument for sporting succession based on continuous club identity and operations."
                         }
                     ],
                     "evidence": [
@@ -156,10 +156,10 @@ def get_argument_data():
                                     "isDisputed": False,
                                     "paragraphs": "56-57",
                                     "exhibits": ["C-5"],
-                                    "source_text": "Minor variations in the specific shades of blue and white used in uniforms and club materials during the 1970s were purely aesthetic choices that did not alter the fundamental color identity of the club.",
-                                    "page": 63,
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                                    "source_text": "During the 1970s, the Club made minor adjustments to the specific shades of blue and white used in uniforms and marketing materials, but these variations were purely aesthetic and did not represent any change in club identity or branding strategy.",
+                                    "page": "56",
+                                    "doc_name": "Appeal Brief",
+                                    "doc_summary": "Appellant's comprehensive brief outlining the argument for sporting succession based on continuous club identity and operations."
                                 },
                                 {
                                     "point": "Temporary third color addition in 1980s",
@@ -167,10 +167,10 @@ def get_argument_data():
                                     "isDisputed": False,
                                     "paragraphs": "58-59",
                                     "exhibits": ["C-5"],
-                                    "source_text": "Between 1982 and 1988, the club temporarily incorporated a third accent color (gold) in its uniform design for special occasions, while maintaining blue and white as the primary colors.",
-                                    "page": 65,
-                                    "doc_name": "Statement of Appeal",
-                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+                                    "source_text": "From 1982 to 1988, the Club temporarily incorporated a third accent color (gold) into its uniform design as part of a special anniversary celebration, but this addition was clearly identified as temporary and did not replace the core blue and white identity.",
+                                    "page": "58",
+                                    "doc_name": "Appeal Brief",
+                                    "doc_summary": "Appellant's comprehensive brief outlining the argument for sporting succession based on continuous club identity and operations."
                                 }
                             ],
                             "children": {}
@@ -202,10 +202,10 @@ def get_argument_data():
                     "source": "Claimant",
                     "paragraphs": "206-207",
                     "exhibits": ["R-1"],
-                    "source_text": "The club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.",
-                    "page": 89,
-                    "doc_name": "Answer to Request for Provisional Measures",
-                    "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+                    "source_text": "Federation records conclusively demonstrate that the Club completely ceased all competitive activities during the 1975-1976 season, with no teams registered at any level of competition, thereby breaking the chain of sporting succession.",
+                    "page": "206",
+                    "doc_name": "Answer to Request for PM",
+                    "doc_summary": "Respondent's detailed response challenging the appellant's claims of continuous operations and sporting succession."
                 }
             ],
             "evidence": [
@@ -300,10 +300,10 @@ def get_timeline_data():
             "argId": "1",
             "argTitle": "Sporting Succession",
             "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "page": 15,
+            "source_text": "On January 12, 1950, the Club was officially founded and registered with the National Football Federation under Certificate No. NFR-1950-0012, establishing its legal identity in the sporting community.",
+            "page": "12",
             "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "doc_summary": "Primary filing document establishing the appellant's position on club succession and identity rights."
         },
         {
             "point": "First National Championship won",
@@ -314,10 +314,10 @@ def get_timeline_data():
             "argId": "1",
             "argTitle": "Sporting Succession",
             "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "page": 42,
+            "source_text": "The Club achieved its first National Championship victory on May 20, 1955, defeating City Rovers 3-1 in the final match, establishing its credentials as a competitive sporting entity.",
+            "page": "45",
             "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
+            "doc_summary": "Appellant's comprehensive brief outlining the argument for sporting succession based on continuous club identity and operations."
         },
         {
             "point": "Club colors established as blue and white",
@@ -328,10 +328,10 @@ def get_timeline_data():
             "argId": "1.2",
             "argTitle": "Club Colors Analysis",
             "source": "Appeal - Statement of Appeal",
-            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "page": 67,
+            "source_text": "The Club formally adopted its distinctive blue and white color scheme on March 10, 1956, as recorded in Board Resolution No. 56-03, creating the visual identity that would become synonymous with the Club's brand.",
+            "page": "67",
             "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "doc_summary": "Primary filing document establishing the appellant's position on club succession and identity rights."
         },
         {
             "point": "First international competition participation",
@@ -341,11 +341,7 @@ def get_timeline_data():
             "exhibits": ["C-6"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United made its debut in international competition on September 15, 1962, participating in the Continental Cup preliminary round against European champions.",
-            "page": 78,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Minor variations in club color shades introduced",
@@ -355,11 +351,7 @@ def get_timeline_data():
             "exhibits": ["C-5"],
             "argId": "1.2.1",
             "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "During the 1970s decade, minor variations in the specific shades of blue were introduced for aesthetic purposes, ranging from royal blue to navy blue, while maintaining the core blue and white identity.",
-            "page": 92,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Administrative operations halted due to financial difficulties",
@@ -369,11 +361,7 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely.",
-            "page": 156,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "source": "provisional messier - Answer to Request for PM"
         },
         {
             "point": "Operations ceased between 1975-1976",
@@ -384,10 +372,10 @@ def get_timeline_data():
             "argId": "1",
             "argTitle": "Sporting Succession Rebuttal",
             "source": "provisional messier - Answer to PM",
-            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "page": 127,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "source_text": "Federation records conclusively demonstrate that the Club completely ceased all competitive activities during the 1975-1976 season, with no teams registered at any level of competition, thereby breaking the chain of sporting succession.",
+            "page": "206",
+            "doc_name": "Answer to Request for PM",
+            "doc_summary": "Respondent's detailed response challenging the appellant's claims of continuous operations and sporting succession."
         },
         {
             "point": "Club registration formally terminated",
@@ -398,10 +386,10 @@ def get_timeline_data():
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
             "source": "provisional messier - Answer to Request for PM",
-            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
-            "page": 158,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "source_text": "Official termination notice filed with the National Football Federation on April 30, 1975, formally ending the Club's legal registration and competitive authorization.",
+            "page": "89",
+            "doc_name": "Answer to Request for PM",
+            "doc_summary": "Respondent's detailed response challenging the appellant's claims of continuous operations and sporting succession."
         },
         {
             "point": "New entity registered with similar name",
@@ -412,10 +400,10 @@ def get_timeline_data():
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
             "source": "provisional messier - Answer to Request for PM",
-            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
-            "page": 162,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "source_text": "A new sporting entity was registered on September 15, 1976, using a name similar to but legally distinct from the original Club, indicating a break in continuity rather than succession.",
+            "page": "91",
+            "doc_name": "Answer to Request for PM",
+            "doc_summary": "Respondent's detailed response challenging the appellant's claims of continuous operations and sporting succession."
         },
         {
             "point": "Significant color scheme change implemented",
@@ -425,11 +413,7 @@ def get_timeline_data():
             "exhibits": ["R-4"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis Rebuttal",
-            "source": "admissibility - Brief on Admissibility",
-            "source_text": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
-            "page": 203,
-            "doc_name": "Brief on Admissibility",
-            "doc_summary": "Respondent's legal brief addressing the admissibility of evidence and procedural matters in the case."
+            "source": "admissibility - Brief on Admissibility"
         },
         {
             "point": "Third color temporarily added to uniform",
@@ -439,11 +423,7 @@ def get_timeline_data():
             "exhibits": ["C-5"],
             "argId": "1.2.1",
             "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "From 1982 to 1988, gold was introduced as a third accent color for special matches and European competitions, complementing but not replacing the traditional blue and white scheme.",
-            "page": 114,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Club won Continental Cup with post-1976 team",
@@ -453,11 +433,7 @@ def get_timeline_data():
             "exhibits": ["C-7"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United achieved its greatest international success on June 24, 1987, winning the Continental Cup final 2-1 against defending champions, demonstrating sporting continuity post-1976.",
-            "page": 145,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Return to original blue and white color scheme",
@@ -467,11 +443,7 @@ def get_timeline_data():
             "exhibits": ["C-8"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "On August 12, 1989, the club officially returned to its traditional blue and white color scheme, removing all temporary color additions and reaffirming its historical identity.",
-            "page": 167,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
+            "source": "Appeal - Appeal Brief"
         },
         {
             "point": "Trademark registration for club name and emblem",
@@ -481,11 +453,7 @@ def get_timeline_data():
             "exhibits": ["C-9"],
             "argId": "1.1",
             "argTitle": "Club Name Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club secured comprehensive trademark protection for its name 'Athletic Club United' and distinctive emblem on November 30, 1995, providing legal recognition of its continuous identity.",
-            "page": 189,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "source": "Appeal - Statement of Appeal"
         },
         {
             "point": "Federation officially recognizes club history spanning pre and post 1976",
@@ -495,11 +463,7 @@ def get_timeline_data():
             "exhibits": ["C-10"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility",
-            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
-            "page": 234,
-            "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments."
+            "source": "admissibility - Reply to Objection to Admissibility"
         }
     ]
     
@@ -842,61 +806,21 @@ def main():
                     border-bottom: 1px solid #eaeaea;
                 }}
                 
-                /* Table view with horizontal scroll */
-                .table-view-container {{
-                    overflow-x: auto;
-                    width: 100%;
-                    border: 1px solid #dee2e6;
-                    border-radius: 4px;
-                    position: relative;
-                }}
-                
-                .table-view-container::after {{
-                    content: "← Scroll horizontally to see more columns →";
-                    position: sticky;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    bottom: 8px;
-                    background-color: rgba(0, 0, 0, 0.7);
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                    font-size: 11px;
-                    pointer-events: none;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                    z-index: 1000;
-                }}
-                
-                .table-view-container:hover::after {{
-                    opacity: 1;
-                }}
-                
+                /* Table view */
                 .table-view {{
-                    width: max-content;
-                    min-width: 100%;
+                    width: 100%;
                     border-collapse: collapse;
-                    margin-top: 0;
-                    font-size: 14px;
+                    margin-top: 20px;
                 }}
                 
                 .table-view th {{
-                    padding: 12px 16px;
+                    padding: 12px;
                     text-align: left;
                     background-color: #f8f9fa;
                     border-bottom: 2px solid #dee2e6;
-                    border-right: 1px solid #e9ecef;
                     position: sticky;
                     top: 0;
                     cursor: pointer;
-                    font-size: 13px;
-                    white-space: nowrap;
-                    font-weight: 600;
-                    z-index: 10;
-                }}
-                
-                .table-view th:last-child {{
-                    border-right: none;
                 }}
                 
                 .table-view th:hover {{
@@ -904,75 +828,31 @@ def main():
                 }}
                 
                 .table-view td {{
-                    padding: 12px 16px;
+                    padding: 12px;
                     border-bottom: 1px solid #dee2e6;
-                    border-right: 1px solid #f1f3f4;
-                    font-size: 13px;
-                    vertical-align: top;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:last-child {{
-                    border-right: none;
                 }}
                 
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
                 }}
                 
-                /* Specific column widths for better readability */
-                .table-view th:nth-child(1), .table-view td:nth-child(1) {{ /* Date */
-                    min-width: 120px;
-                }}
-                
-                .table-view th:nth-child(2), .table-view td:nth-child(2) {{ /* Event */
-                    min-width: 250px;
-                    max-width: 350px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                }}
-                
-                .table-view th:nth-child(3), .table-view td:nth-child(3) {{ /* Source Text */
-                    min-width: 300px;
-                    max-width: 500px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                    line-height: 1.4;
-                }}
-                
-                .table-view th:nth-child(4), .table-view td:nth-child(4) {{ /* Page */
-                    min-width: 60px;
-                    text-align: center;
-                }}
-                
-                .table-view th:nth-child(5), .table-view td:nth-child(5) {{ /* Document */
-                    min-width: 180px;
-                    max-width: 220px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                    font-weight: 500;
-                }}
-                
-                .table-view th:nth-child(6), .table-view td:nth-child(6) {{ /* Doc Summary */
-                    min-width: 250px;
-                    max-width: 400px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                    line-height: 1.4;
+                /* Source text column styling */
+                .source-text-cell {{
+                    max-width: 300px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                     font-style: italic;
-                    color: #666;
+                    color: #555;
                 }}
                 
-                .table-view th:nth-child(7), .table-view td:nth-child(7) {{ /* Party */
-                    min-width: 100px;
-                }}
-                
-                .table-view th:nth-child(8), .table-view td:nth-child(8) {{ /* Status */
-                    min-width: 100px;
-                }}
-                
-                .table-view th:nth-child(9), .table-view td:nth-child(9) {{ /* Evidence */
-                    min-width: 120px;
+                .source-text-cell:hover {{
+                    overflow: visible;
+                    white-space: normal;
+                    background-color: #f0f8ff;
+                    z-index: 100;
+                    position: relative;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 }}
                 
                 /* View toggle */
@@ -1244,24 +1124,21 @@ def main():
                     
                     <!-- Table View -->
                     <div id="table-view-content" class="facts-content">
-                        <div class="table-view-container">
-                            <table class="table-view">
-                                <thead>
-                                    <tr>
-                                        <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                        <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                        <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                        <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                        <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                        <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                        <th onclick="sortTable('facts-table-body', 6)">Party</th>
-                                        <th onclick="sortTable('facts-table-body', 7)">Status</th>
-                                        <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="facts-table-body"></tbody>
-                            </table>
-                        </div>
+                        <table class="table-view">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facts-table-body"></tbody>
+                        </table>
                     </div>
                     
                     <!-- Timeline View -->
@@ -1444,15 +1321,14 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
+                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            const sourceText = (item.source_text || '').replace(/"/g, '""');
-                            const docName = (item.doc_name || '').replace(/"/g, '""');
-                            const docSummary = (item.doc_summary || '').replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{docSummary}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                            const sourceText = (item.source_text || '').replace(/"/g, '""'); // Escape quotes
+                            const docSummary = (item.doc_summary || '').replace(/"/g, '""'); // Escape quotes
+                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{item.doc_name || ''}}","${{docSummary}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1697,10 +1573,9 @@ def main():
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
                         metaEl.innerHTML = `
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
                             <span><strong>Document:</strong> ${{fact.doc_name || fact.source}}</span>
-                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
+                            <span><strong>Page:</strong> ${{fact.page || 'N/A'}}</span>
+                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
                         `;
                         bodyEl.appendChild(metaEl);
                         
@@ -1708,8 +1583,11 @@ def main():
                         if (fact.source_text) {{
                             const sourceTextEl = document.createElement('div');
                             sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.cssText = 'font-style: italic; color: #666; margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-left: 3px solid #4299e1; font-size: 13px;';
-                            sourceTextEl.textContent = fact.source_text;
+                            sourceTextEl.style.fontSize = '13px';
+                            sourceTextEl.style.color = '#4a5568';
+                            sourceTextEl.style.fontStyle = 'italic';
+                            sourceTextEl.style.marginTop = '8px';
+                            sourceTextEl.textContent = `"${{fact.source_text}}"`;
                             bodyEl.appendChild(sourceTextEl);
                         }}
                         
@@ -1843,44 +1721,40 @@ def main():
                         if (facts.length > 0) {{
                             // Create a single table for all facts in this category
                             contentHtml += `
-                                <div class="table-view-container">
-                                    <table class="table-view">
-                                        <thead>
-                                            <tr>
-                                                <th>Document</th>
-                                                <th>Date</th>
-                                                <th>Event</th>
-                                                <th>Source Text</th>
-                                                <th>Page</th>
-                                                <th>Doc Summary</th>
-                                                <th>Party</th>
-                                                <th>Status</th>
-                                                <th>Evidence</th>
+                                <table class="table-view">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Date</th>
+                                            <th>Event</th>
+                                            <th>Source Text</th>
+                                            <th>Page</th>
+                                            <th>Party</th>
+                                            <th>Status</th>
+                                            <th>Evidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${{facts.map(fact => `
+                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                <td><strong>${{fact.documentName}}</strong></td>
+                                                <td>${{fact.date}}</td>
+                                                <td>${{fact.point}}</td>
+                                                <td style="max-width: 300px;" class="source-text-cell" title="${{fact.source_text}}">${{fact.source_text}}</td>
+                                                <td>${{fact.page}}</td>
+                                                <td>
+                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
+                                                        ${{fact.party}}
+                                                    </span>
+                                                </td>
+                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                    : 'None'}}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${{facts.map(fact => `
-                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                    <td><strong>${{fact.documentName}}</strong></td>
-                                                    <td>${{fact.date}}</td>
-                                                    <td>${{fact.point}}</td>
-                                                    <td>${{fact.source_text || ''}}</td>
-                                                    <td style="text-align: center">${{fact.page || ''}}</td>
-                                                    <td>${{fact.doc_summary || ''}}</td>
-                                                    <td>
-                                                        <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                            ${{fact.party}}
-                                                        </span>
-                                                    </td>
-                                                    <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                    <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                        ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                        : 'None'}}</td>
-                                                </tr>
-                                            `).join('')}}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        `).join('')}}
+                                    </tbody>
+                                </table>
                             `;
                         }} else {{
                             contentHtml += '<p style="padding: 12px;">No facts found</p>';
@@ -1934,24 +1808,20 @@ def main():
                         
                         // Source Text column
                         const sourceTextCell = document.createElement('td');
+                        sourceTextCell.className = 'source-text-cell';
                         sourceTextCell.textContent = fact.source_text || '';
+                        sourceTextCell.title = fact.source_text || '';
                         row.appendChild(sourceTextCell);
                         
                         // Page column
                         const pageCell = document.createElement('td');
                         pageCell.textContent = fact.page || '';
-                        pageCell.style.textAlign = 'center';
                         row.appendChild(pageCell);
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || '';
+                        docCell.innerHTML = `<strong>${{fact.doc_name || ''}}</strong>`;
                         row.appendChild(docCell);
-                        
-                        // Document Summary column
-                        const docSummaryCell = document.createElement('td');
-                        docSummaryCell.textContent = fact.doc_summary || '';
-                        row.appendChild(docSummaryCell);
                         
                         // Party column
                         const partyCell = document.createElement('td');

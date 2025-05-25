@@ -218,210 +218,151 @@ def get_argument_data():
 
 # Get all facts from the data
 def get_all_facts():
-    # New facts structure with Antani Ivanov information - using ALL provided fields
+    # Create sample facts with the new required fields
     facts = [
         {
-            'date': '1999-07-17',
+            'date': '1950-01-12',
             'end_date': '',
-            'event': 'Antani Ivanov was born on July 17, 1999.',
-            'source_text': 'It is established that the swimmer Antani Antonov Ivanov, born on 17.07.1999, 23 years old at the time of the violation, residing in Veliko Tarnovo, and,1. Establishes that Antani Ivanov, born on 17.07.1999,',
-            'page': '1,2',
-            'doc_name': 'Decision No. 1 of the Disciplinary Commission of the Bulgarian Swimming Federation,Disciplinary Commission\'s Decision № 2/2024 of August 12 2024 (Exh. R-3)',
-            'doc_sum': 'Decision No. 1, dated January 30, 2024, was issued by the Disciplinary Commission of the Bulgarian Swimming Federation (BSF) regarding Disciplinary Case No. 2 of 2023. The decision confirms that athlete Antani Antonov Ivanov was found guilty of repeated violations of the BSF Disciplinary Rules by making disparaging and unfounded public statements about the Federation, resulting in a suspension of his competition rights for two years and a fine of 1,000 BGN. The document details the case background, evidence, and reasoning behind the disciplinary measures, and outlines the avenues for appeal.,The \'Disciplinary Commission\'s Decision № 2/2024 of August 12 2024\' concerns Bulgarian swimmer Antani Ivanov, who was found to have committed an anti-doping rule violation by participating in a competition during his period of ineligibility. As a result, the Disciplinary Commission of the Bulgarian Olympic Committee imposed an additional two-year period of ineligibility on Ivanov, starting from June 8, 2025. The decision outlines the findings, the athlete\'s defense, and notes that the sanction may be appealed within 21 days before the Court of Arbitration for Sport.',
-            # Additional fields for system compatibility
-            'isDisputed': False,
-            'party': 'Respondent',
-            'exhibits': ['R-3'],
-            'argId': '1',
-            'argTitle': 'Disciplinary Violation - Antani Ivanov Case',
-            'source': 'Disciplinary Commission Decision',
-            # Legacy fields for backward compatibility
-            'point': 'Antani Ivanov was born on July 17, 1999.',
-            'paragraphs': '1,2'
+            'event': 'Club founded and officially registered in the Football Federation',
+            'source_text': 'The club was established on January 12, 1950, with official registration documents filed with the National Football Federation showing continuous operation under the same name and colors.',
+            'page': '18,19',
+            'doc_name': 'Statement of Appeal',
+            'doc_summary': 'Primary appeal document establishing the foundation and continuous operation of the sporting club since 1950.'
+        },
+        {
+            'date': '1950-01-12',
+            'end_date': 'present',
+            'event': 'Continuous operation under same name since 1950',
+            'source_text': 'Official records demonstrate uninterrupted name usage and operational continuity from the date of founding through the present day, establishing a clear line of sporting succession.',
+            'page': '20,21,24',
+            'doc_name': 'Historical Registration Documents',
+            'doc_summary': 'Comprehensive collection documenting the club\'s continuous legal existence and operational history.'
+        },
+        {
+            'date': '1955-05-20',
+            'end_date': '',
+            'event': 'First National Championship won',
+            'source_text': 'The club achieved its first major sporting success by winning the National Championship, establishing its competitive credentials and public recognition.',
+            'page': '45,46',
+            'doc_name': 'Appeal Brief',
+            'doc_summary': 'Supporting documentation detailing the club\'s sporting achievements and competitive history.'
+        },
+        {
+            'date': '1956-03-10',
+            'end_date': '',
+            'event': 'Club colors established as blue and white',
+            'source_text': 'Official adoption of blue and white as the club\'s identifying colors, documented in federation records and consistently maintained throughout the club\'s history.',
+            'page': '51,52',
+            'doc_name': 'Club Colors Analysis',
+            'doc_summary': 'Analysis of the club\'s visual identity elements and their consistency over time.'
+        },
+        {
+            'date': '1962-09-15',
+            'end_date': '',
+            'event': 'First international competition participation',
+            'source_text': 'The club participated in its first international competition, marking its entry into continental sporting events and establishing international recognition.',
+            'page': '78,79',
+            'doc_name': 'International Competition Records',
+            'doc_summary': 'Documentation of the club\'s participation in international sporting competitions.'
+        },
+        {
+            'date': '1970-01-01',
+            'end_date': '1980-12-31',
+            'event': 'Minor variations in club color shades introduced',
+            'source_text': 'During this period, minor variations in the specific shades of blue and white were observed, but the core color scheme remained consistent with the club\'s established identity.',
+            'page': '56,57',
+            'doc_name': 'Color Variations Analysis',
+            'doc_summary': 'Detailed analysis of minor variations in club colors and their impact on continuity.'
+        },
+        {
+            'date': '1975-04-30',
+            'end_date': '',
+            'event': 'Administrative operations halted due to financial difficulties',
+            'source_text': 'The club faced significant financial challenges leading to a temporary halt in administrative operations, though the legal entity remained in existence.',
+            'page': '206,207',
+            'doc_name': 'Answer to Request for PM',
+            'doc_summary': 'Respondent\'s documentation of the club\'s financial difficulties and operational challenges.'
+        },
+        {
+            'date': '1975-05-15',
+            'end_date': '1976-09-14',
+            'event': 'Operations ceased between 1975-1976',
+            'source_text': 'Federation records indicate a complete absence of the club from all levels of competition during the 1975-1976 season, with official withdrawal notification filed.',
+            'page': '208,209,210',
+            'doc_name': 'Federation Records',
+            'doc_summary': 'Official competition records showing the club\'s absence from competitive activities during this period.'
+        },
+        {
+            'date': '1976-09-15',
+            'end_date': '',
+            'event': 'New entity registered with similar name',
+            'source_text': 'A new sporting entity was registered with a similar name and claimed succession rights, leading to the current dispute over sporting succession and identity.',
+            'page': '212,213',
+            'doc_name': 'Registration Gap Evidence',
+            'doc_summary': 'Evidence documenting the registration of a new entity and claims to sporting succession.'
+        },
+        {
+            'date': '1976-10-01',
+            'end_date': '',
+            'event': 'Significant color scheme change implemented',
+            'source_text': 'The newly registered entity implemented changes to the traditional blue and white color scheme, raising questions about continuity of visual identity.',
+            'page': '65,66',
+            'doc_name': 'Brief on Admissibility',
+            'doc_summary': 'Analysis of changes to the club\'s visual identity and their significance for succession claims.'
+        },
+        {
+            'date': '1982-01-01',
+            'end_date': '1988-12-31',
+            'event': 'Third color temporarily added to uniform',
+            'source_text': 'A third color was temporarily incorporated into the team uniform design, representing a period of experimentation with the club\'s visual identity.',
+            'page': '58,59',
+            'doc_name': 'Color Variations Analysis',
+            'doc_summary': 'Documentation of temporary modifications to the club\'s color scheme during the 1980s.'
+        },
+        {
+            'date': '1987-06-24',
+            'end_date': '',
+            'event': 'Club won Continental Cup with post-1976 team',
+            'source_text': 'The club achieved significant success by winning the Continental Cup, demonstrating competitive continuity and sporting excellence under the post-1976 organization.',
+            'page': '95,96',
+            'doc_name': 'Statement of Appeal',
+            'doc_summary': 'Evidence of the club\'s continued sporting success and competitive achievements.'
+        },
+        {
+            'date': '1989-08-12',
+            'end_date': '',
+            'event': 'Return to original blue and white color scheme',
+            'source_text': 'The club returned to its traditional blue and white colors, restoring the visual identity consistent with its historical appearance.',
+            'page': '67,68',
+            'doc_name': 'Club Colors Analysis',
+            'doc_summary': 'Documentation of the restoration of the club\'s traditional color scheme.'
+        },
+        {
+            'date': '1995-11-30',
+            'end_date': '',
+            'event': 'Trademark registration for club name and emblem',
+            'source_text': 'The club secured legal protection for its name and emblem through trademark registration, establishing formal intellectual property rights.',
+            'page': '125,126',
+            'doc_name': 'Club Name Analysis',
+            'doc_summary': 'Legal documentation of trademark protections for the club\'s identifying elements.'
+        },
+        {
+            'date': '2010-05-18',
+            'end_date': '',
+            'event': 'Federation officially recognizes club history spanning pre and post 1976',
+            'source_text': 'The National Football Federation issued an official recognition acknowledging the club\'s continuous history spanning both pre-1976 and post-1976 periods.',
+            'page': '145,146,147',
+            'doc_name': 'Reply to Objection to Admissibility',
+            'doc_summary': 'Official federation recognition of the club\'s historical continuity and sporting succession.'
         }
     ]
-    
-    # Add more legal case facts here if needed
-    # Each fact should follow the same structure with all required fields:
-    # date, end_date, event, source_text, page, doc_name, doc_sum
     
     return facts
 
 # Get enhanced timeline data with additional events
 def get_timeline_data():
-    # Create a richer set of timeline events including Antani Ivanov case
-    timeline_events = [
-        {
-            "date": "1999-07-17",
-            "end_date": "",
-            "point": "Antani Ivanov was born on July 17, 1999.",
-            "source_text": "It is established that the swimmer Antani Antonov Ivanov, born on 17.07.1999, 23 years old at the time of the violation, residing in Veliko Tarnovo, and,1. Establishes that Antani Ivanov, born on 17.07.1999,",
-            "page": "1,2",
-            "doc_name": "Decision No. 1 of the Disciplinary Commission of the Bulgarian Swimming Federation,Disciplinary Commission's Decision № 2/2024 of August 12 2024 (Exh. R-3)",
-            "doc_sum": "Decision No. 1, dated January 30, 2024, was issued by the Disciplinary Commission of the Bulgarian Swimming Federation (BSF) regarding Disciplinary Case No. 2 of 2023. The decision confirms that athlete Antani Antonov Ivanov was found guilty of repeated violations of the BSF Disciplinary Rules by making disparaging and unfounded public statements about the Federation, resulting in a suspension of his competition rights for two years and a fine of 1,000 BGN. The document details the case background, evidence, and reasoning behind the disciplinary measures, and outlines the avenues for appeal.,The 'Disciplinary Commission's Decision № 2/2024 of August 12 2024' concerns Bulgarian swimmer Antani Ivanov, who was found to have committed an anti-doping rule violation by participating in a competition during his period of ineligibility. As a result, the Disciplinary Commission of the Bulgarian Olympic Committee imposed an additional two-year period of ineligibility on Ivanov, starting from June 8, 2025. The decision outlines the findings, the athlete's defense, and notes that the sanction may be appealed within 21 days before the Court of Arbitration for Sport.",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-3"],
-            "argId": "1",
-            "argTitle": "Disciplinary Violation",
-            "source": "Disciplinary Commission Decision"
-        },
-        {
-            "point": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "First international competition participation",
-            "date": "1962-09-15",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-6"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Minor variations in club color shades introduced",
-            "date": "1970-1980",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Administrative operations halted due to financial difficulties",
-            "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
-            "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession Rebuttal",
-            "source": "provisional messier - Answer to PM"
-        },
-        {
-            "point": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "New entity registered with similar name",
-            "date": "1976-09-15",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
-        },
-        {
-            "point": "Significant color scheme change implemented",
-            "date": "1976-10-01",
-            "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis Rebuttal",
-            "source": "admissibility - Brief on Admissibility"
-        },
-        {
-            "point": "Third color temporarily added to uniform",
-            "date": "1982-1988",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Club won Continental Cup with post-1976 team",
-            "date": "1987-06-24",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-7"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Return to original blue and white color scheme",
-            "date": "1989-08-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-8"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Appeal Brief"
-        },
-        {
-            "point": "Trademark registration for club name and emblem",
-            "date": "1995-11-30",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-9"],
-            "argId": "1.1",
-            "argTitle": "Club Name Analysis",
-            "source": "Appeal - Statement of Appeal"
-        },
-        {
-            "point": "Federation officially recognizes club history spanning pre and post 1976",
-            "date": "2010-05-18",
-            "isDisputed": True,
-            "party": "Appellant",
-            "exhibits": ["C-10"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility"
-        }
-    ]
-    
-    # Sort events chronologically
-    timeline_events.sort(key=lambda x: x['date'])
-    
-    return timeline_events
+    # Use the same data as facts for consistency
+    return get_all_facts()
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
@@ -762,7 +703,6 @@ def main():
                     width: 100%;
                     border-collapse: collapse;
                     margin-top: 20px;
-                    table-layout: auto;
                 }}
                 
                 .table-view th {{
@@ -773,7 +713,6 @@ def main():
                     position: sticky;
                     top: 0;
                     cursor: pointer;
-                    font-size: 0.9em;
                 }}
                 
                 .table-view th:hover {{
@@ -783,18 +722,22 @@ def main():
                 .table-view td {{
                     padding: 12px;
                     border-bottom: 1px solid #dee2e6;
-                    word-wrap: break-word;
-                    max-width: 200px;
-                    font-size: 0.9em;
-                }}
-                
-                .table-view td:nth-child(3) {{ /* Event column */
                     max-width: 300px;
+                    word-wrap: break-word;
                 }}
                 
-                .table-view td:nth-child(7) {{ /* Document column */
+                .table-view td.text-column {{
                     max-width: 250px;
-                    font-size: 0.8em;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td.summary-column {{
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }}
                 
                 .table-view tr:hover {{
@@ -1021,30 +964,6 @@ def main():
                     background-color: #e2e8f0;
                     margin-left: 12px;
                 }}
-                
-                /* Timeline source text styling */
-                .timeline-source-text {{
-                    font-size: 13px;
-                    color: #666;
-                    font-style: italic;
-                    margin-top: 8px;
-                    padding: 8px;
-                    background-color: #f8f9fa;
-                    border-radius: 4px;
-                    border-left: 3px solid #4299e1;
-                }}
-                
-                .timeline-doc-summary {{
-                    font-size: 12px;
-                    color: #555;
-                    margin-top: 8px;
-                    padding: 8px;
-                    background-color: #fff8e1;
-                    border-radius: 4px;
-                    border-left: 3px solid #ffa726;
-                    max-height: 120px;
-                    overflow-y: auto;
-                }}
             </style>
         </head>
         <body>
@@ -1088,8 +1007,6 @@ def main():
                     
                     <div class="facts-header">
                         <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
                     <!-- Table View -->
@@ -1100,11 +1017,10 @@ def main():
                                     <th onclick="sortTable('facts-table-body', 0)">Date</th>
                                     <th onclick="sortTable('facts-table-body', 1)">End Date</th>
                                     <th onclick="sortTable('facts-table-body', 2)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Source Text</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Page</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Document Name</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Document Summary</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1204,27 +1120,18 @@ def main():
                         timelineItems.forEach(item => {{
                             const dateEl = item.querySelector('.timeline-date');
                             const factEl = item.querySelector('.timeline-fact');
-                            const partyEl = item.querySelector('.badge');
-                            const sourceEl = item.querySelector('.timeline-source-text');
                             
                             if (dateEl && factEl) {{
                                 const date = dateEl.textContent.trim();
                                 const fact = factEl.textContent.trim();
-                                const party = partyEl ? partyEl.textContent.trim() : '';
-                                const source = sourceEl ? sourceEl.textContent.trim() : '';
                                 
-                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n`;
-                                if (source) {{
-                                    contentToCopy += `  ${{source}}\\n`;
-                                }}
-                                contentToCopy += '\\n';
+                                contentToCopy += `${{date}} - ${{fact}}\\n\\n`;
                             }}
                         }});
                     }} else {{
-                        // Copy document sets data (just a basic representation)
+                        // Copy document sets data
                         contentToCopy += 'Case Facts by Document\\n\\n';
                         
-                        // This is a simplified version since the full structure would be complex
                         const docsetContainers = document.querySelectorAll('.docset-container');
                         docsetContainers.forEach(container => {{
                             const header = container.querySelector('.docset-header');
@@ -1235,7 +1142,9 @@ def main():
                             const tableFacts = container.querySelectorAll('tbody tr');
                             tableFacts.forEach(fact => {{
                                 const cells = Array.from(fact.querySelectorAll('td'));
-                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
+                                if (cells.length >= 3) {{
+                                    contentToCopy += `- ${{cells[0].textContent}} | ${{cells[2].textContent}}\\n`;
+                                }}
                             }});
                             
                             contentToCopy += '\\n';
@@ -1280,7 +1189,7 @@ def main():
                         const rows = table.querySelectorAll('tbody tr');
                         rows.forEach(row => {{
                             const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim().replace(/"/g, '""') + '\"')
+                                .map(td => '\"' + td.textContent.trim() + '\"')
                                 .join(',');
                             
                             contentToCsv += rowText + '\\n';
@@ -1296,16 +1205,12 @@ def main():
                         link.click();
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
-                        // Export timeline data using factsData for consistency
-                        let headers = "Date,End Date,Event,Party,Status,Page,Document,Evidence,Source Text\\n";
+                        // Export timeline data
+                        let headers = "Date,End Date,Event,Source Text,Page,Document Name,Document Summary\\n";
                         let rows = '';
                         
-                        factsData.forEach(item => {{
-                            const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            const docName = item.doc_name ? item.doc_name.replace(/"/g, '""') : '';
-                            const sourceText = item.source_text ? item.source_text.replace(/"/g, '""') : '';
-                            const event = (item.event || item.point).replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.end_date || ''}}","${{event}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{item.page || ''}}","${{docName}}","${{exhibits}}","${{sourceText}}"\\n`;
+                        timelineData.forEach(item => {{
+                            rows += `"${{item.date}}","${{item.end_date || ''}}","${{item.event}}","${{item.source_text}}","${{item.page}}","${{item.doc_name}}","${{item.doc_summary}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1317,7 +1222,22 @@ def main():
                         link.click();
                         document.body.removeChild(link);
                     }} else {{
-                        alert("CSV export for document sets view is not implemented yet.");
+                        // Export document sets data
+                        let headers = "Document Name,Date,End Date,Event,Source Text,Page\\n";
+                        let rows = '';
+                        
+                        factsData.forEach(item => {{
+                            rows += `"${{item.doc_name}}","${{item.date}}","${{item.end_date || ''}}","${{item.event}}","${{item.source_text}}","${{item.page}}"\\n`;
+                        }});
+                        
+                        const csvContent = headers + rows;
+                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "document_facts.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                     }}
                 }}
                 
@@ -1332,25 +1252,13 @@ def main():
                 // Switch facts tab
                 function switchFactsTab(tabType) {{
                     const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
                     
                     // Remove active class from all
                     allBtn.classList.remove('active');
-                    disputedBtn.classList.remove('active');
-                    undisputedBtn.classList.remove('active');
                     
-                    // Add active to selected
-                    if (tabType === 'all') {{
-                        allBtn.classList.add('active');
-                        renderFacts('all');
-                    }} else if (tabType === 'disputed') {{
-                        disputedBtn.classList.add('active');
-                        renderFacts('disputed');
-                    }} else {{
-                        undisputedBtn.classList.add('active');
-                        renderFacts('undisputed');
-                    }}
+                    // Add active to selected (only 'all' now)
+                    allBtn.classList.add('active');
+                    renderFacts('all');
                     
                     // Update active view
                     const tableContent = document.getElementById('table-view-content');
@@ -1358,11 +1266,11 @@ def main():
                     const docsetContent = document.getElementById('docset-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
-                        renderFacts(tabType);
+                        renderFacts('all');
                     }} else if (timelineContent.style.display !== 'none') {{
-                        renderTimeline(tabType);
+                        renderTimeline('all');
                     }} else if (docsetContent.style.display !== 'none') {{
-                        renderDocumentSets(tabType);
+                        renderDocumentSets('all');
                     }}
                 }}
                 
@@ -1456,20 +1364,12 @@ def main():
                     const container = document.getElementById('timeline-events');
                     container.innerHTML = '';
                     
-                    // Use factsData instead of separate timelineData to ensure consistency
-                    let filteredData = factsData;
-                    if (tabType === 'disputed') {{
-                        filteredData = factsData.filter(item => item.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredData = factsData.filter(item => !item.isDisputed);
-                    }}
+                    // Use all timeline data (no filtering by disputed status since new structure doesn't have it)
+                    let filteredData = timelineData;
                     
                     // Sort by date
                     filteredData.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
+                        return new Date(a.date) - new Date(b.date);
                     }});
                     
                     // Track years for year markers
@@ -1498,7 +1398,7 @@ def main():
                         
                         // Create timeline point
                         const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
+                        timelinePoint.className = 'timeline-point';
                         timelineItem.appendChild(timelinePoint);
                         
                         // Create timeline content
@@ -1507,42 +1407,22 @@ def main():
                         
                         // Create timeline header
                         const headerEl = document.createElement('div');
-                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
+                        headerEl.className = 'timeline-header';
                         
-                        // Date section
-                        const dateSection = document.createElement('div');
+                        // Date
                         const dateEl = document.createElement('div');
                         dateEl.className = 'timeline-date';
-                        dateEl.textContent = formatDate(fact.date);
-                        dateSection.appendChild(dateEl);
+                        dateEl.textContent = formatDate(fact.date) + (fact.end_date ? ' - ' + formatDate(fact.end_date) : '');
+                        headerEl.appendChild(dateEl);
                         
-                        // End date if available
-                        if (fact.end_date) {{
-                            const endDateEl = document.createElement('div');
-                            endDateEl.style.fontSize = '0.9em';
-                            endDateEl.style.color = '#666';
-                            endDateEl.textContent = `to ${{formatDate(fact.end_date)}}`;
-                            dateSection.appendChild(endDateEl);
-                        }}
-                        headerEl.appendChild(dateSection);
-                        
-                        // Badges
+                        // Page badge
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'timeline-badges';
                         
-                        // Party badge
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        badgesEl.appendChild(partyBadge);
-                        
-                        // Disputed badge
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
+                        const pageBadge = document.createElement('span');
+                        pageBadge.className = 'badge exhibit-badge';
+                        pageBadge.textContent = 'Page ' + fact.page;
+                        badgesEl.appendChild(pageBadge);
                         
                         headerEl.appendChild(badgesEl);
                         contentEl.appendChild(headerEl);
@@ -1551,72 +1431,38 @@ def main():
                         const bodyEl = document.createElement('div');
                         bodyEl.className = 'timeline-body';
                         
-                        // Fact content
-                        const factContent = document.createElement('div');
-                        factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.event || fact.point;
-                        bodyEl.appendChild(factContent);
+                        // Event content
+                        const eventContent = document.createElement('div');
+                        eventContent.className = 'timeline-fact';
+                        eventContent.innerHTML = `<strong>${{fact.event}}</strong>`;
+                        bodyEl.appendChild(eventContent);
                         
-                        // Source text if available
-                        if (fact.source_text && fact.source_text !== factContent.textContent) {{
-                            const sourceText = document.createElement('div');
-                            sourceText.className = 'timeline-source-text';
-                            sourceText.style.fontSize = '13px';
-                            sourceText.style.color = '#666';
-                            sourceText.style.fontStyle = 'italic';
-                            sourceText.style.marginTop = '8px';
-                            sourceText.style.padding = '8px';
-                            sourceText.style.backgroundColor = '#f8f9fa';
-                            sourceText.style.borderRadius = '4px';
-                            sourceText.style.borderLeft = '3px solid #4299e1';
-                            sourceText.innerHTML = `<strong>Source:</strong> ${{fact.source_text}}`;
-                            bodyEl.appendChild(sourceText);
-                        }}
+                        // Source text
+                        const sourceContent = document.createElement('div');
+                        sourceContent.style.marginTop = '8px';
+                        sourceContent.style.fontSize = '14px';
+                        sourceContent.style.color = '#666';
+                        sourceContent.textContent = fact.source_text;
+                        bodyEl.appendChild(sourceContent);
                         
-                        // Document summary if available and different from source text
-                        if (fact.doc_sum && fact.doc_sum !== fact.source_text) {{
-                            const docSummary = document.createElement('div');
-                            docSummary.className = 'timeline-doc-summary';
-                            docSummary.style.fontSize = '12px';
-                            docSummary.style.color = '#555';
-                            docSummary.style.marginTop = '8px';
-                            docSummary.style.padding = '8px';
-                            docSummary.style.backgroundColor = '#fff8e1';
-                            docSummary.style.borderRadius = '4px';
-                            docSummary.style.borderLeft = '3px solid #ffa726';
-                            docSummary.innerHTML = `<strong>Document Summary:</strong> ${{fact.doc_sum.substring(0, 200)}}${{fact.doc_sum.length > 200 ? '...' : ''}}`;
-                            bodyEl.appendChild(docSummary);
-                        }}
-                        
-                        // Related argument and source
+                        // Document info
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
                         metaEl.innerHTML = `
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            ${{fact.source ? '<span><strong>Source:</strong> ' + fact.source + '</span>' : ''}}
-                            ${{fact.doc_name ? '<span><strong>Document:</strong> ' + fact.doc_name.substring(0, 60) + (fact.doc_name.length > 60 ? '...' : '') + '</span>' : ''}}
+                            <span><strong>Document:</strong> ${{fact.doc_name}}</span>
+                            <span><strong>Page:</strong> ${{fact.page}}</span>
                         `;
                         bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);
                         
-                        // Add footer if there are exhibits
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            const footerEl = document.createElement('div');
-                            footerEl.className = 'timeline-footer';
-                            
-                            // Add exhibit badges
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                footerEl.appendChild(exhibitBadge);
-                            }});
-                            
-                            contentEl.appendChild(footerEl);
-                        }}
+                        // Add footer with document summary
+                        const footerEl = document.createElement('div');
+                        footerEl.className = 'timeline-footer';
+                        footerEl.style.fontSize = '13px';
+                        footerEl.style.fontStyle = 'italic';
+                        footerEl.textContent = fact.doc_summary;
+                        contentEl.appendChild(footerEl);
                         
                         timelineItem.appendChild(contentEl);
                         container.appendChild(timelineItem);
@@ -1633,133 +1479,69 @@ def main():
                     const container = document.getElementById('document-sets-container');
                     container.innerHTML = '';
                     
-                    // Filter facts based on tab type
-                    let filteredFacts = factsData;
-                    if (tabType === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                    }}
+                    // Group facts by document name
+                    const docGroups = {{}};
                     
-                    // Initialize docsWithFacts for all groups
-                    const docsWithFacts = {{}};
-                    
-                    // Initialize all groups
-                    documentSets.forEach(ds => {{
-                        if (ds.isGroup) {{
-                            docsWithFacts[ds.id] = {{
-                                docset: ds,
+                    factsData.forEach(fact => {{
+                        if (!docGroups[fact.doc_name]) {{
+                            docGroups[fact.doc_name] = {{
+                                name: fact.doc_name,
+                                summary: fact.doc_summary,
                                 facts: []
                             }};
                         }}
+                        docGroups[fact.doc_name].facts.push(fact);
                     }});
                     
-                    // Distribute facts to categories based on document
-                    filteredFacts.forEach((fact, index) => {{
-                        // Find which document this fact belongs to based on source
-                        let factAssigned = false;
-                        
-                        documentSets.forEach(ds => {{
-                            if (ds.isGroup) {{
-                                ds.documents.forEach(doc => {{
-                                    // Check if the fact's source contains the document number
-                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
-                                        docsWithFacts[ds.id].facts.push({{ 
-                                            ...fact, 
-                                            documentName: doc.name
-                                        }});
-                                        factAssigned = true;
-                                    }}
-                                }});
-                            }}
-                        }});
-                        
-                        // If not assigned by source, assign by party matching
-                        if (!factAssigned) {{
-                            documentSets.forEach(ds => {{
-                                if (ds.isGroup) {{
-                                    ds.documents.forEach(doc => {{
-                                        if (doc.party === 'Mixed' || 
-                                            (fact.party === 'Appellant' && doc.party === 'Appellant') ||
-                                            (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
-                                            docsWithFacts[ds.id].facts.push({{ 
-                                                ...fact, 
-                                                documentName: doc.name
-                                            }});
-                                            factAssigned = true;
-                                            return;
-                                        }}
-                                    }});
-                                    if (factAssigned) return;
-                                }}
-                            }});
-                        }}
-                    }});
-                    
-                    // Create document sets UI with direct table display
-                    Object.values(docsWithFacts).forEach(docWithFacts => {{
-                        const docset = docWithFacts.docset;
-                        const facts = docWithFacts.facts;
-                        
+                    // Create document sets UI
+                    Object.values(docGroups).forEach(docGroup => {{
                         // Create document set container
                         const docsetEl = document.createElement('div');
                         docsetEl.className = 'docset-container';
                         
                         // Create folder header
                         const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="docset-header" onclick="toggleDocSet('${{docGroup.name.replace(/\s+/g, '_')}}')">
+                                <svg id="chevron-${{docGroup.name.replace(/\s+/g, '_')}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                                 <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                                 </svg>
-                                <span><strong>${{docset.name}}</strong></span>
+                                <span><strong>${{docGroup.name}}</strong></span>
                                 <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
-                                    </span>
-                                    <span class="badge">${{facts.length}} facts</span>
+                                    <span class="badge">${{docGroup.facts.length}} facts</span>
                                 </span>
                             </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                            <div id="docset-content-${{docGroup.name.replace(/\s+/g, '_')}}" class="docset-content">
+                                <div style="padding: 12px; background: #f8f9fa; font-style: italic; border-bottom: 1px solid #dee2e6;">
+                                    ${{docGroup.summary}}
+                                </div>
                         `;
                         
                         let contentHtml = '';
                         
-                        if (facts.length > 0) {{
-                            // Create a single table for all facts in this category
+                        if (docGroup.facts.length > 0) {{
+                            // Create a table for facts in this document
                             contentHtml += `
                                 <table class="table-view">
                                     <thead>
                                         <tr>
-                                            <th>Document</th>
                                             <th>Date</th>
                                             <th>End Date</th>
                                             <th>Event</th>
-                                            <th>Party</th>
-                                            <th>Status</th>
+                                            <th>Source Text</th>
                                             <th>Page</th>
-                                            <th>Evidence</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td><strong>${{fact.documentName || fact.doc_name?.substring(0, 40) || 'Unknown'}}</strong></td>
+                                        ${{docGroup.facts.map(fact => `
+                                            <tr>
                                                 <td>${{fact.date}}</td>
-                                                <td>${{fact.end_date || ''}}</td>
-                                                <td style="max-width: 250px; word-wrap: break-word;">${{fact.event || fact.point}}</td>
-                                                <td>
-                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                        ${{fact.party}}
-                                                    </span>
-                                                </td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.page || fact.paragraphs || ''}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
+                                                <td>${{fact.end_date || '-'}}</td>
+                                                <td><strong>${{fact.event}}</strong></td>
+                                                <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis;">${{fact.source_text}}</td>
+                                                <td>${{fact.page}}</td>
                                             </tr>
                                         `).join('')}}
                                     </tbody>
@@ -1781,29 +1563,17 @@ def main():
                     const tableBody = document.getElementById('facts-table-body');
                     tableBody.innerHTML = '';
                     
-                    // Filter by type
+                    // Filter by type - for now showing all since we don't have disputed info in new structure
                     let filteredFacts = factsData;
-                    
-                    if (type === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
-                    }} else if (type === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                    }}
                     
                     // Sort by date
                     filteredFacts.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
+                        return new Date(a.date) - new Date(b.date);
                     }});
                     
                     // Render rows
                     filteredFacts.forEach(fact => {{
                         const row = document.createElement('tr');
-                        if (fact.isDisputed) {{
-                            row.classList.add('disputed');
-                        }}
                         
                         // Date column
                         const dateCell = document.createElement('td');
@@ -1812,63 +1582,37 @@ def main():
                         
                         // End Date column
                         const endDateCell = document.createElement('td');
-                        endDateCell.textContent = fact.end_date || '';
+                        endDateCell.textContent = fact.end_date || '-';
                         row.appendChild(endDateCell);
                         
                         // Event column
                         const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.event || fact.point;
-                        eventCell.style.maxWidth = '300px';
-                        eventCell.style.wordWrap = 'break-word';
+                        eventCell.textContent = fact.event;
                         row.appendChild(eventCell);
                         
-                        // Party column
-                        const partyCell = document.createElement('td');
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        partyCell.appendChild(partyBadge);
-                        row.appendChild(partyCell);
-                        
-                        // Status column
-                        const statusCell = document.createElement('td');
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            statusCell.appendChild(disputedBadge);
-                        }} else {{
-                            statusCell.textContent = 'Undisputed';
-                        }}
-                        row.appendChild(statusCell);
+                        // Source Text column
+                        const sourceTextCell = document.createElement('td');
+                        sourceTextCell.className = 'text-column';
+                        sourceTextCell.textContent = fact.source_text;
+                        sourceTextCell.title = fact.source_text; // Show full text on hover
+                        row.appendChild(sourceTextCell);
                         
                         // Page column
                         const pageCell = document.createElement('td');
-                        pageCell.textContent = fact.page || fact.paragraphs || '';
+                        pageCell.textContent = fact.page;
                         row.appendChild(pageCell);
                         
-                        // Document column
-                        const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || `${{fact.argId}}. ${{fact.argTitle}}`;
-                        docCell.style.maxWidth = '200px';
-                        docCell.style.wordWrap = 'break-word';
-                        docCell.style.fontSize = '0.9em';
-                        row.appendChild(docCell);
+                        // Document Name column
+                        const docNameCell = document.createElement('td');
+                        docNameCell.textContent = fact.doc_name;
+                        row.appendChild(docNameCell);
                         
-                        // Evidence column
-                        const evidenceCell = document.createElement('td');
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                exhibitBadge.style.marginRight = '4px';
-                                evidenceCell.appendChild(exhibitBadge);
-                            }});
-                        }} else {{
-                            evidenceCell.textContent = 'None';
-                        }}
-                        row.appendChild(evidenceCell);
+                        // Document Summary column
+                        const docSummaryCell = document.createElement('td');
+                        docSummaryCell.className = 'summary-column';
+                        docSummaryCell.textContent = fact.doc_summary;
+                        docSummaryCell.title = fact.doc_summary; // Show full text on hover
+                        row.appendChild(docSummaryCell);
                         
                         tableBody.appendChild(row);
                     }});

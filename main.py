@@ -821,24 +821,32 @@ def main():
                     border-bottom: 1px solid #eaeaea;
                 }}
                 
-                /* Table view */
+                /* Table view with horizontal scroll */
+                .table-view-container {{
+                    overflow-x: auto;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }}
+                
                 .table-view {{
                     width: 100%;
+                    min-width: 1200px; /* Ensure minimum width for readability */
                     border-collapse: collapse;
-                    margin-top: 20px;
-                    font-size: 14px;
+                    font-size: 14px; /* Normal readable size */
                 }}
                 
                 .table-view th {{
-                    padding: 8px;
+                    padding: 12px;
                     text-align: left;
                     background-color: #f8f9fa;
                     border-bottom: 2px solid #dee2e6;
                     position: sticky;
                     top: 0;
                     cursor: pointer;
-                    font-size: 12px;
+                    font-size: 13px;
                     white-space: nowrap;
+                    z-index: 10;
                 }}
                 
                 .table-view th:hover {{
@@ -846,36 +854,100 @@ def main():
                 }}
                 
                 .table-view td {{
-                    padding: 8px;
+                    padding: 12px;
                     border-bottom: 1px solid #dee2e6;
-                    font-size: 13px;
+                    font-size: 13px; /* Normal readable size */
                     vertical-align: top;
+                    line-height: 1.4;
                 }}
                 
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
                 }}
                 
-                /* Source text column styling */
-                .table-view td:nth-child(3) {{
-                    max-width: 300px;
-                    word-wrap: break-word;
-                    line-height: 1.4;
+                /* Column-specific widths for better readability */
+                .table-view td:nth-child(1) {{ /* Date */
+                    min-width: 120px;
+                    white-space: nowrap;
                 }}
                 
-                /* Document column styling */
-                .table-view td:nth-child(5) {{
-                    max-width: 150px;
+                .table-view td:nth-child(2) {{ /* Event */
+                    min-width: 250px;
+                    max-width: 300px;
+                }}
+                
+                .table-view td:nth-child(3) {{ /* Source Text */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(4) {{ /* Page */
+                    min-width: 80px;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:nth-child(5) {{ /* Document */
+                    min-width: 200px;
+                    max-width: 250px;
                     font-weight: 500;
                 }}
                 
-                /* Document summary column styling */
-                .table-view td:nth-child(6) {{
-                    max-width: 250px;
-                    word-wrap: break-word;
-                    line-height: 1.4;
+                .table-view td:nth-child(6) {{ /* Doc Summary */
+                    min-width: 250px;
+                    max-width: 350px;
                     font-style: italic;
                     color: #666;
+                }}
+                
+                .table-view td:nth-child(7) {{ /* Claimant Submission */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(8) {{ /* Respondent Submission */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(9) {{ /* Status */
+                    min-width: 100px;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:nth-child(10) {{ /* Evidence */
+                    min-width: 200px;
+                    max-width: 300px;
+                }}
+                
+                /* Text wrapping for content cells */
+                .table-view td:nth-child(2),
+                .table-view td:nth-child(3),
+                .table-view td:nth-child(5),
+                .table-view td:nth-child(6),
+                .table-view td:nth-child(7),
+                .table-view td:nth-child(8),
+                .table-view td:nth-child(10) {{
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                }}
+                
+                /* Horizontal scroll indicator */
+                .table-view-container::-webkit-scrollbar {{
+                    height: 8px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-thumb {{
+                    background: #c1c1c1;
+                    border-radius: 4px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-thumb:hover {{
+                    background: #a8a8a8;
                 }}
                 
                 /* View toggle */
@@ -1404,23 +1476,25 @@ def main():
                     
                     <!-- Table View -->
                     <div id="table-view-content" class="facts-content" style="display: none;">
-                        <table class="table-view">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Claimant Submission</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Respondent Submission</th>
-                                    <th onclick="sortTable('facts-table-body', 8)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 9)">Evidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facts-table-body"></tbody>
-                        </table>
+                        <div class="table-view-container">
+                            <table class="table-view">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                        <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                        <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
+                                        <th onclick="sortTable('facts-table-body', 3)">Page</th>
+                                        <th onclick="sortTable('facts-table-body', 4)">Document</th>
+                                        <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
+                                        <th onclick="sortTable('facts-table-body', 6)">Claimant Submission</th>
+                                        <th onclick="sortTable('facts-table-body', 7)">Respondent Submission</th>
+                                        <th onclick="sortTable('facts-table-body', 8)">Status</th>
+                                        <th onclick="sortTable('facts-table-body', 9)">Evidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="facts-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <!-- Timeline View -->
@@ -2565,9 +2639,6 @@ def main():
                         // Source Text column
                         const sourceTextCell = document.createElement('td');
                         sourceTextCell.textContent = fact.source_text || '';
-                        sourceTextCell.style.maxWidth = '300px';
-                        sourceTextCell.style.overflow = 'hidden';
-                        sourceTextCell.style.textOverflow = 'ellipsis';
                         sourceTextCell.title = fact.source_text || '';
                         row.appendChild(sourceTextCell);
                         
@@ -2585,9 +2656,6 @@ def main():
                         // Document Summary column
                         const docSummaryCell = document.createElement('td');
                         docSummaryCell.textContent = fact.doc_summary || '';
-                        docSummaryCell.style.maxWidth = '250px';
-                        docSummaryCell.style.overflow = 'hidden';
-                        docSummaryCell.style.textOverflow = 'ellipsis';
                         docSummaryCell.title = fact.doc_summary || '';
                         row.appendChild(docSummaryCell);
                         
@@ -2596,9 +2664,6 @@ def main():
                         const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
                             ? fact.claimant_submission : 'No submission';
                         claimantSubmissionCell.textContent = claimantText;
-                        claimantSubmissionCell.style.maxWidth = '300px';
-                        claimantSubmissionCell.style.overflow = 'hidden';
-                        claimantSubmissionCell.style.textOverflow = 'ellipsis';
                         claimantSubmissionCell.title = claimantText;
                         row.appendChild(claimantSubmissionCell);
                         
@@ -2607,9 +2672,6 @@ def main():
                         const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
                             ? fact.respondent_submission : 'No submission';
                         respondentSubmissionCell.textContent = respondentText;
-                        respondentSubmissionCell.style.maxWidth = '300px';
-                        respondentSubmissionCell.style.overflow = 'hidden';
-                        respondentSubmissionCell.style.textOverflow = 'ellipsis';
                         respondentSubmissionCell.title = respondentText;
                         row.appendChild(respondentSubmissionCell);
                         
@@ -2625,7 +2687,7 @@ def main():
                         }}
                         row.appendChild(statusCell);
                         
-                        // Evidence column - show expandable content
+                        // Evidence column - show expandable content with normal sizing
                         const evidenceCell = document.createElement('td');
                         const evidenceContent = getEvidenceContent(fact);
                         
@@ -2634,26 +2696,24 @@ def main():
                         }} else {{
                             // For table view, show compact badges that expand on click
                             evidenceCell.innerHTML = `
-                                <div style="font-size: 11px;">
+                                <div>
                                     ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 4px;">
+                                        <div style="margin-bottom: 6px;">
                                             <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
-                                                  style="display: inline-flex; align-items: center; padding: 3px 6px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 10px; font-weight: 600;"
+                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
                                                   onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
                                                   onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 20)}}${{evidence.title.length > 20 ? '...' : ''}}
-                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 4px; font-size: 8px;">+</span>
+                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
+                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
                                             </span>
                                             <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
-                                                 style="display: none; margin-top: 4px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 10px; color: #666; line-height: 1.3;">
+                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
                                                 ${{evidence.summary}}
                                             </div>
                                         </div>
                                     `).join('')}}
                                 </div>
                             `;
-                            evidenceCell.style.maxWidth = '200px';
-                            evidenceCell.style.fontSize = '11px';
                         }}
                         row.appendChild(evidenceCell);
                         

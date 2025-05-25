@@ -842,24 +842,61 @@ def main():
                     border-bottom: 1px solid #eaeaea;
                 }}
                 
-                /* Table view */
-                .table-view {{
+                /* Table view with horizontal scroll */
+                .table-view-container {{
+                    overflow-x: auto;
                     width: 100%;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    position: relative;
+                }}
+                
+                .table-view-container::after {{
+                    content: "← Scroll horizontally to see more columns →";
+                    position: sticky;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    bottom: 8px;
+                    background-color: rgba(0, 0, 0, 0.7);
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    z-index: 1000;
+                }}
+                
+                .table-view-container:hover::after {{
+                    opacity: 1;
+                }}
+                
+                .table-view {{
+                    width: max-content;
+                    min-width: 100%;
                     border-collapse: collapse;
-                    margin-top: 20px;
+                    margin-top: 0;
                     font-size: 14px;
                 }}
                 
                 .table-view th {{
-                    padding: 8px;
+                    padding: 12px 16px;
                     text-align: left;
                     background-color: #f8f9fa;
                     border-bottom: 2px solid #dee2e6;
+                    border-right: 1px solid #e9ecef;
                     position: sticky;
                     top: 0;
                     cursor: pointer;
-                    font-size: 12px;
+                    font-size: 13px;
                     white-space: nowrap;
+                    font-weight: 600;
+                    z-index: 10;
+                }}
+                
+                .table-view th:last-child {{
+                    border-right: none;
                 }}
                 
                 .table-view th:hover {{
@@ -867,36 +904,75 @@ def main():
                 }}
                 
                 .table-view td {{
-                    padding: 8px;
+                    padding: 12px 16px;
                     border-bottom: 1px solid #dee2e6;
+                    border-right: 1px solid #f1f3f4;
                     font-size: 13px;
                     vertical-align: top;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:last-child {{
+                    border-right: none;
                 }}
                 
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
                 }}
                 
-                /* Source text column styling */
-                .table-view td:nth-child(3) {{
-                    max-width: 300px;
+                /* Specific column widths for better readability */
+                .table-view th:nth-child(1), .table-view td:nth-child(1) {{ /* Date */
+                    min-width: 120px;
+                }}
+                
+                .table-view th:nth-child(2), .table-view td:nth-child(2) {{ /* Event */
+                    min-width: 250px;
+                    max-width: 350px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                }}
+                
+                .table-view th:nth-child(3), .table-view td:nth-child(3) {{ /* Source Text */
+                    min-width: 300px;
+                    max-width: 500px;
+                    white-space: normal;
                     word-wrap: break-word;
                     line-height: 1.4;
                 }}
                 
-                /* Document column styling */
-                .table-view td:nth-child(5) {{
-                    max-width: 150px;
+                .table-view th:nth-child(4), .table-view td:nth-child(4) {{ /* Page */
+                    min-width: 60px;
+                    text-align: center;
+                }}
+                
+                .table-view th:nth-child(5), .table-view td:nth-child(5) {{ /* Document */
+                    min-width: 180px;
+                    max-width: 220px;
+                    white-space: normal;
+                    word-wrap: break-word;
                     font-weight: 500;
                 }}
                 
-                /* Document summary column styling */
-                .table-view td:nth-child(6) {{
-                    max-width: 250px;
+                .table-view th:nth-child(6), .table-view td:nth-child(6) {{ /* Doc Summary */
+                    min-width: 250px;
+                    max-width: 400px;
+                    white-space: normal;
                     word-wrap: break-word;
                     line-height: 1.4;
                     font-style: italic;
                     color: #666;
+                }}
+                
+                .table-view th:nth-child(7), .table-view td:nth-child(7) {{ /* Party */
+                    min-width: 100px;
+                }}
+                
+                .table-view th:nth-child(8), .table-view td:nth-child(8) {{ /* Status */
+                    min-width: 100px;
+                }}
+                
+                .table-view th:nth-child(9), .table-view td:nth-child(9) {{ /* Evidence */
+                    min-width: 120px;
                 }}
                 
                 /* View toggle */
@@ -1168,22 +1244,24 @@ def main():
                     
                     <!-- Table View -->
                     <div id="table-view-content" class="facts-content">
-                        <table class="table-view">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facts-table-body"></tbody>
-                        </table>
+                        <div class="table-view-container">
+                            <table class="table-view">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                        <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                        <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
+                                        <th onclick="sortTable('facts-table-body', 3)">Page</th>
+                                        <th onclick="sortTable('facts-table-body', 4)">Document</th>
+                                        <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
+                                        <th onclick="sortTable('facts-table-body', 6)">Party</th>
+                                        <th onclick="sortTable('facts-table-body', 7)">Status</th>
+                                        <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="facts-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <!-- Timeline View -->
@@ -1765,42 +1843,44 @@ def main():
                         if (facts.length > 0) {{
                             // Create a single table for all facts in this category
                             contentHtml += `
-                                <table class="table-view">
-                                    <thead>
-                                        <tr>
-                                            <th>Document</th>
-                                            <th>Date</th>
-                                            <th>Event</th>
-                                            <th>Source Text</th>
-                                            <th>Page</th>
-                                            <th>Doc Summary</th>
-                                            <th>Party</th>
-                                            <th>Status</th>
-                                            <th>Evidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td><strong>${{fact.documentName}}</strong></td>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.point}}</td>
-                                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
-                                                <td>${{fact.page || ''}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td>
-                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                        ${{fact.party}}
-                                                    </span>
-                                                </td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
+                                <div class="table-view-container">
+                                    <table class="table-view">
+                                        <thead>
+                                            <tr>
+                                                <th>Document</th>
+                                                <th>Date</th>
+                                                <th>Event</th>
+                                                <th>Source Text</th>
+                                                <th>Page</th>
+                                                <th>Doc Summary</th>
+                                                <th>Party</th>
+                                                <th>Status</th>
+                                                <th>Evidence</th>
                                             </tr>
-                                        `).join('')}}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            ${{facts.map(fact => `
+                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                    <td><strong>${{fact.documentName}}</strong></td>
+                                                    <td>${{fact.date}}</td>
+                                                    <td>${{fact.point}}</td>
+                                                    <td>${{fact.source_text || ''}}</td>
+                                                    <td style="text-align: center">${{fact.page || ''}}</td>
+                                                    <td>${{fact.doc_summary || ''}}</td>
+                                                    <td>
+                                                        <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
+                                                            ${{fact.party}}
+                                                        </span>
+                                                    </td>
+                                                    <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                    <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                        ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                        : 'None'}}</td>
+                                                </tr>
+                                            `).join('')}}
+                                        </tbody>
+                                    </table>
+                                </div>
                             `;
                         }} else {{
                             contentHtml += '<p style="padding: 12px;">No facts found</p>';
@@ -1855,30 +1935,22 @@ def main():
                         // Source Text column
                         const sourceTextCell = document.createElement('td');
                         sourceTextCell.textContent = fact.source_text || '';
-                        sourceTextCell.style.maxWidth = '300px';
-                        sourceTextCell.style.overflow = 'hidden';
-                        sourceTextCell.style.textOverflow = 'ellipsis';
-                        sourceTextCell.title = fact.source_text || '';
                         row.appendChild(sourceTextCell);
                         
                         // Page column
                         const pageCell = document.createElement('td');
                         pageCell.textContent = fact.page || '';
+                        pageCell.style.textAlign = 'center';
                         row.appendChild(pageCell);
                         
                         // Document column
                         const docCell = document.createElement('td');
                         docCell.textContent = fact.doc_name || '';
-                        docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
                         
                         // Document Summary column
                         const docSummaryCell = document.createElement('td');
                         docSummaryCell.textContent = fact.doc_summary || '';
-                        docSummaryCell.style.maxWidth = '250px';
-                        docSummaryCell.style.overflow = 'hidden';
-                        docSummaryCell.style.textOverflow = 'ellipsis';
-                        docSummaryCell.title = fact.doc_summary || '';
                         row.appendChild(docSummaryCell);
                         
                         // Party column

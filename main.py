@@ -1658,7 +1658,7 @@ def main():
                         const evidenceContent = getEvidenceContent(fact);
                         let evidenceText = 'None';
                         if (evidenceContent !== 'None') {{
-                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join('; ');
+                            evidenceText = evidenceContent.map((ev, index) => `[${{index + 1}}] ${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
                         }}
                         
                         const sourceText = (fact.source_text || '').replace(/"/g, '""');
@@ -2030,13 +2030,17 @@ def main():
                                 <div class="card-detail-value">None</div>
                             `;
                         }} else {{
+                            const evidenceCount = evidenceContent.length;
                             evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence</div>
+                                <div class="card-detail-label">Evidence (${{evidenceCount}} item${{evidenceCount > 1 ? 's' : ''}})</div>
                                 <div class="card-detail-value">
-                                    ${{evidenceContent.map(evidence => `
-                                        <div style="margin-bottom: 8px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0;">
-                                            <div style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                            <div style="font-size: 12px; color: #666; margin-top: 4px;">${{evidence.summary}}</div>
+                                    ${{evidenceContent.map((evidence, index) => `
+                                        <div style="margin-bottom: 12px; padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0; position: relative;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                                <div style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</div>
+                                                <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;">${{index + 1}}</div>
+                                            </div>
+                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
                                         </div>
                                     `).join('')}}
                                 </div>
@@ -2201,16 +2205,27 @@ def main():
                         if (evidenceContent !== 'None') {{
                             const footerEl = document.createElement('div');
                             footerEl.className = 'timeline-footer';
-                            footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
+                            footerEl.style.cssText = 'padding: 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
                             
+                            const evidenceCount = evidenceContent.length;
                             footerEl.innerHTML = `
-                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence</div>
-                                ${{evidenceContent.map(evidence => `
-                                    <div style="margin-bottom: 8px; padding: 10px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0;">
-                                        <div style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                        <div style="font-size: 12px; color: #666; margin-top: 4px; line-height: 1.4;">${{evidence.summary}}</div>
-                                    </div>
-                                `).join('')}}
+                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+                                    <span>Evidence (${{evidenceCount}} item${{evidenceCount > 1 ? 's' : ''}})</span>
+                                    <div style="height: 1px; background-color: #e2e8f0; flex-grow: 1;"></div>
+                                </div>
+                                <div style="display: grid; gap: 12px;">
+                                    ${{evidenceContent.map((evidence, index) => `
+                                        <div style="padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 8px 8px 0; position: relative;">
+                                            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                                <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0;">${{index + 1}}</div>
+                                                <div style="flex-grow: 1;">
+                                                    <div style="font-weight: 600; color: #dd6b20; font-size: 14px; margin-bottom: 4px;">${{evidence.id}}: ${{evidence.title}}</div>
+                                                    <div style="font-size: 13px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}}
+                                </div>
                             `;
                             
                             contentEl.appendChild(footerEl);
@@ -2360,12 +2375,19 @@ def main():
                                                     if (evidenceContent === 'None') {{
                                                         return 'None';
                                                     }}
-                                                    return evidenceContent.map(evidence => `
-                                                        <div style="margin-bottom: 4px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 10px;">
-                                                            <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
-                                                            <div style="color: #666; margin-top: 1px; line-height: 1.2;">${{evidence.summary}}</div>
-                                                        </div>
-                                                    `).join('');
+                                                    const evidenceCount = evidenceContent.length;
+                                                    return `
+                                                        <div style="font-size: 9px; font-weight: 600; color: #666; margin-bottom: 3px;">${{evidenceCount}} Item${{evidenceCount > 1 ? 's' : ''}}</div>
+                                                        ${{evidenceContent.map((evidence, index) => `
+                                                            <div style="margin-bottom: 4px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 9px;">
+                                                                <div style="display: flex; align-items: center; gap: 3px; margin-bottom: 1px;">
+                                                                    <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 600;">${{index + 1}}</div>
+                                                                    <div style="font-weight: 600; color: #dd6b20; line-height: 1.1;">${{evidence.id}}: ${{evidence.title}}</div>
+                                                                </div>
+                                                                <div style="color: #666; line-height: 1.2; margin-left: 15px;">${{evidence.summary.length > 80 ? evidence.summary.substring(0, 80) + '...' : evidence.summary}}</div>
+                                                            </div>
+                                                        `).join('')}}
+                                                    `;
                                                 }})()}}</td>
                                             </tr>
                                         `).join('')}}
@@ -2491,14 +2513,22 @@ def main():
                         if (evidenceContent === 'None') {{
                             evidenceCell.textContent = 'None';
                         }} else {{
-                            evidenceCell.innerHTML = evidenceContent.map(evidence => `
-                                <div style="margin-bottom: 6px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 11px;">
-                                    <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
-                                    <div style="color: #666; margin-top: 2px; line-height: 1.3;">${{evidence.summary}}</div>
-                                </div>
-                            `).join('');
-                            evidenceCell.style.maxWidth = '300px';
-                            evidenceCell.style.fontSize = '11px';
+                            const evidenceCount = evidenceContent.length;
+                            evidenceCell.innerHTML = `
+                                <div style="font-size: 10px; font-weight: 600; color: #666; margin-bottom: 4px;">${{evidenceCount}} Evidence Item${{evidenceCount > 1 ? 's' : ''}}</div>
+                                ${{evidenceContent.map((evidence, index) => `
+                                    <div style="margin-bottom: 6px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 10px; position: relative;">
+                                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 2px;">
+                                            <div style="background-color: #dd6b20; color: white; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; flex-shrink: 0;">${{index + 1}}</div>
+                                            <div style="font-weight: 600; color: #dd6b20; line-height: 1.2;">${{evidence.id}}: ${{evidence.title}}</div>
+                                        </div>
+                                        <div style="color: #666; line-height: 1.3; margin-left: 18px;">${{evidence.summary.length > 100 ? evidence.summary.substring(0, 100) + '...' : evidence.summary}}</div>
+                                    </div>
+                                `).join('')}}
+                            `;
+                            evidenceCell.style.maxWidth = '350px';
+                            evidenceCell.style.fontSize = '10px';
+                            evidenceCell.style.verticalAlign = 'top';
                         }}
                         row.appendChild(evidenceCell);
                         

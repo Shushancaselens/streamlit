@@ -717,6 +717,17 @@ def main():
                     right: 20px;
                     display: flex;
                     gap: 10px;
+                    max-width: 300px;
+                    flex-wrap: wrap;
+                    z-index: 100;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .action-buttons {{
+                        position: static;
+                        justify-content: flex-end;
+                        margin-bottom: 16px;
+                    }}
                 }}
                 
                 .action-button {{
@@ -955,6 +966,10 @@ def main():
                     display: flex;
                     justify-content: flex-end;
                     margin-bottom: 16px;
+                    max-width: 100%;
+                    overflow-x: auto;
+                    flex-wrap: wrap;
+                    gap: 2px;
                 }}
                 
                 .view-toggle button {{
@@ -962,6 +977,8 @@ def main():
                     border: 1px solid #e2e8f0;
                     background-color: #f7fafc;
                     cursor: pointer;
+                    white-space: nowrap;
+                    min-width: fit-content;
                 }}
                 
                 .view-toggle button.active {{
@@ -988,6 +1005,174 @@ def main():
                     border-radius: 0 4px 4px 0;
                 }}
                 
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                    transform: rotate(90deg); /* Start expanded by default */
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                /* Document sets table container - FIX: Ensure scroll works */
+                .docset-table-container {{
+                    overflow-x: auto !important;
+                    overflow-y: hidden;
+                    border: 1px solid #dee2e6;
+                    border-radius: 6px;
+                    margin-top: 8px;
+                    width: 100%;
+                    max-width: 100%;
+                    display: block;
+                    white-space: nowrap;
+                }}
+                
+                .docset-table-container .table-view {{
+                    width: auto;
+                    min-width: 1400px !important; /* Increased to force scroll */
+                    margin: 0;
+                    border-collapse: collapse;
+                    display: table;
+                    table-layout: fixed;
+                }}
+                
+                /* Force specific column widths to ensure scroll */
+                .docset-table-container .table-view th:nth-child(1),
+                .docset-table-container .table-view td:nth-child(1) {{ /* Date */
+                    width: 120px;
+                    min-width: 120px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(2),
+                .docset-table-container .table-view td:nth-child(2) {{ /* Event */
+                    width: 200px;
+                    min-width: 200px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(3),
+                .docset-table-container .table-view td:nth-child(3) {{ /* Source Text */
+                    width: 250px;
+                    min-width: 250px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(4),
+                .docset-table-container .table-view td:nth-child(4) {{ /* Page */
+                    width: 80px;
+                    min-width: 80px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(5),
+                .docset-table-container .table-view td:nth-child(5) {{ /* Document */
+                    width: 150px;
+                    min-width: 150px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(6),
+                .docset-table-container .table-view td:nth-child(6) {{ /* Doc Summary */
+                    width: 200px;
+                    min-width: 200px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(7),
+                .docset-table-container .table-view td:nth-child(7) {{ /* Claimant Submission */
+                    width: 200px;
+                    min-width: 200px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(8),
+                .docset-table-container .table-view td:nth-child(8) {{ /* Respondent Submission */
+                    width: 200px;
+                    min-width: 200px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(9),
+                .docset-table-container .table-view td:nth-child(9) {{ /* Status */
+                    width: 100px;
+                    min-width: 100px;
+                }}
+                
+                .docset-table-container .table-view th:nth-child(10),
+                .docset-table-container .table-view td:nth-child(10) {{ /* Evidence */
+                    width: 170px;
+                    min-width: 170px;
+                }}
+                
+                /* Cell content styling for docset tables */
+                .docset-table-container .table-view td {{
+                    padding: 8px 12px;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    vertical-align: top;
+                    font-size: 13px;
+                    line-height: 1.4;
+                    border-bottom: 1px solid #dee2e6;
+                }}
+                
+                .docset-table-container .table-view th {{
+                    padding: 10px 12px;
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                    font-size: 12px;
+                    font-weight: 600;
+                    text-align: left;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+                }}
+                
+                /* Enhanced scrollbar for document sets */
+                .docset-table-container::-webkit-scrollbar {{
+                    height: 8px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-track {{
+                    background: #f1f3f4;
+                    border-radius: 4px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-thumb {{
+                    background: #4299e1;
+                    border-radius: 4px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-thumb:hover {{
+                    background: #3182ce;
+                }}
+                
+                /* Row hover effect */
+                .docset-table-container .table-view tr:hover {{
+                    background-color: #f8fafc;
+                }}
+                
+                /* Main container constraints - FIX: Ensure proper containment */
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    overflow-x: hidden !important; /* Prevent page-level horizontal scroll */
+                    box-sizing: border-box;
+                }}
+                
+                /* Docset container */
+                .docset-container {{
+                    margin-bottom: 20px;
+                    width: 100%;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }}
+                
                 /* Document sets */
                 .docset-header {{
                     display: flex;
@@ -998,20 +1183,64 @@ def main():
                     border-radius: 4px;
                     margin-bottom: 10px;
                     cursor: pointer;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
                 }}
                 
                 .docset-header:hover {{
                     background-color: #e9ecef;
                 }}
                 
-                .docset-icon {{
-                    margin-right: 10px;
-                    color: #4299e1;
+                .docset-content {{
+                    display: block; /* Changed from 'none' to 'block' to be open by default */
+                    padding: 0 0 20px 0;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }}
+                
+                .docset-content.show {{
+                    display: block;
+                }}
+                
+                /* TEST: Add scroll indicator */
+                .scroll-test {{
+                    background: linear-gradient(90deg, rgba(66,153,225,0.1) 0%, rgba(66,153,225,0.1) 50%, transparent 50%);
+                    background-size: 20px 100%;
+                    animation: scroll-indicate 2s ease-in-out infinite;
+                }}
+                
+                @keyframes scroll-indicate {{
+                    0%, 100% {{ background-position: 0% 0%; }}
+                    50% {{ background-position: 100% 0%; }}
+                }}
+                
+                /* Document sets */
+                .docset-header {{
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }}
+                
+                .docset-header:hover {{
+                    background-color: #e9ecef;
                 }}
                 
                 .docset-content {{
                     display: block; /* Changed from 'none' to 'block' to be open by default */
                     padding: 0 0 20px 0;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
                 }}
                 
                 .docset-content.show {{

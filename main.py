@@ -717,6 +717,17 @@ def main():
                     right: 20px;
                     display: flex;
                     gap: 10px;
+                    max-width: 300px;
+                    flex-wrap: wrap;
+                    z-index: 100;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .action-buttons {{
+                        position: static;
+                        justify-content: flex-end;
+                        margin-bottom: 16px;
+                    }}
                 }}
                 
                 .action-button {{
@@ -955,6 +966,10 @@ def main():
                     display: flex;
                     justify-content: flex-end;
                     margin-bottom: 16px;
+                    max-width: 100%;
+                    overflow-x: auto;
+                    flex-wrap: wrap;
+                    gap: 2px;
                 }}
                 
                 .view-toggle button {{
@@ -962,6 +977,8 @@ def main():
                     border: 1px solid #e2e8f0;
                     background-color: #f7fafc;
                     cursor: pointer;
+                    white-space: nowrap;
+                    min-width: fit-content;
                 }}
                 
                 .view-toggle button.active {{
@@ -988,6 +1005,67 @@ def main():
                     border-radius: 0 4px 4px 0;
                 }}
                 
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                    transform: rotate(90deg); /* Start expanded by default */
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                /* Document sets table container - contained scroll */
+                .docset-table-container {{
+                    overflow-x: auto;
+                    border: 1px solid #dee2e6;
+                    border-radius: 6px;
+                    margin-top: 8px;
+                    max-width: 100%;
+                }}
+                
+                .docset-table-container .table-view {{
+                    min-width: 1200px; /* Ensure minimum width for readability */
+                    margin: 0; /* Remove top margin for nested tables */
+                }}
+                
+                /* Scrollbar styling for document sets */
+                .docset-table-container::-webkit-scrollbar {{
+                    height: 6px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 3px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-thumb {{
+                    background: #c1c1c1;
+                    border-radius: 3px;
+                }}
+                
+                .docset-table-container::-webkit-scrollbar-thumb:hover {{
+                    background: #a8a8a8;
+                }}
+                
+                /* Main container constraints */
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    overflow-x: hidden; /* Prevent page-level horizontal scroll */
+                }}
+                
                 /* Document sets */
                 .docset-header {{
                     display: flex;
@@ -998,20 +1076,21 @@ def main():
                     border-radius: 4px;
                     margin-bottom: 10px;
                     cursor: pointer;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
                 }}
                 
                 .docset-header:hover {{
                     background-color: #e9ecef;
                 }}
                 
-                .docset-icon {{
-                    margin-right: 10px;
-                    color: #4299e1;
-                }}
-                
                 .docset-content {{
                     display: block; /* Changed from 'none' to 'block' to be open by default */
                     padding: 0 0 20px 0;
+                    max-width: 100%;
+                    overflow: hidden;
+                    box-sizing: border-box;
                 }}
                 
                 .docset-content.show {{

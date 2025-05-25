@@ -1374,7 +1374,9 @@ def main():
                 
                 // Debug: Log the data to console to verify submissions are present
                 console.log("Facts data loaded:", factsData.length, "facts");
+                console.log("Raw facts data:", factsData);
                 console.log("Sample fact with submissions:", factsData.find(f => f.claimant_submission && f.claimant_submission !== 'No specific submission recorded'));
+                console.log("Facts with exhibits:", factsData.filter(f => f.exhibits && f.exhibits.length > 0));
                 
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
@@ -1394,6 +1396,13 @@ def main():
                         argTitle: fact.argTitle || '',
                         paragraphs: fact.paragraphs || ''
                     }};
+                    
+                    // Debug: Check exhibits
+                    if (standardized.exhibits && standardized.exhibits.length > 0) {{
+                        console.log(`Fact "${{standardized.event}}" has exhibits:`, standardized.exhibits);
+                    }} else {{
+                        console.log(`Fact "${{standardized.event}}" has NO exhibits`);
+                    }}
                     
                     // Debug: Check if this fact has submissions
                     if (shouldShowSubmission(standardized.claimant_submission) || shouldShowSubmission(standardized.respondent_submission)) {{
@@ -1989,12 +1998,20 @@ def main():
                         // Evidence
                         const evidenceSection = document.createElement('div');
                         evidenceSection.className = 'card-detail-section';
+                        
+                        // Debug: Log exhibits for this fact
+                        console.log(`Fact ${{index + 1}} exhibits:`, fact.exhibits, `(length: ${{fact.exhibits ? fact.exhibits.length : 0}})`);
+                        
+                        const exhibitsHtml = fact.exhibits && fact.exhibits.length > 0 
+                            ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ')
+                            : 'None';
+                            
+                        console.log(`Generated exhibits HTML for fact ${{index + 1}}:`, exhibitsHtml);
+                        
                         evidenceSection.innerHTML = `
                             <div class="card-detail-label">Evidence</div>
                             <div class="card-detail-value">
-                                ${{fact.exhibits && fact.exhibits.length > 0 
-                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ')
-                                    : 'None'}}
+                                ${{exhibitsHtml}}
                             </div>
                         `;
                         statusExhibitsEl.appendChild(evidenceSection);
@@ -2153,6 +2170,7 @@ def main():
                         
                         // Add footer if there are exhibits
                         if (fact.exhibits && fact.exhibits.length > 0) {{
+                            console.log(`Timeline - Adding footer with exhibits:`, fact.exhibits);
                             const footerEl = document.createElement('div');
                             footerEl.className = 'timeline-footer';
                             
@@ -2162,9 +2180,12 @@ def main():
                                 exhibitBadge.className = 'badge exhibit-badge';
                                 exhibitBadge.textContent = exhibitId;
                                 footerEl.appendChild(exhibitBadge);
+                                console.log(`Timeline - Added exhibit: ${{exhibitId}}`);
                             }});
                             
                             contentEl.appendChild(footerEl);
+                        }} else {{
+                            console.log(`Timeline - No exhibits for this fact:`, fact.exhibits);
                         }}
                         
                         timelineItem.appendChild(contentEl);
@@ -2426,6 +2447,8 @@ def main():
                         
                         // Evidence column
                         const evidenceCell = document.createElement('td');
+                        console.log(`Table view - Fact exhibits:`, fact.exhibits, `(length: ${{fact.exhibits ? fact.exhibits.length : 0}})`);
+                        
                         if (fact.exhibits && fact.exhibits.length > 0) {{
                             fact.exhibits.forEach(exhibitId => {{
                                 const exhibitBadge = document.createElement('span');
@@ -2433,9 +2456,11 @@ def main():
                                 exhibitBadge.textContent = exhibitId;
                                 exhibitBadge.style.marginRight = '4px';
                                 evidenceCell.appendChild(exhibitBadge);
+                                console.log(`Added exhibit badge: ${{exhibitId}}`);
                             }});
                         }} else {{
                             evidenceCell.textContent = 'None';
+                            console.log('No exhibits, showing "None"');
                         }}
                         row.appendChild(evidenceCell);
                         

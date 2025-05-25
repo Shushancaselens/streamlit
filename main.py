@@ -244,7 +244,7 @@ def get_argument_data():
         "topics": topics
     }
 
-# Get all facts from the data
+# Get all facts from the data with enhanced submissions structure
 def get_all_facts():
     args_data = get_argument_data()
     facts = []
@@ -257,7 +257,7 @@ def get_all_facts():
         if 'factualPoints' in arg and arg['factualPoints']:
             for point in arg['factualPoints']:
                 fact = {
-                    'point': point['point'],
+                    'event': point['point'],  # Renamed from 'point' to 'event'
                     'date': point['date'],
                     'isDisputed': point['isDisputed'],
                     'party': party,
@@ -268,7 +268,9 @@ def get_all_facts():
                     'source_text': point.get('source_text', ''),
                     'page': point.get('page', ''),
                     'doc_name': point.get('doc_name', ''),
-                    'doc_summary': point.get('doc_summary', '')
+                    'doc_summary': point.get('doc_summary', ''),
+                    'claimant_submission': '',
+                    'respondent_submission': ''
                 }
                 facts.append(fact)
                 
@@ -284,18 +286,76 @@ def get_all_facts():
     # Extract from respondent args
     for arg_id, arg in args_data['respondentArgs'].items():
         extract_facts(arg, 'Respondent')
+    
+    # Now enhance facts with both parties' submissions
+    enhanced_facts = []
+    fact_groups = {}
+    
+    # Group facts by date and similar events
+    for fact in facts:
+        key = f"{fact['date']}_{fact['event'][:50]}"  # Group by date and first 50 chars of event
+        if key not in fact_groups:
+            fact_groups[key] = {
+                'event': fact['event'],
+                'date': fact['date'],
+                'isDisputed': fact['isDisputed'],
+                'claimant_submission': '',
+                'respondent_submission': '',
+                'source_text': fact['source_text'],
+                'page': fact['page'],
+                'doc_name': fact['doc_name'],
+                'doc_summary': fact['doc_summary'],
+                'exhibits': fact['exhibits'],
+                'paragraphs': fact['paragraphs'],
+                'argId': fact['argId'],
+                'argTitle': fact['argTitle'],
+                'parties_involved': []
+            }
         
-    return facts
+        # Add party-specific information
+        if fact['party'] == 'Appellant':
+            fact_groups[key]['claimant_submission'] = fact['source_text']
+        else:
+            fact_groups[key]['respondent_submission'] = fact['source_text']
+        
+        fact_groups[key]['parties_involved'].append(fact['party'])
+        
+        # Update disputed status if either party contests it
+        if fact['isDisputed']:
+            fact_groups[key]['isDisputed'] = True
+    
+    # Create enhanced facts with proper submissions structure
+    for key, group in fact_groups.items():
+        enhanced_fact = {
+            'event': group['event'],
+            'date': group['date'],
+            'isDisputed': group['isDisputed'],
+            'source_text': group['source_text'],
+            'page': group['page'],
+            'doc_name': group['doc_name'],
+            'doc_summary': group['doc_summary'],
+            'exhibits': group['exhibits'],
+            'paragraphs': group['paragraphs'],
+            'argId': group['argId'],
+            'argTitle': group['argTitle'],
+            'claimant_submission': group['claimant_submission'] or 'No specific submission recorded',
+            'respondent_submission': group['respondent_submission'] or 'No specific submission recorded',
+            'parties_involved': list(set(group['parties_involved']))  # Remove duplicates
+        }
+        enhanced_facts.append(enhanced_fact)
+    
+    return enhanced_facts
 
-# Get enhanced timeline data with additional events
+# Get enhanced timeline data with claimant and respondent submissions
 def get_timeline_data():
-    # Create a richer set of timeline events
+    # Create enhanced timeline events with both parties' positions
     timeline_events = [
         {
-            "point": "Club founded and officially registered in the Football Federation",
+            "event": "Club founded and officially registered in the Football Federation",
             "date": "1950-01-12",
             "isDisputed": False,
-            "party": "Appellant",
+            "claimant_submission": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
+            "respondent_submission": "No specific counter-submission recorded",
             "exhibits": ["C-1"],
             "argId": "1",
             "argTitle": "Sporting Succession",
@@ -303,13 +363,47 @@ def get_timeline_data():
             "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
             "page": 15,
             "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
+            "parties_involved": ["Appellant"]
         },
         {
-            "point": "First National Championship won",
+            "event": "Operations ceased between 1975-1976",
+            "date": "1975-1976",
+            "isDisputed": True,
+            "claimant_submission": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
+            "respondent_submission": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
+            "exhibits": ["C-2", "R-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Both parties - Statement of Appeal & Answer to PM",
+            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
+            "page": 127,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "Club colors established as blue and white",
+            "date": "1956-03-10",
+            "isDisputed": True,
+            "claimant_submission": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
+            "respondent_submission": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
+            "exhibits": ["C-4", "R-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
+            "page": 67,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "First National Championship won",
             "date": "1955-05-20",
             "isDisputed": False,
-            "party": "Appellant",
+            "claimant_submission": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
+            "respondent_submission": "No specific counter-submission recorded",
             "exhibits": ["C-3"],
             "argId": "1",
             "argTitle": "Sporting Succession",
@@ -317,83 +411,15 @@ def get_timeline_data():
             "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
             "page": 42,
             "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
+            "parties_involved": ["Appellant"]
         },
         {
-            "point": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "page": 67,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
-        },
-        {
-            "point": "First international competition participation",
-            "date": "1962-09-15",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-6"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United made its debut in international competition on September 15, 1962, participating in the Continental Cup preliminary round against European champions.",
-            "page": 78,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
-        },
-        {
-            "point": "Minor variations in club color shades introduced",
-            "date": "1970-1980",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "During the 1970s decade, minor variations in the specific shades of blue were introduced for aesthetic purposes, ranging from royal blue to navy blue, while maintaining the core blue and white identity.",
-            "page": 92,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
-        },
-        {
-            "point": "Administrative operations halted due to financial difficulties",
+            "event": "Club registration formally terminated",
             "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely.",
-            "page": 156,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
-        },
-        {
-            "point": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
             "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession Rebuttal",
-            "source": "provisional messier - Answer to PM",
-            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "page": 127,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
-        },
-        {
-            "point": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": False,
-            "party": "Respondent",
+            "claimant_submission": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely, but this was a temporary administrative measure that did not affect the club's legal identity.",
+            "respondent_submission": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.",
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
@@ -401,13 +427,15 @@ def get_timeline_data():
             "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
             "page": 158,
             "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
         },
         {
-            "point": "New entity registered with similar name",
+            "event": "New entity registered with similar name",
             "date": "1976-09-15",
-            "isDisputed": False,
-            "party": "Respondent",
+            "isDisputed": True,
+            "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
+            "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
@@ -415,83 +443,15 @@ def get_timeline_data():
             "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
             "page": 162,
             "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
         },
         {
-            "point": "Significant color scheme change implemented",
-            "date": "1976-10-01",
-            "isDisputed": True,
-            "party": "Respondent",
-            "exhibits": ["R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis Rebuttal",
-            "source": "admissibility - Brief on Admissibility",
-            "source_text": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
-            "page": 203,
-            "doc_name": "Brief on Admissibility",
-            "doc_summary": "Respondent's legal brief addressing the admissibility of evidence and procedural matters in the case."
-        },
-        {
-            "point": "Third color temporarily added to uniform",
-            "date": "1982-1988",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-5"],
-            "argId": "1.2.1",
-            "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "From 1982 to 1988, gold was introduced as a third accent color for special matches and European competitions, complementing but not replacing the traditional blue and white scheme.",
-            "page": 114,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
-        },
-        {
-            "point": "Club won Continental Cup with post-1976 team",
-            "date": "1987-06-24",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-7"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United achieved its greatest international success on June 24, 1987, winning the Continental Cup final 2-1 against defending champions, demonstrating sporting continuity post-1976.",
-            "page": 145,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
-        },
-        {
-            "point": "Return to original blue and white color scheme",
-            "date": "1989-08-12",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-8"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "On August 12, 1989, the club officially returned to its traditional blue and white color scheme, removing all temporary color additions and reaffirming its historical identity.",
-            "page": 167,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
-        },
-        {
-            "point": "Trademark registration for club name and emblem",
-            "date": "1995-11-30",
-            "isDisputed": False,
-            "party": "Appellant",
-            "exhibits": ["C-9"],
-            "argId": "1.1",
-            "argTitle": "Club Name Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club secured comprehensive trademark protection for its name 'Athletic Club United' and distinctive emblem on November 30, 1995, providing legal recognition of its continuous identity.",
-            "page": 189,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
-        },
-        {
-            "point": "Federation officially recognizes club history spanning pre and post 1976",
+            "event": "Federation officially recognizes club history spanning pre and post 1976",
             "date": "2010-05-18",
             "isDisputed": True,
-            "party": "Appellant",
+            "claimant_submission": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.",
+            "respondent_submission": "The 2010 federation recognition was a purely administrative convenience that does not override the documented legal and operational discontinuity that occurred in 1975-1976.",
             "exhibits": ["C-10"],
             "argId": "1",
             "argTitle": "Sporting Succession",
@@ -499,7 +459,8 @@ def get_timeline_data():
             "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
             "page": 234,
             "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments."
+            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
+            "parties_involved": ["Appellant", "Respondent"]
         }
     ]
     
@@ -1115,6 +1076,33 @@ def main():
                     line-height: 1.5;
                 }}
                 
+                .card-source-text.claimant-submission {{
+                    border-left-color: #3182ce;
+                    background-color: rgba(49, 130, 206, 0.03);
+                }}
+                
+                .card-source-text.respondent-submission {{
+                    border-left-color: #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.03);
+                }}
+                
+                .submission-header {{
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 8px;
+                    color: inherit;
+                }}
+                
+                .claimant-submission .submission-header {{
+                    color: #3182ce;
+                }}
+                
+                .respondent-submission .submission-header {{
+                    color: #e53e3e;
+                }}
+                
                 .card-exhibits {{
                     display: flex;
                     flex-wrap: wrap;
@@ -1333,9 +1321,10 @@ def main():
                                     <th onclick="sortTable('facts-table-body', 3)">Page</th>
                                     <th onclick="sortTable('facts-table-body', 4)">Document</th>
                                     <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Claimant Submission</th>
+                                    <th onclick="sortTable('facts-table-body', 7)">Respondent Submission</th>
+                                    <th onclick="sortTable('facts-table-body', 8)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 9)">Evidence</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1425,18 +1414,23 @@ def main():
                         cardItems.forEach(card => {{
                             const dateEl = card.querySelector('.card-fact-date');
                             const eventEl = card.querySelector('.card-fact-event');
-                            const partyEl = card.querySelector('.badge');
-                            const sourceTextEl = card.querySelector('.card-source-text div:last-child');
+                            const partyEls = card.querySelectorAll('.badge');
+                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
+                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
                             
                             if (dateEl && eventEl) {{
                                 const date = dateEl.textContent.trim();
                                 const event = eventEl.textContent.trim();
-                                const party = partyEl ? partyEl.textContent.trim() : '';
-                                const sourceText = sourceTextEl ? sourceTextEl.textContent.trim() : '';
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
+                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
                                 
-                                contentToCopy += `${{date}} - ${{event}} (${{party}})\\n`;
-                                if (sourceText) {{
-                                    contentToCopy += `Source: ${{sourceText}}\\n`;
+                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
+                                if (claimantSubmission) {{
+                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
+                                }}
+                                if (respondentSubmission) {{
+                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
                                 }}
                                 contentToCopy += '\\n';
                             }}
@@ -1468,14 +1462,28 @@ def main():
                         timelineItems.forEach(item => {{
                             const dateEl = item.querySelector('.timeline-date');
                             const factEl = item.querySelector('.timeline-fact');
-                            const partyEl = item.querySelector('.badge');
+                            const partyEls = item.querySelectorAll('.badge');
+                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
+                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
                             
                             if (dateEl && factEl) {{
                                 const date = dateEl.textContent.trim();
                                 const fact = factEl.textContent.trim();
-                                const party = partyEl ? partyEl.textContent.trim() : '';
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
                                 
-                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
+                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
+                                
+                                if (claimantEl) {{
+                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
+                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
+                                }}
+                                
+                                if (respondentEl) {{
+                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
+                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
+                                }}
+                                
+                                contentToCopy += '\\n';
                             }}
                         }});
                     }} else {{
@@ -1493,7 +1501,18 @@ def main():
                             const tableFacts = container.querySelectorAll('tbody tr');
                             tableFacts.forEach(fact => {{
                                 const cells = Array.from(fact.querySelectorAll('td'));
-                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
+                                const date = cells[1] ? cells[1].textContent : '';
+                                const event = cells[2] ? cells[2].textContent : '';
+                                const claimantSub = cells[6] ? cells[6].textContent : '';
+                                const respondentSub = cells[7] ? cells[7].textContent : '';
+                                
+                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
+                                if (claimantSub && claimantSub !== 'No submission') {{
+                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
+                                }}
+                                if (respondentSub && respondentSub !== 'No submission') {{
+                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
+                                }}
                             }});
                             
                             contentToCopy += '\\n';
@@ -1589,7 +1608,7 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
+                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
@@ -1597,7 +1616,9 @@ def main():
                             const sourceText = (item.source_text || '').replace(/"/g, '""');
                             const docName = (item.doc_name || '').replace(/"/g, '""');
                             const docSummary = (item.doc_summary || '').replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{docSummary}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                            const claimantSubmission = (item.claimant_submission || '').replace(/"/g, '""');
+                            const respondentSubmission = (item.respondent_submission || '').replace(/"/g, '""');
+                            rows += `"${{item.date}}","${{item.event}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1804,7 +1825,7 @@ def main():
                         // Event
                         const eventEl = document.createElement('div');
                         eventEl.className = 'card-fact-event';
-                        eventEl.textContent = fact.point;
+                        eventEl.textContent = fact.event;
                         titleEl.appendChild(eventEl);
                         
                         headerEl.appendChild(titleEl);
@@ -1813,11 +1834,15 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'card-fact-badges';
                         
-                        // Party badge
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        badgesEl.appendChild(partyBadge);
+                        // Parties involved badges
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
+                                const partyBadge = document.createElement('span');
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                                partyBadge.textContent = party;
+                                badgesEl.appendChild(partyBadge);
+                            }});
+                        }}
                         
                         // Disputed badge
                         if (fact.isDisputed) {{
@@ -1876,12 +1901,35 @@ def main():
                         
                         contentEl.appendChild(detailsEl);
                         
-                        // Source text
-                        if (fact.source_text) {{
+                        // Claimant Submission
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
+                            const claimantSubmissionEl = document.createElement('div');
+                            claimantSubmissionEl.className = 'card-source-text claimant-submission';
+                            claimantSubmissionEl.innerHTML = `
+                                <div class="submission-header">Claimant Submission</div>
+                                <div>${{fact.claimant_submission}}</div>
+                            `;
+                            contentEl.appendChild(claimantSubmissionEl);
+                        }}
+                        
+                        // Respondent Submission
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
+                            const respondentSubmissionEl = document.createElement('div');
+                            respondentSubmissionEl.className = 'card-source-text respondent-submission';
+                            respondentSubmissionEl.innerHTML = `
+                                <div class="submission-header">Respondent Submission</div>
+                                <div>${{fact.respondent_submission}}</div>
+                            `;
+                            contentEl.appendChild(respondentSubmissionEl);
+                        }}
+                        
+                        // Original source text if different from submissions
+                        if (fact.source_text && fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
                             const sourceTextEl = document.createElement('div');
                             sourceTextEl.className = 'card-source-text';
+                            sourceTextEl.style.marginTop = '12px';
                             sourceTextEl.innerHTML = `
-                                <div class="card-detail-label" style="margin-bottom: 8px;">Source Text</div>
+                                <div class="card-detail-label" style="margin-bottom: 8px;">Additional Source Text</div>
                                 <div>${{fact.source_text}}</div>
                             `;
                             contentEl.appendChild(sourceTextEl);
@@ -1989,11 +2037,15 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'timeline-badges';
                         
-                        // Party badge
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        badgesEl.appendChild(partyBadge);
+                        // Parties involved badges
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
+                                const partyBadge = document.createElement('span');
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                                partyBadge.textContent = party;
+                                badgesEl.appendChild(partyBadge);
+                            }});
+                        }}
                         
                         // Disputed badge
                         if (fact.isDisputed) {{
@@ -2013,7 +2065,7 @@ def main():
                         // Fact content
                         const factContent = document.createElement('div');
                         factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.point;
+                        factContent.textContent = fact.event;
                         bodyEl.appendChild(factContent);
                         
                         // Related argument and source
@@ -2027,13 +2079,22 @@ def main():
                         `;
                         bodyEl.appendChild(metaEl);
                         
-                        // Add source text if available
-                        if (fact.source_text) {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.cssText = 'font-style: italic; color: #666; margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-left: 3px solid #4299e1; font-size: 13px;';
-                            sourceTextEl.textContent = fact.source_text;
-                            bodyEl.appendChild(sourceTextEl);
+                        // Add claimant submission
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' && fact.claimant_submission !== 'No specific counter-submission recorded') {{
+                            const claimantTextEl = document.createElement('div');
+                            claimantTextEl.className = 'timeline-source-text';
+                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 8px; background-color: rgba(49, 130, 206, 0.05); border-left: 3px solid #3182ce; font-size: 13px;';
+                            claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}`;
+                            bodyEl.appendChild(claimantTextEl);
+                        }}
+                        
+                        // Add respondent submission
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' && fact.respondent_submission !== 'No specific counter-submission recorded') {{
+                            const respondentTextEl = document.createElement('div');
+                            respondentTextEl.className = 'timeline-source-text';
+                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 8px; background-color: rgba(229, 62, 62, 0.05); border-left: 3px solid #e53e3e; font-size: 13px;';
+                            respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
+                            bodyEl.appendChild(respondentTextEl);
                         }}
                         
                         contentEl.appendChild(bodyEl);
@@ -2116,8 +2177,8 @@ def main():
                                 if (ds.isGroup) {{
                                     ds.documents.forEach(doc => {{
                                         if (doc.party === 'Mixed' || 
-                                            (fact.party === 'Appellant' && doc.party === 'Appellant') ||
-                                            (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
+                                            (fact.parties_involved && fact.parties_involved.includes('Appellant') && doc.party === 'Appellant') ||
+                                            (fact.parties_involved && fact.parties_involved.includes('Respondent') && doc.party === 'Respondent')) {{
                                             docsWithFacts[ds.id].facts.push({{ 
                                                 ...fact, 
                                                 documentName: doc.name
@@ -2175,7 +2236,8 @@ def main():
                                             <th>Source Text</th>
                                             <th>Page</th>
                                             <th>Doc Summary</th>
-                                            <th>Party</th>
+                                            <th>Claimant Submission</th>
+                                            <th>Respondent Submission</th>
                                             <th>Status</th>
                                             <th>Evidence</th>
                                         </tr>
@@ -2185,15 +2247,12 @@ def main():
                                             <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
                                                 <td><strong>${{fact.documentName}}</strong></td>
                                                 <td>${{fact.date}}</td>
-                                                <td>${{fact.point}}</td>
+                                                <td>${{fact.event}}</td>
                                                 <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
                                                 <td>${{fact.page || ''}}</td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td>
-                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                        ${{fact.party}}
-                                                    </span>
-                                                </td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission || 'No submission'}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission || 'No submission'}}</td>
                                                 <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
                                                 <td>${{fact.exhibits && fact.exhibits.length > 0 
                                                     ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
@@ -2250,7 +2309,7 @@ def main():
                         
                         // Event column
                         const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.point;
+                        eventCell.textContent = fact.event;
                         row.appendChild(eventCell);
                         
                         // Source Text column
@@ -2282,13 +2341,23 @@ def main():
                         docSummaryCell.title = fact.doc_summary || '';
                         row.appendChild(docSummaryCell);
                         
-                        // Party column
-                        const partyCell = document.createElement('td');
-                        const partyBadge = document.createElement('span');
-                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                        partyBadge.textContent = fact.party;
-                        partyCell.appendChild(partyBadge);
-                        row.appendChild(partyCell);
+                        // Claimant Submission column
+                        const claimantSubmissionCell = document.createElement('td');
+                        claimantSubmissionCell.textContent = fact.claimant_submission || 'No submission';
+                        claimantSubmissionCell.style.maxWidth = '300px';
+                        claimantSubmissionCell.style.overflow = 'hidden';
+                        claimantSubmissionCell.style.textOverflow = 'ellipsis';
+                        claimantSubmissionCell.title = fact.claimant_submission || '';
+                        row.appendChild(claimantSubmissionCell);
+                        
+                        // Respondent Submission column
+                        const respondentSubmissionCell = document.createElement('td');
+                        respondentSubmissionCell.textContent = fact.respondent_submission || 'No submission';
+                        respondentSubmissionCell.style.maxWidth = '300px';
+                        respondentSubmissionCell.style.overflow = 'hidden';
+                        respondentSubmissionCell.style.textOverflow = 'ellipsis';
+                        respondentSubmissionCell.title = fact.respondent_submission || '';
+                        row.appendChild(respondentSubmissionCell);
                         
                         // Status column
                         const statusCell = document.createElement('td');

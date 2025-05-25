@@ -1155,7 +1155,7 @@ def main():
                     <div class="section-title">Case Facts</div>
                     
                     <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">Card View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>
@@ -1166,24 +1166,9 @@ def main():
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
-                    <!-- Table View -->
+                    <!-- Card View -->
                     <div id="table-view-content" class="facts-content">
-                        <table class="table-view">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
-                                </tr>
-                            </thead>
-                            <tbody id="facts-table-body"></tbody>
-                        </table>
+                        <div id="facts-cards-container" class="facts-container"></div>
                     </div>
                     
                     <!-- Timeline View -->

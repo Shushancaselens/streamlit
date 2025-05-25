@@ -1349,10 +1349,50 @@ def main():
             </div>
             
             <script>
-                // Initialize data
+                // Initialize data - ensure all views use the same core data structure
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
+                
+                // Standardize data structure across all views
+                function standardizeFactData(fact) {{
+                    return {{
+                        date: fact.date,
+                        event: fact.event,
+                        source_text: fact.source_text || '',
+                        page: fact.page || '',
+                        doc_name: fact.doc_name || '',
+                        doc_summary: fact.doc_summary || '',
+                        claimant_submission: fact.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: fact.respondent_submission || 'No specific submission recorded',
+                        isDisputed: fact.isDisputed,
+                        exhibits: fact.exhibits || [],
+                        parties_involved: fact.parties_involved || [],
+                        argId: fact.argId || '',
+                        argTitle: fact.argTitle || '',
+                        paragraphs: fact.paragraphs || ''
+                    }};
+                }}
+                
+                // Standardize timeline data to match facts structure
+                function standardizeTimelineData(item) {{
+                    return {{
+                        date: item.date,
+                        event: item.event,
+                        source_text: item.source_text || '',
+                        page: item.page || '',
+                        doc_name: item.doc_name || '',
+                        doc_summary: item.doc_summary || '',
+                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
+                        isDisputed: item.isDisputed,
+                        exhibits: item.exhibits || [],
+                        parties_involved: item.parties_involved || [],
+                        argId: item.argId || '',
+                        argTitle: item.argTitle || '',
+                        paragraphs: item.paragraphs || ''
+                    }};
+                }}
                 
                 // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{
@@ -1544,94 +1584,56 @@ def main():
                     const tableContent = document.getElementById('table-view-content');
                     const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
                     
-                    if (cardContent.style.display !== 'none') {{
-                        // Export card data - use the current filtered facts data
-                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
-                        let rows = '';
-                        
-                        // Get currently displayed facts based on active tab
-                        const allBtn = document.getElementById('all-facts-btn');
-                        const disputedBtn = document.getElementById('disputed-facts-btn');
-                        const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                        
-                        let currentFacts = factsData;
-                        if (disputedBtn.classList.contains('active')) {{
-                            currentFacts = factsData.filter(fact => fact.isDisputed);
-                        }} else if (undisputedBtn.classList.contains('active')) {{
-                            currentFacts = factsData.filter(fact => !fact.isDisputed);
-                        }}
-                        
-                        currentFacts.forEach(fact => {{
-                            const exhibits = fact.exhibits ? fact.exhibits.join(', ') : '';
-                            const sourceText = (fact.source_text || '').replace(/"/g, '""');
-                            const docName = (fact.doc_name || '').replace(/"/g, '""');
-                            const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
-                            rows += `"${{fact.date}}","${{fact.point}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{fact.party}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{fact.argId}}. ${{fact.argTitle}}"\\n`;
-                        }});
-                        
-                        const csvContent = headers + rows;
-                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "facts_cards.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else if (tableContent.style.display !== 'none') {{
-                        // Export table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join(',');
-                        
-                        contentToCsv += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim() + '\"')
-                                .join(',');
-                            
-                            contentToCsv += rowText + '\\n';
-                        }});
-                        
-                        // Create link for CSV download
-                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                        const encodedUri = csvContent;
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "facts.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        // Export timeline data
-                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence,Argument\\n";
-                        let rows = '';
-                        
-                        timelineData.forEach(item => {{
-                            const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            const sourceText = (item.source_text || '').replace(/"/g, '""');
-                            const docName = (item.doc_name || '').replace(/"/g, '""');
-                            const docSummary = (item.doc_summary || '').replace(/"/g, '""');
-                            const claimantSubmission = (item.claimant_submission || '').replace(/"/g, '""');
-                            const respondentSubmission = (item.respondent_submission || '').replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.event}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
-                        }});
-                        
-                        const csvContent = headers + rows;
-                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "timeline.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else {{
-                        alert("CSV export for document sets view is not implemented yet.");
+                    // Get currently active tab filter
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    let currentFacts = factsData.map(standardizeFactData);
+                    if (disputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
+                    }} else if (undisputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
                     }}
+                    
+                    // Standard headers for all views
+                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
+                    let rows = '';
+                    
+                    currentFacts.forEach(fact => {{
+                        const exhibits = fact.exhibits ? fact.exhibits.join(', ') : '';
+                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                        const docName = (fact.doc_name || '').replace(/"/g, '""');
+                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
+                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}"\\n`;
+                    }});
+                    
+                    const csvContent = headers + rows;
+                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    
+                    // Set filename based on active view
+                    let filename = "facts.csv";
+                    if (cardContent.style.display !== 'none') {{
+                        filename = "facts_cards.csv";
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        filename = "facts_timeline.csv";
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        filename = "facts_documents.csv";
+                    }} else {{
+                        filename = "facts_table.csv";
+                    }}
+                    
+                    link.setAttribute("download", filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 }}
                 
                 function exportAsPdf() {{
@@ -1786,17 +1788,16 @@ def main():
                     const container = document.getElementById('card-facts-container');
                     container.innerHTML = '';
                     
-                    // Filter facts based on tab type
-                    let filteredFacts = factsData;
+                    // Filter facts based on tab type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
                     if (tabType === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
                     }} else if (tabType === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
                     // Sort by date
                     filteredFacts.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
@@ -1866,7 +1867,7 @@ def main():
                         headerEl.appendChild(badgesEl);
                         cardContainer.appendChild(headerEl);
                         
-                        // Create card content
+                        // Create card content with standardized structure
                         const contentEl = document.createElement('div');
                         contentEl.className = 'card-fact-content';
                         contentEl.id = `card-fact-content-${{index}}`;
@@ -1901,6 +1902,17 @@ def main():
                         
                         contentEl.appendChild(detailsEl);
                         
+                        // Source Text (always show if available)
+                        if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'card-source-text';
+                            sourceTextEl.innerHTML = `
+                                <div class="submission-header">Source Text</div>
+                                <div>${{fact.source_text}}</div>
+                            `;
+                            contentEl.appendChild(sourceTextEl);
+                        }}
+                        
                         // Claimant Submission
                         if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantSubmissionEl = document.createElement('div');
@@ -1923,18 +1935,6 @@ def main():
                             contentEl.appendChild(respondentSubmissionEl);
                         }}
                         
-                        // Original source text if different from submissions
-                        if (fact.source_text && fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'card-source-text';
-                            sourceTextEl.style.marginTop = '12px';
-                            sourceTextEl.innerHTML = `
-                                <div class="card-detail-label" style="margin-bottom: 8px;">Additional Source Text</div>
-                                <div>${{fact.source_text}}</div>
-                            `;
-                            contentEl.appendChild(sourceTextEl);
-                        }}
-                        
                         // Document summary
                         if (fact.doc_summary) {{
                             const summaryEl = document.createElement('div');
@@ -1947,18 +1947,34 @@ def main():
                             contentEl.appendChild(summaryEl);
                         }}
                         
-                        // Exhibits
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            const exhibitsEl = document.createElement('div');
-                            exhibitsEl.innerHTML = `
-                                <div class="card-detail-label" style="margin-top: 16px; margin-bottom: 8px;">Evidence</div>
-                                <div class="card-exhibits">
-                                    ${{fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join('')}}
-                                </div>
-                            `;
-                            contentEl.appendChild(exhibitsEl);
-                        }}
+                        // Status and Exhibits section
+                        const statusExhibitsEl = document.createElement('div');
+                        statusExhibitsEl.className = 'card-fact-details';
+                        statusExhibitsEl.style.marginTop = '16px';
                         
+                        // Status
+                        const statusSection = document.createElement('div');
+                        statusSection.className = 'card-detail-section';
+                        statusSection.innerHTML = `
+                            <div class="card-detail-label">Status</div>
+                            <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
+                        `;
+                        statusExhibitsEl.appendChild(statusSection);
+                        
+                        // Evidence
+                        const evidenceSection = document.createElement('div');
+                        evidenceSection.className = 'card-detail-section';
+                        evidenceSection.innerHTML = `
+                            <div class="card-detail-label">Evidence</div>
+                            <div class="card-detail-value">
+                                ${{fact.exhibits && fact.exhibits.length > 0 
+                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ')
+                                    : 'None'}}
+                            </div>
+                        `;
+                        statusExhibitsEl.appendChild(evidenceSection);
+                        
+                        contentEl.appendChild(statusExhibitsEl);
                         cardContainer.appendChild(contentEl);
                         container.appendChild(cardContainer);
                     }});
@@ -1974,17 +1990,16 @@ def main():
                     const container = document.getElementById('timeline-events');
                     container.innerHTML = '';
                     
-                    // Filter timeline data based on tab type
-                    let filteredData = timelineData;
+                    // Use factsData and standardize it, not separate timelineData
+                    let filteredData = factsData.map(standardizeFactData);
                     if (tabType === 'disputed') {{
-                        filteredData = timelineData.filter(item => item.isDisputed);
+                        filteredData = filteredData.filter(item => item.isDisputed);
                     }} else if (tabType === 'undisputed') {{
-                        filteredData = timelineData.filter(item => !item.isDisputed);
+                        filteredData = filteredData.filter(item => !item.isDisputed);
                     }}
                     
                     // Sort by date
                     filteredData.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
@@ -2047,13 +2062,11 @@ def main():
                             }});
                         }}
                         
-                        // Disputed badge
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
+                        // Status badge
+                        const statusBadge = document.createElement('span');
+                        statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
+                        statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
+                        badgesEl.appendChild(statusBadge);
                         
                         headerEl.appendChild(badgesEl);
                         contentEl.appendChild(headerEl);
@@ -2062,25 +2075,24 @@ def main():
                         const bodyEl = document.createElement('div');
                         bodyEl.className = 'timeline-body';
                         
-                        // Fact content
+                        // Event content
                         const factContent = document.createElement('div');
                         factContent.className = 'timeline-fact';
                         factContent.textContent = fact.event;
                         bodyEl.appendChild(factContent);
                         
-                        // Related argument and source
-                        const metaEl = document.createElement('div');
-                        metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = `
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            <span><strong>Document:</strong> ${{fact.doc_name || fact.source}}</span>
-                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
-                        `;
-                        bodyEl.appendChild(metaEl);
+                        // Source Text (if different from submissions and available)
+                        if (fact.source_text && fact.source_text !== 'No specific submission recorded' && 
+                            fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'timeline-source-text';
+                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 8px; background-color: rgba(74, 85, 104, 0.05); border-left: 3px solid #4a5568; font-size: 13px;';
+                            sourceTextEl.innerHTML = `<strong>Source Text:</strong><br>${{fact.source_text}}`;
+                            bodyEl.appendChild(sourceTextEl);
+                        }}
                         
                         // Add claimant submission
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' && fact.claimant_submission !== 'No specific counter-submission recorded') {{
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantTextEl = document.createElement('div');
                             claimantTextEl.className = 'timeline-source-text';
                             claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 8px; background-color: rgba(49, 130, 206, 0.05); border-left: 3px solid #3182ce; font-size: 13px;';
@@ -2089,13 +2101,25 @@ def main():
                         }}
                         
                         // Add respondent submission
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' && fact.respondent_submission !== 'No specific counter-submission recorded') {{
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
                             const respondentTextEl = document.createElement('div');
                             respondentTextEl.className = 'timeline-source-text';
                             respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 8px; background-color: rgba(229, 62, 62, 0.05); border-left: 3px solid #e53e3e; font-size: 13px;';
                             respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
                             bodyEl.appendChild(respondentTextEl);
                         }}
+                        
+                        // Related argument, document, and page info
+                        const metaEl = document.createElement('div');
+                        metaEl.className = 'timeline-meta';
+                        metaEl.innerHTML = `
+                            <span><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</span>
+                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
+                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
+                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
+                            ${{fact.doc_summary ? '<span><strong>Summary:</strong> ' + fact.doc_summary + '</span>' : ''}}
+                        `;
+                        bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);
                         
@@ -2130,12 +2154,12 @@ def main():
                     const container = document.getElementById('document-sets-container');
                     container.innerHTML = '';
                     
-                    // Filter facts based on tab type
-                    let filteredFacts = factsData;
+                    // Filter facts based on tab type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
                     if (tabType === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
                     }} else if (tabType === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
                     // Initialize docsWithFacts for all groups
@@ -2225,16 +2249,16 @@ def main():
                         let contentHtml = '';
                         
                         if (facts.length > 0) {{
-                            // Create a single table for all facts in this category
+                            // Create a single table for all facts in this category - with consistent structure
                             contentHtml += `
                                 <table class="table-view">
                                     <thead>
                                         <tr>
-                                            <th>Document</th>
                                             <th>Date</th>
                                             <th>Event</th>
                                             <th>Source Text</th>
                                             <th>Page</th>
+                                            <th>Document</th>
                                             <th>Doc Summary</th>
                                             <th>Claimant Submission</th>
                                             <th>Respondent Submission</th>
@@ -2245,14 +2269,14 @@ def main():
                                     <tbody>
                                         ${{facts.map(fact => `
                                             <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td><strong>${{fact.documentName}}</strong></td>
                                                 <td>${{fact.date}}</td>
                                                 <td>${{fact.event}}</td>
                                                 <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
                                                 <td>${{fact.page || ''}}</td>
+                                                <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission || 'No submission'}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission || 'No submission'}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
                                                 <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
                                                 <td>${{fact.exhibits && fact.exhibits.length > 0 
                                                     ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
@@ -2278,24 +2302,23 @@ def main():
                     const tableBody = document.getElementById('facts-table-body');
                     tableBody.innerHTML = '';
                     
-                    // Filter by type
-                    let filteredFacts = factsData;
+                    // Filter by type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
                     
                     if (type === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
                     }} else if (type === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
                     // Sort by date
                     filteredFacts.sort((a, b) => {{
-                        // Handle date ranges like "1950-present"
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
                     }});
                     
-                    // Render rows
+                    // Render rows with consistent structure
                     filteredFacts.forEach(fact => {{
                         const row = document.createElement('tr');
                         if (fact.isDisputed) {{
@@ -2343,20 +2366,24 @@ def main():
                         
                         // Claimant Submission column
                         const claimantSubmissionCell = document.createElement('td');
-                        claimantSubmissionCell.textContent = fact.claimant_submission || 'No submission';
+                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission : 'No submission';
+                        claimantSubmissionCell.textContent = claimantText;
                         claimantSubmissionCell.style.maxWidth = '300px';
                         claimantSubmissionCell.style.overflow = 'hidden';
                         claimantSubmissionCell.style.textOverflow = 'ellipsis';
-                        claimantSubmissionCell.title = fact.claimant_submission || '';
+                        claimantSubmissionCell.title = claimantText;
                         row.appendChild(claimantSubmissionCell);
                         
                         // Respondent Submission column
                         const respondentSubmissionCell = document.createElement('td');
-                        respondentSubmissionCell.textContent = fact.respondent_submission || 'No submission';
+                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission : 'No submission';
+                        respondentSubmissionCell.textContent = respondentText;
                         respondentSubmissionCell.style.maxWidth = '300px';
                         respondentSubmissionCell.style.overflow = 'hidden';
                         respondentSubmissionCell.style.textOverflow = 'ellipsis';
-                        respondentSubmissionCell.title = fact.respondent_submission || '';
+                        respondentSubmissionCell.title = respondentText;
                         row.appendChild(respondentSubmissionCell);
                         
                         // Status column

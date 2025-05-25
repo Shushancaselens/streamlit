@@ -923,8 +923,12 @@ def main():
                     border-radius: 4px 0 0 4px;
                 }}
                 
-                .view-toggle button:not(:first-child):not(:last-child) {{
-                    border-radius: 0;
+                .view-toggle button:nth-child(2) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:nth-child(3) {{
                     border-left: none;
                     border-right: none;
                 }}
@@ -986,6 +990,152 @@ def main():
                     position: relative;
                     max-width: 1000px;
                     margin: 0 auto;
+                }}
+                
+                /* Card View styling */
+                .card-fact-container {{
+                    margin-bottom: 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    background-color: white;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                
+                .card-fact-container.disputed {{
+                    border-left: 4px solid #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.02);
+                }}
+                
+                .card-fact-header {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px;
+                    background-color: #f8fafc;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }}
+                
+                .card-fact-header:hover {{
+                    background-color: #e2e8f0;
+                }}
+                
+                .card-fact-header.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .card-fact-header.disputed:hover {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                }}
+                
+                .card-fact-title {{
+                    display: flex;
+                    align-items: center;
+                    flex-grow: 1;
+                    gap: 12px;
+                }}
+                
+                .card-fact-date {{
+                    font-weight: 600;
+                    color: #2d3748;
+                    min-width: 120px;
+                }}
+                
+                .card-fact-event {{
+                    font-weight: 500;
+                    color: #1a202c;
+                    flex-grow: 1;
+                }}
+                
+                .card-fact-badges {{
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }}
+                
+                .card-chevron {{
+                    transition: transform 0.2s;
+                    color: #718096;
+                    margin-left: 8px;
+                }}
+                
+                .card-chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                .card-fact-content {{
+                    display: none;
+                    padding: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    background-color: white;
+                }}
+                
+                .card-fact-content.show {{
+                    display: block;
+                }}
+                
+                .card-fact-details {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin-bottom: 16px;
+                }}
+                
+                .card-detail-section {{
+                    background-color: #f7fafc;
+                    padding: 12px 16px;
+                    border-radius: 6px;
+                    border: 1px solid #e2e8f0;
+                }}
+                
+                .card-detail-label {{
+                    font-weight: 600;
+                    color: #4a5568;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 4px;
+                }}
+                
+                .card-detail-value {{
+                    color: #2d3748;
+                    font-size: 14px;
+                    line-height: 1.4;
+                }}
+                
+                .card-source-text {{
+                    background-color: #f7fafc;
+                    padding: 16px;
+                    border-radius: 6px;
+                    border-left: 4px solid #4299e1;
+                    margin: 16px 0;
+                    font-style: italic;
+                    color: #4a5568;
+                    line-height: 1.5;
+                }}
+                
+                .card-exhibits {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 12px;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .card-fact-details {{
+                        grid-template-columns: 1fr;
+                    }}
+                    
+                    .card-fact-title {{
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 8px;
+                    }}
+                    
+                    .card-fact-date {{
+                        min-width: auto;
+                    }}
                 }}
                 
                 .timeline-wrapper {{
@@ -1155,7 +1305,8 @@ def main():
                     <div class="section-title">Case Facts</div>
                     
                     <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Card View</button>
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="card-view-btn" onclick="switchView('card')">Card View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>
@@ -1166,9 +1317,29 @@ def main():
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
-                    <!-- Card View -->
+                    <!-- Table View -->
                     <div id="table-view-content" class="facts-content">
-                        <div id="facts-cards-container" class="facts-container"></div>
+                        <table class="table-view">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 7)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facts-table-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Card View -->
+                    <div id="card-view-content" class="facts-content" style="display: none;">
+                        <div id="card-facts-container"></div>
                     </div>
                     
                     <!-- Timeline View -->
@@ -1194,23 +1365,27 @@ def main():
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
                 
-                // Switch view between table, timeline, and document sets
+                // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{
                     const tableBtn = document.getElementById('table-view-btn');
+                    const cardBtn = document.getElementById('card-view-btn');
                     const timelineBtn = document.getElementById('timeline-view-btn');
                     const docsetBtn = document.getElementById('docset-view-btn');
                     
                     const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
                     // Remove active class from all buttons
                     tableBtn.classList.remove('active');
+                    cardBtn.classList.remove('active');
                     timelineBtn.classList.remove('active');
                     docsetBtn.classList.remove('active');
                     
                     // Hide all content
                     tableContent.style.display = 'none';
+                    cardContent.style.display = 'none';
                     timelineContent.style.display = 'none';
                     docsetContent.style.display = 'none';
                     
@@ -1218,6 +1393,10 @@ def main():
                     if (viewType === 'table') {{
                         tableBtn.classList.add('active');
                         tableContent.style.display = 'block';
+                    }} else if (viewType === 'card') {{
+                        cardBtn.classList.add('active');
+                        cardContent.style.display = 'block';
+                        renderCardView();
                     }} else if (viewType === 'timeline') {{
                         timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
@@ -1235,6 +1414,7 @@ def main():
                     
                     // Determine which view is active
                     const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
@@ -1255,6 +1435,30 @@ def main():
                                 .join('\\t');
                             
                             contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (cardContent.style.display !== 'none') {{
+                        // Copy card data
+                        contentToCopy += 'Case Facts (Card View)\\n\\n';
+                        
+                        const cardItems = document.querySelectorAll('.card-fact-container');
+                        cardItems.forEach(card => {{
+                            const dateEl = card.querySelector('.card-fact-date');
+                            const eventEl = card.querySelector('.card-fact-event');
+                            const partyEl = card.querySelector('.badge');
+                            const sourceTextEl = card.querySelector('.card-source-text div:last-child');
+                            
+                            if (dateEl && eventEl) {{
+                                const date = dateEl.textContent.trim();
+                                const event = eventEl.textContent.trim();
+                                const party = partyEl ? partyEl.textContent.trim() : '';
+                                const sourceText = sourceTextEl ? sourceTextEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{event}} (${{party}})\\n`;
+                                if (sourceText) {{
+                                    contentToCopy += `Source: ${{sourceText}}\\n`;
+                                }}
+                                contentToCopy += '\\n';
+                            }}
                         }});
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Copy timeline data
@@ -1319,6 +1523,7 @@ def main():
                     
                     // Determine which view is active
                     const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
@@ -1346,6 +1551,39 @@ def main():
                         const link = document.createElement("a");
                         link.setAttribute("href", encodedUri);
                         link.setAttribute("download", "facts.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else if (cardContent.style.display !== 'none') {{
+                        // Export card data - use the current filtered facts data
+                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
+                        let rows = '';
+                        
+                        // Get currently displayed facts based on active tab
+                        const allBtn = document.getElementById('all-facts-btn');
+                        const disputedBtn = document.getElementById('disputed-facts-btn');
+                        const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                        
+                        let currentFacts = factsData;
+                        if (disputedBtn.classList.contains('active')) {{
+                            currentFacts = factsData.filter(fact => fact.isDisputed);
+                        }} else if (undisputedBtn.classList.contains('active')) {{
+                            currentFacts = factsData.filter(fact => !fact.isDisputed);
+                        }}
+                        
+                        currentFacts.forEach(fact => {{
+                            const exhibits = fact.exhibits ? fact.exhibits.join(', ') : '';
+                            const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                            const docName = (fact.doc_name || '').replace(/"/g, '""');
+                            const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                            rows += `"${{fact.date}}","${{fact.point}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{fact.party}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{fact.argId}}. ${{fact.argTitle}}"\\n`;
+                        }});
+                        
+                        const csvContent = headers + rows;
+                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "facts_cards.csv");
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -1408,11 +1646,14 @@ def main():
                     
                     // Update active view
                     const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
                         renderFacts(tabType);
+                    }} else if (cardContent.style.display !== 'none') {{
+                        renderCardView(tabType);
                     }} else if (timelineContent.style.display !== 'none') {{
                         renderTimeline(tabType);
                     }} else if (docsetContent.style.display !== 'none') {{
@@ -1459,6 +1700,20 @@ def main():
                     table.setAttribute('data-sort-dir', dir);
                 }}
                 
+                // Toggle card fact visibility
+                function toggleCardFact(factIndex) {{
+                    const content = document.getElementById(`card-fact-content-${{factIndex}}`);
+                    const chevron = document.getElementById(`card-chevron-${{factIndex}}`);
+                    
+                    if (content.classList.contains('show')) {{
+                        content.classList.remove('show');
+                        chevron.classList.remove('expanded');
+                    }} else {{
+                        content.classList.add('show');
+                        chevron.classList.add('expanded');
+                    }}
+                }}
+                
                 // Toggle document set visibility
                 function toggleDocSet(docsetId) {{
                     const content = document.getElementById(`docset-content-${{docsetId}}`);
@@ -1503,6 +1758,167 @@ def main():
                     }}
                     
                     return date.getFullYear().toString();
+                }}
+                
+                // Render card view with dropdown containers for each fact
+                function renderCardView(tabType = 'all') {{
+                    const container = document.getElementById('card-facts-container');
+                    container.innerHTML = '';
+                    
+                    // Filter facts based on tab type
+                    let filteredFacts = factsData;
+                    if (tabType === 'disputed') {{
+                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Sort by date
+                    filteredFacts.sort((a, b) => {{
+                        // Handle date ranges like "1950-present"
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
+                    
+                    // Render each fact as a card
+                    filteredFacts.forEach((fact, index) => {{
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
+                        
+                        // Create card header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
+                        headerEl.onclick = () => toggleCardFact(index);
+                        
+                        // Create title section
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'card-fact-title';
+                        
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'card-fact-date';
+                        dateEl.textContent = fact.date;
+                        titleEl.appendChild(dateEl);
+                        
+                        // Event
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'card-fact-event';
+                        eventEl.textContent = fact.point;
+                        titleEl.appendChild(eventEl);
+                        
+                        headerEl.appendChild(titleEl);
+                        
+                        // Create badges section
+                        const badgesEl = document.createElement('div');
+                        badgesEl.className = 'card-fact-badges';
+                        
+                        // Party badge
+                        const partyBadge = document.createElement('span');
+                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                        partyBadge.textContent = fact.party;
+                        badgesEl.appendChild(partyBadge);
+                        
+                        // Disputed badge
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            badgesEl.appendChild(disputedBadge);
+                        }}
+                        
+                        // Chevron
+                        const chevronEl = document.createElement('div');
+                        chevronEl.className = 'card-chevron';
+                        chevronEl.id = `card-chevron-${{index}}`;
+                        chevronEl.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        `;
+                        
+                        badgesEl.appendChild(chevronEl);
+                        headerEl.appendChild(badgesEl);
+                        cardContainer.appendChild(headerEl);
+                        
+                        // Create card content
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'card-fact-content';
+                        contentEl.id = `card-fact-content-${{index}}`;
+                        
+                        // Create details grid
+                        const detailsEl = document.createElement('div');
+                        detailsEl.className = 'card-fact-details';
+                        
+                        // Document info
+                        const docSection = document.createElement('div');
+                        docSection.className = 'card-detail-section';
+                        docSection.innerHTML = `
+                            <div class="card-detail-label">Document</div>
+                            <div class="card-detail-value">
+                                <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                            </div>
+                        `;
+                        detailsEl.appendChild(docSection);
+                        
+                        // Argument info
+                        const argSection = document.createElement('div');
+                        argSection.className = 'card-detail-section';
+                        argSection.innerHTML = `
+                            <div class="card-detail-label">Argument</div>
+                            <div class="card-detail-value">
+                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
+                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
+                            </div>
+                        `;
+                        detailsEl.appendChild(argSection);
+                        
+                        contentEl.appendChild(detailsEl);
+                        
+                        // Source text
+                        if (fact.source_text) {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'card-source-text';
+                            sourceTextEl.innerHTML = `
+                                <div class="card-detail-label" style="margin-bottom: 8px;">Source Text</div>
+                                <div>${{fact.source_text}}</div>
+                            `;
+                            contentEl.appendChild(sourceTextEl);
+                        }}
+                        
+                        // Document summary
+                        if (fact.doc_summary) {{
+                            const summaryEl = document.createElement('div');
+                            summaryEl.className = 'card-detail-section';
+                            summaryEl.style.marginTop = '16px';
+                            summaryEl.innerHTML = `
+                                <div class="card-detail-label">Document Summary</div>
+                                <div class="card-detail-value">${{fact.doc_summary}}</div>
+                            `;
+                            contentEl.appendChild(summaryEl);
+                        }}
+                        
+                        // Exhibits
+                        if (fact.exhibits && fact.exhibits.length > 0) {{
+                            const exhibitsEl = document.createElement('div');
+                            exhibitsEl.innerHTML = `
+                                <div class="card-detail-label" style="margin-top: 16px; margin-bottom: 8px;">Evidence</div>
+                                <div class="card-exhibits">
+                                    ${{fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join('')}}
+                                </div>
+                            `;
+                            contentEl.appendChild(exhibitsEl);
+                        }}
+                        
+                        cardContainer.appendChild(contentEl);
+                        container.appendChild(cardContainer);
+                    }});
+                    
+                    // If no facts found
+                    if (filteredFacts.length === 0) {{
+                        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No facts found matching the selected criteria.</p>';
+                    }}
                 }}
                 
                 // Render enhanced timeline view

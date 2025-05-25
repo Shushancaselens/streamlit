@@ -1305,8 +1305,8 @@ def main():
                     <div class="section-title">Case Facts</div>
                     
                     <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
-                        <button id="card-view-btn" onclick="switchView('card')">Card View</button>
+                        <button id="card-view-btn" class="active" onclick="switchView('card')">Card View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>
@@ -1317,8 +1317,13 @@ def main():
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                     </div>
                     
+                    <!-- Card View -->
+                    <div id="card-view-content" class="facts-content">
+                        <div id="card-facts-container"></div>
+                    </div>
+                    
                     <!-- Table View -->
-                    <div id="table-view-content" class="facts-content">
+                    <div id="table-view-content" class="facts-content" style="display: none;">
                         <table class="table-view">
                             <thead>
                                 <tr>
@@ -1335,11 +1340,6 @@ def main():
                             </thead>
                             <tbody id="facts-table-body"></tbody>
                         </table>
-                    </div>
-                    
-                    <!-- Card View -->
-                    <div id="card-view-content" class="facts-content" style="display: none;">
-                        <div id="card-facts-container"></div>
                     </div>
                     
                     <!-- Timeline View -->
@@ -1390,13 +1390,13 @@ def main():
                     docsetContent.style.display = 'none';
                     
                     // Activate the selected view
-                    if (viewType === 'table') {{
-                        tableBtn.classList.add('active');
-                        tableContent.style.display = 'block';
-                    }} else if (viewType === 'card') {{
+                    if (viewType === 'card') {{
                         cardBtn.classList.add('active');
                         cardContent.style.display = 'block';
                         renderCardView();
+                    }} else if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        tableContent.style.display = 'block';
                     }} else if (viewType === 'timeline') {{
                         timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
@@ -1417,26 +1417,7 @@ def main():
                     const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     
-                    if (tableContent.style.display !== 'none') {{
-                        // Copy table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join('\\t');
-                        
-                        contentToCopy += 'Case Facts\\n\\n';
-                        contentToCopy += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => td.textContent.trim())
-                                .join('\\t');
-                            
-                            contentToCopy += rowText + '\\n';
-                        }});
-                    }} else if (cardContent.style.display !== 'none') {{
+                    if (cardContent.style.display !== 'none') {{
                         // Copy card data
                         contentToCopy += 'Case Facts (Card View)\\n\\n';
                         
@@ -1459,6 +1440,25 @@ def main():
                                 }}
                                 contentToCopy += '\\n';
                             }}
+                        }});
+                    }} else if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join('\\t');
+                        
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
                         }});
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Copy timeline data
@@ -1526,35 +1526,7 @@ def main():
                     const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     
-                    if (tableContent.style.display !== 'none') {{
-                        // Export table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join(',');
-                        
-                        contentToCsv += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim() + '\"')
-                                .join(',');
-                            
-                            contentToCsv += rowText + '\\n';
-                        }});
-                        
-                        // Create link for CSV download
-                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                        const encodedUri = csvContent;
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "facts.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }} else if (cardContent.style.display !== 'none') {{
+                    if (cardContent.style.display !== 'none') {{
                         // Export card data - use the current filtered facts data
                         let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
                         let rows = '';
@@ -1584,6 +1556,34 @@ def main():
                         const link = document.createElement("a");
                         link.setAttribute("href", encodedUri);
                         link.setAttribute("download", "facts_cards.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else if (tableContent.style.display !== 'none') {{
+                        // Export table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join(',');
+                        
+                        contentToCsv += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => '\"' + td.textContent.trim() + '\"')
+                                .join(',');
+                            
+                            contentToCsv += rowText + '\\n';
+                        }});
+                        
+                        // Create link for CSV download
+                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
+                        const encodedUri = csvContent;
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "facts.csv");
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -1650,10 +1650,10 @@ def main():
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
-                    if (tableContent.style.display !== 'none') {{
-                        renderFacts(tabType);
-                    }} else if (cardContent.style.display !== 'none') {{
+                    if (cardContent.style.display !== 'none') {{
                         renderCardView(tabType);
+                    }} else if (tableContent.style.display !== 'none') {{
+                        renderFacts(tabType);
                     }} else if (timelineContent.style.display !== 'none') {{
                         renderTimeline(tabType);
                     }} else if (docsetContent.style.display !== 'none') {{
@@ -2323,11 +2323,11 @@ def main():
                 
                 // Initialize facts on page load
                 document.addEventListener('DOMContentLoaded', function() {{
-                    renderFacts('all');
+                    renderCardView('all');
                 }});
                 
-                // Initialize facts immediately
-                renderFacts('all');
+                // Initialize card view immediately
+                renderCardView('all');
             </script>
         </body>
         </html>

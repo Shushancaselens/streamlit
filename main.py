@@ -246,121 +246,103 @@ def get_argument_data():
 
 # Get all facts from the data with enhanced submissions structure
 def get_all_facts():
-    # Return enhanced facts with proper claimant and respondent submissions
-    enhanced_facts = [
-        {
-            'event': 'Continuous operation under same name since 1950',
-            'date': '1950-present',
-            'isDisputed': False,
-            'source_text': 'The club has maintained continuous operation under the same name \'Athletic Club United\' since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.',
-            'page': 23,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-1'],
-            'paragraphs': '18-19',
-            'argId': '1',
-            'argTitle': 'Sporting Succession',
-            'claimant_submission': 'The club has maintained continuous operation under the same name \'Athletic Club United\' since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.',
-            'respondent_submission': 'No specific counter-submission recorded',
-            'parties_involved': ['Appellant']
-        },
-        {
-            'event': 'Initial registration in 1950',
-            'date': '1950',
-            'isDisputed': False,
-            'source_text': 'The club was initially registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a sporting entity.',
-            'page': 31,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-2'],
-            'paragraphs': '25-26',
-            'argId': '1.1.1',
-            'argTitle': 'Registration History',
-            'claimant_submission': 'The club was initially registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a sporting entity.',
-            'respondent_submission': 'No specific counter-submission recorded',
-            'parties_involved': ['Appellant']
-        },
-        {
-            'event': 'Brief administrative gap in 1975-1976',
-            'date': '1975-1976',
-            'isDisputed': True,
-            'source_text': 'While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club\'s core operations and identity remained intact throughout this period, with no cessation of sporting activities.',
-            'page': 35,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-2', 'R-1'],
-            'paragraphs': '29-30',
-            'argId': '1.1.1',
-            'argTitle': 'Registration History',
-            'claimant_submission': 'While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club\'s core operations and identity remained intact throughout this period, with no cessation of sporting activities.',
-            'respondent_submission': 'The club\'s operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.',
-            'parties_involved': ['Appellant', 'Respondent']
-        },
-        {
-            'event': 'Consistent use of blue and white since founding',
-            'date': '1950-present',
-            'isDisputed': True,
-            'source_text': 'The club has consistently utilized blue and white as its primary colors since its founding in 1950, with these colors being integral to the club\'s visual identity and fan recognition throughout its history.',
-            'page': 58,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-4'],
-            'paragraphs': '51-52',
-            'argId': '1.2',
-            'argTitle': 'Club Colors Analysis',
-            'claimant_submission': 'The club has consistently utilized blue and white as its primary colors since its founding in 1950, with these colors being integral to the club\'s visual identity and fan recognition throughout its history.',
-            'respondent_submission': 'The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.',
-            'parties_involved': ['Appellant', 'Respondent']
-        },
-        {
-            'event': 'Minor shade variations do not affect continuity',
-            'date': '1970-1980',
-            'isDisputed': False,
-            'source_text': 'Minor variations in the specific shades of blue and white used in uniforms and club materials during the 1970s were purely aesthetic choices that did not alter the fundamental color identity of the club.',
-            'page': 63,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-5'],
-            'paragraphs': '56-57',
-            'argId': '1.2.1',
-            'argTitle': 'Color Variations Analysis',
-            'claimant_submission': 'Minor variations in the specific shades of blue and white used in uniforms and club materials during the 1970s were purely aesthetic choices that did not alter the fundamental color identity of the club.',
-            'respondent_submission': 'No specific counter-submission recorded',
-            'parties_involved': ['Appellant']
-        },
-        {
-            'event': 'Temporary third color addition in 1980s',
-            'date': '1982-1988',
-            'isDisputed': False,
-            'source_text': 'Between 1982 and 1988, the club temporarily incorporated a third accent color (gold) in its uniform design for special occasions, while maintaining blue and white as the primary colors.',
-            'page': 65,
-            'doc_name': 'Statement of Appeal',
-            'doc_summary': 'Primary appeal document outlining the appellant\'s main arguments regarding sporting succession and club identity continuity.',
-            'exhibits': ['C-5'],
-            'paragraphs': '58-59',
-            'argId': '1.2.1',
-            'argTitle': 'Color Variations Analysis',
-            'claimant_submission': 'Between 1982 and 1988, the club temporarily incorporated a third accent color (gold) in its uniform design for special occasions, while maintaining blue and white as the primary colors.',
-            'respondent_submission': 'No specific counter-submission recorded',
-            'parties_involved': ['Appellant']
-        },
-        {
-            'event': 'Operations ceased between 1975-1976',
-            'date': '1975-1976',
-            'isDisputed': True,
-            'source_text': 'The club\'s operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.',
-            'page': 89,
-            'doc_name': 'Answer to Request for Provisional Measures',
-            'doc_summary': 'Respondent\'s response challenging the appellant\'s claims and presenting evidence of operational discontinuity.',
-            'exhibits': ['R-1'],
-            'paragraphs': '206-207',
-            'argId': '1',
-            'argTitle': 'Sporting Succession Rebuttal',
-            'claimant_submission': 'While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club\'s core operations and identity remained intact throughout this period, with no cessation of sporting activities.',
-            'respondent_submission': 'The club\'s operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.',
-            'parties_involved': ['Appellant', 'Respondent']
+    args_data = get_argument_data()
+    facts = []
+    
+    # Helper function to extract facts from arguments
+    def extract_facts(arg, party):
+        if not arg:
+            return
+            
+        if 'factualPoints' in arg and arg['factualPoints']:
+            for point in arg['factualPoints']:
+                fact = {
+                    'event': point['point'],  # Renamed from 'point' to 'event'
+                    'date': point['date'],
+                    'isDisputed': point['isDisputed'],
+                    'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
+                    'exhibits': point.get('exhibits', []),
+                    'argId': arg['id'],
+                    'argTitle': arg['title'],
+                    'source_text': point.get('source_text', ''),
+                    'page': point.get('page', ''),
+                    'doc_name': point.get('doc_name', ''),
+                    'doc_summary': point.get('doc_summary', ''),
+                    'claimant_submission': '',
+                    'respondent_submission': ''
+                }
+                facts.append(fact)
+                
+        # Process children
+        if 'children' in arg and arg['children']:
+            for child_id, child in arg['children'].items():
+                extract_facts(child, party)
+    
+    # Extract from claimant args
+    for arg_id, arg in args_data['claimantArgs'].items():
+        extract_facts(arg, 'Appellant')
+        
+    # Extract from respondent args
+    for arg_id, arg in args_data['respondentArgs'].items():
+        extract_facts(arg, 'Respondent')
+    
+    # Now enhance facts with both parties' submissions
+    enhanced_facts = []
+    fact_groups = {}
+    
+    # Group facts by date and similar events
+    for fact in facts:
+        key = f"{fact['date']}_{fact['event'][:50]}"  # Group by date and first 50 chars of event
+        if key not in fact_groups:
+            fact_groups[key] = {
+                'event': fact['event'],
+                'date': fact['date'],
+                'isDisputed': fact['isDisputed'],
+                'claimant_submission': '',
+                'respondent_submission': '',
+                'source_text': fact['source_text'],
+                'page': fact['page'],
+                'doc_name': fact['doc_name'],
+                'doc_summary': fact['doc_summary'],
+                'exhibits': fact['exhibits'],
+                'paragraphs': fact['paragraphs'],
+                'argId': fact['argId'],
+                'argTitle': fact['argTitle'],
+                'parties_involved': []
+            }
+        
+        # Add party-specific information
+        if fact['party'] == 'Appellant':
+            fact_groups[key]['claimant_submission'] = fact['source_text']
+        else:
+            fact_groups[key]['respondent_submission'] = fact['source_text']
+        
+        fact_groups[key]['parties_involved'].append(fact['party'])
+        
+        # Update disputed status if either party contests it
+        if fact['isDisputed']:
+            fact_groups[key]['isDisputed'] = True
+    
+    # Create enhanced facts with proper submissions structure
+    for key, group in fact_groups.items():
+        enhanced_fact = {
+            'event': group['event'],
+            'date': group['date'],
+            'isDisputed': group['isDisputed'],
+            'source_text': group['source_text'],
+            'page': group['page'],
+            'doc_name': group['doc_name'],
+            'doc_summary': group['doc_summary'],
+            'exhibits': group['exhibits'],
+            'paragraphs': group['paragraphs'],
+            'argId': group['argId'],
+            'argTitle': group['argTitle'],
+            'claimant_submission': group['claimant_submission'] or 'No specific submission recorded',
+            'respondent_submission': group['respondent_submission'] or 'No specific submission recorded',
+            'parties_involved': list(set(group['parties_involved']))  # Remove duplicates
         }
-    ]
+        enhanced_facts.append(enhanced_fact)
     
     return enhanced_facts
 
@@ -1372,15 +1354,9 @@ def main():
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
                 
-                // Debug: Log the data to console to verify submissions are present
-                console.log("Facts data loaded:", factsData.length, "facts");
-                console.log("Raw facts data:", factsData);
-                console.log("Sample fact with submissions:", factsData.find(f => f.claimant_submission && f.claimant_submission !== 'No specific submission recorded'));
-                console.log("Facts with exhibits:", factsData.filter(f => f.exhibits && f.exhibits.length > 0));
-                
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
-                    const standardized = {{
+                    return {{
                         date: fact.date,
                         event: fact.event,
                         source_text: fact.source_text || '',
@@ -1391,37 +1367,83 @@ def main():
                         respondent_submission: fact.respondent_submission || 'No specific submission recorded',
                         isDisputed: fact.isDisputed,
                         exhibits: fact.exhibits || [],
+                        evidence: fact.evidence || [], // Add evidence details
                         parties_involved: fact.parties_involved || [],
                         argId: fact.argId || '',
                         argTitle: fact.argTitle || '',
                         paragraphs: fact.paragraphs || ''
                     }};
-                    
-                    // Debug: Check exhibits
-                    if (standardized.exhibits && standardized.exhibits.length > 0) {{
-                        console.log(`Fact "${{standardized.event}}" has exhibits:`, standardized.exhibits);
-                    }} else {{
-                        console.log(`Fact "${{standardized.event}}" has NO exhibits`);
-                    }}
-                    
-                    // Debug: Check if this fact has submissions
-                    if (shouldShowSubmission(standardized.claimant_submission) || shouldShowSubmission(standardized.respondent_submission)) {{
-                        console.log("Fact with submissions:", standardized.event, {{
-                            claimant: standardized.claimant_submission,
-                            respondent: standardized.respondent_submission
-                        }});
-                    }}
-                    
-                    return standardized;
                 }}
                 
-                // Helper function to check if submission should be displayed
-                function shouldShowSubmission(submission) {{
-                    const show = submission && 
-                           submission !== 'No specific submission recorded' && 
-                           submission !== 'No specific counter-submission recorded' &&
-                           submission.trim() !== '';
-                    return show;
+                // Function to get evidence content instead of just IDs
+                function getEvidenceContent(fact) {{
+                    if (!fact.exhibits || fact.exhibits.length === 0) {{
+                        return 'None';
+                    }}
+                    
+                    // Get evidence details from the argument data
+                    const args_data = {args_json};
+                    let evidenceContent = [];
+                    
+                    fact.exhibits.forEach(exhibitId => {{
+                        // Search through all arguments to find evidence details
+                        function findEvidence(args) {{
+                            for (const argKey in args) {{
+                                const arg = args[argKey];
+                                if (arg.evidence) {{
+                                    const evidence = arg.evidence.find(e => e.id === exhibitId);
+                                    if (evidence) {{
+                                        return evidence;
+                                    }}
+                                }}
+                                if (arg.children) {{
+                                    const childEvidence = findEvidence(arg.children);
+                                    if (childEvidence) return childEvidence;
+                                }}
+                            }}
+                            return null;
+                        }}
+                        
+                        // Look in both claimant and respondent args
+                        let evidence = findEvidence(args_data.claimantArgs) || findEvidence(args_data.respondentArgs);
+                        
+                        if (evidence) {{
+                            evidenceContent.push({{
+                                id: exhibitId,
+                                title: evidence.title,
+                                summary: evidence.summary
+                            }});
+                        }} else {{
+                            evidenceContent.push({{
+                                id: exhibitId,
+                                title: exhibitId,
+                                summary: 'Evidence details not available'
+                            }});
+                        }}
+                    }});
+                    
+                    return evidenceContent;
+                }}
+                
+                // Standardize timeline data to match facts structure
+                function standardizeTimelineData(item) {{
+                    return {{
+                        date: item.date,
+                        event: item.event,
+                        source_text: item.source_text || '',
+                        page: item.page || '',
+                        doc_name: item.doc_name || '',
+                        doc_summary: item.doc_summary || '',
+                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
+                        isDisputed: item.isDisputed,
+                        exhibits: item.exhibits || [],
+                        evidence: item.evidence || [],
+                        parties_involved: item.parties_involved || [],
+                        argId: item.argId || '',
+                        argTitle: item.argTitle || '',
+                        paragraphs: item.paragraphs || ''
+                    }};
                 }}
                 
                 // Switch view between table, card, timeline, and document sets
@@ -1633,14 +1655,20 @@ def main():
                     let rows = '';
                     
                     currentFacts.forEach(fact => {{
-                        const exhibits = fact.exhibits ? fact.exhibits.join(', ') : '';
+                        const evidenceContent = getEvidenceContent(fact);
+                        let evidenceText = 'None';
+                        if (evidenceContent !== 'None') {{
+                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join('; ');
+                        }}
+                        
                         const sourceText = (fact.source_text || '').replace(/"/g, '""');
                         const docName = (fact.doc_name || '').replace(/"/g, '""');
                         const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
-                        const claimantSubmission = (shouldShowSubmission(fact.claimant_submission) ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
-                        const respondentSubmission = (shouldShowSubmission(fact.respondent_submission) ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
+                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
                         
-                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}"\\n`;
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
                     }});
                     
                     const csvContent = headers + rows;
@@ -1944,9 +1972,7 @@ def main():
                         }}
                         
                         // Claimant Submission
-                        if (fact.claimant_submission && 
-                            fact.claimant_submission !== 'No specific submission recorded' && 
-                            fact.claimant_submission !== 'No specific counter-submission recorded') {{
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantSubmissionEl = document.createElement('div');
                             claimantSubmissionEl.className = 'card-source-text claimant-submission';
                             claimantSubmissionEl.innerHTML = `
@@ -1957,9 +1983,7 @@ def main():
                         }}
                         
                         // Respondent Submission
-                        if (fact.respondent_submission && 
-                            fact.respondent_submission !== 'No specific submission recorded' && 
-                            fact.respondent_submission !== 'No specific counter-submission recorded') {{
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
                             const respondentSubmissionEl = document.createElement('div');
                             respondentSubmissionEl.className = 'card-source-text respondent-submission';
                             respondentSubmissionEl.innerHTML = `
@@ -1998,22 +2022,26 @@ def main():
                         // Evidence
                         const evidenceSection = document.createElement('div');
                         evidenceSection.className = 'card-detail-section';
+                        const evidenceContent = getEvidenceContent(fact);
                         
-                        // Debug: Log exhibits for this fact
-                        console.log(`Fact ${{index + 1}} exhibits:`, fact.exhibits, `(length: ${{fact.exhibits ? fact.exhibits.length : 0}})`);
-                        
-                        const exhibitsHtml = fact.exhibits && fact.exhibits.length > 0 
-                            ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ')
-                            : 'None';
-                            
-                        console.log(`Generated exhibits HTML for fact ${{index + 1}}:`, exhibitsHtml);
-                        
-                        evidenceSection.innerHTML = `
-                            <div class="card-detail-label">Evidence</div>
-                            <div class="card-detail-value">
-                                ${{exhibitsHtml}}
-                            </div>
-                        `;
+                        if (evidenceContent === 'None') {{
+                            evidenceSection.innerHTML = `
+                                <div class="card-detail-label">Evidence</div>
+                                <div class="card-detail-value">None</div>
+                            `;
+                        }} else {{
+                            evidenceSection.innerHTML = `
+                                <div class="card-detail-label">Evidence</div>
+                                <div class="card-detail-value">
+                                    ${{evidenceContent.map(evidence => `
+                                        <div style="margin-bottom: 8px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0;">
+                                            <div style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}: ${{evidence.title}}</div>
+                                            <div style="font-size: 12px; color: #666; margin-top: 4px;">${{evidence.summary}}</div>
+                                        </div>
+                                    `).join('')}}
+                                </div>
+                            `;
+                        }}
                         statusExhibitsEl.appendChild(evidenceSection);
                         
                         contentEl.appendChild(statusExhibitsEl);
@@ -2149,7 +2177,7 @@ def main():
                         }}
                         
                         // Add claimant submission
-                        if (shouldShowSubmission(fact.claimant_submission)) {{
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantTextEl = document.createElement('div');
                             claimantTextEl.className = 'timeline-source-text';
                             claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
@@ -2158,7 +2186,7 @@ def main():
                         }}
                         
                         // Add respondent submission
-                        if (shouldShowSubmission(fact.respondent_submission)) {{
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
                             const respondentTextEl = document.createElement('div');
                             respondentTextEl.className = 'timeline-source-text';
                             respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
@@ -2168,24 +2196,24 @@ def main():
                         
                         contentEl.appendChild(bodyEl);
                         
-                        // Add footer if there are exhibits
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            console.log(`Timeline - Adding footer with exhibits:`, fact.exhibits);
+                        // Add footer if there are exhibits - show content instead of just IDs
+                        const evidenceContent = getEvidenceContent(fact);
+                        if (evidenceContent !== 'None') {{
                             const footerEl = document.createElement('div');
                             footerEl.className = 'timeline-footer';
+                            footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
                             
-                            // Add exhibit badges
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                footerEl.appendChild(exhibitBadge);
-                                console.log(`Timeline - Added exhibit: ${{exhibitId}}`);
-                            }});
+                            footerEl.innerHTML = `
+                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence</div>
+                                ${{evidenceContent.map(evidence => `
+                                    <div style="margin-bottom: 8px; padding: 10px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0;">
+                                        <div style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</div>
+                                        <div style="font-size: 12px; color: #666; margin-top: 4px; line-height: 1.4;">${{evidence.summary}}</div>
+                                    </div>
+                                `).join('')}}
+                            `;
                             
                             contentEl.appendChild(footerEl);
-                        }} else {{
-                            console.log(`Timeline - No exhibits for this fact:`, fact.exhibits);
                         }}
                         
                         timelineItem.appendChild(contentEl);
@@ -2324,12 +2352,21 @@ def main():
                                                 <td>${{fact.page || ''}}</td>
                                                 <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' && fact.claimant_submission !== 'No specific counter-submission recorded' && fact.claimant_submission.trim() !== '') ? fact.claimant_submission : 'No submission'}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' && fact.respondent_submission !== 'No specific counter-submission recorded' && fact.respondent_submission.trim() !== '') ? fact.respondent_submission : 'No submission'}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
                                                 <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
+                                                <td>${{(() => {{
+                                                    const evidenceContent = getEvidenceContent(fact);
+                                                    if (evidenceContent === 'None') {{
+                                                        return 'None';
+                                                    }}
+                                                    return evidenceContent.map(evidence => `
+                                                        <div style="margin-bottom: 4px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 10px;">
+                                                            <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
+                                                            <div style="color: #666; margin-top: 1px; line-height: 1.2;">${{evidence.summary}}</div>
+                                                        </div>
+                                                    `).join('');
+                                                }})()}}</td>
                                             </tr>
                                         `).join('')}}
                                     </tbody>
@@ -2415,7 +2452,8 @@ def main():
                         
                         // Claimant Submission column
                         const claimantSubmissionCell = document.createElement('td');
-                        const claimantText = shouldShowSubmission(fact.claimant_submission) ? fact.claimant_submission : 'No submission';
+                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission : 'No submission';
                         claimantSubmissionCell.textContent = claimantText;
                         claimantSubmissionCell.style.maxWidth = '300px';
                         claimantSubmissionCell.style.overflow = 'hidden';
@@ -2425,7 +2463,8 @@ def main():
                         
                         // Respondent Submission column
                         const respondentSubmissionCell = document.createElement('td');
-                        const respondentText = shouldShowSubmission(fact.respondent_submission) ? fact.respondent_submission : 'No submission';
+                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission : 'No submission';
                         respondentSubmissionCell.textContent = respondentText;
                         respondentSubmissionCell.style.maxWidth = '300px';
                         respondentSubmissionCell.style.overflow = 'hidden';
@@ -2445,22 +2484,21 @@ def main():
                         }}
                         row.appendChild(statusCell);
                         
-                        // Evidence column
+                        // Evidence column - show content instead of just IDs
                         const evidenceCell = document.createElement('td');
-                        console.log(`Table view - Fact exhibits:`, fact.exhibits, `(length: ${{fact.exhibits ? fact.exhibits.length : 0}})`);
+                        const evidenceContent = getEvidenceContent(fact);
                         
-                        if (fact.exhibits && fact.exhibits.length > 0) {{
-                            fact.exhibits.forEach(exhibitId => {{
-                                const exhibitBadge = document.createElement('span');
-                                exhibitBadge.className = 'badge exhibit-badge';
-                                exhibitBadge.textContent = exhibitId;
-                                exhibitBadge.style.marginRight = '4px';
-                                evidenceCell.appendChild(exhibitBadge);
-                                console.log(`Added exhibit badge: ${{exhibitId}}`);
-                            }});
-                        }} else {{
+                        if (evidenceContent === 'None') {{
                             evidenceCell.textContent = 'None';
-                            console.log('No exhibits, showing "None"');
+                        }} else {{
+                            evidenceCell.innerHTML = evidenceContent.map(evidence => `
+                                <div style="margin-bottom: 6px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 11px;">
+                                    <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
+                                    <div style="color: #666; margin-top: 2px; line-height: 1.3;">${{evidence.summary}}</div>
+                                </div>
+                            `).join('');
+                            evidenceCell.style.maxWidth = '300px';
+                            evidenceCell.style.fontSize = '11px';
                         }}
                         row.appendChild(evidenceCell);
                         
@@ -2468,15 +2506,12 @@ def main():
                     }});
                 }}
                 
-                // Initialize facts on page load and render immediately
+                // Initialize facts on page load
                 document.addEventListener('DOMContentLoaded', function() {{
-                    console.log("DOM loaded, initializing views...");
                     renderCardView('all');
-                    renderFacts('all');
                 }});
                 
-                // Initialize card view immediately with debug
-                console.log("Initializing card view with facts:", factsData.length);
+                // Initialize card view immediately
                 renderCardView('all');
             </script>
         </body>

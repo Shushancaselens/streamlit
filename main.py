@@ -2081,12 +2081,27 @@ def main():
                         factContent.textContent = fact.event;
                         bodyEl.appendChild(factContent);
                         
+                        // Document and reference information section
+                        const docInfoEl = document.createElement('div');
+                        docInfoEl.className = 'timeline-meta';
+                        docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
+                        docInfoEl.innerHTML = `
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
+                                <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
+                                <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
+                            </div>
+                            ${{fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}}
+                        `;
+                        bodyEl.appendChild(docInfoEl);
+                        
                         // Source Text (if different from submissions and available)
                         if (fact.source_text && fact.source_text !== 'No specific submission recorded' && 
                             fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
                             const sourceTextEl = document.createElement('div');
                             sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 8px; background-color: rgba(74, 85, 104, 0.05); border-left: 3px solid #4a5568; font-size: 13px;';
+                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 12px; background-color: rgba(74, 85, 104, 0.05); border-left: 4px solid #4a5568; font-size: 13px; border-radius: 0 6px 6px 0;';
                             sourceTextEl.innerHTML = `<strong>Source Text:</strong><br>${{fact.source_text}}`;
                             bodyEl.appendChild(sourceTextEl);
                         }}
@@ -2095,7 +2110,7 @@ def main():
                         if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantTextEl = document.createElement('div');
                             claimantTextEl.className = 'timeline-source-text';
-                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 8px; background-color: rgba(49, 130, 206, 0.05); border-left: 3px solid #3182ce; font-size: 13px;';
+                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
                             claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}`;
                             bodyEl.appendChild(claimantTextEl);
                         }}
@@ -2104,22 +2119,10 @@ def main():
                         if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
                             const respondentTextEl = document.createElement('div');
                             respondentTextEl.className = 'timeline-source-text';
-                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 8px; background-color: rgba(229, 62, 62, 0.05); border-left: 3px solid #e53e3e; font-size: 13px;';
+                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
                             respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
                             bodyEl.appendChild(respondentTextEl);
                         }}
-                        
-                        // Related argument, document, and page info
-                        const metaEl = document.createElement('div');
-                        metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = `
-                            <span><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</span>
-                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            ${{fact.doc_summary ? '<span><strong>Summary:</strong> ' + fact.doc_summary + '</span>' : ''}}
-                        `;
-                        bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);
                         

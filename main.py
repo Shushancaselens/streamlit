@@ -573,6 +573,9 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
+        # Show current view for debugging
+        st.write(f"Current view: {st.session_state.view}")
+        
         # Custom CSS for button styling
         st.markdown("""
         <style>
@@ -605,7 +608,13 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts HTML component
+    # Debug information
+    st.write("Debug Info:")
+    st.write(f"- Session state view: {st.session_state.view}")
+    st.write(f"- Facts data length: {len(get_all_facts())}")
+    st.write(f"- Timeline data length: {len(get_timeline_data())}")
+    
+    # Create the main content based on selected view
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
         html_content = f"""
@@ -1145,38 +1154,65 @@ def main():
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
                 
+                // Debug: Log data to console
+                console.log('Facts Data:', factsData);
+                console.log('Document Sets:', documentSets);
+                console.log('Timeline Data:', timelineData);
+                
+                // Initialize facts immediately when script loads
+                document.addEventListener('DOMContentLoaded', function() {{
+                    console.log('DOM Content Loaded');
+                    renderFacts('all');
+                }});
+                
+                // Also try to initialize immediately
+                setTimeout(function() {{
+                    console.log('Initializing facts with timeout');
+                    renderFacts('all');
+                }}, 100);
+                
                 // Switch view between table, timeline, and document sets
                 function switchView(viewType) {{
-                    const tableBtn = document.getElementById('table-view-btn');
-                    const timelineBtn = document.getElementById('timeline-view-btn');
-                    const docsetBtn = document.getElementById('docset-view-btn');
-                    
-                    const tableContent = document.getElementById('table-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    // Remove active class from all buttons
-                    tableBtn.classList.remove('active');
-                    timelineBtn.classList.remove('active');
-                    docsetBtn.classList.remove('active');
-                    
-                    // Hide all content
-                    tableContent.style.display = 'none';
-                    timelineContent.style.display = 'none';
-                    docsetContent.style.display = 'none';
-                    
-                    // Activate the selected view
-                    if (viewType === 'table') {{
-                        tableBtn.classList.add('active');
-                        tableContent.style.display = 'block';
-                    }} else if (viewType === 'timeline') {{
-                        timelineBtn.classList.add('active');
-                        timelineContent.style.display = 'block';
-                        renderTimeline();
-                    }} else if (viewType === 'docset') {{
-                        docsetBtn.classList.add('active');
-                        docsetContent.style.display = 'block';
-                        renderDocumentSets();
+                    try {{
+                        console.log('Switching to view:', viewType);
+                        const tableBtn = document.getElementById('table-view-btn');
+                        const timelineBtn = document.getElementById('timeline-view-btn');
+                        const docsetBtn = document.getElementById('docset-view-btn');
+                        
+                        const tableContent = document.getElementById('table-view-content');
+                        const timelineContent = document.getElementById('timeline-view-content');
+                        const docsetContent = document.getElementById('docset-view-content');
+                        
+                        if (!tableBtn || !timelineBtn || !docsetBtn || !tableContent || !timelineContent || !docsetContent) {{
+                            console.error('Required elements not found');
+                            return;
+                        }}
+                        
+                        // Remove active class from all buttons
+                        tableBtn.classList.remove('active');
+                        timelineBtn.classList.remove('active');
+                        docsetBtn.classList.remove('active');
+                        
+                        // Hide all content
+                        tableContent.style.display = 'none';
+                        timelineContent.style.display = 'none';
+                        docsetContent.style.display = 'none';
+                        
+                        // Activate the selected view
+                        if (viewType === 'table') {{
+                            tableBtn.classList.add('active');
+                            tableContent.style.display = 'block';
+                        }} else if (viewType === 'timeline') {{
+                            timelineBtn.classList.add('active');
+                            timelineContent.style.display = 'block';
+                            renderTimeline();
+                        }} else if (viewType === 'docset') {{
+                            docsetBtn.classList.add('active');
+                            docsetContent.style.display = 'block';
+                            renderDocumentSets();
+                        }}
+                    }} catch (error) {{
+                        console.error('Error in switchView:', error);
                     }}
                 }}
                 
@@ -1870,7 +1906,78 @@ def main():
         
         # Render the HTML component
         st.title("Case Facts")
-        components.html(html_content, height=800, scrolling=True)
+        
+        # Add a simple test button to verify Streamlit is working
+        if st.button("Test Button - Click to verify Streamlit is working"):
+            st.success("Streamlit buttons are working!")
+            st.write("Current session state:", st.session_state.view)
+        
+        # Render the main HTML component
+        components.html(html_content, height=900, scrolling=True)
+    
+    elif st.session_state.view == "Arguments":
+        st.title("Legal Arguments")
+        
+        # Arguments view placeholder - you can implement detailed argument analysis here
+        st.info("Arguments view - Under development")
+        
+        # Show basic argument structure
+        args_data = get_argument_data()
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("Appellant Arguments")
+            for arg_id, arg in args_data['claimantArgs'].items():
+                with st.expander(f"{arg['id']}. {arg['title']}"):
+                    st.write(f"**Paragraphs:** {arg['paragraphs']}")
+                    if 'overview' in arg:
+                        st.write("**Key Points:**")
+                        for point in arg['overview']['points']:
+                            st.write(f"• {point}")
+        
+        with col2:
+            st.subheader("Respondent Arguments")
+            for arg_id, arg in args_data['respondentArgs'].items():
+                with st.expander(f"{arg['id']}. {arg['title']}"):
+                    st.write(f"**Paragraphs:** {arg['paragraphs']}")
+                    if 'overview' in arg:
+                        st.write("**Key Points:**")
+                        for point in arg['overview']['points']:
+                            st.write(f"• {point}")
+    
+    elif st.session_state.view == "Exhibits":
+        st.title("Case Exhibits")
+        
+        # Exhibits view placeholder
+        st.info("Exhibits view - Under development")
+        
+        # Show basic exhibit information
+        args_data = get_argument_data()
+        all_exhibits = []
+        
+        # Collect all exhibits
+        def collect_exhibits(args_dict, party):
+            for arg_id, arg in args_dict.items():
+                if 'evidence' in arg:
+                    for evidence in arg['evidence']:
+                        exhibit_info = {
+                            'id': evidence['id'],
+                            'title': evidence['title'],
+                            'summary': evidence['summary'],
+                            'party': party,
+                            'argument': f"{arg['id']}. {arg['title']}"
+                        }
+                        all_exhibits.append(exhibit_info)
+        
+        collect_exhibits(args_data['claimantArgs'], 'Appellant')
+        collect_exhibits(args_data['respondentArgs'], 'Respondent')
+        
+        if all_exhibits:
+            exhibit_df = pd.DataFrame(all_exhibits)
+            st.dataframe(exhibit_df, use_container_width=True)
+        else:
+            st.write("No exhibits found.")
 
 if __name__ == "__main__":
     main()

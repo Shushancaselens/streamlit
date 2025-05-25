@@ -341,7 +341,11 @@ def get_timeline_data():
             "exhibits": ["C-6"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
+            "source": "Appeal - Appeal Brief",
+            "source_text": "Athletic Club United made its debut in international competition on September 15, 1962, participating in the Continental Cup preliminary round against European champions.",
+            "page": 78,
+            "doc_name": "Appeal Brief",
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
         },
         {
             "point": "Minor variations in club color shades introduced",
@@ -351,7 +355,11 @@ def get_timeline_data():
             "exhibits": ["C-5"],
             "argId": "1.2.1",
             "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Statement of Appeal"
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "During the 1970s decade, minor variations in the specific shades of blue were introduced for aesthetic purposes, ranging from royal blue to navy blue, while maintaining the core blue and white identity.",
+            "page": 92,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
         },
         {
             "point": "Administrative operations halted due to financial difficulties",
@@ -361,7 +369,11 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
+            "source": "provisional messier - Answer to Request for PM",
+            "source_text": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely.",
+            "page": 156,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
         },
         {
             "point": "Operations ceased between 1975-1976",
@@ -385,7 +397,11 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
+            "source": "provisional messier - Answer to Request for PM",
+            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
+            "page": 158,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
         },
         {
             "point": "New entity registered with similar name",
@@ -395,7 +411,11 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM"
+            "source": "provisional messier - Answer to Request for PM",
+            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
+            "page": 162,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
         },
         {
             "point": "Significant color scheme change implemented",
@@ -405,7 +425,11 @@ def get_timeline_data():
             "exhibits": ["R-4"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis Rebuttal",
-            "source": "admissibility - Brief on Admissibility"
+            "source": "admissibility - Brief on Admissibility",
+            "source_text": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
+            "page": 203,
+            "doc_name": "Brief on Admissibility",
+            "doc_summary": "Respondent's legal brief addressing the admissibility of evidence and procedural matters in the case."
         },
         {
             "point": "Third color temporarily added to uniform",
@@ -415,7 +439,11 @@ def get_timeline_data():
             "exhibits": ["C-5"],
             "argId": "1.2.1",
             "argTitle": "Color Variations Analysis",
-            "source": "Appeal - Appeal Brief"
+            "source": "Appeal - Appeal Brief",
+            "source_text": "From 1982 to 1988, gold was introduced as a third accent color for special matches and European competitions, complementing but not replacing the traditional blue and white scheme.",
+            "page": 114,
+            "doc_name": "Appeal Brief",
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
         },
         {
             "point": "Club won Continental Cup with post-1976 team",
@@ -425,7 +453,11 @@ def get_timeline_data():
             "exhibits": ["C-7"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "Athletic Club United achieved its greatest international success on June 24, 1987, winning the Continental Cup final 2-1 against defending champions, demonstrating sporting continuity post-1976.",
+            "page": 145,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
         },
         {
             "point": "Return to original blue and white color scheme",
@@ -435,7 +467,11 @@ def get_timeline_data():
             "exhibits": ["C-8"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Appeal Brief"
+            "source": "Appeal - Appeal Brief",
+            "source_text": "On August 12, 1989, the club officially returned to its traditional blue and white color scheme, removing all temporary color additions and reaffirming its historical identity.",
+            "page": 167,
+            "doc_name": "Appeal Brief",
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
         },
         {
             "point": "Trademark registration for club name and emblem",
@@ -445,7 +481,11 @@ def get_timeline_data():
             "exhibits": ["C-9"],
             "argId": "1.1",
             "argTitle": "Club Name Analysis",
-            "source": "Appeal - Statement of Appeal"
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "The club secured comprehensive trademark protection for its name 'Athletic Club United' and distinctive emblem on November 30, 1995, providing legal recognition of its continuous identity.",
+            "page": 189,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
         },
         {
             "point": "Federation officially recognizes club history spanning pre and post 1976",
@@ -455,7 +495,11 @@ def get_timeline_data():
             "exhibits": ["C-10"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility"
+            "source": "admissibility - Reply to Objection to Admissibility",
+            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
+            "page": 234,
+            "doc_name": "Reply to Objection to Admissibility",
+            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments."
         }
     ]
     
@@ -846,6 +890,15 @@ def main():
                     font-weight: 500;
                 }}
                 
+                /* Document summary column styling */
+                .table-view td:nth-child(6) {{
+                    max-width: 250px;
+                    word-wrap: break-word;
+                    line-height: 1.4;
+                    font-style: italic;
+                    color: #666;
+                }}
+                
                 /* View toggle */
                 .view-toggle {{
                     display: flex;
@@ -1123,9 +1176,10 @@ def main():
                                     <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
                                     <th onclick="sortTable('facts-table-body', 3)">Page</th>
                                     <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 7)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1312,14 +1366,15 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Source Text,Page,Document,Party,Status,Evidence,Argument\\n";
+                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
                             const sourceText = (item.source_text || '').replace(/"/g, '""');
                             const docName = (item.doc_name || '').replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                            const docSummary = (item.doc_summary || '').replace(/"/g, '""');
+                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{docSummary}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1718,6 +1773,7 @@ def main():
                                             <th>Event</th>
                                             <th>Source Text</th>
                                             <th>Page</th>
+                                            <th>Doc Summary</th>
                                             <th>Party</th>
                                             <th>Status</th>
                                             <th>Evidence</th>
@@ -1731,6 +1787,7 @@ def main():
                                                 <td>${{fact.point}}</td>
                                                 <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
                                                 <td>${{fact.page || ''}}</td>
+                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
                                                 <td>
                                                     <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
                                                         ${{fact.party}}
@@ -1814,6 +1871,15 @@ def main():
                         docCell.textContent = fact.doc_name || '';
                         docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
+                        
+                        // Document Summary column
+                        const docSummaryCell = document.createElement('td');
+                        docSummaryCell.textContent = fact.doc_summary || '';
+                        docSummaryCell.style.maxWidth = '250px';
+                        docSummaryCell.style.overflow = 'hidden';
+                        docSummaryCell.style.textOverflow = 'ellipsis';
+                        docSummaryCell.title = fact.doc_summary || '';
+                        row.appendChild(docSummaryCell);
                         
                         // Party column
                         const partyCell = document.createElement('td');

@@ -32,7 +32,11 @@ def get_argument_data():
                     "date": "1950-present",
                     "isDisputed": False,
                     "paragraphs": "18-19",
-                    "exhibits": ["C-1"]
+                    "exhibits": ["C-1"],
+                    "source_text": "The club has maintained continuous operation under the same name 'Athletic Club United' since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.",
+                    "page": 23,
+                    "doc_name": "Statement of Appeal",
+                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                 }
             ],
             "evidence": [
@@ -76,7 +80,11 @@ def get_argument_data():
                                     "date": "1950",
                                     "isDisputed": False,
                                     "paragraphs": "25-26",
-                                    "exhibits": ["C-2"]
+                                    "exhibits": ["C-2"],
+                                    "source_text": "The club was initially registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a sporting entity.",
+                                    "page": 31,
+                                    "doc_name": "Statement of Appeal",
+                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                                 },
                                 {
                                     "point": "Brief administrative gap in 1975-1976",
@@ -84,7 +92,11 @@ def get_argument_data():
                                     "isDisputed": True,
                                     "source": "Respondent",
                                     "paragraphs": "29-30",
-                                    "exhibits": ["C-2"]
+                                    "exhibits": ["C-2"],
+                                    "source_text": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
+                                    "page": 35,
+                                    "doc_name": "Statement of Appeal",
+                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                                 }
                             ],
                             "evidence": [
@@ -117,7 +129,11 @@ def get_argument_data():
                             "isDisputed": True,
                             "source": "Respondent",
                             "paragraphs": "51-52",
-                            "exhibits": ["C-4"]
+                            "exhibits": ["C-4"],
+                            "source_text": "The club has consistently utilized blue and white as its primary colors since its founding in 1950, with these colors being integral to the club's visual identity and fan recognition throughout its history.",
+                            "page": 58,
+                            "doc_name": "Statement of Appeal",
+                            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                         }
                     ],
                     "evidence": [
@@ -139,14 +155,22 @@ def get_argument_data():
                                     "date": "1970-1980",
                                     "isDisputed": False,
                                     "paragraphs": "56-57",
-                                    "exhibits": ["C-5"]
+                                    "exhibits": ["C-5"],
+                                    "source_text": "Minor variations in the specific shades of blue and white used in uniforms and club materials during the 1970s were purely aesthetic choices that did not alter the fundamental color identity of the club.",
+                                    "page": 63,
+                                    "doc_name": "Statement of Appeal",
+                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                                 },
                                 {
                                     "point": "Temporary third color addition in 1980s",
                                     "date": "1982-1988",
                                     "isDisputed": False,
                                     "paragraphs": "58-59",
-                                    "exhibits": ["C-5"]
+                                    "exhibits": ["C-5"],
+                                    "source_text": "Between 1982 and 1988, the club temporarily incorporated a third accent color (gold) in its uniform design for special occasions, while maintaining blue and white as the primary colors.",
+                                    "page": 65,
+                                    "doc_name": "Statement of Appeal",
+                                    "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                                 }
                             ],
                             "children": {}
@@ -177,7 +201,11 @@ def get_argument_data():
                     "isDisputed": True,
                     "source": "Claimant",
                     "paragraphs": "206-207",
-                    "exhibits": ["R-1"]
+                    "exhibits": ["R-1"],
+                    "source_text": "The club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.",
+                    "page": 89,
+                    "doc_name": "Answer to Request for Provisional Measures",
+                    "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
                 }
             ],
             "evidence": [
@@ -236,7 +264,11 @@ def get_all_facts():
                     'paragraphs': point.get('paragraphs', ''),
                     'exhibits': point.get('exhibits', []),
                     'argId': arg['id'],
-                    'argTitle': arg['title']
+                    'argTitle': arg['title'],
+                    'source_text': point.get('source_text', ''),
+                    'page': point.get('page', ''),
+                    'doc_name': point.get('doc_name', ''),
+                    'doc_summary': point.get('doc_summary', '')
                 }
                 facts.append(fact)
                 
@@ -267,7 +299,11 @@ def get_timeline_data():
             "exhibits": ["C-1"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal"
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
+            "page": 15,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
         },
         {
             "point": "First National Championship won",
@@ -277,7 +313,11 @@ def get_timeline_data():
             "exhibits": ["C-3"],
             "argId": "1",
             "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief"
+            "source": "Appeal - Appeal Brief",
+            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
+            "page": 42,
+            "doc_name": "Appeal Brief",
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity."
         },
         {
             "point": "Club colors established as blue and white",
@@ -287,7 +327,11 @@ def get_timeline_data():
             "exhibits": ["C-4"],
             "argId": "1.2",
             "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal"
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
+            "page": 67,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
         },
         {
             "point": "First international competition participation",
@@ -327,7 +371,11 @@ def get_timeline_data():
             "exhibits": ["R-1"],
             "argId": "1",
             "argTitle": "Sporting Succession Rebuttal",
-            "source": "provisional messier - Answer to PM"
+            "source": "provisional messier - Answer to PM",
+            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
+            "page": 127,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity."
         },
         {
             "point": "Club registration formally terminated",
@@ -755,16 +803,19 @@ def main():
                     width: 100%;
                     border-collapse: collapse;
                     margin-top: 20px;
+                    font-size: 14px;
                 }}
                 
                 .table-view th {{
-                    padding: 12px;
+                    padding: 8px;
                     text-align: left;
                     background-color: #f8f9fa;
                     border-bottom: 2px solid #dee2e6;
                     position: sticky;
                     top: 0;
                     cursor: pointer;
+                    font-size: 12px;
+                    white-space: nowrap;
                 }}
                 
                 .table-view th:hover {{
@@ -772,12 +823,27 @@ def main():
                 }}
                 
                 .table-view td {{
-                    padding: 12px;
+                    padding: 8px;
                     border-bottom: 1px solid #dee2e6;
+                    font-size: 13px;
+                    vertical-align: top;
                 }}
                 
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
+                }}
+                
+                /* Source text column styling */
+                .table-view td:nth-child(3) {{
+                    max-width: 300px;
+                    word-wrap: break-word;
+                    line-height: 1.4;
+                }}
+                
+                /* Document column styling */
+                .table-view td:nth-child(5) {{
+                    max-width: 150px;
+                    font-weight: 500;
                 }}
                 
                 /* View toggle */
@@ -1054,10 +1120,12 @@ def main():
                                 <tr>
                                     <th onclick="sortTable('facts-table-body', 0)">Date</th>
                                     <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Page</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Document</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 6)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1244,12 +1312,14 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
+                        let headers = "Date,Event,Source Text,Page,Document,Party,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                            const sourceText = (item.source_text || '').replace(/"/g, '""');
+                            const docName = (item.doc_name || '').replace(/"/g, '""');
+                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || ''}}","${{docName}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1496,9 +1566,19 @@ def main():
                         metaEl.innerHTML = `
                             <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
                             ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            <span><strong>Source:</strong> ${{fact.source}}</span>
+                            <span><strong>Document:</strong> ${{fact.doc_name || fact.source}}</span>
+                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
                         `;
                         bodyEl.appendChild(metaEl);
+                        
+                        // Add source text if available
+                        if (fact.source_text) {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'timeline-source-text';
+                            sourceTextEl.style.cssText = 'font-style: italic; color: #666; margin-top: 8px; padding: 8px; background-color: #f8f9fa; border-left: 3px solid #4299e1; font-size: 13px;';
+                            sourceTextEl.textContent = fact.source_text;
+                            bodyEl.appendChild(sourceTextEl);
+                        }}
                         
                         contentEl.appendChild(bodyEl);
                         
@@ -1636,6 +1716,8 @@ def main():
                                             <th>Document</th>
                                             <th>Date</th>
                                             <th>Event</th>
+                                            <th>Source Text</th>
+                                            <th>Page</th>
                                             <th>Party</th>
                                             <th>Status</th>
                                             <th>Evidence</th>
@@ -1647,6 +1729,8 @@ def main():
                                                 <td><strong>${{fact.documentName}}</strong></td>
                                                 <td>${{fact.date}}</td>
                                                 <td>${{fact.point}}</td>
+                                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
+                                                <td>${{fact.page || ''}}</td>
                                                 <td>
                                                     <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
                                                         ${{fact.party}}
@@ -1711,6 +1795,26 @@ def main():
                         eventCell.textContent = fact.point;
                         row.appendChild(eventCell);
                         
+                        // Source Text column
+                        const sourceTextCell = document.createElement('td');
+                        sourceTextCell.textContent = fact.source_text || '';
+                        sourceTextCell.style.maxWidth = '300px';
+                        sourceTextCell.style.overflow = 'hidden';
+                        sourceTextCell.style.textOverflow = 'ellipsis';
+                        sourceTextCell.title = fact.source_text || '';
+                        row.appendChild(sourceTextCell);
+                        
+                        // Page column
+                        const pageCell = document.createElement('td');
+                        pageCell.textContent = fact.page || '';
+                        row.appendChild(pageCell);
+                        
+                        // Document column
+                        const docCell = document.createElement('td');
+                        docCell.textContent = fact.doc_name || '';
+                        docCell.title = fact.doc_summary || '';
+                        row.appendChild(docCell);
+                        
                         // Party column
                         const partyCell = document.createElement('td');
                         const partyBadge = document.createElement('span');
@@ -1730,11 +1834,6 @@ def main():
                             statusCell.textContent = 'Undisputed';
                         }}
                         row.appendChild(statusCell);
-                        
-                        // Related argument
-                        const argCell = document.createElement('td');
-                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                        row.appendChild(argCell);
                         
                         // Evidence column
                         const evidenceCell = document.createElement('td');

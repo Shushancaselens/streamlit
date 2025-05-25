@@ -1269,6 +1269,80 @@ def main():
                     margin-left: 32px;
                 }}
                 
+                /* Enhanced Evidence styling */
+                .evidence-item {{
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    margin-bottom: 6px;
+                    transition: all 0.2s ease;
+                }}
+                
+                .evidence-header {{
+                    padding: 8px 12px;
+                    background-color: rgba(221, 107, 32, 0.05);
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    transition: background-color 0.2s ease;
+                }}
+                
+                .evidence-header:hover {{
+                    background-color: rgba(221, 107, 32, 0.1);
+                }}
+                
+                .evidence-content {{
+                    display: none;
+                    padding: 12px;
+                    background-color: white;
+                    border-top: 1px solid #e2e8f0;
+                    animation: slideDown 0.2s ease;
+                }}
+                
+                .evidence-icon {{
+                    width: 16px;
+                    height: 16px;
+                    background-color: #dd6b20;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    transition: transform 0.2s ease;
+                }}
+                
+                .evidence-badge {{
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 3px 6px;
+                    background-color: rgba(221, 107, 32, 0.1);
+                    color: #dd6b20;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-size: 10px;
+                    font-weight: 600;
+                    transition: background-color 0.2s ease;
+                    margin: 2px;
+                }}
+                
+                .evidence-badge:hover {{
+                    background-color: rgba(221, 107, 32, 0.2);
+                }}
+                
+                @keyframes slideDown {{
+                    from {{
+                        opacity: 0;
+                        max-height: 0;
+                    }}
+                    to {{
+                        opacity: 1;
+                        max-height: 200px;
+                    }}
+                }}
+                
                 .timeline-year-line {{
                     flex-grow: 1;
                     height: 2px;
@@ -1393,8 +1467,8 @@ def main():
                     }};
                 }}
                 
-                // Function to get evidence content instead of just IDs
-                function getEvidenceContent(fact) {{
+                // Function to get evidence content with expandable functionality
+                function getEvidenceContent(fact, viewType = 'card') {{
                     if (!fact.exhibits || fact.exhibits.length === 0) {{
                         return 'None';
                     }}
@@ -1441,6 +1515,22 @@ def main():
                     }});
                     
                     return evidenceContent;
+                }}
+                
+                // Toggle evidence expansion
+                function toggleEvidence(evidenceId, factIndex) {{
+                    const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
+                    const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
+                    
+                    if (content.style.display === 'none' || content.style.display === '') {{
+                        content.style.display = 'block';
+                        icon.textContent = '−';
+                        icon.style.transform = 'rotate(0deg)';
+                    }} else {{
+                        content.style.display = 'none';
+                        icon.textContent = '+';
+                        icon.style.transform = 'rotate(0deg)';
+                    }}
                 }}
                 
                 // Standardize timeline data to match facts structure
@@ -1676,7 +1766,7 @@ def main():
                         const evidenceContent = getEvidenceContent(fact);
                         let evidenceText = 'None';
                         if (evidenceContent !== 'None') {{
-                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join('; ');
+                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
                         }}
                         
                         const sourceText = (fact.source_text || '').replace(/"/g, '""');
@@ -2049,12 +2139,25 @@ def main():
                             `;
                         }} else {{
                             evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence</div>
+                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
                                 <div class="card-detail-value">
-                                    ${{evidenceContent.map(evidence => `
-                                        <div style="margin-bottom: 8px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0;">
-                                            <div style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                            <div style="font-size: 12px; color: #666; margin-top: 4px;">${{evidence.summary}}</div>
+                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
+                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                                <div>
+                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
+                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
+                                                </div>
+                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
+                                            </div>
+                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                            </div>
                                         </div>
                                     `).join('')}}
                                 </div>
@@ -2214,7 +2317,7 @@ def main():
                         
                         contentEl.appendChild(bodyEl);
                         
-                        // Add footer if there are exhibits - show content instead of just IDs
+                        // Add footer if there are exhibits - show expandable content
                         const evidenceContent = getEvidenceContent(fact);
                         if (evidenceContent !== 'None') {{
                             const footerEl = document.createElement('div');
@@ -2222,11 +2325,24 @@ def main():
                             footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
                             
                             footerEl.innerHTML = `
-                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence</div>
-                                ${{evidenceContent.map(evidence => `
-                                    <div style="margin-bottom: 8px; padding: 10px; background-color: rgba(221, 107, 32, 0.05); border-left: 4px solid #dd6b20; border-radius: 0 6px 6px 0;">
-                                        <div style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}: ${{evidence.title}}</div>
-                                        <div style="font-size: 12px; color: #666; margin-top: 4px; line-height: 1.4;">${{evidence.summary}}</div>
+                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence (${{evidenceContent.length}} items)</div>
+                                ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                    <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                        <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
+                                             style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                             onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                             onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                            <div>
+                                                <span style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}</span>
+                                                <span style="margin-left: 8px; color: #4a5568; font-size: 13px;">${{evidence.title}}</span>
+                                            </div>
+                                            <span id="evidence-icon-${{evidence.id}}-timeline-${{evidenceIndex}}" 
+                                                  style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
+                                        </div>
+                                        <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
+                                             style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                        </div>
                                     </div>
                                 `).join('')}}
                             `;
@@ -2378,10 +2494,17 @@ def main():
                                                     if (evidenceContent === 'None') {{
                                                         return 'None';
                                                     }}
-                                                    return evidenceContent.map(evidence => `
-                                                        <div style="margin-bottom: 4px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 10px;">
-                                                            <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
-                                                            <div style="color: #666; margin-top: 1px; line-height: 1.2;">${{evidence.summary}}</div>
+                                                    return evidenceContent.map((evidence, evidenceIndex) => `
+                                                        <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{evidenceIndex}}')" 
+                                                              style="display: inline-block; margin: 2px; padding: 2px 5px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 10px; cursor: pointer; font-size: 9px; font-weight: 600;"
+                                                              onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                              onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                            📁 ${{evidence.id}}
+                                                            <span id="evidence-icon-${{evidence.id}}-docset-${{evidenceIndex}}" style="margin-left: 2px; font-size: 7px;">+</span>
+                                                        </span>
+                                                        <div id="evidence-content-${{evidence.id}}-docset-${{evidenceIndex}}" 
+                                                             style="display: none; margin-top: 2px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 1px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 8px; color: #666; line-height: 1.2;">
+                                                            <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
                                                         </div>
                                                     `).join('');
                                                 }})()}}</td>
@@ -2502,20 +2625,34 @@ def main():
                         }}
                         row.appendChild(statusCell);
                         
-                        // Evidence column - show content instead of just IDs
+                        // Evidence column - show expandable content
                         const evidenceCell = document.createElement('td');
                         const evidenceContent = getEvidenceContent(fact);
                         
                         if (evidenceContent === 'None') {{
                             evidenceCell.textContent = 'None';
                         }} else {{
-                            evidenceCell.innerHTML = evidenceContent.map(evidence => `
-                                <div style="margin-bottom: 6px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 11px;">
-                                    <div style="font-weight: 600; color: #dd6b20;">${{evidence.id}}: ${{evidence.title}}</div>
-                                    <div style="color: #666; margin-top: 2px; line-height: 1.3;">${{evidence.summary}}</div>
+                            // For table view, show compact badges that expand on click
+                            evidenceCell.innerHTML = `
+                                <div style="font-size: 11px;">
+                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                        <div style="margin-bottom: 4px;">
+                                            <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
+                                                  style="display: inline-flex; align-items: center; padding: 3px 6px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 10px; font-weight: 600;"
+                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 20)}}${{evidence.title.length > 20 ? '...' : ''}}
+                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 4px; font-size: 8px;">+</span>
+                                            </span>
+                                            <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
+                                                 style="display: none; margin-top: 4px; padding: 6px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 3px 3px 0; font-size: 10px; color: #666; line-height: 1.3;">
+                                                ${{evidence.summary}}
+                                            </div>
+                                        </div>
+                                    `).join('')}}
                                 </div>
-                            `).join('');
-                            evidenceCell.style.maxWidth = '300px';
+                            `;
+                            evidenceCell.style.maxWidth = '200px';
                             evidenceCell.style.fontSize = '11px';
                         }}
                         row.appendChild(evidenceCell);

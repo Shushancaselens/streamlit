@@ -218,29 +218,8 @@ def get_argument_data():
 
 # Get all facts from the data
 def get_all_facts():
-    # New facts structure with Antani Ivanov information
-    facts = [
-        {
-            'date': '1999-07-17',
-            'end_date': '',
-            'event': 'Antani Ivanov was born on July 17, 1999.',
-            'source_text': 'It is established that the swimmer Antani Antonov Ivanov, born on 17.07.1999, 23 years old at the time of the violation, residing in Veliko Tarnovo, and,1. Establishes that Antani Ivanov, born on 17.07.1999,',
-            'page': '1,2',
-            'doc_name': 'Decision No. 1 of the Disciplinary Commission of the Bulgarian Swimming Federation,Disciplinary Commission\'s Decision № 2/2024 of August 12 2024 (Exh. R-3)',
-            'doc_sum': 'Decision No. 1, dated January 30, 2024, was issued by the Disciplinary Commission of the Bulgarian Swimming Federation (BSF) regarding Disciplinary Case No. 2 of 2023. The decision confirms that athlete Antani Antonov Ivanov was found guilty of repeated violations of the BSF Disciplinary Rules by making disparaging and unfounded public statements about the Federation, resulting in a suspension of his competition rights for two years and a fine of 1,000 BGN. The document details the case background, evidence, and reasoning behind the disciplinary measures, and outlines the avenues for appeal.,The \'Disciplinary Commission\'s Decision № 2/2024 of August 12 2024\' concerns Bulgarian swimmer Antani Ivanov, who was found to have committed an anti-doping rule violation by participating in a competition during his period of ineligibility. As a result, the Disciplinary Commission of the Bulgarian Olympic Committee imposed an additional two-year period of ineligibility on Ivanov, starting from June 8, 2025. The decision outlines the findings, the athlete\'s defense, and notes that the sanction may be appealed within 21 days before the Court of Arbitration for Sport.',
-            'isDisputed': False,
-            'party': 'Respondent',
-            'exhibits': ['R-3'],
-            'argId': '1',
-            'argTitle': 'Disciplinary Violation',
-            # Legacy fields for compatibility
-            'point': 'Antani Ivanov was born on July 17, 1999.',
-            'paragraphs': '1,2'
-        }
-    ]
-    
-    # Add original facts from argument data for backward compatibility
     args_data = get_argument_data()
+    facts = []
     
     # Helper function to extract facts from arguments
     def extract_facts(arg, party):
@@ -250,21 +229,14 @@ def get_all_facts():
         if 'factualPoints' in arg and arg['factualPoints']:
             for point in arg['factualPoints']:
                 fact = {
+                    'point': point['point'],
                     'date': point['date'],
-                    'end_date': '',
-                    'event': point['point'],
-                    'source_text': f"From argument {arg['id']}: {point['point']}",
-                    'page': point.get('paragraphs', ''),
-                    'doc_name': f"Legal Argument {arg['id']} - {arg['title']}",
-                    'doc_sum': f"This fact is part of {arg['title']} argument section.",
                     'isDisputed': point['isDisputed'],
                     'party': party,
+                    'paragraphs': point.get('paragraphs', ''),
                     'exhibits': point.get('exhibits', []),
                     'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    # Legacy fields for compatibility
-                    'point': point['point'],
-                    'paragraphs': point.get('paragraphs', '')
+                    'argTitle': arg['title']
                 }
                 facts.append(fact)
                 
@@ -285,23 +257,8 @@ def get_all_facts():
 
 # Get enhanced timeline data with additional events
 def get_timeline_data():
-    # Create a richer set of timeline events including Antani Ivanov case
+    # Create a richer set of timeline events
     timeline_events = [
-        {
-            "date": "1999-07-17",
-            "end_date": "",
-            "point": "Antani Ivanov was born on July 17, 1999.",
-            "source_text": "It is established that the swimmer Antani Antonov Ivanov, born on 17.07.1999, 23 years old at the time of the violation, residing in Veliko Tarnovo, and,1. Establishes that Antani Ivanov, born on 17.07.1999,",
-            "page": "1,2",
-            "doc_name": "Decision No. 1 of the Disciplinary Commission of the Bulgarian Swimming Federation,Disciplinary Commission's Decision № 2/2024 of August 12 2024 (Exh. R-3)",
-            "doc_sum": "Decision No. 1, dated January 30, 2024, was issued by the Disciplinary Commission of the Bulgarian Swimming Federation (BSF) regarding Disciplinary Case No. 2 of 2023. The decision confirms that athlete Antani Antonov Ivanov was found guilty of repeated violations of the BSF Disciplinary Rules by making disparaging and unfounded public statements about the Federation, resulting in a suspension of his competition rights for two years and a fine of 1,000 BGN. The document details the case background, evidence, and reasoning behind the disciplinary measures, and outlines the avenues for appeal.,The 'Disciplinary Commission's Decision № 2/2024 of August 12 2024' concerns Bulgarian swimmer Antani Ivanov, who was found to have committed an anti-doping rule violation by participating in a competition during his period of ineligibility. As a result, the Disciplinary Commission of the Bulgarian Olympic Committee imposed an additional two-year period of ineligibility on Ivanov, starting from June 8, 2025. The decision outlines the findings, the athlete's defense, and notes that the sanction may be appealed within 21 days before the Court of Arbitration for Sport.",
-            "isDisputed": False,
-            "party": "Respondent",
-            "exhibits": ["R-3"],
-            "argId": "1",
-            "argTitle": "Disciplinary Violation",
-            "source": "Disciplinary Commission Decision"
-        },
         {
             "point": "Club founded and officially registered in the Football Federation",
             "date": "1950-01-12",
@@ -798,7 +755,6 @@ def main():
                     width: 100%;
                     border-collapse: collapse;
                     margin-top: 20px;
-                    table-layout: auto;
                 }}
                 
                 .table-view th {{
@@ -809,7 +765,6 @@ def main():
                     position: sticky;
                     top: 0;
                     cursor: pointer;
-                    font-size: 0.9em;
                 }}
                 
                 .table-view th:hover {{
@@ -819,18 +774,6 @@ def main():
                 .table-view td {{
                     padding: 12px;
                     border-bottom: 1px solid #dee2e6;
-                    word-wrap: break-word;
-                    max-width: 200px;
-                    font-size: 0.9em;
-                }}
-                
-                .table-view td:nth-child(3) {{ /* Event column */
-                    max-width: 300px;
-                }}
-                
-                .table-view td:nth-child(7) {{ /* Document column */
-                    max-width: 250px;
-                    font-size: 0.8em;
                 }}
                 
                 .table-view tr:hover {{
@@ -1110,13 +1053,11 @@ def main():
                             <thead>
                                 <tr>
                                     <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                    <th onclick="sortTable('facts-table-body', 1)">End Date</th>
-                                    <th onclick="sortTable('facts-table-body', 2)">Event</th>
-                                    <th onclick="sortTable('facts-table-body', 3)">Party</th>
-                                    <th onclick="sortTable('facts-table-body', 4)">Status</th>
-                                    <th onclick="sortTable('facts-table-body', 5)">Page</th>
-                                    <th onclick="sortTable('facts-table-body', 6)">Document</th>
-                                    <th onclick="sortTable('facts-table-body', 7)">Evidence</th>
+                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
                                 </tr>
                             </thead>
                             <tbody id="facts-table-body"></tbody>
@@ -1286,7 +1227,7 @@ def main():
                         const rows = table.querySelectorAll('tbody tr');
                         rows.forEach(row => {{
                             const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim().replace(/"/g, '""') + '\"')
+                                .map(td => '\"' + td.textContent.trim() + '\"')
                                 .join(',');
                             
                             contentToCsv += rowText + '\\n';
@@ -1303,15 +1244,12 @@ def main():
                         document.body.removeChild(link);
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Export timeline data
-                        let headers = "Date,End Date,Event,Party,Status,Page,Document,Evidence,Source Text\\n";
+                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
                         let rows = '';
                         
                         timelineData.forEach(item => {{
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
-                            const docName = item.doc_name ? item.doc_name.replace(/"/g, '""') : '';
-                            const sourceText = item.source_text ? item.source_text.replace(/"/g, '""') : '';
-                            const event = (item.event || item.point).replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.end_date || ''}}","${{event}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{item.page || ''}}","${{docName}}","${{exhibits}}","${{sourceText}}"\\n`;
+                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
                         }});
                         
                         const csvContent = headers + rows;
@@ -1549,33 +1487,16 @@ def main():
                         // Fact content
                         const factContent = document.createElement('div');
                         factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.event || fact.point;
+                        factContent.textContent = fact.point;
                         bodyEl.appendChild(factContent);
-                        
-                        // Source text if available
-                        if (fact.source_text && fact.source_text !== factContent.textContent) {{
-                            const sourceText = document.createElement('div');
-                            sourceText.className = 'timeline-source-text';
-                            sourceText.style.fontSize = '13px';
-                            sourceText.style.color = '#666';
-                            sourceText.style.fontStyle = 'italic';
-                            sourceText.style.marginTop = '8px';
-                            sourceText.style.padding = '8px';
-                            sourceText.style.backgroundColor = '#f8f9fa';
-                            sourceText.style.borderRadius = '4px';
-                            sourceText.textContent = `Source: ${{fact.source_text}}`;
-                            bodyEl.appendChild(sourceText);
-                        }}
                         
                         // Related argument and source
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
                         metaEl.innerHTML = `
                             <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.page ? '<span><strong>Page:</strong> ' + fact.page + '</span>' : ''}}
                             ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            <span><strong>Source:</strong> ${{fact.source || 'Unknown'}}</span>
-                            ${{fact.doc_name ? '<span><strong>Document:</strong> ' + fact.doc_name.substring(0, 50) + (fact.doc_name.length > 50 ? '...' : '') + '</span>' : ''}}
+                            <span><strong>Source:</strong> ${{fact.source}}</span>
                         `;
                         bodyEl.appendChild(metaEl);
                         
@@ -1714,28 +1635,24 @@ def main():
                                         <tr>
                                             <th>Document</th>
                                             <th>Date</th>
-                                            <th>End Date</th>
                                             <th>Event</th>
                                             <th>Party</th>
                                             <th>Status</th>
-                                            <th>Page</th>
                                             <th>Evidence</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         ${{facts.map(fact => `
                                             <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td><strong>${{fact.documentName || fact.doc_name?.substring(0, 40) || 'Unknown'}}</strong></td>
+                                                <td><strong>${{fact.documentName}}</strong></td>
                                                 <td>${{fact.date}}</td>
-                                                <td>${{fact.end_date || ''}}</td>
-                                                <td style="max-width: 250px; word-wrap: break-word;">${{fact.event || fact.point}}</td>
+                                                <td>${{fact.point}}</td>
                                                 <td>
                                                     <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
                                                         ${{fact.party}}
                                                     </span>
                                                 </td>
                                                 <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.page || fact.paragraphs || ''}}</td>
                                                 <td>${{fact.exhibits && fact.exhibits.length > 0 
                                                     ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
                                                     : 'None'}}</td>
@@ -1789,16 +1706,9 @@ def main():
                         dateCell.textContent = fact.date;
                         row.appendChild(dateCell);
                         
-                        // End Date column
-                        const endDateCell = document.createElement('td');
-                        endDateCell.textContent = fact.end_date || '';
-                        row.appendChild(endDateCell);
-                        
                         // Event column
                         const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.event || fact.point;
-                        eventCell.style.maxWidth = '300px';
-                        eventCell.style.wordWrap = 'break-word';
+                        eventCell.textContent = fact.point;
                         row.appendChild(eventCell);
                         
                         // Party column
@@ -1821,18 +1731,10 @@ def main():
                         }}
                         row.appendChild(statusCell);
                         
-                        // Page column
-                        const pageCell = document.createElement('td');
-                        pageCell.textContent = fact.page || fact.paragraphs || '';
-                        row.appendChild(pageCell);
-                        
-                        // Document column
-                        const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || `${{fact.argId}}. ${{fact.argTitle}}`;
-                        docCell.style.maxWidth = '200px';
-                        docCell.style.wordWrap = 'break-word';
-                        docCell.style.fontSize = '0.9em';
-                        row.appendChild(docCell);
+                        // Related argument
+                        const argCell = document.createElement('td');
+                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                        row.appendChild(argCell);
                         
                         // Evidence column
                         const evidenceCell = document.createElement('td');
@@ -1871,4 +1773,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

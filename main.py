@@ -831,6 +831,90 @@ def main():
                 
                 .facts-content {{
                     margin-top: 20px;
+                }                }
+                
+                /* Document sets tables (keep table format) */
+                .docset-container .table-view-container {{
+                    overflow-x: auto;
+                    width: 100%;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    margin-top: 12px;
+                }}
+                
+                .docset-container .table-view {{
+                    width: max-content;
+                    min-width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 0;
+                    font-size: 13px;
+                }}
+                
+                .docset-container .table-view th {{
+                    padding: 10px 12px;
+                    text-align: left;
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                    border-right: 1px solid #e9ecef;
+                    font-size: 12px;
+                    white-space: nowrap;
+                    font-weight: 600;
+                }}
+                
+                .docset-container .table-view th:last-child {{
+                    border-right: none;
+                }}
+                
+                .docset-container .table-view td {{
+                    padding: 10px 12px;
+                    border-bottom: 1px solid #dee2e6;
+                    border-right: 1px solid #f1f3f4;
+                    font-size: 12px;
+                    vertical-align: top;
+                    white-space: nowrap;
+                }}
+                
+                .docset-container .table-view td:last-child {{
+                    border-right: none;
+                }}
+                
+                .docset-container .table-view tr:hover {{
+                    background-color: #f8f9fa;
+                }}
+                
+                /* Specific column widths for document sets */
+                .docset-container .table-view th:nth-child(2), .docset-container .table-view td:nth-child(2) {{ /* Date */
+                    min-width: 100px;
+                }}
+                
+                .docset-container .table-view th:nth-child(3), .docset-container .table-view td:nth-child(3) {{ /* Event */
+                    min-width: 200px;
+                    max-width: 300px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                }}
+                
+                .docset-container .table-view th:nth-child(4), .docset-container .table-view td:nth-child(4) {{ /* Source Text */
+                    min-width: 250px;
+                    max-width: 400px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                    line-height: 1.4;
+                }}
+                
+                .docset-container .table-view th:nth-child(5), .docset-container .table-view td:nth-child(5) {{ /* Page */
+                    min-width: 50px;
+                    text-align: center;
+                }}
+                
+                .docset-container .table-view th:nth-child(6), .docset-container .table-view td:nth-child(6) {{ /* Doc Summary */
+                    min-width: 200px;
+                    max-width: 300px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                    line-height: 1.4;
+                    font-style: italic;
+                    color: #666;
                 }}
                 
                 /* Section title */
@@ -842,137 +926,179 @@ def main():
                     border-bottom: 1px solid #eaeaea;
                 }}
                 
-                /* Table view with horizontal scroll */
-                .table-view-container {{
-                    overflow-x: auto;
-                    width: 100%;
-                    border: 1px solid #dee2e6;
-                    border-radius: 4px;
-                    position: relative;
+                /* Fact containers instead of table */
+                .facts-list {{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    margin-top: 20px;
                 }}
                 
-                .table-view-container::after {{
-                    content: "← Scroll horizontally to see more columns →";
-                    position: sticky;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    bottom: 8px;
-                    background-color: rgba(0, 0, 0, 0.7);
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                    font-size: 11px;
-                    pointer-events: none;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                    z-index: 1000;
+                .fact-container {{
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    background-color: white;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                    transition: all 0.2s ease;
                 }}
                 
-                .table-view-container:hover::after {{
-                    opacity: 1;
+                .fact-container:hover {{
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+                    transform: translateY(-1px);
                 }}
                 
-                .table-view {{
-                    width: max-content;
-                    min-width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 0;
+                .fact-container.disputed {{
+                    border-left: 4px solid #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.02);
+                }}
+                
+                .fact-header {{
+                    padding: 16px 20px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    background-color: #f8fafc;
+                    border-bottom: 1px solid #e2e8f0;
+                    min-height: 60px;
+                }}
+                
+                .fact-header:hover {{
+                    background-color: #f1f5f9;
+                }}
+                
+                .fact-header.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .fact-header.disputed:hover {{
+                    background-color: rgba(229, 62, 62, 0.08);
+                }}
+                
+                .fact-chevron {{
+                    transition: transform 0.2s ease;
+                    color: #64748b;
+                    min-width: 16px;
+                }}
+                
+                .fact-chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                .fact-date {{
+                    min-width: 120px;
+                    font-weight: 600;
+                    color: #1e293b;
                     font-size: 14px;
                 }}
                 
-                .table-view th {{
-                    padding: 12px 16px;
-                    text-align: left;
-                    background-color: #f8f9fa;
-                    border-bottom: 2px solid #dee2e6;
-                    border-right: 1px solid #e9ecef;
-                    position: sticky;
-                    top: 0;
-                    cursor: pointer;
-                    font-size: 13px;
-                    white-space: nowrap;
+                .fact-main-info {{
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    flex-grow: 1;
+                }}
+                
+                .fact-party {{
+                    min-width: 80px;
+                }}
+                
+                .fact-status {{
+                    min-width: 90px;
+                }}
+                
+                .fact-evidence {{
+                    display: flex;
+                    gap: 4px;
+                    flex-wrap: wrap;
+                }}
+                
+                .fact-content {{
+                    display: none;
+                    padding: 20px;
+                    background-color: white;
+                    border-top: 1px solid #f1f5f9;
+                }}
+                
+                .fact-content.show {{
+                    display: block;
+                }}
+                
+                .fact-details {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin-bottom: 16px;
+                }}
+                
+                .fact-detail-section {{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }}
+                
+                .fact-detail-label {{
                     font-weight: 600;
-                    z-index: 10;
-                }}
-                
-                .table-view th:last-child {{
-                    border-right: none;
-                }}
-                
-                .table-view th:hover {{
-                    background-color: #e9ecef;
-                }}
-                
-                .table-view td {{
-                    padding: 12px 16px;
-                    border-bottom: 1px solid #dee2e6;
-                    border-right: 1px solid #f1f3f4;
+                    color: #374151;
                     font-size: 13px;
-                    vertical-align: top;
-                    white-space: nowrap;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }}
                 
-                .table-view td:last-child {{
-                    border-right: none;
+                .fact-detail-value {{
+                    color: #1f2937;
+                    line-height: 1.5;
+                    font-size: 14px;
                 }}
                 
-                .table-view tr:hover {{
-                    background-color: #f8f9fa;
+                .fact-event {{
+                    grid-column: 1 / -1;
+                    margin-bottom: 16px;
                 }}
                 
-                /* Specific column widths for better readability */
-                .table-view th:nth-child(1), .table-view td:nth-child(1) {{ /* Date */
-                    min-width: 120px;
-                }}
-                
-                .table-view th:nth-child(2), .table-view td:nth-child(2) {{ /* Event */
-                    min-width: 250px;
-                    max-width: 350px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                }}
-                
-                .table-view th:nth-child(3), .table-view td:nth-child(3) {{ /* Source Text */
-                    min-width: 300px;
-                    max-width: 500px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                    line-height: 1.4;
-                }}
-                
-                .table-view th:nth-child(4), .table-view td:nth-child(4) {{ /* Page */
-                    min-width: 60px;
-                    text-align: center;
-                }}
-                
-                .table-view th:nth-child(5), .table-view td:nth-child(5) {{ /* Document */
-                    min-width: 180px;
-                    max-width: 220px;
-                    white-space: normal;
-                    word-wrap: break-word;
+                .fact-event .fact-detail-value {{
+                    font-size: 15px;
                     font-weight: 500;
+                    color: #111827;
                 }}
                 
-                .table-view th:nth-child(6), .table-view td:nth-child(6) {{ /* Doc Summary */
-                    min-width: 250px;
-                    max-width: 400px;
-                    white-space: normal;
-                    word-wrap: break-word;
-                    line-height: 1.4;
+                .fact-source-text {{
+                    grid-column: 1 / -1;
+                    background-color: #f8fafc;
+                    padding: 16px;
+                    border-radius: 6px;
+                    border-left: 4px solid #3b82f6;
+                }}
+                
+                .fact-source-text .fact-detail-value {{
                     font-style: italic;
-                    color: #666;
+                    color: #4b5563;
+                    line-height: 1.6;
                 }}
                 
-                .table-view th:nth-child(7), .table-view td:nth-child(7) {{ /* Party */
-                    min-width: 100px;
-                }}
-                
-                .table-view th:nth-child(8), .table-view td:nth-child(8) {{ /* Status */
-                    min-width: 100px;
-                }}
-                
-                .table-view th:nth-child(9), .table-view td:nth-child(9) {{ /* Evidence */
-                    min-width: 120px;
+                @media (max-width: 768px) {{
+                    .fact-header {{
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 8px;
+                        padding: 12px 16px;
+                    }}
+                    
+                    .fact-main-info {{
+                        width: 100%;
+                        gap: 8px;
+                    }}
+                    
+                    .fact-details {{
+                        grid-template-columns: 1fr;
+                        gap: 16px;
+                    }}
+                    
+                    .fact-source-text {{
+                        grid-column: 1;
+                    }}
                 }}
                 
                 /* View toggle */
@@ -1231,7 +1357,7 @@ def main():
                     <div class="section-title">Case Facts</div>
                     
                     <div class="view-toggle">
-                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">Card View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
                         <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>
@@ -1244,24 +1370,7 @@ def main():
                     
                     <!-- Table View -->
                     <div id="table-view-content" class="facts-content">
-                        <div class="table-view-container">
-                            <table class="table-view">
-                                <thead>
-                                    <tr>
-                                        <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                        <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                        <th onclick="sortTable('facts-table-body', 2)">Source Text</th>
-                                        <th onclick="sortTable('facts-table-body', 3)">Page</th>
-                                        <th onclick="sortTable('facts-table-body', 4)">Document</th>
-                                        <th onclick="sortTable('facts-table-body', 5)">Doc Summary</th>
-                                        <th onclick="sortTable('facts-table-body', 6)">Party</th>
-                                        <th onclick="sortTable('facts-table-body', 7)">Status</th>
-                                        <th onclick="sortTable('facts-table-body', 8)">Evidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="facts-table-body"></tbody>
-                            </table>
-                        </div>
+                        <div id="facts-list" class="facts-list"></div>
                     </div>
                     
                     <!-- Timeline View -->
@@ -1331,23 +1440,27 @@ def main():
                     const timelineContent = document.getElementById('timeline-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
-                        // Copy table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join('\\t');
-                        
+                        // Copy facts data from containers
                         contentToCopy += 'Case Facts\\n\\n';
-                        contentToCopy += headers + '\\n';
                         
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => td.textContent.trim())
-                                .join('\\t');
+                        const factContainers = document.querySelectorAll('.fact-container');
+                        factContainers.forEach(container => {{
+                            const date = container.querySelector('.fact-date')?.textContent || '';
+                            const party = container.querySelector('.fact-party .badge')?.textContent || '';
+                            const status = container.querySelector('.fact-status')?.textContent || '';
+                            const event = container.querySelector('.fact-event .fact-detail-value')?.textContent || '';
+                            const sourceText = container.querySelector('.fact-source-text .fact-detail-value')?.textContent || '';
+                            const evidence = Array.from(container.querySelectorAll('.fact-evidence .badge')).map(badge => badge.textContent).join(', ') || 'None';
                             
-                            contentToCopy += rowText + '\\n';
+                            contentToCopy += `Date: ${{date}}\\n`;
+                            contentToCopy += `Party: ${{party}}\\n`;
+                            contentToCopy += `Status: ${{status}}\\n`;
+                            contentToCopy += `Event: ${{event}}\\n`;
+                            if (sourceText) {{
+                                contentToCopy += `Source Text: ${{sourceText}}\\n`;
+                            }}
+                            contentToCopy += `Evidence: ${{evidence}}\\n`;
+                            contentToCopy += '\\n---\\n\\n';
                         }});
                     }} else if (timelineContent.style.display !== 'none') {{
                         // Copy timeline data
@@ -1415,27 +1528,39 @@ def main():
                     const timelineContent = document.getElementById('timeline-view-content');
                     
                     if (tableContent.style.display !== 'none') {{
-                        // Export table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join(',');
+                        // Export container data as CSV
+                        let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Party,Status,Evidence,Related Argument\\n";
+                        let rows = '';
                         
-                        contentToCsv += headers + '\\n';
+                        // Get current filtered facts data
+                        const allBtn = document.getElementById('all-facts-btn');
+                        const disputedBtn = document.getElementById('disputed-facts-btn');
+                        const undisputedBtn = document.getElementById('undisputed-facts-btn');
                         
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => '\"' + td.textContent.trim() + '\"')
-                                .join(',');
+                        let currentFacts = factsData;
+                        if (disputedBtn.classList.contains('active')) {{
+                            currentFacts = factsData.filter(fact => fact.isDisputed);
+                        }} else if (undisputedBtn.classList.contains('active')) {{
+                            currentFacts = factsData.filter(fact => !fact.isDisputed);
+                        }}
+                        
+                        currentFacts.forEach(fact => {{
+                            const date = (fact.date || '').replace(/"/g, '""');
+                            const event = (fact.point || '').replace(/"/g, '""');
+                            const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                            const page = (fact.page || '').toString().replace(/"/g, '""');
+                            const docName = (fact.doc_name || '').replace(/"/g, '""');
+                            const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                            const party = (fact.party || '').replace(/"/g, '""');
+                            const status = fact.isDisputed ? 'Disputed' : 'Undisputed';
+                            const evidence = fact.exhibits ? fact.exhibits.join(', ') : '';
+                            const argument = `${{fact.argId}}. ${{fact.argTitle}}`.replace(/"/g, '""');
                             
-                            contentToCsv += rowText + '\\n';
+                            rows += `"${{date}}","${{event}}","${{sourceText}}","${{page}}","${{docName}}","${{docSummary}}","${{party}}","${{status}}","${{evidence}}","${{argument}}"\\n`;
                         }});
                         
-                        // Create link for CSV download
-                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                        const encodedUri = csvContent;
+                        const csvContent = headers + rows;
+                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
                         const link = document.createElement("a");
                         link.setAttribute("href", encodedUri);
                         link.setAttribute("download", "facts.csv");
@@ -1513,43 +1638,22 @@ def main():
                     }}
                 }}
                 
-                // Sort table function
-                function sortTable(tableId, columnIndex) {{
-                    const table = document.getElementById(tableId);
-                    const rows = Array.from(table.rows);
-                    let dir = 1; // 1 for ascending, -1 for descending
+                // Sort facts function (for container view)
+                function sortFacts(sortBy) {{
+                    // This could be implemented to sort the container view
+                    // For now, we'll just re-render with default date sorting
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
                     
-                    // Check if already sorted in this direction
-                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                        table.getAttribute('data-sort-dir') === '1') {{
-                        dir = -1;
+                    let currentType = 'all';
+                    if (disputedBtn.classList.contains('active')) {{
+                        currentType = 'disputed';
+                    }} else if (undisputedBtn.classList.contains('active')) {{
+                        currentType = 'undisputed';
                     }}
                     
-                    // Sort the rows
-                    rows.sort((a, b) => {{
-                        const cellA = a.cells[columnIndex].textContent.trim();
-                        const cellB = b.cells[columnIndex].textContent.trim();
-                        
-                        // Handle date sorting
-                        if (columnIndex === 0) {{
-                            // Attempt to parse as dates
-                            const dateA = new Date(cellA);
-                            const dateB = new Date(cellB);
-                            
-                            if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                return dir * (dateA - dateB);
-                            }}
-                        }}
-                        
-                        return dir * cellA.localeCompare(cellB);
-                    }});
-                    
-                    // Remove existing rows and append in new order
-                    rows.forEach(row => table.appendChild(row));
-                    
-                    // Store current sort direction and column
-                    table.setAttribute('data-sort-column', columnIndex);
-                    table.setAttribute('data-sort-dir', dir);
+                    renderFacts(currentType);
                 }}
                 
                 // Toggle document set visibility
@@ -1893,10 +1997,24 @@ def main():
                     }});
                 }}
                 
-                // Render facts table
+                // Toggle fact container visibility
+                function toggleFact(factIndex) {{
+                    const content = document.getElementById(`fact-content-${{factIndex}}`);
+                    const chevron = document.getElementById(`fact-chevron-${{factIndex}}`);
+                    
+                    if (content.classList.contains('show')) {{
+                        content.classList.remove('show');
+                        chevron.classList.remove('expanded');
+                    }} else {{
+                        content.classList.add('show');
+                        chevron.classList.add('expanded');
+                    }}
+                }}
+                
+                // Render facts as dropdown containers
                 function renderFacts(type = 'all') {{
-                    const tableBody = document.getElementById('facts-table-body');
-                    tableBody.innerHTML = '';
+                    const container = document.getElementById('facts-list');
+                    container.innerHTML = '';
                     
                     // Filter by type
                     let filteredFacts = factsData;
@@ -1915,81 +2033,175 @@ def main():
                         return new Date(dateA) - new Date(dateB);
                     }});
                     
-                    // Render rows
-                    filteredFacts.forEach(fact => {{
-                        const row = document.createElement('tr');
-                        if (fact.isDisputed) {{
-                            row.classList.add('disputed');
-                        }}
+                    // Render fact containers
+                    filteredFacts.forEach((fact, index) => {{
+                        const factContainer = document.createElement('div');
+                        factContainer.className = `fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
                         
-                        // Date column
-                        const dateCell = document.createElement('td');
-                        dateCell.textContent = fact.date;
-                        row.appendChild(dateCell);
+                        // Create fact header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
+                        headerEl.onclick = () => toggleFact(index);
                         
-                        // Event column
-                        const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.point;
-                        row.appendChild(eventCell);
+                        // Chevron
+                        const chevronEl = document.createElement('div');
+                        chevronEl.className = 'fact-chevron';
+                        chevronEl.id = `fact-chevron-${{index}}`;
+                        chevronEl.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        `;
+                        headerEl.appendChild(chevronEl);
                         
-                        // Source Text column
-                        const sourceTextCell = document.createElement('td');
-                        sourceTextCell.textContent = fact.source_text || '';
-                        row.appendChild(sourceTextCell);
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'fact-date';
+                        dateEl.textContent = fact.date;
+                        headerEl.appendChild(dateEl);
                         
-                        // Page column
-                        const pageCell = document.createElement('td');
-                        pageCell.textContent = fact.page || '';
-                        pageCell.style.textAlign = 'center';
-                        row.appendChild(pageCell);
+                        // Main info container
+                        const mainInfoEl = document.createElement('div');
+                        mainInfoEl.className = 'fact-main-info';
                         
-                        // Document column
-                        const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || '';
-                        row.appendChild(docCell);
-                        
-                        // Document Summary column
-                        const docSummaryCell = document.createElement('td');
-                        docSummaryCell.textContent = fact.doc_summary || '';
-                        row.appendChild(docSummaryCell);
-                        
-                        // Party column
-                        const partyCell = document.createElement('td');
+                        // Party
+                        const partyContainer = document.createElement('div');
+                        partyContainer.className = 'fact-party';
                         const partyBadge = document.createElement('span');
                         partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
                         partyBadge.textContent = fact.party;
-                        partyCell.appendChild(partyBadge);
-                        row.appendChild(partyCell);
+                        partyContainer.appendChild(partyBadge);
+                        mainInfoEl.appendChild(partyContainer);
                         
-                        // Status column
-                        const statusCell = document.createElement('td');
+                        // Status
+                        const statusContainer = document.createElement('div');
+                        statusContainer.className = 'fact-status';
                         if (fact.isDisputed) {{
                             const disputedBadge = document.createElement('span');
                             disputedBadge.className = 'badge disputed-badge';
                             disputedBadge.textContent = 'Disputed';
-                            statusCell.appendChild(disputedBadge);
+                            statusContainer.appendChild(disputedBadge);
                         }} else {{
-                            statusCell.textContent = 'Undisputed';
+                            statusContainer.textContent = 'Undisputed';
+                            statusContainer.style.color = '#059669';
+                            statusContainer.style.fontWeight = '500';
                         }}
-                        row.appendChild(statusCell);
+                        mainInfoEl.appendChild(statusContainer);
                         
-                        // Evidence column
-                        const evidenceCell = document.createElement('td');
+                        // Evidence
+                        const evidenceContainer = document.createElement('div');
+                        evidenceContainer.className = 'fact-evidence';
                         if (fact.exhibits && fact.exhibits.length > 0) {{
                             fact.exhibits.forEach(exhibitId => {{
                                 const exhibitBadge = document.createElement('span');
                                 exhibitBadge.className = 'badge exhibit-badge';
                                 exhibitBadge.textContent = exhibitId;
-                                exhibitBadge.style.marginRight = '4px';
-                                evidenceCell.appendChild(exhibitBadge);
+                                evidenceContainer.appendChild(exhibitBadge);
                             }});
                         }} else {{
-                            evidenceCell.textContent = 'None';
+                            const noEvidence = document.createElement('span');
+                            noEvidence.textContent = 'No Evidence';
+                            noEvidence.style.color = '#9ca3af';
+                            noEvidence.style.fontSize = '13px';
+                            evidenceContainer.appendChild(noEvidence);
                         }}
-                        row.appendChild(evidenceCell);
+                        mainInfoEl.appendChild(evidenceContainer);
                         
-                        tableBody.appendChild(row);
+                        headerEl.appendChild(mainInfoEl);
+                        factContainer.appendChild(headerEl);
+                        
+                        // Create fact content (dropdown)
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'fact-content';
+                        contentEl.id = `fact-content-${{index}}`;
+                        
+                        // Details grid
+                        const detailsEl = document.createElement('div');
+                        detailsEl.className = 'fact-details';
+                        
+                        // Event (full width)
+                        const eventSection = document.createElement('div');
+                        eventSection.className = 'fact-detail-section fact-event';
+                        eventSection.innerHTML = `
+                            <div class="fact-detail-label">Event</div>
+                            <div class="fact-detail-value">${{fact.point}}</div>
+                        `;
+                        detailsEl.appendChild(eventSection);
+                        
+                        // Source text (full width)
+                        if (fact.source_text) {{
+                            const sourceSection = document.createElement('div');
+                            sourceSection.className = 'fact-detail-section fact-source-text';
+                            sourceSection.innerHTML = `
+                                <div class="fact-detail-label">Source Text</div>
+                                <div class="fact-detail-value">${{fact.source_text}}</div>
+                            `;
+                            detailsEl.appendChild(sourceSection);
+                        }}
+                        
+                        // Page
+                        if (fact.page) {{
+                            const pageSection = document.createElement('div');
+                            pageSection.className = 'fact-detail-section';
+                            pageSection.innerHTML = `
+                                <div class="fact-detail-label">Page</div>
+                                <div class="fact-detail-value">${{fact.page}}</div>
+                            `;
+                            detailsEl.appendChild(pageSection);
+                        }}
+                        
+                        // Document
+                        if (fact.doc_name) {{
+                            const docSection = document.createElement('div');
+                            docSection.className = 'fact-detail-section';
+                            docSection.innerHTML = `
+                                <div class="fact-detail-label">Document</div>
+                                <div class="fact-detail-value">${{fact.doc_name}}</div>
+                            `;
+                            detailsEl.appendChild(docSection);
+                        }}
+                        
+                        // Argument
+                        const argSection = document.createElement('div');
+                        argSection.className = 'fact-detail-section';
+                        argSection.innerHTML = `
+                            <div class="fact-detail-label">Related Argument</div>
+                            <div class="fact-detail-value">${{fact.argId}}. ${{fact.argTitle}}</div>
+                        `;
+                        detailsEl.appendChild(argSection);
+                        
+                        // Paragraphs
+                        if (fact.paragraphs) {{
+                            const paragraphsSection = document.createElement('div');
+                            paragraphsSection.className = 'fact-detail-section';
+                            paragraphsSection.innerHTML = `
+                                <div class="fact-detail-label">Paragraphs</div>
+                                <div class="fact-detail-value">${{fact.paragraphs}}</div>
+                            `;
+                            detailsEl.appendChild(paragraphsSection);
+                        }}
+                        
+                        // Document summary (full width if exists)
+                        if (fact.doc_summary) {{
+                            const summarySection = document.createElement('div');
+                            summarySection.className = 'fact-detail-section';
+                            summarySection.style.gridColumn = '1 / -1';
+                            summarySection.innerHTML = `
+                                <div class="fact-detail-label">Document Summary</div>
+                                <div class="fact-detail-value" style="font-style: italic; color: #6b7280;">${{fact.doc_summary}}</div>
+                            `;
+                            detailsEl.appendChild(summarySection);
+                        }}
+                        
+                        contentEl.appendChild(detailsEl);
+                        factContainer.appendChild(contentEl);
+                        container.appendChild(factContainer);
                     }});
+                    
+                    // Show message if no facts found
+                    if (filteredFacts.length === 0) {{
+                        container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">No facts found matching the selected criteria.</p>';
+                    }}
                 }}
                 
                 // Initialize facts on page load

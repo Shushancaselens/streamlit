@@ -1421,11 +1421,247 @@ def main():
                     background-color: #e2e8f0;
                     margin-left: 12px;
                 }}
+                
+                /* Document Preview Modal */
+                .document-preview-modal {{
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0,0,0,0.5);
+                    animation: fadeIn 0.3s;
+                }}
+                
+                .document-preview-content {{
+                    background-color: #fefefe;
+                    margin: 5% auto;
+                    padding: 0;
+                    border: none;
+                    border-radius: 8px;
+                    width: 80%;
+                    max-width: 900px;
+                    max-height: 80vh;
+                    overflow: hidden;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                }}
+                
+                .document-preview-header {{
+                    background-color: #f8fafc;
+                    padding: 20px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }}
+                
+                .document-preview-title {{
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #1a202c;
+                    margin: 0;
+                }}
+                
+                .document-preview-close {{
+                    color: #718096;
+                    font-size: 28px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: color 0.2s;
+                }}
+                
+                .document-preview-close:hover,
+                .document-preview-close:focus {{
+                    color: #2d3748;
+                }}
+                
+                .document-preview-body {{
+                    padding: 20px;
+                    max-height: 60vh;
+                    overflow-y: auto;
+                }}
+                
+                .document-preview-meta {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 16px;
+                    margin-bottom: 20px;
+                    padding: 16px;
+                    background-color: #f7fafc;
+                    border-radius: 6px;
+                    border: 1px solid #e2e8f0;
+                }}
+                
+                .document-preview-meta-item {{
+                    display: flex;
+                    flex-direction: column;
+                }}
+                
+                .document-preview-meta-label {{
+                    font-weight: 600;
+                    color: #4a5568;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 4px;
+                }}
+                
+                .document-preview-meta-value {{
+                    color: #2d3748;
+                    font-size: 14px;
+                }}
+                
+                .document-preview-content-area {{
+                    background-color: white;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    padding: 20px;
+                    min-height: 200px;
+                    color: #4a5568;
+                    line-height: 1.6;
+                }}
+                
+                .document-preview-placeholder {{
+                    text-align: center;
+                    color: #a0aec0;
+                    font-style: italic;
+                    padding: 40px 20px;
+                }}
+                
+                @keyframes fadeIn {{
+                    from {{ opacity: 0; }}
+                    to {{ opacity: 1; }}
+                }}
+                
+                .document-preview-tabs {{
+                    display: flex;
+                    border-bottom: 1px solid #e2e8f0;
+                    background-color: #f8fafc;
+                }}
+                
+                .document-preview-tab {{
+                    padding: 12px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    font-weight: 500;
+                    color: #718096;
+                    border-bottom: 2px solid transparent;
+                    transition: all 0.2s;
+                }}
+                
+                .document-preview-tab.active {{
+                    color: #4299e1;
+                    border-bottom-color: #4299e1;
+                    background-color: white;
+                }}
+                
+                .document-preview-tab:hover {{
+                    color: #4299e1;
+                    background-color: rgba(66, 153, 225, 0.05);
+                }}
+                
+                .document-preview-tab-content {{
+                    display: none;
+                    padding: 20px;
+                }}
+                
+                .document-preview-tab-content.active {{
+                    display: block;
+                }}
             </style>
         </head>
         <body>
             <div class="container">
                 <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+                
+                <!-- Document Preview Modal -->
+                <div id="document-preview-modal" class="document-preview-modal">
+                    <div class="document-preview-content">
+                        <div class="document-preview-header">
+                            <h2 id="document-preview-title" class="document-preview-title">Document Preview</h2>
+                            <span class="document-preview-close" onclick="closeDocumentPreview()">&times;</span>
+                        </div>
+                        
+                        <div class="document-preview-tabs">
+                            <button class="document-preview-tab active" onclick="switchDocumentTab('overview')">Overview</button>
+                            <button class="document-preview-tab" onclick="switchDocumentTab('content')">Content</button>
+                            <button class="document-preview-tab" onclick="switchDocumentTab('metadata')">Metadata</button>
+                        </div>
+                        
+                        <div id="document-tab-overview" class="document-preview-tab-content active">
+                            <div class="document-preview-meta">
+                                <div class="document-preview-meta-item">
+                                    <div class="document-preview-meta-label">Document Name</div>
+                                    <div id="modal-doc-name" class="document-preview-meta-value">-</div>
+                                </div>
+                                <div class="document-preview-meta-item">
+                                    <div class="document-preview-meta-label">Page Reference</div>
+                                    <div id="modal-doc-page" class="document-preview-meta-value">-</div>
+                                </div>
+                                <div class="document-preview-meta-item">
+                                    <div class="document-preview-meta-label">Document Type</div>
+                                    <div id="modal-doc-type" class="document-preview-meta-value">Legal Document</div>
+                                </div>
+                                <div class="document-preview-meta-item">
+                                    <div class="document-preview-meta-label">Status</div>
+                                    <div id="modal-doc-status" class="document-preview-meta-value">Available</div>
+                                </div>
+                            </div>
+                            
+                            <div class="document-preview-content-area">
+                                <div class="document-preview-meta-label" style="margin-bottom: 12px;">Summary</div>
+                                <div id="modal-doc-summary" style="color: #2d3748; line-height: 1.6;">
+                                    Document summary will appear here...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="document-tab-content" class="document-preview-tab-content">
+                            <div class="document-preview-content-area">
+                                <div class="document-preview-placeholder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px; opacity: 0.5;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                    <div>Full document content would be displayed here</div>
+                                    <div style="font-size: 12px; margin-top: 8px;">This is a preview interface - actual document viewing would require integration with document management system</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="document-tab-metadata" class="document-preview-tab-content">
+                            <div class="document-preview-content-area">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <div>
+                                        <div class="document-preview-meta-label" style="margin-bottom: 8px;">Document Properties</div>
+                                        <div style="background-color: #f7fafc; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+                                            <div><strong>Created:</strong> <span id="modal-created-date">2024-01-15</span></div>
+                                            <div><strong>Modified:</strong> <span id="modal-modified-date">2024-01-20</span></div>
+                                            <div><strong>File Size:</strong> <span id="modal-file-size">2.4 MB</span></div>
+                                            <div><strong>Pages:</strong> <span id="modal-page-count">45</span></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="document-preview-meta-label" style="margin-bottom: 8px;">Legal Context</div>
+                                        <div style="background-color: #f7fafc; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+                                            <div><strong>Party:</strong> <span id="modal-party">Mixed</span></div>
+                                            <div><strong>Category:</strong> <span id="modal-category">Appeal</span></div>
+                                            <div><strong>Confidentiality:</strong> <span id="modal-confidential">Standard</span></div>
+                                            <div><strong>Language:</strong> <span id="modal-language">English</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="action-buttons">
                     <button class="action-button" onclick="copyAllContent()">
@@ -2122,8 +2358,23 @@ def main():
                         docSection.innerHTML = `
                             <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                <strong>${{fact.doc_name || 'N/A'}}</strong>
-                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                        ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                                    </div>
+                                    <svg onclick="openDocumentPreview('${{fact.doc_name}}', '${{fact.doc_summary}}', '${{fact.page}}')" 
+                                         style="cursor: pointer; color: #4299e1; margin-left: 8px; flex-shrink: 0;" 
+                                         onmouseover="this.style.color='#2b6cb0'" 
+                                         onmouseout="this.style.color='#4299e1'"
+                                         xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                </div>
                             </div>
                         `;
                         detailsEl.appendChild(docSection);
@@ -2352,7 +2603,20 @@ def main():
                         docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
                         docInfoEl.innerHTML = `
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <span><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</span>
+                                    <svg onclick="openDocumentPreview('${{fact.doc_name}}', '${{fact.doc_summary}}', '${{fact.page}}')" 
+                                         style="cursor: pointer; color: #4299e1; margin-left: 8px; flex-shrink: 0;" 
+                                         onmouseover="this.style.color='#2b6cb0'" 
+                                         onmouseout="this.style.color='#4299e1'"
+                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14,2 14,8 20,8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10,9 9,9 8,9"></polyline>
+                                    </svg>
+                                </div>
                                 <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
                                 <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
                                 <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
@@ -2558,7 +2822,22 @@ def main():
                                                 <td>${{fact.event}}</td>
                                                 <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
                                                 <td>${{fact.page || ''}}</td>
-                                                <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                <td>
+                                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                        <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                                        <svg onclick="openDocumentPreview('${{fact.doc_name}}', '${{fact.doc_summary}}', '${{fact.page}}')" 
+                                                             style="cursor: pointer; color: #4299e1; margin-left: 8px; flex-shrink: 0;" 
+                                                             onmouseover="this.style.color='#2b6cb0'" 
+                                                             onmouseout="this.style.color='#4299e1'"
+                                                             xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                            <polyline points="14,2 14,8 20,8"></polyline>
+                                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                            <polyline points="10,9 9,9 8,9"></polyline>
+                                                        </svg>
+                                                    </div>
+                                                </td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
                                                 <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
@@ -2568,19 +2847,25 @@ def main():
                                                     if (evidenceContent === 'None') {{
                                                         return 'None';
                                                     }}
-                                                    return evidenceContent.map((evidence, evidenceIndex) => `
-                                                        <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{evidenceIndex}}')" 
-                                                              style="display: inline-block; margin: 2px; padding: 2px 5px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 10px; cursor: pointer; font-size: 9px; font-weight: 600;"
-                                                              onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                              onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                            📁 ${{evidence.id}}
-                                                            <span id="evidence-icon-${{evidence.id}}-docset-${{evidenceIndex}}" style="margin-left: 2px; font-size: 7px;">+</span>
-                                                        </span>
-                                                        <div id="evidence-content-${{evidence.id}}-docset-${{evidenceIndex}}" 
-                                                             style="display: none; margin-top: 2px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 1px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 8px; color: #666; line-height: 1.2;">
-                                                            <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
+                                                    return `
+                                                        <div>
+                                                            ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                                                <div style="margin-bottom: 6px;">
+                                                                    <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{evidenceIndex}}')" 
+                                                                          style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
+                                                                          onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                                          onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                                        📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
+                                                                        <span id="evidence-icon-${{evidence.id}}-docset-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
+                                                                    </span>
+                                                                    <div id="evidence-content-${{evidence.id}}-docset-${{evidenceIndex}}" 
+                                                                         style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
+                                                                        ${{evidence.summary}}
+                                                                    </div>
+                                                                </div>
+                                                            `).join('')}}
                                                         </div>
-                                                    `).join('');
+                                                    `;
                                                 }})()}}</td>
                                             </tr>
                                         `).join('')}}
@@ -2649,8 +2934,39 @@ def main():
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || '';
-                        docCell.title = fact.doc_summary || '';
+                        const docContainer = document.createElement('div');
+                        docContainer.style.cssText = 'display: flex; align-items: center; justify-content: space-between;';
+                        
+                        const docName = document.createElement('strong');
+                        docName.textContent = fact.doc_name || 'N/A';
+                        docName.title = fact.doc_summary || '';
+                        docContainer.appendChild(docName);
+                        
+                        // Add preview icon
+                        const previewIcon = document.createElement('svg');
+                        previewIcon.onclick = () => openDocumentPreview(fact.doc_name, fact.doc_summary, fact.page);
+                        previewIcon.style.cssText = 'cursor: pointer; color: #4299e1; margin-left: 8px; flex-shrink: 0;';
+                        previewIcon.onmouseover = () => previewIcon.style.color = '#2b6cb0';
+                        previewIcon.onmouseout = () => previewIcon.style.color = '#4299e1';
+                        previewIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                        previewIcon.setAttribute('width', '16');
+                        previewIcon.setAttribute('height', '16');
+                        previewIcon.setAttribute('viewBox', '0 0 24 24');
+                        previewIcon.setAttribute('fill', 'none');
+                        previewIcon.setAttribute('stroke', 'currentColor');
+                        previewIcon.setAttribute('stroke-width', '2');
+                        previewIcon.setAttribute('stroke-linecap', 'round');
+                        previewIcon.setAttribute('stroke-linejoin', 'round');
+                        previewIcon.innerHTML = `
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        `;
+                        docContainer.appendChild(previewIcon);
+                        
+                        docCell.appendChild(docContainer);
                         row.appendChild(docCell);
                         
                         // Document Summary column
@@ -2728,6 +3044,73 @@ def main():
                 
                 // Initialize card view immediately
                 renderCardView('all');
+                
+                // Document preview modal functions
+                function openDocumentPreview(docName, docSummary, page) {{
+                    const modal = document.getElementById('document-preview-modal');
+                    const title = document.getElementById('document-preview-title');
+                    const modalDocName = document.getElementById('modal-doc-name');
+                    const modalDocPage = document.getElementById('modal-doc-page');
+                    const modalDocSummary = document.getElementById('modal-doc-summary');
+                    
+                    // Set content
+                    title.textContent = docName || 'Document Preview';
+                    modalDocName.textContent = docName || 'Unknown Document';
+                    modalDocPage.textContent = page ? `Page ${{page}}` : 'Not specified';
+                    modalDocSummary.textContent = docSummary || 'No summary available for this document.';
+                    
+                    // Show modal
+                    modal.style.display = 'block';
+                    
+                    // Set focus for accessibility
+                    modal.focus();
+                }}
+                
+                function closeDocumentPreview() {{
+                    const modal = document.getElementById('document-preview-modal');
+                    modal.style.display = 'none';
+                }}
+                
+                function switchDocumentTab(tabName) {{
+                    // Hide all tab contents
+                    const tabContents = document.querySelectorAll('.document-preview-tab-content');
+                    tabContents.forEach(content => {{
+                        content.classList.remove('active');
+                    }});
+                    
+                    // Remove active class from all tabs
+                    const tabs = document.querySelectorAll('.document-preview-tab');
+                    tabs.forEach(tab => {{
+                        tab.classList.remove('active');
+                    }});
+                    
+                    // Show selected tab content
+                    const selectedContent = document.getElementById(`document-tab-${{tabName}}`);
+                    if (selectedContent) {{
+                        selectedContent.classList.add('active');
+                    }}
+                    
+                    // Add active class to selected tab
+                    event.target.classList.add('active');
+                }}
+                
+                // Close modal when clicking outside of it
+                window.onclick = function(event) {{
+                    const modal = document.getElementById('document-preview-modal');
+                    if (event.target === modal) {{
+                        closeDocumentPreview();
+                    }}
+                }}
+                
+                // Close modal with Escape key
+                document.addEventListener('keydown', function(event) {{
+                    if (event.key === 'Escape') {{
+                        const modal = document.getElementById('document-preview-modal');
+                        if (modal.style.display === 'block') {{
+                            closeDocumentPreview();
+                        }}
+                    }}
+                }});
             </script>
         </body>
         </html>

@@ -835,16 +835,21 @@ def main():
                 /* Table view with horizontal scroll */
                 .table-view-container {{
                     overflow-x: auto;
+                    overflow-y: visible;
                     border: 1px solid #dee2e6;
                     border-radius: 8px;
                     margin-top: 20px;
+                    width: 100%;
+                    max-width: 100%;
+                    display: block;
                 }}
                 
                 .table-view {{
-                    width: 100%;
-                    min-width: 1200px; /* Ensure minimum width for readability */
+                    min-width: 1400px; /* Increased to definitely trigger scroll */
+                    width: 1400px; /* Force specific width */
                     border-collapse: collapse;
                     font-size: 14px; /* Normal readable size */
+                    table-layout: fixed; /* Fixed layout for consistent column widths */
                 }}
                 
                 .table-view th {{
@@ -858,88 +863,39 @@ def main():
                     font-size: 13px;
                     white-space: nowrap;
                     z-index: 10;
+                    overflow: hidden;
                 }}
                 
                 .table-view th:hover {{
                     background-color: #e9ecef;
                 }}
                 
+                /* Force specific column widths */
+                .table-view th:nth-child(1) {{ width: 100px; }} /* Date */
+                .table-view th:nth-child(2) {{ width: 200px; }} /* Event */
+                .table-view th:nth-child(3) {{ width: 250px; }} /* Source Text */
+                .table-view th:nth-child(4) {{ width: 60px; }}  /* Page */
+                .table-view th:nth-child(5) {{ width: 150px; }} /* Document */
+                .table-view th:nth-child(6) {{ width: 200px; }} /* Doc Summary */
+                .table-view th:nth-child(7) {{ width: 200px; }} /* Claimant Submission */
+                .table-view th:nth-child(8) {{ width: 200px; }} /* Respondent Submission */
+                .table-view th:nth-child(9) {{ width: 80px; }}  /* Status */
+                .table-view th:nth-child(10) {{ width: 150px; }} /* Evidence */
+                
+                /* Text wrapping for content cells */
                 .table-view td {{
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
                     padding: 12px;
                     border-bottom: 1px solid #dee2e6;
                     font-size: 13px; /* Normal readable size */
                     vertical-align: top;
                     line-height: 1.4;
+                    overflow: hidden;
                 }}
                 
                 .table-view tr:hover {{
                     background-color: #f8f9fa;
-                }}
-                
-                /* Column-specific widths for better readability */
-                .table-view td:nth-child(1) {{ /* Date */
-                    min-width: 120px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(2) {{ /* Event */
-                    min-width: 250px;
-                    max-width: 300px;
-                }}
-                
-                .table-view td:nth-child(3) {{ /* Source Text */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(4) {{ /* Page */
-                    min-width: 80px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(5) {{ /* Document */
-                    min-width: 200px;
-                    max-width: 250px;
-                    font-weight: 500;
-                }}
-                
-                .table-view td:nth-child(6) {{ /* Doc Summary */
-                    min-width: 250px;
-                    max-width: 350px;
-                    font-style: italic;
-                    color: #666;
-                }}
-                
-                .table-view td:nth-child(7) {{ /* Claimant Submission */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(8) {{ /* Respondent Submission */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(9) {{ /* Status */
-                    min-width: 100px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(10) {{ /* Evidence */
-                    min-width: 200px;
-                    max-width: 300px;
-                }}
-                
-                /* Text wrapping for content cells */
-                .table-view td:nth-child(2),
-                .table-view td:nth-child(3),
-                .table-view td:nth-child(5),
-                .table-view td:nth-child(6),
-                .table-view td:nth-child(7),
-                .table-view td:nth-child(8),
-                .table-view td:nth-child(10) {{
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
                 }}
                 
                 /* Horizontal scroll indicator */
@@ -1028,16 +984,33 @@ def main():
                 /* Document sets table container - contained scroll */
                 .docset-table-container {{
                     overflow-x: auto;
+                    overflow-y: visible;
                     border: 1px solid #dee2e6;
                     border-radius: 6px;
                     margin-top: 8px;
+                    width: 100%;
                     max-width: 100%;
+                    display: block;
                 }}
                 
                 .docset-table-container .table-view {{
-                    min-width: 1200px; /* Ensure minimum width for readability */
+                    min-width: 1400px; /* Increased to definitely trigger scroll */
+                    width: 1400px; /* Force specific width */
                     margin: 0; /* Remove top margin for nested tables */
+                    table-layout: fixed; /* Fixed layout for consistent column widths */
                 }}
+                
+                /* Force specific column widths for document sets tables */
+                .docset-table-container .table-view th:nth-child(1) {{ width: 100px; }} /* Date */
+                .docset-table-container .table-view th:nth-child(2) {{ width: 200px; }} /* Event */
+                .docset-table-container .table-view th:nth-child(3) {{ width: 250px; }} /* Source Text */
+                .docset-table-container .table-view th:nth-child(4) {{ width: 60px; }}  /* Page */
+                .docset-table-container .table-view th:nth-child(5) {{ width: 150px; }} /* Document */
+                .docset-table-container .table-view th:nth-child(6) {{ width: 200px; }} /* Doc Summary */
+                .docset-table-container .table-view th:nth-child(7) {{ width: 200px; }} /* Claimant */
+                .docset-table-container .table-view th:nth-child(8) {{ width: 200px; }} /* Respondent */
+                .docset-table-container .table-view th:nth-child(9) {{ width: 80px; }}  /* Status */
+                .docset-table-container .table-view th:nth-child(10) {{ width: 150px; }} /* Evidence */
                 
                 /* Scrollbar styling for document sets */
                 .docset-table-container::-webkit-scrollbar {{

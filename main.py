@@ -92,7 +92,7 @@ def get_argument_data():
                                     "isDisputed": True,
                                     "source": "Respondent",
                                     "paragraphs": "29-30",
-                                    "exhibits": ["C-2"],
+                                    "exhibits": ["C-2", "R-1"],
                                     "source_text": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
                                     "page": 35,
                                     "doc_name": "Statement of Appeal",
@@ -173,6 +173,14 @@ def get_argument_data():
                                     "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity."
                                 }
                             ],
+                            "evidence": [
+                                {
+                                    "id": "C-5",
+                                    "title": "Uniform Evolution Documentation",
+                                    "summary": "Detailed photographic and written documentation of uniform changes throughout the club's history, including fabric samples, design sketches, and manufacturer records showing consistent color palette maintenance.",
+                                    "citations": ["56", "57", "58"]
+                                }
+                            ],
                             "children": {}
                         }
                     }
@@ -201,7 +209,7 @@ def get_argument_data():
                     "isDisputed": True,
                     "source": "Claimant",
                     "paragraphs": "206-207",
-                    "exhibits": ["R-1"],
+                    "exhibits": ["R-1", "R-2"],
                     "source_text": "The club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.",
                     "page": 89,
                     "doc_name": "Answer to Request for Provisional Measures",
@@ -352,129 +360,6 @@ def get_all_facts():
     
     return enhanced_facts
 
-# Get enhanced timeline data with claimant and respondent submissions
-def get_timeline_data():
-    # Create enhanced timeline events with both parties' positions
-    timeline_events = [
-        {
-            "event": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "page": 15,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
-            "isDisputed": True,
-            "claimant_submission": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
-            "respondent_submission": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "exhibits": ["C-2", "R-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Both parties - Statement of Appeal & Answer to PM",
-            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "page": 127,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": True,
-            "claimant_submission": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "respondent_submission": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
-            "exhibits": ["C-4", "R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "page": 67,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "page": 42,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": True,
-            "claimant_submission": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely, but this was a temporary administrative measure that did not affect the club's legal identity.",
-            "respondent_submission": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
-            "page": 158,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "New entity registered with similar name",
-            "date": "1976-09-15",
-            "isDisputed": True,
-            "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
-            "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
-            "exhibits": ["R-2", "C-4", "R-1"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
-            "page": 162,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Federation officially recognizes club history spanning pre and post 1976",
-            "date": "2010-05-18",
-            "isDisputed": True,
-            "claimant_submission": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.",
-            "respondent_submission": "The 2010 federation recognition was a purely administrative convenience that does not override the documented legal and operational discontinuity that occurred in 1975-1976.",
-            "exhibits": ["C-10"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility",
-            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
-            "page": 234,
-            "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
-            "parties_involved": ["Appellant", "Respondent"]
-        }
-    ]
-    
-    # Sort events chronologically
-    timeline_events.sort(key=lambda x: x['date'])
-    
-    return timeline_events
-
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     # Return grouped document sets with individual document subfolders
@@ -542,13 +427,11 @@ def main():
     args_data = get_argument_data()
     facts_data = get_all_facts()
     document_sets = get_document_sets()
-    timeline_data = get_timeline_data()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
-    timeline_json = json.dumps(timeline_data)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -844,28 +727,6 @@ def main():
                     background-color: #f8f9fa;
                 }}
                 
-                /* Source text column styling */
-                .table-view td:nth-child(3) {{
-                    max-width: 300px;
-                    word-wrap: break-word;
-                    line-height: 1.4;
-                }}
-                
-                /* Document column styling */
-                .table-view td:nth-child(5) {{
-                    max-width: 150px;
-                    font-weight: 500;
-                }}
-                
-                /* Document summary column styling */
-                .table-view td:nth-child(6) {{
-                    max-width: 250px;
-                    word-wrap: break-word;
-                    line-height: 1.4;
-                    font-style: italic;
-                    color: #666;
-                }}
-                
                 /* View toggle */
                 .view-toggle {{
                     display: flex;
@@ -926,7 +787,7 @@ def main():
                 }}
                 
                 .docset-content {{
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
+                    display: block;
                     padding: 0 0 20px 0;
                 }}
                 
@@ -942,7 +803,7 @@ def main():
                 .chevron {{
                     transition: transform 0.2s;
                     margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
+                    transform: rotate(90deg);
                 }}
                 
                 .chevron.expanded {{
@@ -1355,10 +1216,10 @@ def main():
             </div>
             
             <script>
-                // Initialize data - ensure all views use the same core data structure
+                // Initialize data
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
+                const args_data = {args_json};
                 
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
@@ -1373,7 +1234,6 @@ def main():
                         respondent_submission: fact.respondent_submission || 'No specific submission recorded',
                         isDisputed: fact.isDisputed,
                         exhibits: fact.exhibits || [],
-                        evidence: fact.evidence || [], // Add evidence details
                         parties_involved: fact.parties_involved || [],
                         argId: fact.argId || '',
                         argTitle: fact.argTitle || '',
@@ -1387,8 +1247,6 @@ def main():
                         return 'None';
                     }}
                     
-                    // Get evidence details from the argument data
-                    const args_data = {args_json};
                     let evidenceContent = [];
                     
                     fact.exhibits.forEach(exhibitId => {{
@@ -1431,27 +1289,6 @@ def main():
                     return evidenceContent;
                 }}
                 
-                // Standardize timeline data to match facts structure
-                function standardizeTimelineData(item) {{
-                    return {{
-                        date: item.date,
-                        event: item.event,
-                        source_text: item.source_text || '',
-                        page: item.page || '',
-                        doc_name: item.doc_name || '',
-                        doc_summary: item.doc_summary || '',
-                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
-                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
-                        isDisputed: item.isDisputed,
-                        exhibits: item.exhibits || [],
-                        evidence: item.evidence || [],
-                        parties_involved: item.parties_involved || [],
-                        argId: item.argId || '',
-                        argTitle: item.argTitle || '',
-                        paragraphs: item.paragraphs || ''
-                    }};
-                }}
-                
                 // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{
                     const tableBtn = document.getElementById('table-view-btn');
@@ -1484,6 +1321,7 @@ def main():
                     }} else if (viewType === 'table') {{
                         tableBtn.classList.add('active');
                         tableContent.style.display = 'block';
+                        renderFacts();
                     }} else if (viewType === 'timeline') {{
                         timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
@@ -1493,219 +1331,6 @@ def main():
                         docsetContent.style.display = 'block';
                         renderDocumentSets();
                     }}
-                }}
-                
-                // Copy all content function
-                function copyAllContent() {{
-                    let contentToCopy = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    
-                    if (cardContent.style.display !== 'none') {{
-                        // Copy card data
-                        contentToCopy += 'Case Facts (Card View)\\n\\n';
-                        
-                        const cardItems = document.querySelectorAll('.card-fact-container');
-                        cardItems.forEach(card => {{
-                            const dateEl = card.querySelector('.card-fact-date');
-                            const eventEl = card.querySelector('.card-fact-event');
-                            const partyEls = card.querySelectorAll('.badge');
-                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
-                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
-                            
-                            if (dateEl && eventEl) {{
-                                const date = dateEl.textContent.trim();
-                                const event = eventEl.textContent.trim();
-                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
-                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
-                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
-                                
-                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
-                                if (claimantSubmission) {{
-                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
-                                }}
-                                if (respondentSubmission) {{
-                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
-                                }}
-                                contentToCopy += '\\n';
-                            }}
-                        }});
-                    }} else if (tableContent.style.display !== 'none') {{
-                        // Copy table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join('\\t');
-                        
-                        contentToCopy += 'Case Facts\\n\\n';
-                        contentToCopy += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => td.textContent.trim())
-                                .join('\\t');
-                            
-                            contentToCopy += rowText + '\\n';
-                        }});
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        // Copy timeline data
-                        contentToCopy += 'Case Timeline\\n\\n';
-                        
-                        const timelineItems = document.querySelectorAll('.timeline-item');
-                        timelineItems.forEach(item => {{
-                            const dateEl = item.querySelector('.timeline-date');
-                            const factEl = item.querySelector('.timeline-fact');
-                            const partyEls = item.querySelectorAll('.badge');
-                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
-                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
-                            
-                            if (dateEl && factEl) {{
-                                const date = dateEl.textContent.trim();
-                                const fact = factEl.textContent.trim();
-                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
-                                
-                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
-                                
-                                if (claimantEl) {{
-                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
-                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
-                                }}
-                                
-                                if (respondentEl) {{
-                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
-                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
-                                }}
-                                
-                                contentToCopy += '\\n';
-                            }}
-                        }});
-                    }} else {{
-                        // Copy document sets data (just a basic representation)
-                        contentToCopy += 'Case Facts by Document\\n\\n';
-                        
-                        // This is a simplified version since the full structure would be complex
-                        const docsetContainers = document.querySelectorAll('.docset-container');
-                        docsetContainers.forEach(container => {{
-                            const header = container.querySelector('.docset-header');
-                            const title = header.querySelector('span').textContent;
-                            contentToCopy += `=== ${{title}} ===\\n`;
-                            
-                            // Get facts from this document
-                            const tableFacts = container.querySelectorAll('tbody tr');
-                            tableFacts.forEach(fact => {{
-                                const cells = Array.from(fact.querySelectorAll('td'));
-                                const date = cells[1] ? cells[1].textContent : '';
-                                const event = cells[2] ? cells[2].textContent : '';
-                                const claimantSub = cells[6] ? cells[6].textContent : '';
-                                const respondentSub = cells[7] ? cells[7].textContent : '';
-                                
-                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
-                                if (claimantSub && claimantSub !== 'No submission') {{
-                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
-                                }}
-                                if (respondentSub && respondentSub !== 'No submission') {{
-                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
-                                }}
-                            }});
-                            
-                            contentToCopy += '\\n';
-                        }});
-                    }}
-                    
-                    // Create a temporary textarea to copy the content
-                    const textarea = document.createElement('textarea');
-                    textarea.value = contentToCopy;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    
-                    // Show notification
-                    const notification = document.getElementById('copy-notification');
-                    notification.classList.add('show');
-                    
-                    setTimeout(() => {{
-                        notification.classList.remove('show');
-                    }}, 2000);
-                }}
-                
-                // Export functions
-                function exportAsCsv() {{
-                    let contentToCsv = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    // Get currently active tab filter
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    let currentFacts = factsData.map(standardizeFactData);
-                    if (disputedBtn.classList.contains('active')) {{
-                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
-                    }} else if (undisputedBtn.classList.contains('active')) {{
-                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Standard headers for all views
-                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
-                    let rows = '';
-                    
-                    currentFacts.forEach(fact => {{
-                        const evidenceContent = getEvidenceContent(fact);
-                        let evidenceText = 'None';
-                        if (evidenceContent !== 'None') {{
-                            evidenceText = evidenceContent.map((ev, index) => `[${{index + 1}}] ${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
-                        }}
-                        
-                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
-                        const docName = (fact.doc_name || '').replace(/"/g, '""');
-                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
-                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
-                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
-                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
-                        
-                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
-                    }});
-                    
-                    const csvContent = headers + rows;
-                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    
-                    // Set filename based on active view
-                    let filename = "facts.csv";
-                    if (cardContent.style.display !== 'none') {{
-                        filename = "facts_cards.csv";
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        filename = "facts_timeline.csv";
-                    }} else if (docsetContent.style.display !== 'none') {{
-                        filename = "facts_documents.csv";
-                    }} else {{
-                        filename = "facts_table.csv";
-                    }}
-                    
-                    link.setAttribute("download", filename);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }}
-                
-                function exportAsPdf() {{
-                    alert("PDF export functionality would be implemented here");
-                }}
-                
-                function exportAsWord() {{
-                    alert("Word export functionality would be implemented here");
                 }}
                 
                 // Switch facts tab
@@ -1722,13 +1347,10 @@ def main():
                     // Add active to selected
                     if (tabType === 'all') {{
                         allBtn.classList.add('active');
-                        renderFacts('all');
                     }} else if (tabType === 'disputed') {{
                         disputedBtn.classList.add('active');
-                        renderFacts('disputed');
                     }} else {{
                         undisputedBtn.classList.add('active');
-                        renderFacts('undisputed');
                     }}
                     
                     // Update active view
@@ -1746,45 +1368,6 @@ def main():
                     }} else if (docsetContent.style.display !== 'none') {{
                         renderDocumentSets(tabType);
                     }}
-                }}
-                
-                // Sort table function
-                function sortTable(tableId, columnIndex) {{
-                    const table = document.getElementById(tableId);
-                    const rows = Array.from(table.rows);
-                    let dir = 1; // 1 for ascending, -1 for descending
-                    
-                    // Check if already sorted in this direction
-                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                        table.getAttribute('data-sort-dir') === '1') {{
-                        dir = -1;
-                    }}
-                    
-                    // Sort the rows
-                    rows.sort((a, b) => {{
-                        const cellA = a.cells[columnIndex].textContent.trim();
-                        const cellB = b.cells[columnIndex].textContent.trim();
-                        
-                        // Handle date sorting
-                        if (columnIndex === 0) {{
-                            // Attempt to parse as dates
-                            const dateA = new Date(cellA);
-                            const dateB = new Date(cellB);
-                            
-                            if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                return dir * (dateA - dateB);
-                            }}
-                        }}
-                        
-                        return dir * cellA.localeCompare(cellB);
-                    }});
-                    
-                    // Remove existing rows and append in new order
-                    rows.forEach(row => table.appendChild(row));
-                    
-                    // Store current sort direction and column
-                    table.setAttribute('data-sort-column', columnIndex);
-                    table.setAttribute('data-sort-dir', dir);
                 }}
                 
                 // Toggle card fact visibility
@@ -1817,25 +1400,22 @@ def main():
                 
                 // Format date for display
                 function formatDate(dateString) {{
-                    // If it's a range, just return it as is
-                    if (dateString.includes('-')) {{
+                    if (dateString.includes('-') && !dateString.match(/\\d{{4}}-\\d{{2}}-\\d{{2}}/)) {{
                         return dateString;
                     }}
                     
-                    // Try to parse as a date
                     const date = new Date(dateString);
                     if (isNaN(date)) {{
                         return dateString;
                     }}
                     
-                    // Format the date
                     const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
                     return date.toLocaleDateString(undefined, options);
                 }}
                 
                 // Helper to extract year from date
                 function getYear(dateString) {{
-                    if (dateString.includes('-')) {{
+                    if (dateString.includes('-') && !dateString.match(/\\d{{4}}-\\d{{2}}-\\d{{2}}/)) {{
                         return dateString.split('-')[0];
                     }}
                     
@@ -1847,7 +1427,7 @@ def main():
                     return date.getFullYear().toString();
                 }}
                 
-                // Render card view with dropdown containers for each fact
+                // Render card view
                 function renderCardView(tabType = 'all') {{
                     const container = document.getElementById('card-facts-container');
                     container.innerHTML = '';
@@ -2011,7 +1591,7 @@ def main():
                             contentEl.appendChild(summaryEl);
                         }}
                         
-                        // Status and Exhibits section
+                        // Status and Evidence section
                         const statusExhibitsEl = document.createElement('div');
                         statusExhibitsEl.className = 'card-fact-details';
                         statusExhibitsEl.style.marginTop = '16px';
@@ -2050,9 +1630,9 @@ def main():
                                     `).join('')}}
                                 </div>
                             `;
-                        }
-                        statusExhibitsEl.appendChild(evidenceSection);
+                        }}
                         
+                        statusExhibitsEl.appendChild(evidenceSection);
                         contentEl.appendChild(statusExhibitsEl);
                         cardContainer.appendChild(contentEl);
                         container.appendChild(cardContainer);
@@ -2064,12 +1644,12 @@ def main():
                     }}
                 }}
                 
-                // Render enhanced timeline view
+                // Render timeline view
                 function renderTimeline(tabType = 'all') {{
                     const container = document.getElementById('timeline-events');
                     container.innerHTML = '';
                     
-                    // Use factsData and standardize it, not separate timelineData
+                    // Use factsData and standardize it
                     let filteredData = factsData.map(standardizeFactData);
                     if (tabType === 'disputed') {{
                         filteredData = filteredData.filter(item => item.isDisputed);
@@ -2367,39 +1947,41 @@ def main():
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.event}}</td>
-                                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
-                                                <td>${{fact.page || ''}}</td>
-                                                <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{(() => {{
-                                                    const evidenceContent = getEvidenceContent(fact);
-                                                    if (evidenceContent === 'None') {{
-                                                        return 'None';
-                                                    }}
-                                                    return `
-                                                        <div style="font-size: 10px; font-weight: 600; color: #dd6b20; margin-bottom: 4px;">
-                                                            Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})
-                                                        </div>
-                                                        ${{evidenceContent.map((evidence, index) => `
-                                                            <div style="margin-bottom: 6px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 9px;">
-                                                                <div style="display: flex; align-items: center; margin-bottom: 2px;">
-                                                                    <span style="background-color: #dd6b20; color: white; padding: 1px 3px; border-radius: 2px; font-size: 8px; margin-right: 3px;">${{index + 1}}</span>
-                                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 9px;">${{evidence.id}}: ${{evidence.title}}</span>
-                                                                </div>
-                                                                <div style="color: #666; line-height: 1.2; padding-left: 1px;">${{evidence.summary.length > 80 ? evidence.summary.substring(0, 80) + '...' : evidence.summary}}</div>
+                                        ${{facts.map(fact => {{
+                                            const evidenceContent = getEvidenceContent(fact);
+                                            let evidenceHtml = 'None';
+                                            if (evidenceContent !== 'None') {{
+                                                evidenceHtml = `
+                                                    <div style="font-size: 10px; font-weight: 600; color: #dd6b20; margin-bottom: 4px;">
+                                                        Evidence (${{evidenceContent.length}} item${{evidenceContent.length > 1 ? 's' : ''}})
+                                                    </div>
+                                                    ${{evidenceContent.map((evidence, index) => `
+                                                        <div style="margin-bottom: 6px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 2px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 9px;">
+                                                            <div style="display: flex; align-items: center; margin-bottom: 2px;">
+                                                                <span style="background-color: #dd6b20; color: white; padding: 1px 3px; border-radius: 2px; font-size: 8px; margin-right: 3px;">${{index + 1}}</span>
+                                                                <span style="font-weight: 600; color: #dd6b20; font-size: 9px;">${{evidence.id}}: ${{evidence.title}}</span>
                                                             </div>
-                                                        `).join('')}}
-                                                    `;
-                                                }})()}}</td>
-                                            </tr>
-                                        `).join('')}}
+                                                            <div style="color: #666; line-height: 1.2; padding-left: 1px;">${{evidence.summary.length > 80 ? evidence.summary.substring(0, 80) + '...' : evidence.summary}}</div>
+                                                        </div>
+                                                    `).join('')}}
+                                                `;
+                                            }}
+                                            
+                                            return `
+                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                    <td>${{fact.date}}</td>
+                                                    <td>${{fact.event}}</td>
+                                                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
+                                                    <td>${{fact.page || ''}}</td>
+                                                    <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
+                                                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
+                                                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
+                                                    <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                    <td>${{evidenceHtml}}</td>
+                                                </tr>
+                                            `;
+                                        }}).join('')}}
                                     </tbody>
                                 </table>
                             `;
@@ -2545,6 +2127,254 @@ def main():
                         
                         tableBody.appendChild(row);
                     }});
+                }}
+                
+                // Sort table function
+                function sortTable(tableId, columnIndex) {{
+                    const table = document.getElementById(tableId);
+                    const rows = Array.from(table.rows);
+                    let dir = 1; // 1 for ascending, -1 for descending
+                    
+                    // Check if already sorted in this direction
+                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                        table.getAttribute('data-sort-dir') === '1') {{
+                        dir = -1;
+                    }}
+                    
+                    // Sort the rows
+                    rows.sort((a, b) => {{
+                        const cellA = a.cells[columnIndex].textContent.trim();
+                        const cellB = b.cells[columnIndex].textContent.trim();
+                        
+                        // Handle date sorting
+                        if (columnIndex === 0) {{
+                            // Attempt to parse as dates
+                            const dateA = new Date(cellA);
+                            const dateB = new Date(cellB);
+                            
+                            if (!isNaN(dateA) && !isNaN(dateB)) {{
+                                return dir * (dateA - dateB);
+                            }}
+                        }}
+                        
+                        return dir * cellA.localeCompare(cellB);
+                    }});
+                    
+                    // Remove existing rows and append in new order
+                    rows.forEach(row => table.appendChild(row));
+                    
+                    // Store current sort direction and column
+                    table.setAttribute('data-sort-column', columnIndex);
+                    table.setAttribute('data-sort-dir', dir);
+                }}
+                
+                // Copy all content function
+                function copyAllContent() {{
+                    let contentToCopy = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        // Copy card data
+                        contentToCopy += 'Case Facts (Card View)\\n\\n';
+                        
+                        const cardItems = document.querySelectorAll('.card-fact-container');
+                        cardItems.forEach(card => {{
+                            const dateEl = card.querySelector('.card-fact-date');
+                            const eventEl = card.querySelector('.card-fact-event');
+                            const partyEls = card.querySelectorAll('.badge');
+                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
+                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
+                            
+                            if (dateEl && eventEl) {{
+                                const date = dateEl.textContent.trim();
+                                const event = eventEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
+                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
+                                if (claimantSubmission) {{
+                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
+                                }}
+                                if (respondentSubmission) {{
+                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
+                                }}
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join('\\t');
+                        
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Copy timeline data
+                        contentToCopy += 'Case Timeline\\n\\n';
+                        
+                        const timelineItems = document.querySelectorAll('.timeline-item');
+                        timelineItems.forEach(item => {{
+                            const dateEl = item.querySelector('.timeline-date');
+                            const factEl = item.querySelector('.timeline-fact');
+                            const partyEls = item.querySelectorAll('.badge');
+                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
+                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
+                            
+                            if (dateEl && factEl) {{
+                                const date = dateEl.textContent.trim();
+                                const fact = factEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                
+                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
+                                
+                                if (claimantEl) {{
+                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
+                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
+                                }}
+                                
+                                if (respondentEl) {{
+                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
+                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
+                                }}
+                                
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else {{
+                        // Copy document sets data (just a basic representation)
+                        contentToCopy += 'Case Facts by Document\\n\\n';
+                        
+                        // This is a simplified version since the full structure would be complex
+                        const docsetContainers = document.querySelectorAll('.docset-container');
+                        docsetContainers.forEach(container => {{
+                            const header = container.querySelector('.docset-header');
+                            const title = header.querySelector('span').textContent;
+                            contentToCopy += `=== ${{title}} ===\\n`;
+                            
+                            // Get facts from this document
+                            const tableFacts = container.querySelectorAll('tbody tr');
+                            tableFacts.forEach(fact => {{
+                                const cells = Array.from(fact.querySelectorAll('td'));
+                                const date = cells[1] ? cells[1].textContent : '';
+                                const event = cells[2] ? cells[2].textContent : '';
+                                const claimantSub = cells[6] ? cells[6].textContent : '';
+                                const respondentSub = cells[7] ? cells[7].textContent : '';
+                                
+                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
+                                if (claimantSub && claimantSub !== 'No submission') {{
+                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
+                                }}
+                                if (respondentSub && respondentSub !== 'No submission') {{
+                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
+                                }}
+                            }});
+                            
+                            contentToCopy += '\\n';
+                        }});
+                    }}
+                    
+                    // Create a temporary textarea to copy the content
+                    const textarea = document.createElement('textarea');
+                    textarea.value = contentToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Show notification
+                    const notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {{
+                        notification.classList.remove('show');
+                    }}, 2000);
+                }}
+                
+                // Export functions
+                function exportAsCsv() {{
+                    // Get currently active tab filter
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    let currentFacts = factsData.map(standardizeFactData);
+                    if (disputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
+                    }} else if (undisputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Standard headers for all views
+                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
+                    let rows = '';
+                    
+                    currentFacts.forEach(fact => {{
+                        const evidenceContent = getEvidenceContent(fact);
+                        let evidenceText = 'None';
+                        if (evidenceContent !== 'None') {{
+                            evidenceText = evidenceContent.map((ev, index) => `[${{index + 1}}] ${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
+                        }}
+                        
+                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                        const docName = (fact.doc_name || '').replace(/"/g, '""');
+                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
+                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
+                        
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
+                    }});
+                    
+                    const csvContent = headers + rows;
+                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    
+                    // Set filename based on active view
+                    let filename = "facts.csv";
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        filename = "facts_cards.csv";
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        filename = "facts_timeline.csv";
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        filename = "facts_documents.csv";
+                    }} else {{
+                        filename = "facts_table.csv";
+                    }}
+                    
+                    link.setAttribute("download", filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }}
+                
+                function exportAsPdf() {{
+                    alert("PDF export functionality would be implemented here");
+                }}
+                
+                function exportAsWord() {{
+                    alert("Word export functionality would be implemented here");
                 }}
                 
                 // Initialize facts on page load

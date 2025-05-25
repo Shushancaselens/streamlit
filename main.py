@@ -218,7 +218,7 @@ def get_argument_data():
 
 # Get all facts from the data
 def get_all_facts():
-    # New facts structure with Antani Ivanov information
+    # New facts structure with Antani Ivanov information - using ALL provided fields
     facts = [
         {
             'date': '1999-07-17',
@@ -228,59 +228,23 @@ def get_all_facts():
             'page': '1,2',
             'doc_name': 'Decision No. 1 of the Disciplinary Commission of the Bulgarian Swimming Federation,Disciplinary Commission\'s Decision № 2/2024 of August 12 2024 (Exh. R-3)',
             'doc_sum': 'Decision No. 1, dated January 30, 2024, was issued by the Disciplinary Commission of the Bulgarian Swimming Federation (BSF) regarding Disciplinary Case No. 2 of 2023. The decision confirms that athlete Antani Antonov Ivanov was found guilty of repeated violations of the BSF Disciplinary Rules by making disparaging and unfounded public statements about the Federation, resulting in a suspension of his competition rights for two years and a fine of 1,000 BGN. The document details the case background, evidence, and reasoning behind the disciplinary measures, and outlines the avenues for appeal.,The \'Disciplinary Commission\'s Decision № 2/2024 of August 12 2024\' concerns Bulgarian swimmer Antani Ivanov, who was found to have committed an anti-doping rule violation by participating in a competition during his period of ineligibility. As a result, the Disciplinary Commission of the Bulgarian Olympic Committee imposed an additional two-year period of ineligibility on Ivanov, starting from June 8, 2025. The decision outlines the findings, the athlete\'s defense, and notes that the sanction may be appealed within 21 days before the Court of Arbitration for Sport.',
+            # Additional fields for system compatibility
             'isDisputed': False,
             'party': 'Respondent',
             'exhibits': ['R-3'],
             'argId': '1',
-            'argTitle': 'Disciplinary Violation',
-            # Legacy fields for compatibility
+            'argTitle': 'Disciplinary Violation - Antani Ivanov Case',
+            'source': 'Disciplinary Commission Decision',
+            # Legacy fields for backward compatibility
             'point': 'Antani Ivanov was born on July 17, 1999.',
             'paragraphs': '1,2'
         }
     ]
     
-    # Add original facts from argument data for backward compatibility
-    args_data = get_argument_data()
+    # Add more legal case facts here if needed
+    # Each fact should follow the same structure with all required fields:
+    # date, end_date, event, source_text, page, doc_name, doc_sum
     
-    # Helper function to extract facts from arguments
-    def extract_facts(arg, party):
-        if not arg:
-            return
-            
-        if 'factualPoints' in arg and arg['factualPoints']:
-            for point in arg['factualPoints']:
-                fact = {
-                    'date': point['date'],
-                    'end_date': '',
-                    'event': point['point'],
-                    'source_text': f"From argument {arg['id']}: {point['point']}",
-                    'page': point.get('paragraphs', ''),
-                    'doc_name': f"Legal Argument {arg['id']} - {arg['title']}",
-                    'doc_sum': f"This fact is part of {arg['title']} argument section.",
-                    'isDisputed': point['isDisputed'],
-                    'party': party,
-                    'exhibits': point.get('exhibits', []),
-                    'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    # Legacy fields for compatibility
-                    'point': point['point'],
-                    'paragraphs': point.get('paragraphs', '')
-                }
-                facts.append(fact)
-                
-        # Process children
-        if 'children' in arg and arg['children']:
-            for child_id, child in arg['children'].items():
-                extract_facts(child, party)
-    
-    # Extract from claimant args
-    for arg_id, arg in args_data['claimantArgs'].items():
-        extract_facts(arg, 'Appellant')
-        
-    # Extract from respondent args
-    for arg_id, arg in args_data['respondentArgs'].items():
-        extract_facts(arg, 'Respondent')
-        
     return facts
 
 # Get enhanced timeline data with additional events

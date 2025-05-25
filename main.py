@@ -1426,7 +1426,6 @@ def main():
                     }} else if (viewType === 'table') {{
                         tableBtn.classList.add('active');
                         tableContent.style.display = 'block';
-                        renderFacts(); // Make sure table is populated
                     }} else if (viewType === 'timeline') {{
                         timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
@@ -1506,19 +1505,13 @@ def main():
                             const partyEls = item.querySelectorAll('.badge');
                             const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
                             const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
-                            const sourceEl = item.querySelector('.timeline-source-text[style*="4a5568"]');
                             
                             if (dateEl && factEl) {{
                                 const date = dateEl.textContent.trim();
                                 const fact = factEl.textContent.trim();
-                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed' && text !== 'Undisputed').join(', ');
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
                                 
                                 contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
-                                
-                                if (sourceEl) {{
-                                    const sourceText = sourceEl.textContent.replace('Source Text:', '').trim();
-                                    contentToCopy += `Source: ${{sourceText}}\\n`;
-                                }}
                                 
                                 if (claimantEl) {{
                                     const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
@@ -1598,17 +1591,7 @@ def main():
                     const disputedBtn = document.getElementById('disputed-facts-btn');
                     const undisputedBtn = document.getElementById('undisputed-facts-btn');
                     
-                    let currentFacts;
-                    
-                    // Use appropriate data source based on active view
-                    if (timelineContent.style.display !== 'none') {{
-                        // For timeline view, use timelineData which has richer information
-                        currentFacts = timelineData.map(standardizeTimelineData);
-                    }} else {{
-                        // For other views, use factsData
-                        currentFacts = factsData.map(standardizeFactData);
-                    }}
-                    
+                    let currentFacts = factsData.map(standardizeFactData);
                     if (disputedBtn.classList.contains('active')) {{
                         currentFacts = currentFacts.filter(fact => fact.isDisputed);
                     }} else if (undisputedBtn.classList.contains('active')) {{
@@ -2437,12 +2420,10 @@ def main():
                 // Initialize facts on page load
                 document.addEventListener('DOMContentLoaded', function() {{
                     renderCardView('all');
-                    renderFacts('all'); // Initialize table view
                 }});
                 
-                // Initialize all views immediately
+                // Initialize card view immediately
                 renderCardView('all');
-                renderFacts('all'); // Make sure table is populated from start
             </script>
         </body>
         </html>

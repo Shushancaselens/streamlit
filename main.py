@@ -3,169 +3,13 @@ import json
 import streamlit.components.v1 as components
 import pandas as pd
 import base64
-import os
-from datetime import datetime
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Sample document sets for demonstrating the document set view
-def get_document_sets():
-    # Return grouped document sets with individual document subfolders
-    return [
-        {
-            "id": "appeal",
-            "name": "Appeal",
-            "party": "Mixed",
-            "category": "Appeal",
-            "isGroup": True,
-            "documents": [
-                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
-                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
-                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
-                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
-            ]
-        },
-        {
-            "id": "provisional_messier",
-            "name": "provisional messier",
-            "party": "Respondent",
-            "category": "provisional messier",
-            "isGroup": True,
-            "documents": [
-                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
-                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
-            ]
-        },
-        {
-            "id": "admissibility",
-            "name": "admissibility",
-            "party": "Mixed",
-            "category": "admissibility",
-            "isGroup": True,
-            "documents": [
-                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
-                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
-                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
-            ]
-        },
-        {
-            "id": "challenge",
-            "name": "challenge",
-            "party": "Mixed",
-            "category": "challenge",
-            "isGroup": True,
-            "documents": [
-                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
-                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
-                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
-            ]
-        }
-    ]
-
-# Initialize session state
+# Initialize session state to track selected view
 if 'view' not in st.session_state:
-    st.session_state.view = "Upload"  # Start with Upload view
-
-if 'document_sets' not in st.session_state:
-    st.session_state.document_sets = get_document_sets()
-
-if 'uploaded_files' not in st.session_state:
-    st.session_state.uploaded_files = {}
-
-if 'selected_set' not in st.session_state:
-    st.session_state.selected_set = None
-
-if 'creating_set' not in st.session_state:
-    st.session_state.creating_set = False
-
-if 'viewing_set' not in st.session_state:
-    st.session_state.viewing_set = None
-
-# Function to add a document set (auto-generates category)
-def add_document_set(set_name, set_party):
-    # Create a unique ID based on the set name
-    set_id = set_name.lower().replace(' ', '_')
-    
-    # Auto-generate category from set name
-    set_category = set_name.lower().replace(' ', '_')
-    
-    # Check if ID already exists
-    existing_ids = [ds["id"] for ds in st.session_state.document_sets]
-    if set_id in existing_ids:
-        # Add timestamp to make it unique
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        set_id = f"{set_id}_{timestamp}"
-    
-    # Create the new document set
-    new_set = {
-        "id": set_id,
-        "name": set_name,
-        "party": set_party,
-        "category": set_category,
-        "isGroup": True,
-        "documents": []
-    }
-    
-    # Add to session state
-    st.session_state.document_sets.append(new_set)
-    
-    return set_id
-
-# Function to add a document to a set
-def add_document_to_set(doc_name, doc_party, set_id):
-    # Find the set
-    for doc_set in st.session_state.document_sets:
-        if doc_set["id"] == set_id:
-            # Create a new document ID
-            if doc_set["documents"]:
-                # Use the next available number
-                existing_ids = [int(doc["id"]) for doc in doc_set["documents"] if doc["id"].isdigit()]
-                next_id = str(max(existing_ids) + 1) if existing_ids else "1"
-            else:
-                next_id = "1"
-            
-            # Create the document
-            new_doc = {
-                "id": next_id,
-                "name": doc_name,
-                "party": doc_party,
-                "category": doc_set["category"]
-            }
-            
-            # Add to the set
-            doc_set["documents"].append(new_doc)
-            return next_id
-    
-    return None
-
-# Function to save uploaded file
-def save_uploaded_file(uploaded_file, set_id, doc_id):
-    try:
-        # Read file content
-        file_content = uploaded_file.read()
-        
-        # Store in session state
-        file_key = f"{set_id}-{doc_id}"
-        st.session_state.uploaded_files[file_key] = {
-            "filename": uploaded_file.name,
-            "content": file_content,
-            "type": uploaded_file.type,
-            "size": uploaded_file.size,
-            "upload_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        
-        return True
-    except Exception as e:
-        st.error(f"Error saving file: {e}")
-        return False
-
-# Function to get CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
+    st.session_state.view = "Facts"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -392,8 +236,7 @@ def get_all_facts():
                     'paragraphs': point.get('paragraphs', ''),
                     'exhibits': point.get('exhibits', []),
                     'argId': arg['id'],
-                    'argTitle': arg['title'],
-                    'source': point.get('source', party)
+                    'argTitle': arg['title']
                 }
                 facts.append(fact)
                 
@@ -437,6 +280,46 @@ def get_timeline_data():
             "source": "Appeal - Appeal Brief"
         },
         {
+            "point": "Club colors established as blue and white",
+            "date": "1956-03-10",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Statement of Appeal"
+        },
+        {
+            "point": "First international competition participation",
+            "date": "1962-09-15",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-6"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Appeal Brief"
+        },
+        {
+            "point": "Minor variations in club color shades introduced",
+            "date": "1970-1980",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-5"],
+            "argId": "1.2.1",
+            "argTitle": "Color Variations Analysis",
+            "source": "Appeal - Statement of Appeal"
+        },
+        {
+            "point": "Administrative operations halted due to financial difficulties",
+            "date": "1975-04-30",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to Request for PM"
+        },
+        {
             "point": "Operations ceased between 1975-1976",
             "date": "1975-1976",
             "isDisputed": True,
@@ -446,7 +329,86 @@ def get_timeline_data():
             "argTitle": "Sporting Succession Rebuttal",
             "source": "provisional messier - Answer to PM"
         },
-        # More timeline events would be here
+        {
+            "point": "Club registration formally terminated",
+            "date": "1975-04-30",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to Request for PM"
+        },
+        {
+            "point": "New entity registered with similar name",
+            "date": "1976-09-15",
+            "isDisputed": False,
+            "party": "Respondent",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional messier - Answer to Request for PM"
+        },
+        {
+            "point": "Significant color scheme change implemented",
+            "date": "1976-10-01",
+            "isDisputed": True,
+            "party": "Respondent",
+            "exhibits": ["R-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis Rebuttal",
+            "source": "admissibility - Brief on Admissibility"
+        },
+        {
+            "point": "Third color temporarily added to uniform",
+            "date": "1982-1988",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-5"],
+            "argId": "1.2.1",
+            "argTitle": "Color Variations Analysis",
+            "source": "Appeal - Appeal Brief"
+        },
+        {
+            "point": "Club won Continental Cup with post-1976 team",
+            "date": "1987-06-24",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-7"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Statement of Appeal"
+        },
+        {
+            "point": "Return to original blue and white color scheme",
+            "date": "1989-08-12",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-8"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Appeal Brief"
+        },
+        {
+            "point": "Trademark registration for club name and emblem",
+            "date": "1995-11-30",
+            "isDisputed": False,
+            "party": "Appellant",
+            "exhibits": ["C-9"],
+            "argId": "1.1",
+            "argTitle": "Club Name Analysis",
+            "source": "Appeal - Statement of Appeal"
+        },
+        {
+            "point": "Federation officially recognizes club history spanning pre and post 1976",
+            "date": "2010-05-18",
+            "isDisputed": True,
+            "party": "Appellant",
+            "exhibits": ["C-10"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "admissibility - Reply to Objection to Admissibility"
+        }
     ]
     
     # Sort events chronologically
@@ -454,17 +416,88 @@ def get_timeline_data():
     
     return timeline_events
 
-# Main application
+# Sample document sets for demonstrating the document set view
+def get_document_sets():
+    # Return grouped document sets with individual document subfolders
+    return [
+        {
+            "id": "appeal",
+            "name": "Appeal",
+            "party": "Mixed",
+            "category": "Appeal",
+            "isGroup": True,
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
+            ]
+        },
+        {
+            "id": "provisional_messier",
+            "name": "provisional messier",
+            "party": "Respondent",
+            "category": "provisional messier",
+            "isGroup": True,
+            "documents": [
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
+            ]
+        },
+        {
+            "id": "admissibility",
+            "name": "admissibility",
+            "party": "Mixed",
+            "category": "admissibility",
+            "isGroup": True,
+            "documents": [
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
+            ]
+        },
+        {
+            "id": "challenge",
+            "name": "challenge",
+            "party": "Mixed",
+            "category": "challenge",
+            "isGroup": True,
+            "documents": [
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
+            ]
+        }
+    ]
+
+# Function to create CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
+
+# Main app
 def main():
-    # Get data for JavaScript in facts view
+    # Get the data for JavaScript
     args_data = get_argument_data()
     facts_data = get_all_facts()
-    document_sets = st.session_state.document_sets
+    document_sets = get_document_sets()
     timeline_data = get_timeline_data()
     
-    # Add Streamlit sidebar with navigation buttons
+    # Convert data to JSON for JavaScript use
+    args_json = json.dumps(args_data)
+    facts_json = json.dumps(facts_data)
+    document_sets_json = json.dumps(document_sets)
+    timeline_json = json.dumps(timeline_data)
+    
+    # Initialize session state if not already done
+    if 'view' not in st.session_state:
+        st.session_state.view = "Facts"
+    
+    # Add Streamlit sidebar with navigation buttons only
     with st.sidebar:
-        # Add the logo and CaseLens text (original design)
+        # Add the logo and CaseLens text
         st.markdown("""
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
@@ -484,1010 +517,1259 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling and UI improvements
+        # Custom CSS for button styling
         st.markdown("""
         <style>
-        /* Button styling - keep original structure but enhance appearance */
         .stButton > button {
             width: 100%;
             border-radius: 6px;
             height: 50px;
             margin-bottom: 10px;
             transition: all 0.3s;
-            font-weight: 500;
-            border: none;
         }
-        
         .stButton > button:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        
-        /* Badge styling - slightly improved but keeping original look */
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: 5px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .appellant-badge {
-            background-color: rgba(49, 130, 206, 0.1);
-            color: #3182ce;
-            border: 1px solid rgba(49, 130, 206, 0.2);
-        }
-        
-        .respondent-badge {
-            background-color: rgba(229, 62, 62, 0.1);
-            color: #e53e3e;
-            border: 1px solid rgba(229, 62, 62, 0.2);
-        }
-        
-        .shared-badge {
-            background-color: rgba(128, 128, 128, 0.1);
-            color: #666;
-            border: 1px solid rgba(128, 128, 128, 0.2);
-        }
-        
-        /* Improve uploaded file cards */
-        .uploaded-file-card {
-            border: 1px solid #e6e6e6;
-            border-radius: 5px;
-            padding: 12px;
-            margin-bottom: 12px;
-            background-color: #f9f9f9;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        
-        /* Improve document set headers */
-        .document-set-header {
-            background-color: #f0f5ff;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            border-left: 3px solid #4D68F9;
-        }
-        
-        .document-set-content {
-            margin-left: 20px;
-            margin-bottom: 20px;
-            padding: 12px;
-            border-left: 2px solid #e0e7ff;
-        }
-        
-        /* Improve form appearance */
-        [data-testid="stForm"] {
-            background-color: #f9fafb;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 20px;
-        }
-        
-        /* Better headings */
-        h1, h2, h3 {
-            color: #111927;
-            font-weight: 600;
-        }
-        
-        /* Better file uploader */
-        [data-testid="stFileUploader"] {
-            border: 1px solid #e5e7eb;
-            border-radius: 5px;
-            padding: 5px;
-        }
-        
-        /* Improve expander styling */
-        .streamlit-expanderHeader {
-            font-weight: 500;
-            color: #111927;
-            background-color: #f8fafc;
-            border-radius: 4px;
-        }
-        
-        /* Better tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            border-radius: 4px 4px 0 0;
-            padding: 0px 16px;
-            background-color: #f3f4f6;
-        }
-        
-        .stTabs [aria-selected="true"] {
-            background-color: white !important;
-            border-bottom: 2px solid #4D68F9 !important;
-        }
-        
-        /* Status indicators */
-        .status-badge {
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-        }
-        
-        .status-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .status-warning {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .status-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
         </style>
         """, unsafe_allow_html=True)
         
-        # Button click handler
-        def set_view(view_name):
-            st.session_state.view = view_name
+        # Define button click handlers
+        def set_arguments_view():
+            st.session_state.view = "Arguments"
+            
+        def set_facts_view():
+            st.session_state.view = "Facts"
+            
+        def set_exhibits_view():
+            st.session_state.view = "Exhibits"
         
-        # Original order of buttons with Upload Documents first
-        st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
-        st.button("📑 Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
+        # Create buttons with names
+        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Render the appropriate view based on session state
-    if st.session_state.view == "Upload":
-        render_upload_page()
-    elif st.session_state.view == "Facts":
-        render_facts_page(facts_data, document_sets, timeline_data, args_data)
-    else:
-        # Placeholder for other views
-        st.title(f"{st.session_state.view} View")
-        st.info(f"This is a placeholder for the {st.session_state.view} view.")
-
-# Function to render the upload page
-def render_upload_page():
-    st.title("Document Management")
-    
-    # Create tabs for upload functionality
-    tab1, tab2, tab3 = st.tabs(["📄 Upload Documents", "📁 Manage Document Sets", "🕒 Recent Uploads"])
-    
-    with tab1:
-        # Upload interface with subtle improvements
-        st.subheader("Upload Documents")
-        
-        # Two buttons for the main actions
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("➕ New Document Set", use_container_width=True):
-                st.session_state.creating_set = True
-        with col2:
-            if st.button("📄 Upload Document", use_container_width=True):
-                st.session_state.creating_set = False
-        
-        st.markdown("<div style='margin: 20px 0; border-top: 1px solid #e5e7eb;'></div>", unsafe_allow_html=True)
-        
-        # Display appropriate form based on user selection
-        if st.session_state.creating_set:
-            # Document set creation form
-            st.markdown("### Create Document Set")
-            
-            with st.form("new_set_form"):
-                # Set name field
-                st.markdown("<p style='font-weight: 500; margin-bottom: 5px;'>Set Name</p>", unsafe_allow_html=True)
-                set_name = st.text_input("", placeholder="e.g., Witness Statements, Expert Reports", label_visibility="collapsed")
-                
-                # Party selection
-                st.markdown("<p style='font-weight: 500; margin: 15px 0 5px 0;'>Party</p>", unsafe_allow_html=True)
-                party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-                set_party = st.selectbox("", party_options, label_visibility="collapsed")
-                
-                # Submit button
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    create_btn = st.form_submit_button("Create Document Set", use_container_width=True)
-                
-                if create_btn:
-                    if not set_name:
-                        st.error("Please provide a name for this document set")
-                    else:
-                        # Add new set (category is auto-generated)
-                        set_id = add_document_set(set_name, set_party)
-                        st.session_state.selected_set = set_id
-                        st.session_state.creating_set = False
-                        
-                        # Success message
-                        st.success(f"Created: {set_name}")
-                        st.rerun()
-        else:
-            # Document upload form
-            st.markdown("### Upload Document")
-            
-            # Document set selection
-            if not st.session_state.document_sets:
-                st.warning("No document sets exist. Please create a document set first.")
-            else:
-                st.markdown("<p style='font-weight: 500; margin-bottom: 5px;'>Select Document Set</p>", unsafe_allow_html=True)
-                set_options = ["--Select a document set--"] + [ds["name"] for ds in st.session_state.document_sets]
-                selected_set_name = st.selectbox("", set_options, label_visibility="collapsed")
-                
-                if selected_set_name == "--Select a document set--":
-                    st.warning("Please select a document set first")
-                else:
-                    # Find the selected set
-                    selected_set = None
-                    for ds in st.session_state.document_sets:
-                        if ds["name"] == selected_set_name:
-                            selected_set = ds
-                            st.session_state.selected_set = ds["id"]
-                            break
-                    
-                    # Show selected set info
-                    party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
-                                        "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
-                    
-                    st.markdown(f"""
-                    <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #4D68F9;">
-                        <p style="margin: 0; font-size: 13px; color: #64748b;">Selected Document Set</p>
-                        <p style="margin: 5px 0 0 0; font-weight: 600; color: #0f172a;">{selected_set['name']}</p>
-                        <div style="margin-top: 8px;">
-                            <span class="badge {party_badge_class}">{selected_set["party"]}</span>
-                            <span class="badge shared-badge">{len(selected_set["documents"])} documents</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Form for document upload
-                    with st.form("upload_form"):
-                        # Document name field
-                        st.markdown("<p style='font-weight: 500; margin-bottom: 5px;'>Document Name</p>", unsafe_allow_html=True)
-                        doc_name = st.text_input("", placeholder="Enter document name or title", label_visibility="collapsed")
-                        
-                        # Party selection (default to the set's party if not Mixed)
-                        st.markdown("<p style='font-weight: 500; margin: 15px 0 5px 0;'>Party</p>", unsafe_allow_html=True)
-                        party_options = ["Appellant", "Respondent", "Shared"]
-                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else None
-                        default_index = party_options.index(default_party) if default_party in party_options else 0
-                        doc_party = st.selectbox("", party_options, index=default_index, label_visibility="collapsed")
-                        
-                        # File uploader
-                        st.markdown("<p style='font-weight: 500; margin: 15px 0 5px 0;'>Upload File</p>", unsafe_allow_html=True)
-                        
-                        # File uploader
-                        uploaded_file = st.file_uploader(
-                            "Drag files here or click to browse",
-                            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
-                            help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
-                        )
-                        
-                        # Submit button
-                        col1, col2, col3 = st.columns([1, 2, 1])
-                        with col2:
-                            submit_btn = st.form_submit_button("Upload Document", use_container_width=True)
-                        
-                        if submit_btn:
-                            if not doc_name:
-                                st.error("Please provide a document name")
-                            elif not uploaded_file:
-                                st.error("Please select a file")
-                            else:
-                                # Add document to set
-                                doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
-                                if doc_id:
-                                    # Save the uploaded file
-                                    if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                        # Success message with document details
-                                        st.success(f"Uploaded: {doc_name}")
-                                        
-                                        # Show document details
-                                        st.markdown(f"""
-                                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
-                                            <p style="margin:0; color: #0f172a; font-weight: 500;">Document Details:</p>
-                                            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 10px;">
-                                                <div>
-                                                    <p style="margin: 0; font-size: 13px; color: #64748b;">Document Name</p>
-                                                    <p style="margin: 0; font-weight: 500; color: #0f172a;">{doc_name}</p>
-                                                </div>
-                                                <div>
-                                                    <p style="margin: 0; font-size: 13px; color: #64748b;">Party</p>
-                                                    <p style="margin: 0; font-weight: 500; color: #0f172a;">{doc_party}</p>
-                                                </div>
-                                                <div>
-                                                    <p style="margin: 0; font-size: 13px; color: #64748b;">File Type</p>
-                                                    <p style="margin: 0; font-weight: 500; color: #0f172a;">{uploaded_file.type}</p>
-                                                </div>
-                                                <div>
-                                                    <p style="margin: 0; font-size: 13px; color: #64748b;">File Size</p>
-                                                    <p style="margin: 0; font-weight: 500; color: #0f172a;">{uploaded_file.size/1024:.1f} KB</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                    else:
-                                        st.error("Error saving file")
-                                else:
-                                    st.error("Error adding document")
-    
-    with tab2:
-        # Document set management with improvements
-        st.subheader("Manage Document Sets")
-        
-        if not st.session_state.document_sets:
-            # Empty state message
-            st.markdown("""
-            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
-                <p style="margin: 0; color: #64748b; font-size: 16px;">No document sets exist yet</p>
-                <p style="margin: 5px 0 0 0; color: #94a3b8;">Create your first document set in the Upload Documents tab</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            # Search for document sets
-            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
-                                     help="Filter document sets by name or category")
-            
-            # Filter document sets if search is provided
-            filtered_sets = st.session_state.document_sets
-            if search_term:
-                filtered_sets = [ds for ds in st.session_state.document_sets 
-                                if search_term.lower() in ds['name'].lower() or 
-                                   search_term.lower() in ds['category'].lower()]
-                
-                if not filtered_sets:
-                    st.warning(f"No document sets found matching '{search_term}'")
-            
-            # Display all document sets
-            for doc_set in filtered_sets:
-                # Create an expander for each document set
-                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
-                    # Show set details
-                    party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
-                                       "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
-                    
-                    st.markdown(f"""
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <div>
-                            <span class="badge {party_badge_class}">{doc_set["party"]}</span>
-                            <span class="badge shared-badge">{doc_set["category"]}</span>
-                        </div>
-                        <div>
-                            <span style="color: #64748b; font-size: 13px;">ID: {doc_set["id"]}</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Show documents in this set
-                    if doc_set["documents"]:
-                        # Create a table of documents
-                        doc_data = []
-                        for doc in doc_set["documents"]:
-                            # Check if the file is in our uploaded files
-                            file_key = f"{doc_set['id']}-{doc['id']}"
-                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
-                            
-                            # Get file size if available
-                            file_size = ""
-                            if file_key in st.session_state.uploaded_files:
-                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
-                            
-                            doc_data.append({
-                                "ID": doc["id"],
-                                "Name": doc["name"],
-                                "Party": doc["party"],
-                                "Status": file_status,
-                                "Size": file_size
-                            })
-                        
-                        if doc_data:
-                            # Use native Streamlit dataframe
-                            df = pd.DataFrame(doc_data)
-                            st.dataframe(df, use_container_width=True, height=None)
-                            
-                            # Action buttons
-                            col1, col2, col3 = st.columns(3)
-                            
-                            with col1:
-                                # Button to add documents to this set
-                                if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
-                                    st.session_state.selected_set = doc_set["id"]
-                                    st.session_state.creating_set = False
-                                    st.session_state.view = "Upload"
-                                    st.rerun()
-                            
-                            with col2:
-                                # Export to CSV button
-                                csv = df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label="📥 Export CSV",
-                                    data=csv,
-                                    file_name=f"{doc_set['name']}_documents.csv",
-                                    mime='text/csv',
-                                    key=f"export_{doc_set['id']}"
-                                )
-                            
-                            with col3:
-                                # View details button
-                                if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
-                                    if st.session_state.viewing_set == doc_set["id"]:
-                                        st.session_state.viewing_set = None  # Toggle off
-                                    else:
-                                        st.session_state.viewing_set = doc_set["id"]  # Toggle on
-                            
-                            # If viewing this set, show additional details
-                            if st.session_state.get('viewing_set') == doc_set["id"]:
-                                st.markdown("""
-                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
-                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
-                                """, unsafe_allow_html=True)
-                                
-                                # Show document stats
-                                total_docs = len(doc_set["documents"])
-                                uploaded_docs = sum(1 for doc in doc_set["documents"] 
-                                                   if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                                
-                                col1, col2, col3 = st.columns(3)
-                                col1.metric("Total Documents", total_docs)
-                                col2.metric("Uploaded", uploaded_docs)
-                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
-                                
-                                st.markdown("</div>", unsafe_allow_html=True)
-                    else:
-                        # Empty state for documents
-                        st.markdown("""
-                        <div style="padding: 15px; background-color: #f8fafc; border-radius: 4px; text-align: center;">
-                            <p style="margin: 0; color: #64748b;">No documents in this set yet</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        
-                        # Add first document button
-                        if st.button(f"Add First Document", key=f"add_first_{doc_set['id']}"):
-                            st.session_state.selected_set = doc_set["id"]
-                            st.session_state.creating_set = False
-                            st.session_state.view = "Upload"
-                            st.rerun()
-    
-    with tab3:
-        # Recent uploads tab
-        st.subheader("Recent Uploads")
-        
-        if not st.session_state.uploaded_files:
-            # Empty state message
-            st.markdown("""
-            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
-                <p style="margin: 0; color: #64748b; font-size: 16px;">No documents have been uploaded yet</p>
-                <p style="margin: 5px 0 0 0; color: #94a3b8;">Upload documents to see them listed here</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            # Get list of uploaded files
-            uploads = []
-            for file_key, file_info in st.session_state.uploaded_files.items():
-                set_id, doc_id = file_key.split("-")
-                
-                # Find document set and document
-                doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
-                
-                if doc_set:
-                    doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
-                    
-                    if doc:
-                        # Format upload time nicely
-                        upload_time = file_info.get("upload_time", "Just now")
-                        
-                        uploads.append({
-                            "Name": doc["name"],
-                            "Set": doc_set["name"],
-                            "Party": doc["party"],
-                            "Type": file_info.get("type", "Unknown"),
-                            "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
-                            "Time": upload_time
-                        })
-            
-            # Sort uploads by time (most recent first)
-            uploads = sorted(uploads, key=lambda x: x.get("Time", ""), reverse=True)
-            
-            # Display uploads in a table
-            if uploads:
-                # Create styled upload cards
-                for upload in uploads:
-                    # Determine party badge class
-                    party_badge_class = "appellant-badge" if upload["Party"] == "Appellant" else \
-                                       "respondent-badge" if upload["Party"] == "Respondent" else "shared-badge"
-                    
-                    # Create card for each upload
-                    st.markdown(f"""
-                    <div style="background-color: white; border-radius: 6px; padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="font-weight: 500; color: #111927;">{upload["Name"]}</div>
-                            <div style="font-size: 12px; color: #64748b;">{upload["Time"]}</div>
-                        </div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Set:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Set"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Party:</span>
-                                <span class="badge {party_badge_class}">{upload["Party"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Type:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Type"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Size:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Size"]}</span>
-                            </div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("No upload information available.")
-
-# Function to render the facts page
-def render_facts_page(facts_data, document_sets, timeline_data, args_data):
-    # Convert data to JSON for JavaScript
-    args_json = json.dumps(args_data)
-    facts_json = json.dumps(facts_data)
-    document_sets_json = json.dumps(document_sets)
-    timeline_json = json.dumps(timeline_data)
-    
-    # Create HTML content for the Facts view
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            /* Minimalistic base styling */
-            body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.5;
-                color: #333;
-                margin: 0;
-                padding: 0;
-                background-color: #fff;
-            }}
-            
-            /* Simple container */
-            .container {{
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }}
-            
-            /* Content sections */
-            .content-section {{
-                display: none;
-            }}
-            
-            .content-section.active {{
-                display: block;
-            }}
-            
-            /* Badge styling */
-            .badge {{
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-            }}
-            
-            .appellant-badge {{
-                background-color: rgba(49, 130, 206, 0.1);
-                color: #3182ce;
-            }}
-            
-            .respondent-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .shared-badge {{
-                background-color: rgba(128, 128, 128, 0.1);
-                color: #666;
-            }}
-            
-            .exhibit-badge {{
-                background-color: rgba(221, 107, 32, 0.1);
-                color: #dd6b20;
-            }}
-            
-            .disputed-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            /* Tables */
-            table {{
-                width: 100%;
-                border-collapse: collapse;
-            }}
-            
-            th {{
-                text-align: left;
-                padding: 12px;
-                background-color: #fafafa;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            td {{
-                padding: 12px;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            tr.disputed {{
-                background-color: rgba(229, 62, 62, 0.05);
-            }}
-            
-            /* Action buttons */
-            .action-buttons {{
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-            }}
-            
-            .action-button {{
-                padding: 8px 16px;
-                background-color: #f9f9f9;
-                border: 1px solid #e1e4e8;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                cursor: pointer;
-            }}
-            
-            .action-button:hover {{
-                background-color: #f1f1f1;
-            }}
-            
-            /* Copy notification */
-            .copy-notification {{
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background-color: #2d3748;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }}
-            
-            .copy-notification.show {{
-                opacity: 1;
-            }}
-            
-            /* Facts styling */
-            .facts-container {{
-                margin-top: 20px;
-            }}
-            
-            .facts-header {{
-                display: flex;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .tab-button {{
-                padding: 10px 20px;
-                background: none;
-                border: none;
-                cursor: pointer;
-            }}
-            
-            .tab-button.active {{
-                border-bottom: 2px solid #4299e1;
-                color: #4299e1;
-                font-weight: 500;
-            }}
-            
-            .facts-content {{
-                margin-top: 20px;
-            }}
-            
-            /* Section title */
-            .section-title {{
-                font-size: 1.5rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid #eaeaea;
-            }}
-            
-            /* Table view */
-            .table-view {{
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }}
-            
-            .table-view th {{
-                padding: 12px;
-                text-align: left;
-                background-color: #f8f9fa;
-                border-bottom: 2px solid #dee2e6;
-                position: sticky;
-                top: 0;
-                cursor: pointer;
-            }}
-            
-            .table-view th:hover {{
-                background-color: #e9ecef;
-            }}
-            
-            .table-view td {{
-                padding: 12px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .table-view tr:hover {{
-                background-color: #f8f9fa;
-            }}
-            
-            /* View toggle */
-            .view-toggle {{
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 16px;
-            }}
-            
-            .view-toggle button {{
-                padding: 8px 16px;
-                border: 1px solid #e2e8f0;
-                background-color: #f7fafc;
-                cursor: pointer;
-            }}
-            
-            .view-toggle button.active {{
-                background-color: #4299e1;
-                color: white;
-                border-color: #4299e1;
-            }}
-            
-            .view-toggle button:first-child {{
-                border-radius: 4px 0 0 4px;
-            }}
-            
-            .view-toggle button:not(:first-child):not(:last-child) {{
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-            }}
-            
-            .view-toggle button:last-child {{
-                border-radius: 0 4px 4px 0;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-            
-            <div class="action-buttons">
-                <button class="action-button" onclick="copyAllContent()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy
-                </button>
-            </div>
-            
-            <!-- Facts Section -->
-            <div id="facts" class="content-section active">
-                <div class="section-title">Case Facts</div>
-                
-                <div class="view-toggle">
-                    <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
-                    <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
-                    <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
-                </div>
-                
-                <div class="facts-header">
-                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                </div>
-                
-                <!-- Table View -->
-                <div id="table-view-content" class="facts-content">
-                    <table class="table-view">
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
-                            </tr>
-                        </thead>
-                        <tbody id="facts-table-body"></tbody>
-                    </table>
-                </div>
-                
-                <!-- Other views would go here -->
-                <div id="timeline-view-content" class="facts-content" style="display: none;">
-                    Timeline content would go here
-                </div>
-                
-                <div id="docset-view-content" class="facts-content" style="display: none;">
-                    Document categories content would go here
-                </div>
-            </div>
-        </div>
-        
-        <script>
-            // Initialize data
-            const factsData = {facts_json};
-            const documentSets = {document_sets_json};
-            const timelineData = {timeline_json};
-            
-            // Switch view between table, timeline, and document sets
-            function switchView(viewType) {{
-                const tableBtn = document.getElementById('table-view-btn');
-                const timelineBtn = document.getElementById('timeline-view-btn');
-                const docsetBtn = document.getElementById('docset-view-btn');
-                
-                const tableContent = document.getElementById('table-view-content');
-                const timelineContent = document.getElementById('timeline-view-content');
-                const docsetContent = document.getElementById('docset-view-content');
-                
-                // Remove active class from all buttons
-                tableBtn.classList.remove('active');
-                timelineBtn.classList.remove('active');
-                docsetBtn.classList.remove('active');
-                
-                // Hide all content
-                tableContent.style.display = 'none';
-                timelineContent.style.display = 'none';
-                docsetContent.style.display = 'none';
-                
-                // Activate the selected view
-                if (viewType === 'table') {{
-                    tableBtn.classList.add('active');
-                    tableContent.style.display = 'block';
-                    renderFacts();
-                }} else if (viewType === 'timeline') {{
-                    timelineBtn.classList.add('active');
-                    timelineContent.style.display = 'block';
-                    // Timeline rendering would go here
-                }} else if (viewType === 'docset') {{
-                    docsetBtn.classList.add('active');
-                    docsetContent.style.display = 'block';
-                    // Document set rendering would go here
-                }}
-            }}
-            
-            // Switch facts tab
-            function switchFactsTab(tabType) {{
-                const allBtn = document.getElementById('all-facts-btn');
-                const disputedBtn = document.getElementById('disputed-facts-btn');
-                const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                
-                // Remove active class from all
-                allBtn.classList.remove('active');
-                disputedBtn.classList.remove('active');
-                undisputedBtn.classList.remove('active');
-                
-                // Add active to selected
-                if (tabType === 'all') {{
-                    allBtn.classList.add('active');
-                }} else if (tabType === 'disputed') {{
-                    disputedBtn.classList.add('active');
-                }} else {{
-                    undisputedBtn.classList.add('active');
+    # Create the facts HTML component
+    if st.session_state.view == "Facts":
+        # Create a single HTML component containing the Facts UI
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                /* Minimalistic base styling */
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.5;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #fff;
                 }}
                 
-                // Update active view with filtered facts
-                renderFacts(tabType);
-            }}
-            
-            // Copy content function
-            function copyAllContent() {{
-                const notification = document.getElementById('copy-notification');
-                notification.classList.add('show');
-                
-                setTimeout(() => {{
-                    notification.classList.remove('show');
-                }}, 2000);
-            }}
-            
-            // Sort table function
-            function sortTable(tableId, columnIndex) {{
-                // Sorting logic would go here
-            }}
-            
-            // Render facts table
-            function renderFacts(type = 'all') {{
-                const tableBody = document.getElementById('facts-table-body');
-                tableBody.innerHTML = '';
-                
-                // Filter by type
-                let filteredFacts = factsData;
-                
-                if (type === 'disputed') {{
-                    filteredFacts = factsData.filter(fact => fact.isDisputed);
-                }} else if (type === 'undisputed') {{
-                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                /* Simple container */
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
                 }}
                 
-                // Render rows
-                filteredFacts.forEach(fact => {{
-                    const row = document.createElement('tr');
-                    if (fact.isDisputed) {{
-                        row.classList.add('disputed');
+                /* Content sections */
+                .content-section {{
+                    display: none;
+                }}
+                
+                .content-section.active {{
+                    display: block;
+                }}
+                
+                /* Badge styling */
+                .badge {{
+                    display: inline-block;
+                    padding: 3px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }}
+                
+                .appellant-badge {{
+                    background-color: rgba(49, 130, 206, 0.1);
+                    color: #3182ce;
+                }}
+                
+                .respondent-badge {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }}
+                
+                .shared-badge {{
+                    background-color: rgba(128, 128, 128, 0.1);
+                    color: #666;
+                }}
+                
+                .exhibit-badge {{
+                    background-color: rgba(221, 107, 32, 0.1);
+                    color: #dd6b20;
+                }}
+                
+                .disputed-badge {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }}
+                
+                /* Tables */
+                table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                }}
+                
+                th {{
+                    text-align: left;
+                    padding: 12px;
+                    background-color: #fafafa;
+                    border-bottom: 1px solid #f0f0f0;
+                }}
+                
+                td {{
+                    padding: 12px;
+                    border-bottom: 1px solid #f0f0f0;
+                }}
+                
+                tr.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                /* Action buttons */
+                .action-buttons {{
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    display: flex;
+                    gap: 10px;
+                }}
+                
+                .action-button {{
+                    padding: 8px 16px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #e1e4e8;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    cursor: pointer;
+                }}
+                
+                .action-button:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown {{
+                    position: relative;
+                    display: inline-block;
+                }}
+                
+                .export-dropdown-content {{
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    background-color: #f9f9f9;
+                    min-width: 160px;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                    z-index: 1;
+                    border-radius: 4px;
+                }}
+                
+                .export-dropdown-content a {{
+                    color: black;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    cursor: pointer;
+                }}
+                
+                .export-dropdown-content a:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown:hover .export-dropdown-content {{
+                    display: block;
+                }}
+                
+                /* Copy notification */
+                .copy-notification {{
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background-color: #2d3748;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 4px;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }}
+                
+                .copy-notification.show {{
+                    opacity: 1;
+                }}
+                
+                /* Facts styling */
+                .facts-container {{
+                    margin-top: 20px;
+                }}
+                
+                .facts-header {{
+                    display: flex;
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                }}
+                
+                .tab-button {{
+                    padding: 10px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                }}
+                
+                .tab-button.active {{
+                    border-bottom: 2px solid #4299e1;
+                    color: #4299e1;
+                    font-weight: 500;
+                }}
+                
+                .facts-content {{
+                    margin-top: 20px;
+                }}
+                
+                /* Section title */
+                .section-title {{
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid #eaeaea;
+                }}
+                
+                /* Table view */
+                .table-view {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }}
+                
+                .table-view th {{
+                    padding: 12px;
+                    text-align: left;
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                    position: sticky;
+                    top: 0;
+                    cursor: pointer;
+                }}
+                
+                .table-view th:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .table-view td {{
+                    padding: 12px;
+                    border-bottom: 1px solid #dee2e6;
+                }}
+                
+                .table-view tr:hover {{
+                    background-color: #f8f9fa;
+                }}
+                
+                /* View toggle */
+                .view-toggle {{
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 16px;
+                }}
+                
+                .view-toggle button {{
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                }}
+                
+                .view-toggle button.active {{
+                    background-color: #4299e1;
+                    color: white;
+                    border-color: #4299e1;
+                }}
+                
+                .view-toggle button:first-child {{
+                    border-radius: 4px 0 0 4px;
+                }}
+                
+                .view-toggle button:not(:first-child):not(:last-child) {{
+                    border-radius: 0;
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:last-child {{
+                    border-radius: 0 4px 4px 0;
+                }}
+                
+                /* Document sets */
+                .docset-header {{
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                }}
+                
+                .docset-header:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .docset-content {{
+                    display: block; /* Changed from 'none' to 'block' to be open by default */
+                    padding: 0 0 20px 0;
+                }}
+                
+                .docset-content.show {{
+                    display: block;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                    transform: rotate(90deg); /* Start expanded by default */
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                /* Enhanced Timeline styling */
+                .timeline-container {{
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 20px;
+                    position: relative;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }}
+                
+                .timeline-wrapper {{
+                    position: relative;
+                    margin-left: 20px;
+                }}
+                
+                .timeline-line {{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 4px;
+                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
+                    border-radius: 4px;
+                }}
+                
+                .timeline-item {{
+                    display: flex;
+                    margin-bottom: 32px;
+                    position: relative;
+                }}
+                
+                .timeline-point {{
+                    position: absolute;
+                    left: -12px;
+                    top: 18px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background-color: #4299e1;
+                    border: 4px solid white;
+                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+                    z-index: 10;
+                }}
+                
+                .timeline-point.disputed {{
+                    background-color: #e53e3e;
+                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
+                }}
+                
+                .timeline-content {{
+                    margin-left: 32px;
+                    flex-grow: 1;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+                    overflow: hidden;
+                    transition: all 0.2s;
+                }}
+                
+                .timeline-content:hover {{
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
+                }}
+                
+                .timeline-header {{
+                    padding: 12px 16px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: #f8fafc;
+                }}
+                
+                .timeline-header-disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .timeline-date {{
+                    font-weight: 600;
+                    color: #1a202c;
+                }}
+                
+                .timeline-badges {{
+                    display: flex;
+                    gap: 6px;
+                }}
+                
+                .timeline-body {{
+                    padding: 16px;
+                }}
+                
+                .timeline-fact {{
+                    margin-bottom: 12px;
+                    font-size: 15px;
+                    color: #2d3748;
+                }}
+                
+                .timeline-footer {{
+                    padding: 12px 16px;
+                    background-color: #f8fafc;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    border-top: 1px solid #e2e8f0;
+                }}
+                
+                .timeline-meta {{
+                    font-size: 13px;
+                    color: #718096;
+                    margin-top: 8px;
+                }}
+                
+                .timeline-meta span {{
+                    display: inline-block;
+                    margin-right: 12px;
+                }}
+                
+                .timeline-year-marker {{
+                    display: flex;
+                    align-items: center;
+                    margin: 24px 0;
+                    position: relative;
+                }}
+                
+                .timeline-year {{
+                    background-color: #4299e1;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 16px;
+                    font-weight: 600;
+                    position: relative;
+                    z-index: 10;
+                    margin-left: 32px;
+                }}
+                
+                .timeline-year-line {{
+                    flex-grow: 1;
+                    height: 2px;
+                    background-color: #e2e8f0;
+                    margin-left: 12px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" onclick="copyAllContent()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                    <div class="export-dropdown">
+                        <button class="action-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export
+                        </button>
+                        <div class="export-dropdown-content">
+                            <a onclick="exportAsCsv()">CSV</a>
+                            <a onclick="exportAsPdf()">PDF</a>
+                            <a onclick="exportAsWord()">Word</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Facts Section -->
+                <div id="facts" class="content-section active">
+                    <div class="section-title">Case Facts</div>
+                    
+                    <div class="view-toggle">
+                        <button id="table-view-btn" class="active" onclick="switchView('table')">Table View</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
+                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
+                    </div>
+                    
+                    <div class="facts-header">
+                        <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                    </div>
+                    
+                    <!-- Table View -->
+                    <div id="table-view-content" class="facts-content">
+                        <table class="table-view">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('facts-table-body', 0)">Date</th>
+                                    <th onclick="sortTable('facts-table-body', 1)">Event</th>
+                                    <th onclick="sortTable('facts-table-body', 2)">Party</th>
+                                    <th onclick="sortTable('facts-table-body', 3)">Status</th>
+                                    <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
+                                    <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facts-table-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Timeline View -->
+                    <div id="timeline-view-content" class="facts-content" style="display: none;">
+                        <div class="timeline-container">
+                            <div class="timeline-wrapper">
+                                <div class="timeline-line"></div>
+                                <div id="timeline-events"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Document Sets View -->
+                    <div id="docset-view-content" class="facts-content" style="display: none;">
+                        <div id="document-sets-container"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                // Initialize data
+                const factsData = {facts_json};
+                const documentSets = {document_sets_json};
+                const timelineData = {timeline_json};
+                
+                // Switch view between table, timeline, and document sets
+                function switchView(viewType) {{
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
+                    
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
+                    
+                    // Hide all content
+                    tableContent.style.display = 'none';
+                    timelineContent.style.display = 'none';
+                    docsetContent.style.display = 'none';
+                    
+                    // Activate the selected view
+                    if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        tableContent.style.display = 'block';
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
+                        timelineContent.style.display = 'block';
+                        renderTimeline();
+                    }} else if (viewType === 'docset') {{
+                        docsetBtn.classList.add('active');
+                        docsetContent.style.display = 'block';
+                        renderDocumentSets();
                     }}
+                }}
+                
+                // Copy all content function
+                function copyAllContent() {{
+                    let contentToCopy = '';
                     
-                    // Date column
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = fact.date;
-                    row.appendChild(dateCell);
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
                     
-                    // Event column
-                    const eventCell = document.createElement('td');
-                    eventCell.textContent = fact.point;
-                    row.appendChild(eventCell);
-                    
-                    // Party column
-                    const partyCell = document.createElement('td');
-                    partyCell.innerHTML = `<span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">${{fact.party}}</span>`;
-                    row.appendChild(partyCell);
-                    
-                    // Status column
-                    const statusCell = document.createElement('td');
-                    statusCell.innerHTML = fact.isDisputed ? 
-                        '<span class="badge disputed-badge">Disputed</span>' : 
-                        'Undisputed';
-                    row.appendChild(statusCell);
-                    
-                    // Related argument
-                    const argCell = document.createElement('td');
-                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                    row.appendChild(argCell);
-                    
-                    // Evidence column
-                    const evidenceCell = document.createElement('td');
-                    if (fact.exhibits && fact.exhibits.length > 0) {{
-                        evidenceCell.innerHTML = fact.exhibits.map(ex => 
-                            `<span class="badge exhibit-badge">${{ex}}</span>`
-                        ).join(' ');
+                    if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join('\\t');
+                        
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Copy timeline data
+                        contentToCopy += 'Case Timeline\\n\\n';
+                        
+                        const timelineItems = document.querySelectorAll('.timeline-item');
+                        timelineItems.forEach(item => {{
+                            const dateEl = item.querySelector('.timeline-date');
+                            const factEl = item.querySelector('.timeline-fact');
+                            const partyEl = item.querySelector('.badge');
+                            
+                            if (dateEl && factEl) {{
+                                const date = dateEl.textContent.trim();
+                                const fact = factEl.textContent.trim();
+                                const party = partyEl ? partyEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
+                            }}
+                        }});
                     }} else {{
-                        evidenceCell.textContent = 'None';
+                        // Copy document sets data (just a basic representation)
+                        contentToCopy += 'Case Facts by Document\\n\\n';
+                        
+                        // This is a simplified version since the full structure would be complex
+                        const docsetContainers = document.querySelectorAll('.docset-container');
+                        docsetContainers.forEach(container => {{
+                            const header = container.querySelector('.docset-header');
+                            const title = header.querySelector('span').textContent;
+                            contentToCopy += `=== ${{title}} ===\\n`;
+                            
+                            // Get facts from this document
+                            const tableFacts = container.querySelectorAll('tbody tr');
+                            tableFacts.forEach(fact => {{
+                                const cells = Array.from(fact.querySelectorAll('td'));
+                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
+                            }});
+                            
+                            contentToCopy += '\\n';
+                        }});
                     }}
-                    row.appendChild(evidenceCell);
                     
-                    tableBody.appendChild(row);
+                    // Create a temporary textarea to copy the content
+                    const textarea = document.createElement('textarea');
+                    textarea.value = contentToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Show notification
+                    const notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {{
+                        notification.classList.remove('show');
+                    }}, 2000);
+                }}
+                
+                // Export functions
+                function exportAsCsv() {{
+                    let contentToCsv = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    
+                    if (tableContent.style.display !== 'none') {{
+                        // Export table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join(',');
+                        
+                        contentToCsv += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => '\"' + td.textContent.trim() + '\"')
+                                .join(',');
+                            
+                            contentToCsv += rowText + '\\n';
+                        }});
+                        
+                        // Create link for CSV download
+                        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
+                        const encodedUri = csvContent;
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "facts.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Export timeline data
+                        let headers = "Date,Event,Party,Status,Evidence,Argument\\n";
+                        let rows = '';
+                        
+                        timelineData.forEach(item => {{
+                            const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
+                            rows += `"${{item.date}}","${{item.point}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                        }});
+                        
+                        const csvContent = headers + rows;
+                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", "timeline.csv");
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} else {{
+                        alert("CSV export for document sets view is not implemented yet.");
+                    }}
+                }}
+                
+                function exportAsPdf() {{
+                    alert("PDF export functionality would be implemented here");
+                }}
+                
+                function exportAsWord() {{
+                    alert("Word export functionality would be implemented here");
+                }}
+                
+                // Switch facts tab
+                function switchFactsTab(tabType) {{
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    // Remove active class from all
+                    allBtn.classList.remove('active');
+                    disputedBtn.classList.remove('active');
+                    undisputedBtn.classList.remove('active');
+                    
+                    // Add active to selected
+                    if (tabType === 'all') {{
+                        allBtn.classList.add('active');
+                        renderFacts('all');
+                    }} else if (tabType === 'disputed') {{
+                        disputedBtn.classList.add('active');
+                        renderFacts('disputed');
+                    }} else {{
+                        undisputedBtn.classList.add('active');
+                        renderFacts('undisputed');
+                    }}
+                    
+                    // Update active view
+                    const tableContent = document.getElementById('table-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    if (tableContent.style.display !== 'none') {{
+                        renderFacts(tabType);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        renderTimeline(tabType);
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        renderDocumentSets(tabType);
+                    }}
+                }}
+                
+                // Sort table function
+                function sortTable(tableId, columnIndex) {{
+                    const table = document.getElementById(tableId);
+                    const rows = Array.from(table.rows);
+                    let dir = 1; // 1 for ascending, -1 for descending
+                    
+                    // Check if already sorted in this direction
+                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                        table.getAttribute('data-sort-dir') === '1') {{
+                        dir = -1;
+                    }}
+                    
+                    // Sort the rows
+                    rows.sort((a, b) => {{
+                        const cellA = a.cells[columnIndex].textContent.trim();
+                        const cellB = b.cells[columnIndex].textContent.trim();
+                        
+                        // Handle date sorting
+                        if (columnIndex === 0) {{
+                            // Attempt to parse as dates
+                            const dateA = new Date(cellA);
+                            const dateB = new Date(cellB);
+                            
+                            if (!isNaN(dateA) && !isNaN(dateB)) {{
+                                return dir * (dateA - dateB);
+                            }}
+                        }}
+                        
+                        return dir * cellA.localeCompare(cellB);
+                    }});
+                    
+                    // Remove existing rows and append in new order
+                    rows.forEach(row => table.appendChild(row));
+                    
+                    // Store current sort direction and column
+                    table.setAttribute('data-sort-column', columnIndex);
+                    table.setAttribute('data-sort-dir', dir);
+                }}
+                
+                // Toggle document set visibility
+                function toggleDocSet(docsetId) {{
+                    const content = document.getElementById(`docset-content-${{docsetId}}`);
+                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
+                    
+                    if (content.style.display === 'none') {{
+                        content.style.display = 'block';
+                        chevron.style.transform = 'rotate(90deg)';
+                    }} else {{
+                        content.style.display = 'none';
+                        chevron.style.transform = 'rotate(0deg)';
+                    }}
+                }}
+                
+                // Format date for display
+                function formatDate(dateString) {{
+                    // If it's a range, just return it as is
+                    if (dateString.includes('-')) {{
+                        return dateString;
+                    }}
+                    
+                    // Try to parse as a date
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return dateString;
+                    }}
+                    
+                    // Format the date
+                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
+                    return date.toLocaleDateString(undefined, options);
+                }}
+                
+                // Helper to extract year from date
+                function getYear(dateString) {{
+                    if (dateString.includes('-')) {{
+                        return dateString.split('-')[0];
+                    }}
+                    
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return '';
+                    }}
+                    
+                    return date.getFullYear().toString();
+                }}
+                
+                // Render enhanced timeline view
+                function renderTimeline(tabType = 'all') {{
+                    const container = document.getElementById('timeline-events');
+                    container.innerHTML = '';
+                    
+                    // Filter timeline data based on tab type
+                    let filteredData = timelineData;
+                    if (tabType === 'disputed') {{
+                        filteredData = timelineData.filter(item => item.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredData = timelineData.filter(item => !item.isDisputed);
+                    }}
+                    
+                    // Sort by date
+                    filteredData.sort((a, b) => {{
+                        // Handle date ranges like "1950-present"
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
+                    
+                    // Track years for year markers
+                    let currentYear = '';
+                    let prevYear = '';
+                    
+                    // Create timeline items
+                    filteredData.forEach(fact => {{
+                        // Get the year and check if we need a year marker
+                        currentYear = getYear(fact.date);
+                        if (currentYear && currentYear !== prevYear) {{
+                            // Add year marker
+                            const yearMarker = document.createElement('div');
+                            yearMarker.className = 'timeline-year-marker';
+                            yearMarker.innerHTML = `
+                                <div class="timeline-year">${{currentYear}}</div>
+                                <div class="timeline-year-line"></div>
+                            `;
+                            container.appendChild(yearMarker);
+                            prevYear = currentYear;
+                        }}
+                    
+                        // Create timeline item
+                        const timelineItem = document.createElement('div');
+                        timelineItem.className = 'timeline-item';
+                        
+                        // Create timeline point
+                        const timelinePoint = document.createElement('div');
+                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
+                        timelineItem.appendChild(timelinePoint);
+                        
+                        // Create timeline content
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'timeline-content';
+                        
+                        // Create timeline header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
+                        
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'timeline-date';
+                        dateEl.textContent = formatDate(fact.date);
+                        headerEl.appendChild(dateEl);
+                        
+                        // Badges
+                        const badgesEl = document.createElement('div');
+                        badgesEl.className = 'timeline-badges';
+                        
+                        // Party badge
+                        const partyBadge = document.createElement('span');
+                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                        partyBadge.textContent = fact.party;
+                        badgesEl.appendChild(partyBadge);
+                        
+                        // Disputed badge
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            badgesEl.appendChild(disputedBadge);
+                        }}
+                        
+                        headerEl.appendChild(badgesEl);
+                        contentEl.appendChild(headerEl);
+                        
+                        // Create timeline body
+                        const bodyEl = document.createElement('div');
+                        bodyEl.className = 'timeline-body';
+                        
+                        // Fact content
+                        const factContent = document.createElement('div');
+                        factContent.className = 'timeline-fact';
+                        factContent.textContent = fact.point;
+                        bodyEl.appendChild(factContent);
+                        
+                        // Related argument and source
+                        const metaEl = document.createElement('div');
+                        metaEl.className = 'timeline-meta';
+                        metaEl.innerHTML = `
+                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
+                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
+                            <span><strong>Source:</strong> ${{fact.source}}</span>
+                        `;
+                        bodyEl.appendChild(metaEl);
+                        
+                        contentEl.appendChild(bodyEl);
+                        
+                        // Add footer if there are exhibits
+                        if (fact.exhibits && fact.exhibits.length > 0) {{
+                            const footerEl = document.createElement('div');
+                            footerEl.className = 'timeline-footer';
+                            
+                            // Add exhibit badges
+                            fact.exhibits.forEach(exhibitId => {{
+                                const exhibitBadge = document.createElement('span');
+                                exhibitBadge.className = 'badge exhibit-badge';
+                                exhibitBadge.textContent = exhibitId;
+                                footerEl.appendChild(exhibitBadge);
+                            }});
+                            
+                            contentEl.appendChild(footerEl);
+                        }}
+                        
+                        timelineItem.appendChild(contentEl);
+                        container.appendChild(timelineItem);
+                    }});
+                    
+                    // If no events found
+                    if (filteredData.length === 0) {{
+                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
+                    }}
+                }}
+                
+                // Render document sets view
+                function renderDocumentSets(tabType = 'all') {{
+                    const container = document.getElementById('document-sets-container');
+                    container.innerHTML = '';
+                    
+                    // Filter facts based on tab type
+                    let filteredFacts = factsData;
+                    if (tabType === 'disputed') {{
+                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Initialize docsWithFacts for all groups
+                    const docsWithFacts = {{}};
+                    
+                    // Initialize all groups
+                    documentSets.forEach(ds => {{
+                        if (ds.isGroup) {{
+                            docsWithFacts[ds.id] = {{
+                                docset: ds,
+                                facts: []
+                            }};
+                        }}
+                    }});
+                    
+                    // Distribute facts to categories based on document
+                    filteredFacts.forEach((fact, index) => {{
+                        // Find which document this fact belongs to based on source
+                        let factAssigned = false;
+                        
+                        documentSets.forEach(ds => {{
+                            if (ds.isGroup) {{
+                                ds.documents.forEach(doc => {{
+                                    // Check if the fact's source contains the document number
+                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
+                                        docsWithFacts[ds.id].facts.push({{ 
+                                            ...fact, 
+                                            documentName: doc.name
+                                        }});
+                                        factAssigned = true;
+                                    }}
+                                }});
+                            }}
+                        }});
+                        
+                        // If not assigned by source, assign by party matching
+                        if (!factAssigned) {{
+                            documentSets.forEach(ds => {{
+                                if (ds.isGroup) {{
+                                    ds.documents.forEach(doc => {{
+                                        if (doc.party === 'Mixed' || 
+                                            (fact.party === 'Appellant' && doc.party === 'Appellant') ||
+                                            (fact.party === 'Respondent' && doc.party === 'Respondent')) {{
+                                            docsWithFacts[ds.id].facts.push({{ 
+                                                ...fact, 
+                                                documentName: doc.name
+                                            }});
+                                            factAssigned = true;
+                                            return;
+                                        }}
+                                    }});
+                                    if (factAssigned) return;
+                                }}
+                            }});
+                        }}
+                    }});
+                    
+                    // Create document sets UI with direct table display
+                    Object.values(docsWithFacts).forEach(docWithFacts => {{
+                        const docset = docWithFacts.docset;
+                        const facts = docWithFacts.facts;
+                        
+                        // Create document set container
+                        const docsetEl = document.createElement('div');
+                        docsetEl.className = 'docset-container';
+                        
+                        // Create folder header
+                        const headerHtml = `
+                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span><strong>${{docset.name}}</strong></span>
+                                <span style="margin-left: auto;">
+                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                        ${{docset.party}}
+                                    </span>
+                                    <span class="badge">${{facts.length}} facts</span>
+                                </span>
+                            </div>
+                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                        `;
+                        
+                        let contentHtml = '';
+                        
+                        if (facts.length > 0) {{
+                            // Create a single table for all facts in this category
+                            contentHtml += `
+                                <table class="table-view">
+                                    <thead>
+                                        <tr>
+                                            <th>Document</th>
+                                            <th>Date</th>
+                                            <th>Event</th>
+                                            <th>Party</th>
+                                            <th>Status</th>
+                                            <th>Evidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${{facts.map(fact => `
+                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                <td><strong>${{fact.documentName}}</strong></td>
+                                                <td>${{fact.date}}</td>
+                                                <td>${{fact.point}}</td>
+                                                <td>
+                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
+                                                        ${{fact.party}}
+                                                    </span>
+                                                </td>
+                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
+                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
+                                                    : 'None'}}</td>
+                                            </tr>
+                                        `).join('')}}
+                                    </tbody>
+                                </table>
+                            `;
+                        }} else {{
+                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
+                        }}
+                        
+                        contentHtml += '</div>';
+                        docsetEl.innerHTML = headerHtml + contentHtml;
+                        
+                        container.appendChild(docsetEl);
+                    }});
+                }}
+                
+                // Render facts table
+                function renderFacts(type = 'all') {{
+                    const tableBody = document.getElementById('facts-table-body');
+                    tableBody.innerHTML = '';
+                    
+                    // Filter by type
+                    let filteredFacts = factsData;
+                    
+                    if (type === 'disputed') {{
+                        filteredFacts = factsData.filter(fact => fact.isDisputed);
+                    }} else if (type === 'undisputed') {{
+                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Sort by date
+                    filteredFacts.sort((a, b) => {{
+                        // Handle date ranges like "1950-present"
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
+                    
+                    // Render rows
+                    filteredFacts.forEach(fact => {{
+                        const row = document.createElement('tr');
+                        if (fact.isDisputed) {{
+                            row.classList.add('disputed');
+                        }}
+                        
+                        // Date column
+                        const dateCell = document.createElement('td');
+                        dateCell.textContent = fact.date;
+                        row.appendChild(dateCell);
+                        
+                        // Event column
+                        const eventCell = document.createElement('td');
+                        eventCell.textContent = fact.point;
+                        row.appendChild(eventCell);
+                        
+                        // Party column
+                        const partyCell = document.createElement('td');
+                        const partyBadge = document.createElement('span');
+                        partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                        partyBadge.textContent = fact.party;
+                        partyCell.appendChild(partyBadge);
+                        row.appendChild(partyCell);
+                        
+                        // Status column
+                        const statusCell = document.createElement('td');
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            statusCell.appendChild(disputedBadge);
+                        }} else {{
+                            statusCell.textContent = 'Undisputed';
+                        }}
+                        row.appendChild(statusCell);
+                        
+                        // Related argument
+                        const argCell = document.createElement('td');
+                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                        row.appendChild(argCell);
+                        
+                        // Evidence column
+                        const evidenceCell = document.createElement('td');
+                        if (fact.exhibits && fact.exhibits.length > 0) {{
+                            fact.exhibits.forEach(exhibitId => {{
+                                const exhibitBadge = document.createElement('span');
+                                exhibitBadge.className = 'badge exhibit-badge';
+                                exhibitBadge.textContent = exhibitId;
+                                exhibitBadge.style.marginRight = '4px';
+                                evidenceCell.appendChild(exhibitBadge);
+                            }});
+                        }} else {{
+                            evidenceCell.textContent = 'None';
+                        }}
+                        row.appendChild(evidenceCell);
+                        
+                        tableBody.appendChild(row);
+                    }});
+                }}
+                
+                // Initialize facts on page load
+                document.addEventListener('DOMContentLoaded', function() {{
+                    renderFacts('all');
                 }});
-            }}
-            
-            // Initialize facts on page load
-            document.addEventListener('DOMContentLoaded', function() {{
+                
+                // Initialize facts immediately
                 renderFacts('all');
-            }});
-            
-            // Initialize facts immediately
-            renderFacts('all');
-        </script>
-    </body>
-    </html>
-    """
-    
-    # Render the HTML component
-    st.title("Case Facts")
-    components.html(html_content, height=800, scrolling=True)
+            </script>
+        </body>
+        </html>
+        """
+        
+        # Render the HTML component
+        st.title("Case Facts")
+        components.html(html_content, height=800, scrolling=True)
 
-# Run the main app
 if __name__ == "__main__":
     main()

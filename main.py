@@ -717,17 +717,6 @@ def main():
                     right: 20px;
                     display: flex;
                     gap: 10px;
-                    max-width: 300px;
-                    flex-wrap: wrap;
-                    z-index: 100;
-                }}
-                
-                @media (max-width: 768px) {{
-                    .action-buttons {{
-                        position: static;
-                        justify-content: flex-end;
-                        margin-bottom: 16px;
-                    }}
                 }}
                 
                 .action-button {{
@@ -966,10 +955,6 @@ def main():
                     display: flex;
                     justify-content: flex-end;
                     margin-bottom: 16px;
-                    max-width: 100%;
-                    overflow-x: auto;
-                    flex-wrap: wrap;
-                    gap: 2px;
                 }}
                 
                 .view-toggle button {{
@@ -977,8 +962,6 @@ def main():
                     border: 1px solid #e2e8f0;
                     background-color: #f7fafc;
                     cursor: pointer;
-                    white-space: nowrap;
-                    min-width: fit-content;
                 }}
                 
                 .view-toggle button.active {{
@@ -1005,142 +988,6 @@ def main():
                     border-radius: 0 4px 4px 0;
                 }}
                 
-                .docset-icon {{
-                    margin-right: 10px;
-                    color: #4299e1;
-                }}
-                
-                .folder-icon {{
-                    color: #4299e1;
-                    margin-right: 8px;
-                }}
-                
-                .chevron {{
-                    transition: transform 0.2s;
-                    margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
-                }}
-                
-                .chevron.expanded {{
-                    transform: rotate(90deg);
-                }}
-                
-                /* Main container constraints */
-                .container {{
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    overflow-x: hidden; /* Prevent page-level horizontal scroll */
-                    box-sizing: border-box;
-                }}
-                
-                /* Document sets table container - fixed scroll implementation */
-                .docset-table-container {{
-                    width: 100%;
-                    overflow-x: auto;
-                    overflow-y: visible;
-                    border: 1px solid #dee2e6;
-                    border-radius: 6px;
-                    margin-top: 8px;
-                    box-sizing: border-box;
-                    background-color: white;
-                }}
-                
-                .docset-table-container table.table-view {{
-                    width: auto;
-                    min-width: 1400px; /* Increased for better readability */
-                    margin: 0;
-                    border-collapse: collapse;
-                    table-layout: fixed;
-                }}
-                
-                /* Force specific column widths for document sets */
-                .docset-table-container .table-view th:nth-child(1),
-                .docset-table-container .table-view td:nth-child(1) {{ width: 120px; }} /* Date */
-                .docset-table-container .table-view th:nth-child(2), 
-                .docset-table-container .table-view td:nth-child(2) {{ width: 200px; }} /* Event */
-                .docset-table-container .table-view th:nth-child(3),
-                .docset-table-container .table-view td:nth-child(3) {{ width: 250px; }} /* Source Text */
-                .docset-table-container .table-view th:nth-child(4),
-                .docset-table-container .table-view td:nth-child(4) {{ width: 80px; }} /* Page */
-                .docset-table-container .table-view th:nth-child(5),
-                .docset-table-container .table-view td:nth-child(5) {{ width: 150px; }} /* Document */
-                .docset-table-container .table-view th:nth-child(6),
-                .docset-table-container .table-view td:nth-child(6) {{ width: 200px; }} /* Doc Summary */
-                .docset-table-container .table-view th:nth-child(7),
-                .docset-table-container .table-view td:nth-child(7) {{ width: 200px; }} /* Claimant */
-                .docset-table-container .table-view th:nth-child(8),
-                .docset-table-container .table-view td:nth-child(8) {{ width: 200px; }} /* Respondent */
-                .docset-table-container .table-view th:nth-child(9),
-                .docset-table-container .table-view td:nth-child(9) {{ width: 100px; }} /* Status */
-                .docset-table-container .table-view th:nth-child(10),
-                .docset-table-container .table-view td:nth-child(10) {{ width: 180px; }} /* Evidence */
-                
-                .docset-table-container .table-view td {{
-                    white-space: normal;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                    vertical-align: top;
-                    padding: 8px;
-                    border-bottom: 1px solid #dee2e6;
-                    font-size: 12px;
-                    line-height: 1.4;
-                }}
-                
-                .docset-table-container .table-view th {{
-                    white-space: nowrap;
-                    padding: 10px 8px;
-                    background-color: #f8f9fa;
-                    border-bottom: 2px solid #dee2e6;
-                    font-size: 11px;
-                    font-weight: 600;
-                    text-align: left;
-                    position: sticky;
-                    top: 0;
-                    z-index: 10;
-                }}
-                
-                /* Enhanced scrollbar for document sets */
-                .docset-table-container::-webkit-scrollbar {{
-                    height: 8px;
-                    background-color: #f8f9fa;
-                }}
-                
-                .docset-table-container::-webkit-scrollbar-track {{
-                    background: #e9ecef;
-                    border-radius: 4px;
-                }}
-                
-                .docset-table-container::-webkit-scrollbar-thumb {{
-                    background: #6c757d;
-                    border-radius: 4px;
-                    border: 1px solid #adb5bd;
-                }}
-                
-                .docset-table-container::-webkit-scrollbar-thumb:hover {{
-                    background: #495057;
-                }}
-                
-                /* Ensure parent containers don't interfere */
-                .docset-content {{
-                    width: 100%;
-                    overflow: visible;
-                    box-sizing: border-box;
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
-                    padding: 0 0 20px 0;
-                    max-width: 100%;
-                }}
-                
-                .docset-content.show {{
-                    display: block;
-                }}
-                
-                .docset-container {{
-                    width: 100%;
-                    margin-bottom: 20px;
-                    box-sizing: border-box;
-                }}
-                
                 /* Document sets */
                 .docset-header {{
                     display: flex;
@@ -1151,153 +998,20 @@ def main():
                     border-radius: 4px;
                     margin-bottom: 10px;
                     cursor: pointer;
-                    max-width: 100%;
-                    overflow: hidden;
-                    box-sizing: border-box;
                 }}
                 
                 .docset-header:hover {{
                     background-color: #e9ecef;
                 }}
                 
-                /* Table view with horizontal scroll - Main tables */
-                .table-view-container {{
-                    overflow-x: auto;
-                    border: 1px solid #dee2e6;
-                    border-radius: 8px;
-                    margin-top: 20px;
-                    width: 100%;
-                    box-sizing: border-box;
-                }}
-                
-                .table-view {{
-                    width: 100%;
-                    min-width: 1200px; /* Ensure minimum width for readability */
-                    border-collapse: collapse;
-                    font-size: 14px; /* Normal readable size */
-                    margin: 0;
-                }}
-                
-                .table-view th {{
-                    padding: 12px;
-                    text-align: left;
-                    background-color: #f8f9fa;
-                    border-bottom: 2px solid #dee2e6;
-                    position: sticky;
-                    top: 0;
-                    cursor: pointer;
-                    font-size: 13px;
-                    white-space: nowrap;
-                    z-index: 10;
-                }}
-                
-                .table-view th:hover {{
-                    background-color: #e9ecef;
-                }}
-                
-                .table-view td {{
-                    padding: 12px;
-                    border-bottom: 1px solid #dee2e6;
-                    font-size: 13px; /* Normal readable size */
-                    vertical-align: top;
-                    line-height: 1.4;
-                }}
-                
-                .table-view tr:hover {{
-                    background-color: #f8f9fa;
-                }}
-                
-                /* Column-specific widths for better readability - Main tables */
-                .table-view td:nth-child(1) {{ /* Date */
-                    min-width: 120px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(2) {{ /* Event */
-                    min-width: 250px;
-                    max-width: 300px;
-                }}
-                
-                .table-view td:nth-child(3) {{ /* Source Text */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(4) {{ /* Page */
-                    min-width: 80px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(5) {{ /* Document */
-                    min-width: 200px;
-                    max-width: 250px;
-                    font-weight: 500;
-                }}
-                
-                .table-view td:nth-child(6) {{ /* Doc Summary */
-                    min-width: 250px;
-                    max-width: 350px;
-                    font-style: italic;
-                    color: #666;
-                }}
-                
-                .table-view td:nth-child(7) {{ /* Claimant Submission */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(8) {{ /* Respondent Submission */
-                    min-width: 300px;
-                    max-width: 400px;
-                }}
-                
-                .table-view td:nth-child(9) {{ /* Status */
-                    min-width: 100px;
-                    white-space: nowrap;
-                }}
-                
-                .table-view td:nth-child(10) {{ /* Evidence */
-                    min-width: 200px;
-                    max-width: 300px;
-                }}
-                
-                /* Text wrapping for content cells - Main tables */
-                .table-view td:nth-child(2),
-                .table-view td:nth-child(3),
-                .table-view td:nth-child(5),
-                .table-view td:nth-child(6),
-                .table-view td:nth-child(7),
-                .table-view td:nth-child(8),
-                .table-view td:nth-child(10) {{
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                }}
-                
-                /* Horizontal scroll indicator - Main tables */
-                .table-view-container::-webkit-scrollbar {{
-                    height: 8px;
-                }}
-                
-                .table-view-container::-webkit-scrollbar-track {{
-                    background: #f1f1f1;
-                    border-radius: 4px;
-                }}
-                
-                .table-view-container::-webkit-scrollbar-thumb {{
-                    background: #c1c1c1;
-                    border-radius: 4px;
-                }}
-                
-                .table-view-container::-webkit-scrollbar-thumb:hover {{
-                    background: #a8a8a8;
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
                 }}
                 
                 .docset-content {{
                     display: block; /* Changed from 'none' to 'block' to be open by default */
                     padding: 0 0 20px 0;
-                    max-width: 100%;
-                    overflow: hidden;
-                    box-sizing: border-box;
                 }}
                 
                 .docset-content.show {{
@@ -1877,90 +1591,21 @@ def main():
                     return evidenceContent;
                 }}
                 
-                // Debug function to check scroll containers
-                function debugScrollContainers() {{
-                    console.log('=== Debugging Scroll Containers ===');
-                    const containers = document.querySelectorAll('.docset-table-container');
-                    console.log(`Found ${{containers.length}} scroll containers`);
-                    
-                    containers.forEach((container, index) => {{
-                        console.log(`Container ${{index + 1}}:`);
-                        console.log('  - Width:', container.offsetWidth);
-                        console.log('  - Scroll Width:', container.scrollWidth);
-                        console.log('  - Overflow-X:', getComputedStyle(container).overflowX);
-                        console.log('  - Can scroll:', container.scrollWidth > container.offsetWidth);
-                        
-                        const table = container.querySelector('table');
-                        if (table) {{
-                            console.log('  - Table Width:', table.offsetWidth);
-                            console.log('  - Table Min-Width:', getComputedStyle(table).minWidth);
-                        }}
-                    }});
-                    
-                    // Test horizontal scroll programmatically
-                    if (containers.length > 0) {{
-                        console.log('Testing scroll...');
-                        containers[0].scrollLeft = 100;
-                        setTimeout(() => {{
-                            console.log('Scroll position after test:', containers[0].scrollLeft);
-                            // Reset scroll position
-                            containers[0].scrollLeft = 0;
-                        }}, 500);
-                    }}
-                }}
-                
-                // Manual scroll test function for users
-                function testScroll() {{
-                    const container = document.querySelector('.docset-table-container');
-                    if (container) {{
-                        container.scrollLeft = 200;
-                        container.style.border = '3px solid red';
-                        setTimeout(() => {{
-                            container.scrollLeft = 0;
-                            container.style.border = '1px solid #dee2e6';
-                        }}, 2000);
-                        console.log('Scroll test executed - container should have red border and scroll right then back');
-                    }} else {{
-                        console.log('No scroll container found');
-                    }}
-                }}
-                
-                // Add scroll test button for debugging
-                function addScrollTestButton() {{
-                    const existingButton = document.getElementById('scroll-test-btn');
-                    if (existingButton) return; // Don't add multiple buttons
-                    
-                    const button = document.createElement('button');
-                    button.id = 'scroll-test-btn';
-                    button.textContent = 'Test Scroll';
-                    button.style.cssText = 'position: fixed; top: 10px; left: 10px; z-index: 1000; padding: 8px 12px; background: #ff6b6b; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;';
-                    button.onclick = testScroll;
-                    document.body.appendChild(button);
-                }}
-                
                 // Toggle evidence expansion
                 function toggleEvidence(evidenceId, factIndex) {{
                     const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
                     const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
                     
-                    if (content && icon) {{
-                        if (content.style.display === 'none' || content.style.display === '') {{
-                            content.style.display = 'block';
-                            icon.textContent = '−';
-                        }} else {{
-                            content.style.display = 'none';
-                            icon.textContent = '+';
-                        }}
+                    if (content.style.display === 'none' || content.style.display === '') {{
+                        content.style.display = 'block';
+                        icon.textContent = '−';
+                        icon.style.transform = 'rotate(0deg)';
+                    }} else {{
+                        content.style.display = 'none';
+                        icon.textContent = '+';
+                        icon.style.transform = 'rotate(0deg)';
                     }}
                 }}
-                
-                // Initialize debugging and test button
-                document.addEventListener('DOMContentLoaded', function() {{
-                    setTimeout(() => {{
-                        debugScrollContainers();
-                        addScrollTestButton();
-                    }}, 1000); // Run after content loads
-                }});
                 
                 // Standardize timeline data to match facts structure
                 function standardizeTimelineData(item) {{

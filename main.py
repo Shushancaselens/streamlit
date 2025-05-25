@@ -1222,7 +1222,7 @@ def main():
                                 const fact = factEl.textContent.trim();
                                 const party = partyEl ? partyEl.textContent.trim() : '';
                                 
-                                contentToCopy += `${{date}} - ${{fact}} (${{party}})\\n\\n`;
+                                contentToCopy += date + ' - ' + fact + ' (' + party + ')\\n\\n';
                             }}
                         }});
                     }} else {{
@@ -1234,13 +1234,13 @@ def main():
                         docsetContainers.forEach(container => {{
                             const header = container.querySelector('.docset-header');
                             const title = header.querySelector('span').textContent;
-                            contentToCopy += `=== ${{title}} ===\\n`;
+                            contentToCopy += '=== ' + title + ' ===\\n';
                             
                             // Get facts from this document
                             const tableFacts = container.querySelectorAll('tbody tr');
                             tableFacts.forEach(fact => {{
                                 const cells = Array.from(fact.querySelectorAll('td'));
-                                contentToCopy += `- ${{cells[0].textContent}} | ${{cells[1].textContent}}\\n`;
+                                contentToCopy += '- ' + cells[0].textContent + ' | ' + cells[1].textContent + '\\n';
                             }});
                             
                             contentToCopy += '\\n';
@@ -1309,7 +1309,7 @@ def main():
                             const exhibits = item.exhibits ? item.exhibits.join(', ') : '';
                             const sourceText = (item.source_text || '').replace(/"/g, '""');
                             const docSummary = (item.doc_summary || '').replace(/"/g, '""');
-                            rows += `"${{item.date}}","${{item.point}}","${{sourceText}}","${{item.page || 'N/A'}}","${{item.doc_name || 'N/A'}}","${{docSummary}}","${{item.party}}","${{item.isDisputed ? 'Disputed' : 'Undisputed'}}","${{exhibits}}","${{item.argId}}. ${{item.argTitle}}"\\n`;
+                            rows += '"' + item.date + '","' + item.point + '","' + sourceText + '","' + (item.page || 'N/A') + '","' + (item.doc_name || 'N/A') + '","' + docSummary + '","' + item.party + '","' + (item.isDisputed ? 'Disputed' : 'Undisputed') + '","' + exhibits + '","' + item.argId + '. ' + item.argTitle + '"\\n';
                         }});
                         
                         const csvContent = headers + rows;
@@ -1411,8 +1411,8 @@ def main():
                 
                 // Toggle document set visibility
                 function toggleDocSet(docsetId) {{
-                    const content = document.getElementById(`docset-content-${{docsetId}}`);
-                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
+                    const content = document.getElementById('docset-content-' + docsetId);
+                    const chevron = document.getElementById('chevron-' + docsetId);
                     
                     if (content.style.display === 'none') {{
                         content.style.display = 'block';
@@ -1488,10 +1488,9 @@ def main():
                             // Add year marker
                             const yearMarker = document.createElement('div');
                             yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = `
-                                <div class="timeline-year">${{currentYear}}</div>
-                                <div class="timeline-year-line"></div>
-                            `;
+                            yearMarker.innerHTML = 
+                                '<div class="timeline-year">' + currentYear + '</div>' +
+                                '<div class="timeline-year-line"></div>';
                             container.appendChild(yearMarker);
                             prevYear = currentYear;
                         }}
@@ -1561,20 +1560,19 @@ def main():
                             sourceTextEl.style.padding = '8px';
                             sourceTextEl.style.backgroundColor = '#f7fafc';
                             sourceTextEl.style.borderRadius = '4px';
-                            sourceTextEl.textContent = `"${{fact.source_text}}"`;
+                            sourceTextEl.textContent = '"' + fact.source_text + '"';
                             bodyEl.appendChild(sourceTextEl);
                         }}
                         
                         // Related argument and source
                         const metaEl = document.createElement('div');
                         metaEl.className = 'timeline-meta';
-                        metaEl.innerHTML = `
-                            <span><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</span>
-                            <span><strong>Page:</strong> ${{fact.page || 'N/A'}}</span>
-                            <span><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</span>
-                            ${{fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : ''}}
-                            <span><strong>Source:</strong> ${{fact.source}}</span>
-                        `;
+                        metaEl.innerHTML = 
+                            '<span><strong>Document:</strong> ' + (fact.doc_name || 'N/A') + '</span>' +
+                            '<span><strong>Page:</strong> ' + (fact.page || 'N/A') + '</span>' +
+                            '<span><strong>Argument:</strong> ' + fact.argId + '. ' + fact.argTitle + '</span>' +
+                            (fact.paragraphs ? '<span><strong>Paragraphs:</strong> ' + fact.paragraphs + '</span>' : '') +
+                            '<span><strong>Source:</strong> ' + fact.source + '</span>';
                         bodyEl.appendChild(metaEl);
                         
                         contentEl.appendChild(bodyEl);
@@ -1683,65 +1681,67 @@ def main():
                         docsetEl.className = 'docset-container';
                         
                         // Create folder header
-                        const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span><strong>${{docset.name}}</strong></span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
-                                    </span>
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
-                        `;
+                        const headerHtml = 
+                            '<div class="docset-header" onclick="toggleDocSet(\'' + docset.id + '\')">' +
+                                '<svg id="chevron-' + docset.id + '" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                    '<polyline points="9 18 15 12 9 6"></polyline>' +
+                                '</svg>' +
+                                '<svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                    '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>' +
+                                '</svg>' +
+                                '<span><strong>' + docset.name + '</strong></span>' +
+                                '<span style="margin-left: auto;">' +
+                                    '<span class="badge ' + (docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')) + '">' +
+                                        docset.party +
+                                    '</span>' +
+                                    '<span class="badge">' + facts.length + ' facts</span>' +
+                                '</span>' +
+                            '</div>' +
+                            '<div id="docset-content-' + docset.id + '" class="docset-content">';
                         
                         let contentHtml = '';
                         
                         if (facts.length > 0) {{
                             // Create a single table for all facts in this category
-                            contentHtml += `
-                                <table class="table-view">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Event</th>
-                                            <th>Source Text</th>
-                                            <th>Page</th>
-                                            <th>Document</th>
-                                            <th>Party</th>
-                                            <th>Status</th>
-                                            <th>Evidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.point}}</td>
-                                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || 'N/A'}}">${{(fact.source_text || 'N/A').substring(0, 100)}}${{(fact.source_text || '').length > 100 ? '...' : ''}}</td>
-                                                <td>${{fact.page || 'N/A'}}</td>
-                                                <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
-                                                <td>
-                                                    <span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">
-                                                        ${{fact.party}}
-                                                    </span>
-                                                </td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{fact.exhibits && fact.exhibits.length > 0 
-                                                    ? fact.exhibits.map(ex => `<span class="badge exhibit-badge">${{ex}}</span>`).join(' ') 
-                                                    : 'None'}}</td>
-                                            </tr>
-                                        `).join('')}}
-                                    </tbody>
-                                </table>
-                            `;
+                            contentHtml += 
+                                '<table class="table-view">' +
+                                    '<thead>' +
+                                        '<tr>' +
+                                            '<th>Date</th>' +
+                                            '<th>Event</th>' +
+                                            '<th>Source Text</th>' +
+                                            '<th>Page</th>' +
+                                            '<th>Document</th>' +
+                                            '<th>Party</th>' +
+                                            '<th>Status</th>' +
+                                            '<th>Evidence</th>' +
+                                        '</tr>' +
+                                    '</thead>' +
+                                    '<tbody>';
+                            
+                            facts.forEach(fact => {{
+                                const sourceTextTruncated = (fact.source_text || 'N/A').substring(0, 100) + ((fact.source_text || '').length > 100 ? '...' : '');
+                                const exhibitBadges = fact.exhibits && fact.exhibits.length > 0 
+                                    ? fact.exhibits.map(ex => '<span class="badge exhibit-badge">' + ex + '</span>').join(' ')
+                                    : 'None';
+                                
+                                contentHtml += '<tr' + (fact.isDisputed ? ' class="disputed"' : '') + '>' +
+                                    '<td>' + fact.date + '</td>' +
+                                    '<td>' + fact.point + '</td>' +
+                                    '<td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="' + (fact.source_text || 'N/A') + '">' + sourceTextTruncated + '</td>' +
+                                    '<td>' + (fact.page || 'N/A') + '</td>' +
+                                    '<td><strong>' + (fact.doc_name || 'N/A') + '</strong></td>' +
+                                    '<td>' +
+                                        '<span class="badge ' + (fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge') + '">' +
+                                            fact.party +
+                                        '</span>' +
+                                    '</td>' +
+                                    '<td>' + (fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed') + '</td>' +
+                                    '<td>' + exhibitBadges + '</td>' +
+                                '</tr>';
+                            }});
+                            
+                            contentHtml += '</tbody></table>';
                         }} else {{
                             contentHtml += '<p style="padding: 12px;">No facts found</p>';
                         }}
@@ -1808,7 +1808,7 @@ def main():
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.innerHTML = `<strong>${fact.doc_name || 'N/A'}</strong>`;
+                        docCell.innerHTML = '<strong>' + (fact.doc_name || 'N/A') + '</strong>';
                         docCell.title = fact.doc_summary || 'N/A';
                         row.appendChild(docCell);
                         
@@ -1834,7 +1834,7 @@ def main():
                         
                         // Related argument
                         const argCell = document.createElement('td');
-                        argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
+                        argCell.textContent = fact.argId + '. ' + fact.argTitle;
                         row.appendChild(argCell);
                         
                         // Evidence column

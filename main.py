@@ -2088,6 +2088,31 @@ def main():
                         timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
                         timelineItem.appendChild(timelinePoint);
                         
+                    // Create timeline items
+                    filteredData.forEach(fact => {{
+                        // Get the year and check if we need a year marker
+                        currentYear = getYear(fact.date);
+                        if (currentYear && currentYear !== prevYear) {{
+                            // Add year marker
+                            const yearMarker = document.createElement('div');
+                            yearMarker.className = 'timeline-year-marker';
+                            yearMarker.innerHTML = `
+                                <div class="timeline-year">${{currentYear}}</div>
+                                <div class="timeline-year-line"></div>
+                            `;
+                            container.appendChild(yearMarker);
+                            prevYear = currentYear;
+                        }}
+                    
+                        // Create timeline item
+                        const timelineItem = document.createElement('div');
+                        timelineItem.className = 'timeline-item';
+                        
+                        // Create timeline point
+                        const timelinePoint = document.createElement('div');
+                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
+                        timelineItem.appendChild(timelinePoint);
+                        
                         // Create timeline content with card-like styling but proper timeline structure
                         const contentEl = document.createElement('div');
                         contentEl.className = 'timeline-content';
@@ -2235,6 +2260,9 @@ def main():
                         bodyEl.appendChild(statusSection);
                         
                         contentEl.appendChild(bodyEl);
+                        timelineItem.appendChild(contentEl);
+                        container.appendChild(timelineItem);
+                    }});
                         
 
                         

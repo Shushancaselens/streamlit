@@ -778,7 +778,52 @@ def render_streamlit_timeline_view(filtered_facts=None):
                 if i < len(events) - 1:
                     st.divider()
 
-# Streamlit Native Document Categories View Implementation  
+# Streamlit Native Table View Implementation
+def render_streamlit_table_view(filtered_facts=None):
+    # Get facts data
+    if filtered_facts is None:
+        facts_data = get_all_facts()
+    else:
+        facts_data = filtered_facts
+    
+    # Sort by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    if not facts_data:
+        st.info("No facts found matching the selected criteria.")
+        return
+    
+    # Convert facts to DataFrame for table display
+    table_data = []
+    for fact in facts_data:
+        table_data.append({
+            'Date': fact['date'],
+            'Event': fact['event'],
+            'Status': '🔴 Disputed' if fact['isDisputed'] else '🟢 Undisputed',
+            'Parties': ', '.join(fact.get('parties_involved', [])),
+            'Exhibits': ', '.join(fact.get('exhibits', [])),
+            'Page': fact.get('page', ''),
+            'Document': fact.get('doc_name', '')
+        })
+    
+    # Create DataFrame
+    df = pd.DataFrame(table_data)
+    
+    # Display table with better formatting
+    st.dataframe(
+        df,
+        use_container_width=True,
+        height=600,
+        column_config={
+            'Date': st.column_config.TextColumn('Date', width=120),
+            'Event': st.column_config.TextColumn('Event', width=300),
+            'Status': st.column_config.TextColumn('Status', width=120),
+            'Parties': st.column_config.TextColumn('Parties', width=150),
+            'Exhibits': st.column_config.TextColumn('Exhibits', width=120),
+            'Page': st.column_config.TextColumn('Page', width=80),
+            'Document': st.column_config.TextColumn('Document', width=200)
+        }
+    )  
 def render_streamlit_docset_view(filtered_facts=None):
     # Get facts and document sets data
     if filtered_facts is None:
@@ -945,7 +990,7 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling
+        # Custom CSS for button styling and view selector
         st.markdown("""
         <style>
         .stButton > button {
@@ -958,6 +1003,43 @@ def main():
         .stButton > button:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Enhanced view selector styling */
+        .view-selector-container {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 8px;
+            margin: 16px 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        /* Improve button appearance */
+        div[data-testid="column"] > div > div > div > button {
+            border-radius: 8px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        /* Active button styling */
+        div[data-testid="column"] > div > div > div > button[kind="primary"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+        }
+        
+        /* Inactive button styling */
+        div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+            background-color: white !important;
+            color: #6c757d !important;
+            border: 1px solid #dee2e6 !important;
+        }
+        
+        div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            border-color: #adb5bd !important;
+            transform: translateY(-1px) !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -979,80 +1061,60 @@ def main():
     
     # Create the facts view with native components
     if st.session_state.view == "Facts":
-        st.title("Case Facts")
+        # Header with title and action buttons
+        col_title, col_copy, col_export = st.columns([3, 1, 1])
         
-        # Create a simple header with view toggle using Streamlit components
-        col1, col2, col3 = st.columns(3)
+        with col_title:
+            st.title("Case Facts")
+        
+        with col_copy:
+            if st.button("📋 Copy", use_container_width=True, type="secondary"):
+                st.success("Facts copied to clipboard!")
+        
+        with col_export:
+            if st.button("📥 Export", use_container_width=True, type="secondary"):
+                st.success("Facts exported!")
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Enhanced view toggle with better styling
+        st.markdown('<div class="view-selector-container">', unsafe_allow_html=True)
+        
+        # Create view selector buttons with better styling
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             if st.button("📋 Card View", use_container_width=True, 
-                        type="primary" if st.session_state.current_view_type == "card" else "secondary"):
+                        type="primary" if st.session_state.current_view_type == "card" else "secondary",
+                        key="card_view_btn"):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
         with col2:
-            if st.button("📅 Timeline View", use_container_width=True,
-                        type="primary" if st.session_state.current_view_type == "timeline" else "secondary"):
-                st.session_state.current_view_type = "timeline"
+            if st.button("📊 Table View", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "table" else "secondary",
+                        key="table_view_btn"):
+                st.session_state.current_view_type = "table"
                 st.rerun()
         
         with col3:
             if st.button("📁 Document Categories", use_container_width=True,
-                        type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
+                        type="primary" if st.session_state.current_view_type == "docset" else "secondary",
+                        key="docset_view_btn"):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
+        with col4:
+            if st.button("📅 Timeline View", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "timeline" else "secondary",
+                        key="timeline_view_btn"):
+                st.session_state.current_view_type = "timeline"
+                st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+        
         st.divider()
-        
-        # Custom CSS for improved tabs styling
-        st.markdown("""
-        <style>
-        /* Tab container styling */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 2px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 4px;
-            margin-bottom: 20px;
-        }
-        
-        /* Individual tab styling */
-        .stTabs [data-baseweb="tab"] {
-            height: 40px;
-            padding: 8px 20px;
-            background-color: transparent;
-            border-radius: 6px;
-            color: #6c757d;
-            font-weight: 500;
-            font-size: 14px;
-            border: none;
-            transition: all 0.2s ease;
-        }
-        
-        /* Active tab styling */
-        .stTabs [aria-selected="true"] {
-            background-color: #007bff !important;
-            color: white !important;
-            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-        }
-        
-        /* Hover effect for non-active tabs */
-        .stTabs [data-baseweb="tab"]:hover {
-            background-color: #e9ecef;
-            color: #495057;
-        }
-        
-        /* Remove default tab border */
-        .stTabs [data-baseweb="tab-list"] button[data-baseweb="tab"] {
-            border: none !important;
-        }
-        
-        /* Tab content area */
-        .stTabs [data-baseweb="tab-panel"] {
-            padding-top: 20px;
-        }
-        </style>
-        """, unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
@@ -1079,6 +1141,8 @@ def main():
 def render_view_content(view_type, filtered_facts):
     if view_type == "card":
         render_streamlit_card_view(filtered_facts)
+    elif view_type == "table":
+        render_streamlit_table_view(filtered_facts)
     elif view_type == "timeline":
         render_streamlit_timeline_view(filtered_facts)
     elif view_type == "docset":

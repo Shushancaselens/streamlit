@@ -1033,10 +1033,10 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for compact view selector buttons and tabs
+        # Custom CSS for compact view selector buttons and tabs  
         st.markdown("""
         <style>
-        /* Sidebar button styling */
+        /* Sidebar button styling - keep original */
         .stButton > button {
             width: 100%;
             border-radius: 6px;
@@ -1049,63 +1049,38 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Specific targeting for view selector buttons - make them compact like tabs */
-        button[data-testid="baseButton-secondary"][key="card_view_btn"],
-        button[data-testid="baseButton-primary"][key="card_view_btn"],
-        button[data-testid="baseButton-secondary"][key="table_view_btn"], 
-        button[data-testid="baseButton-primary"][key="table_view_btn"],
-        button[data-testid="baseButton-secondary"][key="docset_view_btn"],
-        button[data-testid="baseButton-primary"][key="docset_view_btn"] {
+        /* TARGET SPECIFIC VIEW SELECTOR AREA - make buttons compact */
+        .view-selector-area .stButton button {
             height: 35px !important;
             font-size: 14px !important;
-            padding: 8px 16px !important;
-            margin: 0 !important;
-            border-radius: 6px !important;
-            font-weight: 500 !important;
-        }
-        
-        /* Override default button styles for view selectors */
-        .stButton button[data-testid*="baseButton"] {
-            height: 35px !important;
-            font-size: 14px !important;
-            padding: 8px 16px !important;
+            padding: 6px 12px !important;
             margin: 0 !important;
             border-radius: 6px !important;
             font-weight: 500 !important;
             min-height: 35px !important;
             max-height: 35px !important;
+            line-height: 1.2 !important;
         }
         
-        /* Active state for view selector buttons */
-        .stButton button[data-testid="baseButton-primary"] {
-            background-color: #1f77b4 !important;
-            color: white !important;
-            border: 1px solid #1f77b4 !important;
-            box-shadow: none !important;
-        }
-        
-        /* Inactive state for view selector buttons */
-        .stButton button[data-testid="baseButton-secondary"] {
-            background-color: white !important;
-            color: #666 !important;
-            border: 1px solid #e1e5e9 !important;
-            box-shadow: none !important;
-        }
-        
-        /* Hover effects for view selector buttons */
-        .stButton button[data-testid="baseButton-secondary"]:hover {
-            background-color: #f8f9fa !important;
-            color: #333 !important;
-            border-color: #adb5bd !important;
+        /* Remove transforms and large styling from view selector buttons */
+        .view-selector-area .stButton button:hover {
             transform: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         }
         
-        .stButton button[data-testid="baseButton-primary"]:hover {
-            background-color: #1565c0 !important;
-            transform: none !important;
+        /* Style the view selector container */
+        .view-selector-area {
+            margin-bottom: 20px;
         }
         
-        /* Facts filter tabs styling */
+        /* Override any Streamlit defaults for view selector area */
+        .view-selector-area button[data-testid*="baseButton"] {
+            height: 35px !important;
+            font-size: 14px !important;
+            padding: 6px 12px !important;
+        }
+        
+        /* Facts filter tabs styling - keep compact */
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
             background-color: transparent;
@@ -1179,7 +1154,10 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Create view selector buttons with better styling
+        # Add a specific container for view selector
+        st.markdown('<div class="view-selector-area">', unsafe_allow_html=True)
+        
+        # Create view selector buttons
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -1202,6 +1180,8 @@ def main():
                         key="docset_view_btn"):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

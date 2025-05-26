@@ -1862,7 +1862,7 @@ def main():
                                 <div class="card-detail-label">Evidence & Source References (${{evidenceContent.length}} items)</div>
                                 <div class="card-detail-value">
                                     <div style="font-size: 13px; color: #4a5568; margin-bottom: 12px; font-style: italic; background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #dd6b20;">
-                                        <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                        Source Text: This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
                                     </div>
                                     ${{evidenceContent.map((evidence, evidenceIndex) => `
                                         <div style="margin-bottom: 12px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
@@ -1887,7 +1887,7 @@ def main():
                                                         <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.doc_summary || 'No document summary available'}}</div>
                                                     </div>
                                                     <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
-                                                        <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Evidence Summary</div>
+                                                        <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Source Text</div>
                                                         <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{evidence.summary}}</div>
                                                     </div>
                                                     <div style="margin-top: 8px; font-size: 11px; color: #718096;">
@@ -2104,7 +2104,7 @@ def main():
                             footerEl.innerHTML = `
                                 <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence & Source References (${{evidenceContent.length}} items)</div>
                                 <div style="font-size: 12px; color: #4a5568; margin-bottom: 12px; font-style: italic; background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #dd6b20;">
-                                    <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                    Source Text: This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
                                 </div>
                                 ${{evidenceContent.map((evidence, evidenceIndex) => `
                                     <div style="margin-bottom: 8px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
@@ -2129,7 +2129,7 @@ def main():
                                                     <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.doc_summary || 'No document summary available'}}</div>
                                                 </div>
                                                 <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Evidence Summary</div>
+                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Source Text</div>
                                                     <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{evidence.summary}}</div>
                                                 </div>
                                                 <div style="margin-top: 8px; font-size: 11px; color: #718096;">
@@ -2281,7 +2281,7 @@ def main():
                                                         <div style="font-size: 11px; color: #4a5568; line-height: 1.3;">${{fact.doc_summary || 'No document summary available'}}</div>
                                                     </div>
                                                     <div style="background-color: #f0f9ff; padding: 6px; border-radius: 3px; border-left: 2px solid #0ea5e9;">
-                                                        <div style="font-weight: 600; font-size: 10px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 3px;">Evidence Summary</div>
+                                                        <div style="font-weight: 600; font-size: 10px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 3px;">Source Text</div>
                                                         <div style="font-size: 11px; color: #4a5568; line-height: 1.3;">${{evidence.summary}}</div>
                                                     </div>
                                                     <div style="margin-top: 6px; font-size: 10px; color: #718096;">
@@ -2328,7 +2328,7 @@ def main():
                                                 <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20; margin-bottom: 12px;">
                                                     <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #dd6b20; margin-bottom: 6px;">Evidence (${{evidenceContent.length}} items)</div>
                                                     <div style="font-size: 12px; color: #4a5568; margin-bottom: 8px; font-style: italic; background-color: #fff; padding: 6px; border-radius: 3px; border-left: 2px solid #dd6b20;">
-                                                        <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                                        Source Text: This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
                                                     </div>
                                                     <div>${{evidenceHtml}}</div>
                                                 </div>

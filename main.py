@@ -389,50 +389,37 @@ if st.session_state.view == "Facts":
                 font-family: "Source Sans Pro", sans-serif;
                 background-color: #ffffff;
                 color: #262730;
-                line-height: 1.6;
-            }}
-            
-            .main-content {{
-                padding: 0;
             }}
             
             .fact-card {{
-                border: 1px solid #e6e6e6;
-                border-radius: 0.5rem;
-                margin-bottom: 1rem;
-                overflow: hidden;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                margin-bottom: 0.5rem;
                 background-color: white;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                transition: box-shadow 0.3s ease;
-            }}
-            
-            .fact-card:hover {{
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             }}
             
             .fact-header {{
-                padding: 1rem;
-                background-color: #f8f9fa;
+                padding: 0.75rem;
+                background-color: #f7f7f7;
                 cursor: pointer;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 1px solid #e6e6e6;
-                transition: background-color 0.2s;
+                border-bottom: 1px solid #ddd;
             }}
             
             .fact-header:hover {{
-                background-color: #e9ecef;
+                background-color: #f0f0f0;
             }}
             
             .fact-title {{
-                font-weight: 600;
-                color: #262730;
+                font-weight: 500;
+                font-size: 0.9rem;
             }}
             
             .dispute-indicator {{
-                width: 12px;
-                height: 12px;
+                width: 8px;
+                height: 8px;
                 border-radius: 50%;
                 background-color: #dc3545;
             }}
@@ -442,8 +429,9 @@ if st.session_state.view == "Facts":
             }}
             
             .fact-content {{
-                padding: 1.5rem;
+                padding: 1rem;
                 display: none;
+                font-size: 0.85rem;
             }}
             
             .fact-content.expanded {{
@@ -451,10 +439,10 @@ if st.session_state.view == "Facts":
             }}
             
             .section-header {{
-                font-size: 1.1rem;
+                font-size: 0.9rem;
                 font-weight: 600;
-                margin: 1.5rem 0 0.75rem 0;
-                color: #262730;
+                margin: 1rem 0 0.5rem 0;
+                color: #555;
             }}
             
             .section-header:first-child {{
@@ -462,156 +450,149 @@ if st.session_state.view == "Facts":
             }}
             
             .evidence-item {{
-                margin-bottom: 1rem;
-                padding: 1rem;
-                background-color: #f8f9fa;
-                border-radius: 0.5rem;
-                border: 1px solid #e6e6e6;
+                margin-bottom: 0.75rem;
+                padding: 0.75rem;
+                background-color: #fafafa;
+                border-radius: 3px;
+                border: 1px solid #eee;
             }}
             
             .evidence-title {{
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-                color: #262730;
+                font-weight: 500;
+                margin-bottom: 0.25rem;
+                font-size: 0.85rem;
             }}
             
             .submission-section {{
-                margin: 1rem 0;
+                margin: 0.75rem 0;
             }}
             
             .submission-header {{
-                font-weight: 600;
-                margin-bottom: 0.5rem;
+                font-weight: 500;
+                margin-bottom: 0.25rem;
+                font-size: 0.85rem;
             }}
             
             .submission-content {{
-                padding: 1rem;
-                border-radius: 0.5rem;
-                font-style: italic;
-                border-left: 4px solid;
+                padding: 0.75rem;
+                border-radius: 3px;
+                font-size: 0.8rem;
+                border-left: 3px solid;
             }}
             
             .claimant-submission {{
-                background-color: #cce5ff;
-                border-left-color: #0066cc;
-                color: #003d7a;
+                background-color: #f0f8ff;
+                border-left-color: #007bff;
             }}
             
             .respondent-submission {{
-                background-color: #ffe6e6;
-                border-left-color: #cc0000;
-                color: #7a0000;
+                background-color: #fff5f5;
+                border-left-color: #dc3545;
             }}
             
             .status-section {{
                 display: flex;
-                gap: 2rem;
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid #e6e6e6;
+                gap: 1rem;
+                margin-top: 0.75rem;
+                padding-top: 0.75rem;
+                border-top: 1px solid #eee;
+                font-size: 0.8rem;
             }}
             
             .status-item {{
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
+                gap: 0.25rem;
             }}
             
             .copy-button {{
-                padding: 0.25rem 0.5rem;
+                padding: 0.2rem 0.4rem;
                 background-color: #6c757d;
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 2px;
                 cursor: pointer;
-                font-size: 0.8rem;
-                transition: background-color 0.2s;
+                font-size: 0.7rem;
             }}
             
             .copy-button:hover {{
-                background-color: #5a6268;
+                background-color: #545b62;
             }}
             
             .no-facts {{
                 text-align: center;
-                padding: 3rem;
-                color: #6c757d;
-                font-style: italic;
+                padding: 2rem;
+                color: #999;
+                font-size: 0.9rem;
             }}
             
             .timeline-year {{
-                font-size: 1.5rem;
+                font-size: 1.2rem;
                 font-weight: 600;
-                margin: 2rem 0 1rem 0;
-                color: #262730;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
+                margin: 1.5rem 0 0.75rem 0;
+                padding-bottom: 0.25rem;
+                border-bottom: 1px solid #ddd;
             }}
             
             .timeline-event {{
-                margin-bottom: 2rem;
-                padding: 1rem;
-                border-left: 4px solid #ff6900;
-                background-color: #f8f9fa;
-                border-radius: 0 0.5rem 0.5rem 0;
+                margin-bottom: 1rem;
+                padding: 0.75rem;
+                border-left: 3px solid #007bff;
+                background-color: #fafafa;
+                font-size: 0.85rem;
             }}
             
             .timeline-header {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
             }}
             
             .timeline-date {{
-                font-weight: 600;
-                color: #ff6900;
+                font-weight: 500;
+                color: #007bff;
+                font-size: 0.8rem;
             }}
             
             .timeline-title {{
-                font-weight: 600;
+                font-weight: 500;
                 flex: 1;
-                margin: 0 1rem;
+                margin: 0 0.75rem;
+                font-size: 0.85rem;
             }}
             
             .docset-container {{
-                margin-bottom: 1rem;
+                margin-bottom: 0.75rem;
             }}
             
             .docset-header {{
-                padding: 1rem;
-                background-color: #f8f9fa;
+                padding: 0.75rem;
+                background-color: #f7f7f7;
                 cursor: pointer;
-                border: 1px solid #e6e6e6;
-                border-radius: 0.5rem;
+                border: 1px solid #ddd;
+                border-radius: 3px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                transition: background-color 0.2s;
+                font-size: 0.9rem;
             }}
             
             .docset-header:hover {{
-                background-color: #e9ecef;
+                background-color: #f0f0f0;
             }}
             
             .docset-content {{
                 display: none;
-                border: 1px solid #e6e6e6;
+                border: 1px solid #ddd;
                 border-top: none;
-                border-radius: 0 0 0.5rem 0.5rem;
-                padding: 1rem;
+                padding: 0.75rem;
                 background-color: white;
+                font-size: 0.85rem;
             }}
             
             .docset-content.expanded {{
                 display: block;
-            }}
-            
-            .divider {{
-                height: 1px;
-                background-color: #e6e6e6;
-                margin: 1rem 0;
             }}
         </style>
     </head>
@@ -1139,4 +1120,3 @@ else:
     # Simple placeholder for other views
     st.title(f"{st.session_state.view}")
     st.info(f"{st.session_state.view} view is not implemented in this demo.")
-

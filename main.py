@@ -11,12 +11,6 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 if 'view' not in st.session_state:
     st.session_state.view = "Facts"
 
-if 'current_facts_view' not in st.session_state:
-    st.session_state.current_facts_view = "card"
-
-if 'facts_filter' not in st.session_state:
-    st.session_state.facts_filter = "all"
-
 # Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
@@ -554,139 +548,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
     return href
 
-def get_evidence_details(exhibits, args_data):
-    """Get evidence details for given exhibit IDs"""
-    evidence_details = []
-    
-    def find_evidence(args, exhibit_id):
-        for arg_key in args:
-            arg = args[arg_key]
-            if 'evidence' in arg and arg['evidence']:
-                for evidence in arg['evidence']:
-                    if evidence['id'] == exhibit_id:
-                        return evidence
-            if 'children' in arg and arg['children']:
-                child_evidence = find_evidence(arg['children'], exhibit_id)
-                if child_evidence:
-                    return child_evidence
-        return None
-    
-    for exhibit_id in exhibits:
-        evidence = (find_evidence(args_data['claimantArgs'], exhibit_id) or 
-                   find_evidence(args_data['respondentArgs'], exhibit_id))
-        
-        if evidence:
-            evidence_details.append({
-                'id': exhibit_id,
-                'title': evidence['title'],
-                'summary': evidence['summary']
-            })
-        else:
-            evidence_details.append({
-                'id': exhibit_id,
-                'title': exhibit_id,
-                'summary': 'Evidence details not available'
-            })
-    
-    return evidence_details
-
-def render_streamlit_cards(filtered_facts, args_data):
-    """Render facts as native Streamlit cards"""
-    
-    if not filtered_facts:
-        st.info("No facts found matching the selected criteria.")
-        return
-    
-    for i, fact in enumerate(filtered_facts):
-        # Create card styling based on disputed status
-        if fact['isDisputed']:
-            card_container = st.container()
-            with card_container:
-                st.markdown("""
-                <style>
-                div[data-testid="stExpander"] > div:first-child {
-                    border-left: 4px solid #e53e3e !important;
-                    background-color: rgba(229, 62, 62, 0.02) !important;
-                }
-                </style>
-                """, unsafe_allow_html=True)
-        
-        # Create the main expander for the fact
-        with st.expander(f"**{fact['date']}** - {fact['event']}", expanded=False):
-            
-            # Add party badges
-            badge_html = ""
-            if fact['parties_involved']:
-                for party in fact['parties_involved']:
-                    if party == 'Appellant':
-                        badge_html += '<span style="background-color: rgba(49, 130, 206, 0.1); color: #3182ce; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Appellant</span>'
-                    else:
-                        badge_html += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Respondent</span>'
-            
-            if fact['isDisputed']:
-                badge_html += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>'
-            
-            if badge_html:
-                st.markdown(badge_html, unsafe_allow_html=True)
-                st.markdown("---")
-            
-            # Create two columns for document and argument info
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**📄 Document**")
-                st.markdown(f"**{fact['doc_name'] or 'N/A'}**")
-                if fact['page']:
-                    st.markdown(f"*Page {fact['page']}*")
-            
-            with col2:
-                st.markdown("**📋 Argument**")
-                st.markdown(f"**{fact['argId']}. {fact['argTitle']}**")
-                if fact['paragraphs']:
-                    st.markdown(f"*Paragraphs: {fact['paragraphs']}*")
-            
-            # Source text
-            if fact['source_text'] and fact['source_text'] != 'No specific submission recorded':
-                st.markdown("**📝 Source Text:**")
-                st.info(fact['source_text'])
-            
-            # Submissions
-            if fact['claimant_submission'] and fact['claimant_submission'] != 'No specific submission recorded':
-                st.markdown("**👤 Claimant Submission:**")
-                st.markdown(f'<div style="background-color: rgba(49, 130, 206, 0.03); border-left: 4px solid #3182ce; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["claimant_submission"]}</div>', unsafe_allow_html=True)
-            
-            if fact['respondent_submission'] and fact['respondent_submission'] != 'No specific submission recorded':
-                st.markdown("**👤 Respondent Submission:**")
-                st.markdown(f'<div style="background-color: rgba(229, 62, 62, 0.03); border-left: 4px solid #e53e3e; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["respondent_submission"]}</div>', unsafe_allow_html=True)
-            
-            # Document summary
-            if fact['doc_summary']:
-                st.markdown("**📖 Document Summary:**")
-                st.markdown(f"*{fact['doc_summary']}*")
-            
-            # Status and Evidence in two columns
-            col3, col4 = st.columns([1, 2])
-            
-            with col3:
-                st.markdown("**⚖️ Status**")
-                if fact['isDisputed']:
-                    st.markdown('<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>', unsafe_allow_html=True)
-                else:
-                    st.markdown("Undisputed")
-            
-            with col4:
-                st.markdown("**📎 Evidence**")
-                if fact['exhibits']:
-                    evidence_details = get_evidence_details(fact['exhibits'], args_data)
-                    
-                    # Use checkboxes instead of nested expanders to avoid the error
-                    for j, evidence in enumerate(evidence_details):
-                        evidence_key = f"evidence_{i}_{j}_{st.session_state.facts_filter}"
-                        if st.checkbox(f"📁 {evidence['id']}: {evidence['title']}", key=evidence_key):
-                            st.markdown(f"*{evidence['summary']}*")
-                else:
-                    st.markdown("None")
-
 # Main app
 def main():
     # Get the data for JavaScript
@@ -700,6 +561,10 @@ def main():
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
     timeline_json = json.dumps(timeline_data)
+    
+    # Initialize session state if not already done
+    if 'view' not in st.session_state:
+        st.session_state.view = "Facts"
     
     # Add Streamlit sidebar with navigation buttons only
     with st.sidebar:
@@ -757,461 +622,860 @@ def main():
     
     # Create the facts HTML component
     if st.session_state.view == "Facts":
-        # Create a container for view selection and filtering
-        st.title("Case Facts")
-        
-        # View toggle buttons
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            if st.button("Card View", key="card_view_btn", 
-                        type="primary" if st.session_state.current_facts_view == "card" else "secondary",
-                        use_container_width=True):
-                st.session_state.current_facts_view = "card"
-                st.experimental_rerun()
-        
-        with col2:
-            if st.button("Table View", key="table_view_btn",
-                        type="primary" if st.session_state.current_facts_view == "table" else "secondary",
-                        use_container_width=True):
-                st.session_state.current_facts_view = "table"
-                st.experimental_rerun()
-        
-        with col3:
-            if st.button("Timeline View", key="timeline_view_btn",
-                        type="primary" if st.session_state.current_facts_view == "timeline" else "secondary",
-                        use_container_width=True):
-                st.session_state.current_facts_view = "timeline"
-                st.experimental_rerun()
-        
-        with col4:
-            if st.button("Document Categories", key="docset_view_btn",
-                        type="primary" if st.session_state.current_facts_view == "docset" else "secondary",
-                        use_container_width=True):
-                st.session_state.current_facts_view = "docset"
-                st.experimental_rerun()
-        
-        # Facts filter tabs
-        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
-        
-        with tab1:
-            st.session_state.facts_filter = "all"
-            filtered_facts = facts_data
-        
-        with tab2:
-            st.session_state.facts_filter = "disputed"
-            filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
-        
-        with tab3:
-            st.session_state.facts_filter = "undisputed"
-            filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
-        
-        # Sort facts by date
-        filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
-        
-        # Render based on selected view
-        if st.session_state.current_facts_view == "card":
-            # Use Streamlit native card view
-            render_streamlit_cards(filtered_facts, args_data)
-            
-        else:
-            # Use HTML component for other views
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    /* Minimalistic base styling */
-                    body {{
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                        line-height: 1.5;
-                        color: #333;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
+        # Create a single HTML component containing the Facts UI
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                /* Minimalistic base styling */
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.5;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #fff;
+                }}
+                
+                /* Simple container */
+                .container {{
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }}
+                
+                /* Content sections */
+                .content-section {{
+                    display: none;
+                }}
+                
+                .content-section.active {{
+                    display: block;
+                }}
+                
+                /* Badge styling */
+                .badge {{
+                    display: inline-block;
+                    padding: 3px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }}
+                
+                .appellant-badge {{
+                    background-color: rgba(49, 130, 206, 0.1);
+                    color: #3182ce;
+                }}
+                
+                .respondent-badge {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }}
+                
+                .shared-badge {{
+                    background-color: rgba(128, 128, 128, 0.1);
+                    color: #666;
+                }}
+                
+                .exhibit-badge {{
+                    background-color: rgba(221, 107, 32, 0.1);
+                    color: #dd6b20;
+                }}
+                
+                .disputed-badge {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }}
+                
+                /* Tables */
+                table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                }}
+                
+                th {{
+                    text-align: left;
+                    padding: 12px;
+                    background-color: #fafafa;
+                    border-bottom: 1px solid #f0f0f0;
+                }}
+                
+                td {{
+                    padding: 12px;
+                    border-bottom: 1px solid #f0f0f0;
+                }}
+                
+                tr.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                /* Action buttons */
+                .action-buttons {{
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    display: flex;
+                    gap: 10px;
+                }}
+                
+                .action-button {{
+                    padding: 8px 16px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #e1e4e8;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    cursor: pointer;
+                }}
+                
+                .action-button:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown {{
+                    position: relative;
+                    display: inline-block;
+                }}
+                
+                .export-dropdown-content {{
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    background-color: #f9f9f9;
+                    min-width: 160px;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                    z-index: 1;
+                    border-radius: 4px;
+                }}
+                
+                .export-dropdown-content a {{
+                    color: black;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    cursor: pointer;
+                }}
+                
+                .export-dropdown-content a:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown:hover .export-dropdown-content {{
+                    display: block;
+                }}
+                
+                /* Copy notification */
+                .copy-notification {{
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background-color: #2d3748;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 4px;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }}
+                
+                .copy-notification.show {{
+                    opacity: 1;
+                }}
+                
+                /* Facts styling */
+                .facts-container {{
+                    margin-top: 20px;
+                }}
+                
+                .facts-header {{
+                    display: flex;
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                }}
+                
+                .tab-button {{
+                    padding: 10px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                }}
+                
+                .tab-button.active {{
+                    border-bottom: 2px solid #4299e1;
+                    color: #4299e1;
+                    font-weight: 500;
+                }}
+                
+                .facts-content {{
+                    margin-top: 20px;
+                }}
+                
+                /* Section title */
+                .section-title {{
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid #eaeaea;
+                }}
+                
+                /* Table view with horizontal scroll */
+                .table-view-container {{
+                    overflow-x: auto;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }}
+                
+                .table-view {{
+                    width: 100%;
+                    min-width: 1200px; /* Ensure minimum width for readability */
+                    border-collapse: collapse;
+                    font-size: 14px; /* Normal readable size */
+                }}
+                
+                .table-view th {{
+                    padding: 12px;
+                    text-align: left;
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                    position: sticky;
+                    top: 0;
+                    cursor: pointer;
+                    font-size: 13px;
+                    white-space: nowrap;
+                    z-index: 10;
+                }}
+                
+                .table-view th:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .table-view td {{
+                    padding: 12px;
+                    border-bottom: 1px solid #dee2e6;
+                    font-size: 13px; /* Normal readable size */
+                    vertical-align: top;
+                    line-height: 1.4;
+                }}
+                
+                .table-view tr:hover {{
+                    background-color: #f8f9fa;
+                }}
+                
+                /* Column-specific widths for better readability */
+                .table-view td:nth-child(1) {{ /* Date */
+                    min-width: 120px;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:nth-child(2) {{ /* Event */
+                    min-width: 250px;
+                    max-width: 300px;
+                }}
+                
+                .table-view td:nth-child(3) {{ /* Source Text */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(4) {{ /* Page */
+                    min-width: 80px;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:nth-child(5) {{ /* Document */
+                    min-width: 200px;
+                    max-width: 250px;
+                    font-weight: 500;
+                }}
+                
+                .table-view td:nth-child(6) {{ /* Doc Summary */
+                    min-width: 250px;
+                    max-width: 350px;
+                    font-style: italic;
+                    color: #666;
+                }}
+                
+                .table-view td:nth-child(7) {{ /* Claimant Submission */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(8) {{ /* Respondent Submission */
+                    min-width: 300px;
+                    max-width: 400px;
+                }}
+                
+                .table-view td:nth-child(9) {{ /* Status */
+                    min-width: 100px;
+                    white-space: nowrap;
+                }}
+                
+                .table-view td:nth-child(10) {{ /* Evidence */
+                    min-width: 200px;
+                    max-width: 300px;
+                }}
+                
+                /* Text wrapping for content cells */
+                .table-view td:nth-child(2),
+                .table-view td:nth-child(3),
+                .table-view td:nth-child(5),
+                .table-view td:nth-child(6),
+                .table-view td:nth-child(7),
+                .table-view td:nth-child(8),
+                .table-view td:nth-child(10) {{
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                }}
+                
+                /* Horizontal scroll indicator */
+                .table-view-container::-webkit-scrollbar {{
+                    height: 8px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-thumb {{
+                    background: #c1c1c1;
+                    border-radius: 4px;
+                }}
+                
+                .table-view-container::-webkit-scrollbar-thumb:hover {{
+                    background: #a8a8a8;
+                }}
+                
+                /* View toggle */
+                .view-toggle {{
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 16px;
+                }}
+                
+                .view-toggle button {{
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                }}
+                
+                .view-toggle button.active {{
+                    background-color: #4299e1;
+                    color: white;
+                    border-color: #4299e1;
+                }}
+                
+                .view-toggle button:first-child {{
+                    border-radius: 4px 0 0 4px;
+                }}
+                
+                .view-toggle button:nth-child(2) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:nth-child(3) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:last-child {{
+                    border-radius: 0 4px 4px 0;
+                }}
+                
+                /* Document sets */
+                .docset-header {{
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                }}
+                
+                .docset-header:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .docset-content {{
+                    display: none; /* Changed to 'none' to be closed by default */
+                    padding: 0 0 20px 0;
+                }}
+                
+                .docset-content.show {{
+                    display: block;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                    transform: rotate(0deg); /* Start collapsed by default */
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                /* Enhanced Timeline styling */
+                .timeline-container {{
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 20px;
+                    position: relative;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }}
+                
+                /* Card View styling */
+                .card-fact-container {{
+                    margin-bottom: 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    background-color: white;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                
+                .card-fact-container.disputed {{
+                    border-left: 4px solid #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.02);
+                }}
+                
+                .card-fact-header {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px;
+                    background-color: #f8fafc;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }}
+                
+                .card-fact-header:hover {{
+                    background-color: #e2e8f0;
+                }}
+                
+                .card-fact-header.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .card-fact-header.disputed:hover {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                }}
+                
+                .card-fact-title {{
+                    display: flex;
+                    align-items: center;
+                    flex-grow: 1;
+                    gap: 12px;
+                }}
+                
+                .card-fact-date {{
+                    font-weight: 600;
+                    color: #2d3748;
+                    min-width: 120px;
+                }}
+                
+                .card-fact-event {{
+                    font-weight: 500;
+                    color: #1a202c;
+                    flex-grow: 1;
+                }}
+                
+                .card-fact-badges {{
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }}
+                
+                .card-chevron {{
+                    transition: transform 0.2s;
+                    color: #718096;
+                    margin-left: 8px;
+                }}
+                
+                .card-chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                .card-fact-content {{
+                    display: none;
+                    padding: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    background-color: white;
+                }}
+                
+                .card-fact-content.show {{
+                    display: block;
+                }}
+                
+                .card-fact-details {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin-bottom: 16px;
+                }}
+                
+                .card-detail-section {{
+                    background-color: #f7fafc;
+                    padding: 12px 16px;
+                    border-radius: 6px;
+                    border: 1px solid #e2e8f0;
+                }}
+                
+                .card-detail-label {{
+                    font-weight: 600;
+                    color: #4a5568;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 4px;
+                }}
+                
+                .card-detail-value {{
+                    color: #2d3748;
+                    font-size: 14px;
+                    line-height: 1.4;
+                }}
+                
+                .card-source-text {{
+                    background-color: #f7fafc;
+                    padding: 16px;
+                    border-radius: 6px;
+                    border-left: 4px solid #4299e1;
+                    margin: 16px 0;
+                    font-style: italic;
+                    color: #4a5568;
+                    line-height: 1.5;
+                }}
+                
+                .card-source-text.claimant-submission {{
+                    border-left-color: #3182ce;
+                    background-color: rgba(49, 130, 206, 0.03);
+                }}
+                
+                .card-source-text.respondent-submission {{
+                    border-left-color: #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.03);
+                }}
+                
+                .submission-header {{
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 8px;
+                    color: inherit;
+                }}
+                
+                .claimant-submission .submission-header {{
+                    color: #3182ce;
+                }}
+                
+                .respondent-submission .submission-header {{
+                    color: #e53e3e;
+                }}
+                
+                .card-exhibits {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 12px;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .card-fact-details {{
+                        grid-template-columns: 1fr;
                     }}
                     
-                    /* Simple container */
-                    .container {{
-                        max-width: 1200px;
-                        margin: 0 auto;
-                        padding: 20px;
-                    }}
-                    
-                    /* Badge styling */
-                    .badge {{
-                        display: inline-block;
-                        padding: 3px 8px;
-                        border-radius: 12px;
-                        font-size: 12px;
-                        font-weight: 500;
-                    }}
-                    
-                    .appellant-badge {{
-                        background-color: rgba(49, 130, 206, 0.1);
-                        color: #3182ce;
-                    }}
-                    
-                    .respondent-badge {{
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }}
-                    
-                    .shared-badge {{
-                        background-color: rgba(128, 128, 128, 0.1);
-                        color: #666;
-                    }}
-                    
-                    .exhibit-badge {{
-                        background-color: rgba(221, 107, 32, 0.1);
-                        color: #dd6b20;
-                    }}
-                    
-                    .disputed-badge {{
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }}
-                    
-                    /* Tables */
-                    table {{
-                        width: 100%;
-                        border-collapse: collapse;
-                    }}
-                    
-                    th {{
-                        text-align: left;
-                        padding: 12px;
-                        background-color: #fafafa;
-                        border-bottom: 1px solid #f0f0f0;
-                    }}
-                    
-                    td {{
-                        padding: 12px;
-                        border-bottom: 1px solid #f0f0f0;
-                    }}
-                    
-                    tr.disputed {{
-                        background-color: rgba(229, 62, 62, 0.05);
-                    }}
-                    
-                    /* Action buttons */
-                    .action-buttons {{
-                        position: absolute;
-                        top: 20px;
-                        right: 20px;
-                        display: flex;
-                        gap: 10px;
-                    }}
-                    
-                    .action-button {{
-                        padding: 8px 16px;
-                        background-color: #f9f9f9;
-                        border: 1px solid #e1e4e8;
-                        border-radius: 4px;
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        cursor: pointer;
-                    }}
-                    
-                    .action-button:hover {{
-                        background-color: #f1f1f1;
-                    }}
-                    
-                    .export-dropdown {{
-                        position: relative;
-                        display: inline-block;
-                    }}
-                    
-                    .export-dropdown-content {{
-                        display: none;
-                        position: absolute;
-                        right: 0;
-                        background-color: #f9f9f9;
-                        min-width: 160px;
-                        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                        z-index: 1;
-                        border-radius: 4px;
-                    }}
-                    
-                    .export-dropdown-content a {{
-                        color: black;
-                        padding: 12px 16px;
-                        text-decoration: none;
-                        display: block;
-                        cursor: pointer;
-                    }}
-                    
-                    .export-dropdown-content a:hover {{
-                        background-color: #f1f1f1;
-                    }}
-                    
-                    .export-dropdown:hover .export-dropdown-content {{
-                        display: block;
-                    }}
-                    
-                    /* Copy notification */
-                    .copy-notification {{
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background-color: #2d3748;
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 4px;
-                        z-index: 1000;
-                        opacity: 0;
-                        transition: opacity 0.3s;
-                    }}
-                    
-                    .copy-notification.show {{
-                        opacity: 1;
-                    }}
-                    
-                    /* Table view with horizontal scroll */
-                    .table-view-container {{
-                        overflow-x: auto;
-                        border: 1px solid #dee2e6;
-                        border-radius: 8px;
-                        margin-top: 20px;
-                    }}
-                    
-                    .table-view {{
-                        width: 100%;
-                        min-width: 1200px;
-                        border-collapse: collapse;
-                        font-size: 14px;
-                    }}
-                    
-                    .table-view th {{
-                        padding: 12px;
-                        text-align: left;
-                        background-color: #f8f9fa;
-                        border-bottom: 2px solid #dee2e6;
-                        position: sticky;
-                        top: 0;
-                        cursor: pointer;
-                        font-size: 13px;
-                        white-space: nowrap;
-                        z-index: 10;
-                    }}
-                    
-                    .table-view th:hover {{
-                        background-color: #e9ecef;
-                    }}
-                    
-                    .table-view td {{
-                        padding: 12px;
-                        border-bottom: 1px solid #dee2e6;
-                        font-size: 13px;
-                        vertical-align: top;
-                        line-height: 1.4;
-                    }}
-                    
-                    .table-view tr:hover {{
-                        background-color: #f8f9fa;
-                    }}
-                    
-                    /* Timeline styling */
-                    .timeline-container {{
-                        display: flex;
+                    .card-fact-title {{
                         flex-direction: column;
-                        margin-top: 20px;
-                        position: relative;
-                        max-width: 1000px;
-                        margin: 0 auto;
+                        align-items: flex-start;
+                        gap: 8px;
                     }}
                     
-                    .timeline-wrapper {{
-                        position: relative;
-                        margin-left: 20px;
+                    .card-fact-date {{
+                        min-width: auto;
                     }}
-                    
-                    .timeline-line {{
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        bottom: 0;
-                        width: 4px;
-                        background: linear-gradient(to bottom, #4299e1, #7f9cf5);
-                        border-radius: 4px;
+                }}
+                
+                .timeline-wrapper {{
+                    position: relative;
+                    margin-left: 20px;
+                }}
+                
+                .timeline-line {{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 4px;
+                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
+                    border-radius: 4px;
+                }}
+                
+                .timeline-item {{
+                    display: flex;
+                    margin-bottom: 32px;
+                    position: relative;
+                }}
+                
+                .timeline-point {{
+                    position: absolute;
+                    left: -12px;
+                    top: 18px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background-color: #4299e1;
+                    border: 4px solid white;
+                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+                    z-index: 10;
+                }}
+                
+                .timeline-point.disputed {{
+                    background-color: #e53e3e;
+                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
+                }}
+                
+                .timeline-content {{
+                    margin-left: 32px;
+                    flex-grow: 1;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+                    overflow: hidden;
+                    transition: all 0.2s;
+                }}
+                
+                .timeline-content:hover {{
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
+                }}
+                
+                .timeline-header {{
+                    padding: 12px 16px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: #f8fafc;
+                }}
+                
+                .timeline-header-disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .timeline-date {{
+                    font-weight: 600;
+                    color: #1a202c;
+                }}
+                
+                .timeline-badges {{
+                    display: flex;
+                    gap: 6px;
+                }}
+                
+                .timeline-body {{
+                    padding: 16px;
+                }}
+                
+                .timeline-fact {{
+                    margin-bottom: 12px;
+                    font-size: 15px;
+                    color: #2d3748;
+                }}
+                
+                .timeline-footer {{
+                    padding: 12px 16px;
+                    background-color: #f8fafc;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    border-top: 1px solid #e2e8f0;
+                }}
+                
+                .timeline-meta {{
+                    font-size: 13px;
+                    color: #718096;
+                    margin-top: 8px;
+                }}
+                
+                .timeline-meta span {{
+                    display: inline-block;
+                    margin-right: 12px;
+                }}
+                
+                .timeline-year-marker {{
+                    display: flex;
+                    align-items: center;
+                    margin: 24px 0;
+                    position: relative;
+                }}
+                
+                .timeline-year {{
+                    background-color: #4299e1;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 16px;
+                    font-weight: 600;
+                    position: relative;
+                    z-index: 10;
+                    margin-left: 32px;
+                }}
+                
+                /* Enhanced Evidence styling */
+                .evidence-item {{
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    margin-bottom: 6px;
+                    transition: all 0.2s ease;
+                }}
+                
+                .evidence-header {{
+                    padding: 8px 12px;
+                    background-color: rgba(221, 107, 32, 0.05);
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    transition: background-color 0.2s ease;
+                }}
+                
+                .evidence-header:hover {{
+                    background-color: rgba(221, 107, 32, 0.1);
+                }}
+                
+                .evidence-content {{
+                    display: none;
+                    padding: 12px;
+                    background-color: white;
+                    border-top: 1px solid #e2e8f0;
+                    animation: slideDown 0.2s ease;
+                }}
+                
+                .evidence-icon {{
+                    width: 16px;
+                    height: 16px;
+                    background-color: #dd6b20;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    transition: transform 0.2s ease;
+                }}
+                
+                .evidence-badge {{
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 3px 6px;
+                    background-color: rgba(221, 107, 32, 0.1);
+                    color: #dd6b20;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-size: 10px;
+                    font-weight: 600;
+                    transition: background-color 0.2s ease;
+                    margin: 2px;
+                }}
+                
+                .evidence-badge:hover {{
+                    background-color: rgba(221, 107, 32, 0.2);
+                }}
+                
+                @keyframes slideDown {{
+                    from {{
+                        opacity: 0;
+                        max-height: 0;
                     }}
-                    
-                    .timeline-item {{
-                        display: flex;
-                        margin-bottom: 32px;
-                        position: relative;
+                    to {{
+                        opacity: 1;
+                        max-height: 200px;
                     }}
-                    
-                    .timeline-point {{
-                        position: absolute;
-                        left: -12px;
-                        top: 18px;
-                        width: 24px;
-                        height: 24px;
-                        border-radius: 50%;
-                        background-color: #4299e1;
-                        border: 4px solid white;
-                        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-                        z-index: 10;
-                    }}
-                    
-                    .timeline-point.disputed {{
-                        background-color: #e53e3e;
-                        box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
-                    }}
-                    
-                    .timeline-content {{
-                        margin-left: 32px;
-                        flex-grow: 1;
-                        background-color: white;
-                        border-radius: 8px;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-                        overflow: hidden;
-                        transition: all 0.2s;
-                    }}
-                    
-                    .timeline-content:hover {{
-                        box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-                        transform: translateY(-2px);
-                    }}
-                    
-                    .timeline-header {{
-                        padding: 12px 16px;
-                        border-bottom: 1px solid #e2e8f0;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        background-color: #f8fafc;
-                    }}
-                    
-                    .timeline-header-disputed {{
-                        background-color: rgba(229, 62, 62, 0.05);
-                    }}
-                    
-                    .timeline-date {{
-                        font-weight: 600;
-                        color: #1a202c;
-                    }}
-                    
-                    .timeline-badges {{
-                        display: flex;
-                        gap: 6px;
-                    }}
-                    
-                    .timeline-body {{
-                        padding: 16px;
-                    }}
-                    
-                    .timeline-fact {{
-                        margin-bottom: 12px;
-                        font-size: 15px;
-                        color: #2d3748;
-                    }}
-                    
-                    .timeline-meta {{
-                        font-size: 13px;
-                        color: #718096;
-                        margin-top: 8px;
-                    }}
-                    
-                    .timeline-year-marker {{
-                        display: flex;
-                        align-items: center;
-                        margin: 24px 0;
-                        position: relative;
-                    }}
-                    
-                    .timeline-year {{
-                        background-color: #4299e1;
-                        color: white;
-                        padding: 4px 12px;
-                        border-radius: 16px;
-                        font-weight: 600;
-                        position: relative;
-                        z-index: 10;
-                        margin-left: 32px;
-                    }}
-                    
-                    .timeline-year-line {{
-                        flex-grow: 1;
-                        height: 2px;
-                        background-color: #e2e8f0;
-                        margin-left: 12px;
-                    }}
-                    
-                    /* Document sets */
-                    .docset-header {{
-                        display: flex;
-                        align-items: center;
-                        padding: 10px 15px;
-                        background-color: #f8f9fa;
-                        border: 1px solid #e9ecef;
-                        border-radius: 4px;
-                        margin-bottom: 10px;
-                        cursor: pointer;
-                    }}
-                    
-                    .docset-header:hover {{
-                        background-color: #e9ecef;
-                    }}
-                    
-                    .docset-content {{
-                        display: none;
-                        padding: 0 0 20px 0;
-                    }}
-                    
-                    .docset-content.show {{
-                        display: block;
-                    }}
-                    
-                    .folder-icon {{
-                        color: #4299e1;
-                        margin-right: 8px;
-                    }}
-                    
-                    .chevron {{
-                        transition: transform 0.2s;
-                        margin-right: 8px;
-                        transform: rotate(0deg);
-                    }}
-                    
-                    .chevron.expanded {{
-                        transform: rotate(90deg);
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-                    
-                    <div class="action-buttons">
-                        <button class="action-button" onclick="copyAllContent()">
+                }}
+                
+                .timeline-year-line {{
+                    flex-grow: 1;
+                    height: 2px;
+                    background-color: #e2e8f0;
+                    margin-left: 12px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" onclick="copyAllContent()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                    <div class="export-dropdown">
+                        <button class="action-button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
-                            Copy
+                            Export
                         </button>
-                        <div class="export-dropdown">
-                            <button class="action-button">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Export
-                            </button>
-                            <div class="export-dropdown-content">
-                                <a onclick="exportAsCsv()">CSV</a>
-                                <a onclick="exportAsPdf()">PDF</a>
-                                <a onclick="exportAsWord()">Word</a>
-                            </div>
+                        <div class="export-dropdown-content">
+                            <a onclick="exportAsCsv()">CSV</a>
+                            <a onclick="exportAsPdf()">PDF</a>
+                            <a onclick="exportAsWord()">Word</a>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Facts Section -->
+                <div id="facts" class="content-section active">
+                    <div class="section-title">Case Facts</div>
+                    
+                    <div class="view-toggle">
+                        <button id="card-view-btn" class="active" onclick="switchView('card')">Card View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
+                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
+                    </div>
+                    
+                    <div class="facts-header">
+                        <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                    </div>
+                    
+                    <!-- Card View -->
+                    <div id="card-view-content" class="facts-content">
+                        <div id="card-facts-container"></div>
                     </div>
                     
                     <!-- Table View -->
-                    <div id="table-view-content" class="facts-content" style="display: {'block' if st.session_state.current_facts_view == 'table' else 'none'};">
+                    <div id="table-view-content" class="facts-content" style="display: none;">
                         <div class="table-view-container">
                             <table class="table-view">
                                 <thead>
@@ -1234,7 +1498,7 @@ def main():
                     </div>
                     
                     <!-- Timeline View -->
-                    <div id="timeline-view-content" class="facts-content" style="display: {'block' if st.session_state.current_facts_view == 'timeline' else 'none'};">
+                    <div id="timeline-view-content" class="facts-content" style="display: none;">
                         <div class="timeline-container">
                             <div class="timeline-wrapper">
                                 <div class="timeline-line"></div>
@@ -1244,24 +1508,532 @@ def main():
                     </div>
                     
                     <!-- Document Sets View -->
-                    <div id="docset-view-content" class="facts-content" style="display: {'block' if st.session_state.current_facts_view == 'docset' else 'none'};">
+                    <div id="docset-view-content" class="facts-content" style="display: none;">
                         <div id="document-sets-container"></div>
                     </div>
                 </div>
+            </div>
+            
+            <script>
+                // Initialize data - ensure all views use the same core data structure
+                const factsData = {facts_json};
+                const documentSets = {document_sets_json};
+                const timelineData = {timeline_json};
                 
-                <script>
-                    // Initialize data
-                    const factsData = {facts_json};
-                    const documentSets = {document_sets_json};
-                    const timelineData = {timeline_json};
-                    const currentFilter = '{st.session_state.facts_filter}';
+                // Standardize data structure across all views
+                function standardizeFactData(fact) {{
+                    return {{
+                        date: fact.date,
+                        event: fact.event,
+                        source_text: fact.source_text || '',
+                        page: fact.page || '',
+                        doc_name: fact.doc_name || '',
+                        doc_summary: fact.doc_summary || '',
+                        claimant_submission: fact.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: fact.respondent_submission || 'No specific submission recorded',
+                        isDisputed: fact.isDisputed,
+                        exhibits: fact.exhibits || [],
+                        evidence: fact.evidence || [], // Add evidence details
+                        parties_involved: fact.parties_involved || [],
+                        argId: fact.argId || '',
+                        argTitle: fact.argTitle || '',
+                        paragraphs: fact.paragraphs || ''
+                    }};
+                }}
+                
+                // Function to get evidence content with expandable functionality
+                function getEvidenceContent(fact, viewType = 'card') {{
+                    if (!fact.exhibits || fact.exhibits.length === 0) {{
+                        return 'None';
+                    }}
                     
-                    // Filter facts based on current selection
-                    let filteredFacts = factsData;
-                    if (currentFilter === 'disputed') {{
-                        filteredFacts = factsData.filter(fact => fact.isDisputed);
-                    }} else if (currentFilter === 'undisputed') {{
-                        filteredFacts = factsData.filter(fact => !fact.isDisputed);
+                    // Get evidence details from the argument data
+                    const args_data = {args_json};
+                    let evidenceContent = [];
+                    
+                    fact.exhibits.forEach(exhibitId => {{
+                        // Search through all arguments to find evidence details
+                        function findEvidence(args) {{
+                            for (const argKey in args) {{
+                                const arg = args[argKey];
+                                if (arg.evidence) {{
+                                    const evidence = arg.evidence.find(e => e.id === exhibitId);
+                                    if (evidence) {{
+                                        return evidence;
+                                    }}
+                                }}
+                                if (arg.children) {{
+                                    const childEvidence = findEvidence(arg.children);
+                                    if (childEvidence) return childEvidence;
+                                }}
+                            }}
+                            return null;
+                        }}
+                        
+                        // Look in both claimant and respondent args
+                        let evidence = findEvidence(args_data.claimantArgs) || findEvidence(args_data.respondentArgs);
+                        
+                        if (evidence) {{
+                            evidenceContent.push({{
+                                id: exhibitId,
+                                title: evidence.title,
+                                summary: evidence.summary
+                            }});
+                        }} else {{
+                            evidenceContent.push({{
+                                id: exhibitId,
+                                title: exhibitId,
+                                summary: 'Evidence details not available'
+                            }});
+                        }}
+                    }});
+                    
+                    return evidenceContent;
+                }}
+                
+                // Toggle evidence expansion
+                function toggleEvidence(evidenceId, factIndex) {{
+                    const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
+                    const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
+                    
+                    if (content.style.display === 'none' || content.style.display === '') {{
+                        content.style.display = 'block';
+                        icon.textContent = '−';
+                        icon.style.transform = 'rotate(0deg)';
+                    }} else {{
+                        content.style.display = 'none';
+                        icon.textContent = '+';
+                        icon.style.transform = 'rotate(0deg)';
+                    }}
+                }}
+                
+                // Standardize timeline data to match facts structure
+                function standardizeTimelineData(item) {{
+                    return {{
+                        date: item.date,
+                        event: item.event,
+                        source_text: item.source_text || '',
+                        page: item.page || '',
+                        doc_name: item.doc_name || '',
+                        doc_summary: item.doc_summary || '',
+                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
+                        isDisputed: item.isDisputed,
+                        exhibits: item.exhibits || [],
+                        evidence: item.evidence || [],
+                        parties_involved: item.parties_involved || [],
+                        argId: item.argId || '',
+                        argTitle: item.argTitle || '',
+                        paragraphs: item.paragraphs || ''
+                    }};
+                }}
+                
+                // Switch view between table, card, timeline, and document sets
+                function switchView(viewType) {{
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const cardBtn = document.getElementById('card-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
+                    
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    cardBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
+                    
+                    // Hide all content
+                    tableContent.style.display = 'none';
+                    cardContent.style.display = 'none';
+                    timelineContent.style.display = 'none';
+                    docsetContent.style.display = 'none';
+                    
+                    // Activate the selected view
+                    if (viewType === 'card') {{
+                        cardBtn.classList.add('active');
+                        cardContent.style.display = 'block';
+                        renderCardView();
+                    }} else if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        tableContent.style.display = 'block';
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
+                        timelineContent.style.display = 'block';
+                        renderTimeline();
+                    }} else if (viewType === 'docset') {{
+                        docsetBtn.classList.add('active');
+                        docsetContent.style.display = 'block';
+                        renderDocumentSets();
+                    }}
+                }}
+                
+                // Copy all content function
+                function copyAllContent() {{
+                    let contentToCopy = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        // Copy card data
+                        contentToCopy += 'Case Facts (Card View)\\n\\n';
+                        
+                        const cardItems = document.querySelectorAll('.card-fact-container');
+                        cardItems.forEach(card => {{
+                            const dateEl = card.querySelector('.card-fact-date');
+                            const eventEl = card.querySelector('.card-fact-event');
+                            const partyEls = card.querySelectorAll('.badge');
+                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
+                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
+                            
+                            if (dateEl && eventEl) {{
+                                const date = dateEl.textContent.trim();
+                                const event = eventEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
+                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
+                                if (claimantSubmission) {{
+                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
+                                }}
+                                if (respondentSubmission) {{
+                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
+                                }}
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join('\\t');
+                        
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Copy timeline data
+                        contentToCopy += 'Case Timeline\\n\\n';
+                        
+                        const timelineItems = document.querySelectorAll('.timeline-item');
+                        timelineItems.forEach(item => {{
+                            const dateEl = item.querySelector('.timeline-date');
+                            const factEl = item.querySelector('.timeline-fact');
+                            const partyEls = item.querySelectorAll('.badge');
+                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
+                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
+                            
+                            if (dateEl && factEl) {{
+                                const date = dateEl.textContent.trim();
+                                const fact = factEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                
+                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
+                                
+                                if (claimantEl) {{
+                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
+                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
+                                }}
+                                
+                                if (respondentEl) {{
+                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
+                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
+                                }}
+                                
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else {{
+                        // Copy document sets data (just a basic representation)
+                        contentToCopy += 'Case Facts by Document\\n\\n';
+                        
+                        // This is a simplified version since the full structure would be complex
+                        const docsetContainers = document.querySelectorAll('.docset-container');
+                        docsetContainers.forEach(container => {{
+                            const header = container.querySelector('.docset-header');
+                            const title = header.querySelector('span').textContent;
+                            contentToCopy += `=== ${{title}} ===\\n`;
+                            
+                            // Get facts from this document
+                            const tableFacts = container.querySelectorAll('tbody tr');
+                            tableFacts.forEach(fact => {{
+                                const cells = Array.from(fact.querySelectorAll('td'));
+                                const date = cells[1] ? cells[1].textContent : '';
+                                const event = cells[2] ? cells[2].textContent : '';
+                                const claimantSub = cells[6] ? cells[6].textContent : '';
+                                const respondentSub = cells[7] ? cells[7].textContent : '';
+                                
+                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
+                                if (claimantSub && claimantSub !== 'No submission') {{
+                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
+                                }}
+                                if (respondentSub && respondentSub !== 'No submission') {{
+                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
+                                }}
+                            }});
+                            
+                            contentToCopy += '\\n';
+                        }});
+                    }}
+                    
+                    // Create a temporary textarea to copy the content
+                    const textarea = document.createElement('textarea');
+                    textarea.value = contentToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Show notification
+                    const notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {{
+                        notification.classList.remove('show');
+                    }}, 2000);
+                }}
+                
+                // Export functions
+                function exportAsCsv() {{
+                    let contentToCsv = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Get currently active tab filter
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    let currentFacts = factsData.map(standardizeFactData);
+                    if (disputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
+                    }} else if (undisputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Standard headers for all views
+                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
+                    let rows = '';
+                    
+                    currentFacts.forEach(fact => {{
+                        const evidenceContent = getEvidenceContent(fact);
+                        let evidenceText = 'None';
+                        if (evidenceContent !== 'None') {{
+                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
+                        }}
+                        
+                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                        const docName = (fact.doc_name || '').replace(/"/g, '""');
+                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
+                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
+                        
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
+                    }});
+                    
+                    const csvContent = headers + rows;
+                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    
+                    // Set filename based on active view
+                    let filename = "facts.csv";
+                    if (cardContent.style.display !== 'none') {{
+                        filename = "facts_cards.csv";
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        filename = "facts_timeline.csv";
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        filename = "facts_documents.csv";
+                    }} else {{
+                        filename = "facts_table.csv";
+                    }}
+                    
+                    link.setAttribute("download", filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }}
+                
+                function exportAsPdf() {{
+                    alert("PDF export functionality would be implemented here");
+                }}
+                
+                function exportAsWord() {{
+                    alert("Word export functionality would be implemented here");
+                }}
+                
+                // Switch facts tab
+                function switchFactsTab(tabType) {{
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    // Remove active class from all
+                    allBtn.classList.remove('active');
+                    disputedBtn.classList.remove('active');
+                    undisputedBtn.classList.remove('active');
+                    
+                    // Add active to selected
+                    if (tabType === 'all') {{
+                        allBtn.classList.add('active');
+                        renderFacts('all');
+                    }} else if (tabType === 'disputed') {{
+                        disputedBtn.classList.add('active');
+                        renderFacts('disputed');
+                    }} else {{
+                        undisputedBtn.classList.add('active');
+                        renderFacts('undisputed');
+                    }}
+                    
+                    // Update active view
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        renderCardView(tabType);
+                    }} else if (tableContent.style.display !== 'none') {{
+                        renderFacts(tabType);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        renderTimeline(tabType);
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        renderDocumentSets(tabType);
+                    }}
+                }}
+                
+                // Sort table function
+                function sortTable(tableId, columnIndex) {{
+                    const table = document.getElementById(tableId);
+                    const rows = Array.from(table.rows);
+                    let dir = 1; // 1 for ascending, -1 for descending
+                    
+                    // Check if already sorted in this direction
+                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
+                        table.getAttribute('data-sort-dir') === '1') {{
+                        dir = -1;
+                    }}
+                    
+                    // Sort the rows
+                    rows.sort((a, b) => {{
+                        const cellA = a.cells[columnIndex].textContent.trim();
+                        const cellB = b.cells[columnIndex].textContent.trim();
+                        
+                        // Handle date sorting
+                        if (columnIndex === 0) {{
+                            // Attempt to parse as dates
+                            const dateA = new Date(cellA);
+                            const dateB = new Date(cellB);
+                            
+                            if (!isNaN(dateA) && !isNaN(dateB)) {{
+                                return dir * (dateA - dateB);
+                            }}
+                        }}
+                        
+                        return dir * cellA.localeCompare(cellB);
+                    }});
+                    
+                    // Remove existing rows and append in new order
+                    rows.forEach(row => table.appendChild(row));
+                    
+                    // Store current sort direction and column
+                    table.setAttribute('data-sort-column', columnIndex);
+                    table.setAttribute('data-sort-dir', dir);
+                }}
+                
+                // Toggle card fact visibility
+                function toggleCardFact(factIndex) {{
+                    const content = document.getElementById(`card-fact-content-${{factIndex}}`);
+                    const chevron = document.getElementById(`card-chevron-${{factIndex}}`);
+                    
+                    if (content.classList.contains('show')) {{
+                        content.classList.remove('show');
+                        chevron.classList.remove('expanded');
+                    }} else {{
+                        content.classList.add('show');
+                        chevron.classList.add('expanded');
+                    }}
+                }}
+                
+                // Toggle document set visibility
+                function toggleDocSet(docsetId) {{
+                    const content = document.getElementById(`docset-content-${{docsetId}}`);
+                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
+                    
+                    if (content.style.display === 'none') {{
+                        content.style.display = 'block';
+                        chevron.style.transform = 'rotate(90deg)';
+                    }} else {{
+                        content.style.display = 'none';
+                        chevron.style.transform = 'rotate(0deg)';
+                    }}
+                }}
+                
+                // Format date for display
+                function formatDate(dateString) {{
+                    // If it's a range, just return it as is
+                    if (dateString.includes('-')) {{
+                        return dateString;
+                    }}
+                    
+                    // Try to parse as a date
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return dateString;
+                    }}
+                    
+                    // Format the date
+                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
+                    return date.toLocaleDateString(undefined, options);
+                }}
+                
+                // Helper to extract year from date
+                function getYear(dateString) {{
+                    if (dateString.includes('-')) {{
+                        return dateString.split('-')[0];
+                    }}
+                    
+                    const date = new Date(dateString);
+                    if (isNaN(date)) {{
+                        return '';
+                    }}
+                    
+                    return date.getFullYear().toString();
+                }}
+                
+                // Render card view with dropdown containers for each fact
+                function renderCardView(tabType = 'all') {{
+                    const container = document.getElementById('card-facts-container');
+                    container.innerHTML = '';
+                    
+                    // Filter facts based on tab type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
+                    if (tabType === 'disputed') {{
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
                     // Sort by date
@@ -1271,416 +2043,709 @@ def main():
                         return new Date(dateA) - new Date(dateB);
                     }});
                     
-                    // Render views based on current selection
-                    if ('{st.session_state.current_facts_view}' === 'table') {{
-                        renderFacts(currentFilter);
-                    }} else if ('{st.session_state.current_facts_view}' === 'timeline') {{
-                        renderTimeline(currentFilter);
-                    }} else if ('{st.session_state.current_facts_view}' === 'docset') {{
-                        renderDocumentSets(currentFilter);
-                    }}
-                    
-                    // Copy all content function
-                    function copyAllContent() {{
-                        let contentToCopy = 'Case Facts\\n\\n';
+                    // Render each fact as a card
+                    filteredFacts.forEach((fact, index) => {{
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
                         
-                        filteredFacts.forEach(fact => {{
-                            contentToCopy += `${{fact.date}} - ${{fact.event}}\\n`;
-                            if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                                contentToCopy += `Claimant: ${{fact.claimant_submission}}\\n`;
-                            }}
-                            if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                                contentToCopy += `Respondent: ${{fact.respondent_submission}}\\n`;
-                            }}
-                            contentToCopy += '\\n';
-                        }});
+                        // Create card header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
+                        headerEl.onclick = () => toggleCardFact(index);
                         
-                        const textarea = document.createElement('textarea');
-                        textarea.value = contentToCopy;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textarea);
+                        // Create title section
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'card-fact-title';
                         
-                        const notification = document.getElementById('copy-notification');
-                        notification.classList.add('show');
-                        setTimeout(() => notification.classList.remove('show'), 2000);
-                    }}
-                    
-                    // Export functions
-                    function exportAsCsv() {{
-                        let csvContent = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'card-fact-date';
+                        dateEl.textContent = fact.date;
+                        titleEl.appendChild(dateEl);
                         
-                        filteredFacts.forEach(fact => {{
-                            const row = [
-                                fact.date,
-                                fact.event,
-                                fact.source_text || '',
-                                fact.page || '',
-                                fact.doc_name || '',
-                                fact.doc_summary || '',
-                                fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission',
-                                fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission',
-                                fact.isDisputed ? 'Disputed' : 'Undisputed',
-                                fact.exhibits ? fact.exhibits.join('; ') : 'None'
-                            ].map(field => `"${{(field || '').replace(/"/g, '""')}}"`).join(',');
-                            
-                            csvContent += row + '\\n';
-                        }});
+                        // Event
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'card-fact-event';
+                        eventEl.textContent = fact.event;
+                        titleEl.appendChild(eventEl);
                         
-                        const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", "facts.csv");
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }}
-                    
-                    function exportAsPdf() {{
-                        alert("PDF export functionality would be implemented here");
-                    }}
-                    
-                    function exportAsWord() {{
-                        alert("Word export functionality would be implemented here");
-                    }}
-                    
-                    // Sort table function
-                    function sortTable(tableId, columnIndex) {{
-                        const table = document.getElementById(tableId);
-                        const rows = Array.from(table.rows);
-                        let dir = 1;
+                        headerEl.appendChild(titleEl);
                         
-                        if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                            table.getAttribute('data-sort-dir') === '1') {{
-                            dir = -1;
-                        }}
+                        // Create badges section
+                        const badgesEl = document.createElement('div');
+                        badgesEl.className = 'card-fact-badges';
                         
-                        rows.sort((a, b) => {{
-                            const cellA = a.cells[columnIndex].textContent.trim();
-                            const cellB = b.cells[columnIndex].textContent.trim();
-                            
-                            if (columnIndex === 0) {{
-                                const dateA = new Date(cellA);
-                                const dateB = new Date(cellB);
-                                if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                    return dir * (dateA - dateB);
-                                }}
-                            }}
-                            
-                            return dir * cellA.localeCompare(cellB);
-                        }});
-                        
-                        rows.forEach(row => table.appendChild(row));
-                        table.setAttribute('data-sort-column', columnIndex);
-                        table.setAttribute('data-sort-dir', dir);
-                    }}
-                    
-                    // Format date for display
-                    function formatDate(dateString) {{
-                        if (dateString.includes('-')) {{
-                            return dateString;
-                        }}
-                        
-                        const date = new Date(dateString);
-                        if (isNaN(date)) {{
-                            return dateString;
-                        }}
-                        
-                        const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
-                        return date.toLocaleDateString(undefined, options);
-                    }}
-                    
-                    // Helper to extract year from date
-                    function getYear(dateString) {{
-                        if (dateString.includes('-')) {{
-                            return dateString.split('-')[0];
-                        }}
-                        
-                        const date = new Date(dateString);
-                        if (isNaN(date)) {{
-                            return '';
-                        }}
-                        
-                        return date.getFullYear().toString();
-                    }}
-                    
-                    // Render facts table
-                    function renderFacts(type = 'all') {{
-                        const tableBody = document.getElementById('facts-table-body');
-                        tableBody.innerHTML = '';
-                        
-                        filteredFacts.forEach(fact => {{
-                            const row = document.createElement('tr');
-                            if (fact.isDisputed) {{
-                                row.classList.add('disputed');
-                            }}
-                            
-                            // Create cells
-                            const cells = [
-                                fact.date,
-                                fact.event,
-                                fact.source_text || '',
-                                fact.page || '',
-                                fact.doc_name || '',
-                                fact.doc_summary || '',
-                                fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission',
-                                fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission',
-                                fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed',
-                                fact.exhibits ? fact.exhibits.join(', ') : 'None'
-                            ];
-                            
-                            cells.forEach((cellContent, index) => {{
-                                const cell = document.createElement('td');
-                                if (index === 8) {{ // Status column
-                                    cell.innerHTML = cellContent;
-                                }} else {{
-                                    cell.textContent = cellContent;
-                                    cell.title = cellContent;
-                                }}
-                                row.appendChild(cell);
+                        // Parties involved badges
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
+                                const partyBadge = document.createElement('span');
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                                partyBadge.textContent = party;
+                                badgesEl.appendChild(partyBadge);
                             }});
-                            
-                            tableBody.appendChild(row);
-                        }});
-                    }}
-                    
-                    // Render timeline view
-                    function renderTimeline(tabType = 'all') {{
-                        const container = document.getElementById('timeline-events');
-                        container.innerHTML = '';
-                        
-                        let currentYear = '';
-                        let prevYear = '';
-                        
-                        filteredFacts.forEach(fact => {{
-                            currentYear = getYear(fact.date);
-                            if (currentYear && currentYear !== prevYear) {{
-                                const yearMarker = document.createElement('div');
-                                yearMarker.className = 'timeline-year-marker';
-                                yearMarker.innerHTML = `
-                                    <div class="timeline-year">${{currentYear}}</div>
-                                    <div class="timeline-year-line"></div>
-                                `;
-                                container.appendChild(yearMarker);
-                                prevYear = currentYear;
-                            }}
-                        
-                            const timelineItem = document.createElement('div');
-                            timelineItem.className = 'timeline-item';
-                            
-                            const timelinePoint = document.createElement('div');
-                            timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                            timelineItem.appendChild(timelinePoint);
-                            
-                            const contentEl = document.createElement('div');
-                            contentEl.className = 'timeline-content';
-                            
-                            const headerEl = document.createElement('div');
-                            headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
-                            
-                            const dateEl = document.createElement('div');
-                            dateEl.className = 'timeline-date';
-                            dateEl.textContent = formatDate(fact.date);
-                            headerEl.appendChild(dateEl);
-                            
-                            const badgesEl = document.createElement('div');
-                            badgesEl.className = 'timeline-badges';
-                            
-                            if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                                fact.parties_involved.forEach(party => {{
-                                    const partyBadge = document.createElement('span');
-                                    partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                    partyBadge.textContent = party;
-                                    badgesEl.appendChild(partyBadge);
-                                }});
-                            }}
-                            
-                            const statusBadge = document.createElement('span');
-                            statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
-                            statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
-                            badgesEl.appendChild(statusBadge);
-                            
-                            headerEl.appendChild(badgesEl);
-                            contentEl.appendChild(headerEl);
-                            
-                            const bodyEl = document.createElement('div');
-                            bodyEl.className = 'timeline-body';
-                            
-                            const factContent = document.createElement('div');
-                            factContent.className = 'timeline-fact';
-                            factContent.textContent = fact.event;
-                            bodyEl.appendChild(factContent);
-                            
-                            if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                                const claimantTextEl = document.createElement('div');
-                                claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
-                                claimantTextEl.innerHTML = `<strong>Claimant:</strong><br>${{fact.claimant_submission}}`;
-                                bodyEl.appendChild(claimantTextEl);
-                            }}
-                            
-                            if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                                const respondentTextEl = document.createElement('div');
-                                respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
-                                respondentTextEl.innerHTML = `<strong>Respondent:</strong><br>${{fact.respondent_submission}}`;
-                                bodyEl.appendChild(respondentTextEl);
-                            }}
-                            
-                            const metaEl = document.createElement('div');
-                            metaEl.className = 'timeline-meta';
-                            metaEl.innerHTML = `<span><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</span><span><strong>Page:</strong> ${{fact.page || 'N/A'}}</span>`;
-                            bodyEl.appendChild(metaEl);
-                            
-                            contentEl.appendChild(bodyEl);
-                            timelineItem.appendChild(contentEl);
-                            container.appendChild(timelineItem);
-                        }});
-                        
-                        if (filteredFacts.length === 0) {{
-                            container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
                         }}
-                    }}
-                    
-                    // Toggle document set visibility
-                    function toggleDocSet(docsetId) {{
-                        const content = document.getElementById(`docset-content-${{docsetId}}`);
-                        const chevron = document.getElementById(`chevron-${{docsetId}}`);
                         
-                        if (content.style.display === 'none') {{
-                            content.style.display = 'block';
-                            chevron.style.transform = 'rotate(90deg)';
+                        // Disputed badge
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            badgesEl.appendChild(disputedBadge);
+                        }}
+                        
+                        // Chevron
+                        const chevronEl = document.createElement('div');
+                        chevronEl.className = 'card-chevron';
+                        chevronEl.id = `card-chevron-${{index}}`;
+                        chevronEl.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        `;
+                        
+                        badgesEl.appendChild(chevronEl);
+                        headerEl.appendChild(badgesEl);
+                        cardContainer.appendChild(headerEl);
+                        
+                        // Create card content with standardized structure
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'card-fact-content';
+                        contentEl.id = `card-fact-content-${{index}}`;
+                        
+                        // Create details grid
+                        const detailsEl = document.createElement('div');
+                        detailsEl.className = 'card-fact-details';
+                        
+                        // Document info
+                        const docSection = document.createElement('div');
+                        docSection.className = 'card-detail-section';
+                        docSection.innerHTML = `
+                            <div class="card-detail-label">Document</div>
+                            <div class="card-detail-value">
+                                <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                            </div>
+                        `;
+                        detailsEl.appendChild(docSection);
+                        
+                        // Argument info
+                        const argSection = document.createElement('div');
+                        argSection.className = 'card-detail-section';
+                        argSection.innerHTML = `
+                            <div class="card-detail-label">Argument</div>
+                            <div class="card-detail-value">
+                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
+                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
+                            </div>
+                        `;
+                        detailsEl.appendChild(argSection);
+                        
+                        contentEl.appendChild(detailsEl);
+                        
+                        // Source Text (always show if available)
+                        if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'card-source-text';
+                            sourceTextEl.innerHTML = `
+                                <div class="submission-header">Source Text</div>
+                                <div>${{fact.source_text}}</div>
+                            `;
+                            contentEl.appendChild(sourceTextEl);
+                        }}
+                        
+                        // Claimant Submission
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
+                            const claimantSubmissionEl = document.createElement('div');
+                            claimantSubmissionEl.className = 'card-source-text claimant-submission';
+                            claimantSubmissionEl.innerHTML = `
+                                <div class="submission-header">Claimant Submission</div>
+                                <div>${{fact.claimant_submission}}</div>
+                            `;
+                            contentEl.appendChild(claimantSubmissionEl);
+                        }}
+                        
+                        // Respondent Submission
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
+                            const respondentSubmissionEl = document.createElement('div');
+                            respondentSubmissionEl.className = 'card-source-text respondent-submission';
+                            respondentSubmissionEl.innerHTML = `
+                                <div class="submission-header">Respondent Submission</div>
+                                <div>${{fact.respondent_submission}}</div>
+                            `;
+                            contentEl.appendChild(respondentSubmissionEl);
+                        }}
+                        
+                        // Document summary
+                        if (fact.doc_summary) {{
+                            const summaryEl = document.createElement('div');
+                            summaryEl.className = 'card-detail-section';
+                            summaryEl.style.marginTop = '16px';
+                            summaryEl.innerHTML = `
+                                <div class="card-detail-label">Document Summary</div>
+                                <div class="card-detail-value">${{fact.doc_summary}}</div>
+                            `;
+                            contentEl.appendChild(summaryEl);
+                        }}
+                        
+                        // Status and Exhibits section
+                        const statusExhibitsEl = document.createElement('div');
+                        statusExhibitsEl.className = 'card-fact-details';
+                        statusExhibitsEl.style.marginTop = '16px';
+                        
+                        // Status
+                        const statusSection = document.createElement('div');
+                        statusSection.className = 'card-detail-section';
+                        statusSection.innerHTML = `
+                            <div class="card-detail-label">Status</div>
+                            <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
+                        `;
+                        statusExhibitsEl.appendChild(statusSection);
+                        
+                        // Evidence
+                        const evidenceSection = document.createElement('div');
+                        evidenceSection.className = 'card-detail-section';
+                        const evidenceContent = getEvidenceContent(fact);
+                        
+                        if (evidenceContent === 'None') {{
+                            evidenceSection.innerHTML = `
+                                <div class="card-detail-label">Evidence</div>
+                                <div class="card-detail-value">None</div>
+                            `;
                         }} else {{
-                            content.style.display = 'none';
-                            chevron.style.transform = 'rotate(0deg)';
+                            evidenceSection.innerHTML = `
+                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
+                                <div class="card-detail-value">
+                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
+                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                                <div>
+                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
+                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
+                                                </div>
+                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
+                                            </div>
+                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}}
+                                </div>
+                            `;
                         }}
+                        statusExhibitsEl.appendChild(evidenceSection);
+                        
+                        contentEl.appendChild(statusExhibitsEl);
+                        cardContainer.appendChild(contentEl);
+                        container.appendChild(cardContainer);
+                    }});
+                    
+                    // If no facts found
+                    if (filteredFacts.length === 0) {{
+                        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No facts found matching the selected criteria.</p>';
+                    }}
+                }}
+                
+                // Render enhanced timeline view
+                function renderTimeline(tabType = 'all') {{
+                    const container = document.getElementById('timeline-events');
+                    container.innerHTML = '';
+                    
+                    // Use factsData and standardize it, not separate timelineData
+                    let filteredData = factsData.map(standardizeFactData);
+                    if (tabType === 'disputed') {{
+                        filteredData = filteredData.filter(item => item.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredData = filteredData.filter(item => !item.isDisputed);
                     }}
                     
-                    // Render document sets view
-                    function renderDocumentSets(tabType = 'all') {{
-                        const container = document.getElementById('document-sets-container');
-                        container.innerHTML = '';
+                    // Sort by date
+                    filteredData.sort((a, b) => {{
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
+                    
+                    // Track years for year markers
+                    let currentYear = '';
+                    let prevYear = '';
+                    
+                    // Create timeline items
+                    filteredData.forEach(fact => {{
+                        // Get the year and check if we need a year marker
+                        currentYear = getYear(fact.date);
+                        if (currentYear && currentYear !== prevYear) {{
+                            // Add year marker
+                            const yearMarker = document.createElement('div');
+                            yearMarker.className = 'timeline-year-marker';
+                            yearMarker.innerHTML = `
+                                <div class="timeline-year">${{currentYear}}</div>
+                                <div class="timeline-year-line"></div>
+                            `;
+                            container.appendChild(yearMarker);
+                            prevYear = currentYear;
+                        }}
+                    
+                        // Create timeline item
+                        const timelineItem = document.createElement('div');
+                        timelineItem.className = 'timeline-item';
                         
-                        const docsWithFacts = {{}};
+                        // Create timeline point
+                        const timelinePoint = document.createElement('div');
+                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
+                        timelineItem.appendChild(timelinePoint);
+                        
+                        // Create timeline content
+                        const contentEl = document.createElement('div');
+                        contentEl.className = 'timeline-content';
+                        
+                        // Create timeline header
+                        const headerEl = document.createElement('div');
+                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
+                        
+                        // Date
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'timeline-date';
+                        dateEl.textContent = formatDate(fact.date);
+                        headerEl.appendChild(dateEl);
+                        
+                        // Badges
+                        const badgesEl = document.createElement('div');
+                        badgesEl.className = 'timeline-badges';
+                        
+                        // Parties involved badges
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
+                                const partyBadge = document.createElement('span');
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                                partyBadge.textContent = party;
+                                badgesEl.appendChild(partyBadge);
+                            }});
+                        }}
+                        
+                        // Status badge
+                        const statusBadge = document.createElement('span');
+                        statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
+                        statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
+                        badgesEl.appendChild(statusBadge);
+                        
+                        headerEl.appendChild(badgesEl);
+                        contentEl.appendChild(headerEl);
+                        
+                        // Create timeline body
+                        const bodyEl = document.createElement('div');
+                        bodyEl.className = 'timeline-body';
+                        
+                        // Event content
+                        const factContent = document.createElement('div');
+                        factContent.className = 'timeline-fact';
+                        factContent.textContent = fact.event;
+                        bodyEl.appendChild(factContent);
+                        
+                        // Document and reference information section
+                        const docInfoEl = document.createElement('div');
+                        docInfoEl.className = 'timeline-meta';
+                        docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
+                        docInfoEl.innerHTML = `
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
+                                <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
+                                <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
+                            </div>
+                            ${{fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}}
+                        `;
+                        bodyEl.appendChild(docInfoEl);
+                        
+                        // Source Text (if different from submissions and available)
+                        if (fact.source_text && fact.source_text !== 'No specific submission recorded' && 
+                            fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
+                            const sourceTextEl = document.createElement('div');
+                            sourceTextEl.className = 'timeline-source-text';
+                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 12px; background-color: rgba(74, 85, 104, 0.05); border-left: 4px solid #4a5568; font-size: 13px; border-radius: 0 6px 6px 0;';
+                            sourceTextEl.innerHTML = `<strong>Source Text:</strong><br>${{fact.source_text}}`;
+                            bodyEl.appendChild(sourceTextEl);
+                        }}
+                        
+                        // Add claimant submission
+                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
+                            const claimantTextEl = document.createElement('div');
+                            claimantTextEl.className = 'timeline-source-text';
+                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
+                            claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}`;
+                            bodyEl.appendChild(claimantTextEl);
+                        }}
+                        
+                        // Add respondent submission
+                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
+                            const respondentTextEl = document.createElement('div');
+                            respondentTextEl.className = 'timeline-source-text';
+                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
+                            respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
+                            bodyEl.appendChild(respondentTextEl);
+                        }}
+                        
+                        contentEl.appendChild(bodyEl);
+                        
+                        // Add footer if there are exhibits - show expandable content
+                        const evidenceContent = getEvidenceContent(fact);
+                        if (evidenceContent !== 'None') {{
+                            const footerEl = document.createElement('div');
+                            footerEl.className = 'timeline-footer';
+                            footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
+                            
+                            footerEl.innerHTML = `
+                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence (${{evidenceContent.length}} items)</div>
+                                ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                    <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                        <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
+                                             style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                             onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                             onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                            <div>
+                                                <span style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}</span>
+                                                <span style="margin-left: 8px; color: #4a5568; font-size: 13px;">${{evidence.title}}</span>
+                                            </div>
+                                            <span id="evidence-icon-${{evidence.id}}-timeline-${{evidenceIndex}}" 
+                                                  style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
+                                        </div>
+                                        <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
+                                             style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}}
+                            `;
+                            
+                            contentEl.appendChild(footerEl);
+                        }}
+                        
+                        timelineItem.appendChild(contentEl);
+                        container.appendChild(timelineItem);
+                    }});
+                    
+                    // If no events found
+                    if (filteredData.length === 0) {{
+                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
+                    }}
+                }}
+                
+                // Render document sets view with table-like evidence formatting
+                function renderDocumentSets(tabType = 'all') {{
+                    const container = document.getElementById('document-sets-container');
+                    container.innerHTML = '';
+                    
+                    // Filter facts based on tab type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
+                    if (tabType === 'disputed') {{
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
+                    }} else if (tabType === 'undisputed') {{
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Initialize docsWithFacts for all groups
+                    const docsWithFacts = {{}};
+                    
+                    // Initialize all groups
+                    documentSets.forEach(ds => {{
+                        if (ds.isGroup) {{
+                            docsWithFacts[ds.id] = {{
+                                docset: ds,
+                                facts: []
+                            }};
+                        }}
+                    }});
+                    
+                    // Distribute facts to categories based on document
+                    filteredFacts.forEach((fact, index) => {{
+                        // Find which document this fact belongs to based on source
+                        let factAssigned = false;
                         
                         documentSets.forEach(ds => {{
                             if (ds.isGroup) {{
-                                docsWithFacts[ds.id] = {{
-                                    docset: ds,
-                                    facts: []
-                                }};
+                                ds.documents.forEach(doc => {{
+                                    // Check if the fact's source contains the document number
+                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
+                                        docsWithFacts[ds.id].facts.push({{ 
+                                            ...fact, 
+                                            documentName: doc.name
+                                        }});
+                                        factAssigned = true;
+                                    }}
+                                }});
                             }}
                         }});
                         
-                        filteredFacts.forEach((fact, index) => {{
-                            // Distribute facts to appropriate categories
-                            let factAssigned = false;
-                            
-                            // Simple assignment based on document name
-                            if (fact.doc_name && fact.doc_name.includes('Appeal')) {{
-                                docsWithFacts['appeal'].facts.push(fact);
-                                factAssigned = true;
-                            }} else if (fact.doc_name && fact.doc_name.includes('Provisional')) {{
-                                docsWithFacts['provisional_measures'].facts.push(fact);
-                                factAssigned = true;
-                            }} else if (fact.doc_name && fact.doc_name.includes('Admissibility')) {{
-                                docsWithFacts['admissibility'].facts.push(fact);
-                                factAssigned = true;
-                            }} else {{
-                                docsWithFacts['challenge'].facts.push(fact);
-                                factAssigned = true;
-                            }}
-                        }});
+                        // If not assigned by source, assign by party matching
+                        if (!factAssigned) {{
+                            documentSets.forEach(ds => {{
+                                if (ds.isGroup) {{
+                                    ds.documents.forEach(doc => {{
+                                        if (doc.party === 'Mixed' || 
+                                            (fact.parties_involved && fact.parties_involved.includes('Appellant') && doc.party === 'Appellant') ||
+                                            (fact.parties_involved && fact.parties_involved.includes('Respondent') && doc.party === 'Respondent')) {{
+                                            docsWithFacts[ds.id].facts.push({{ 
+                                                ...fact, 
+                                                documentName: doc.name
+                                            }});
+                                            factAssigned = true;
+                                            return;
+                                        }}
+                                    }});
+                                    if (factAssigned) return;
+                                }}
+                            }});
+                        }}
+                    }});
+                    
+                    // Create document sets UI with direct table display and improved evidence formatting
+                    Object.values(docsWithFacts).forEach(docWithFacts => {{
+                        const docset = docWithFacts.docset;
+                        const facts = docWithFacts.facts;
                         
-                        Object.values(docsWithFacts).forEach(docWithFacts => {{
-                            const docset = docWithFacts.docset;
-                            const facts = docWithFacts.facts;
-                            
-                            const docsetEl = document.createElement('div');
-                            docsetEl.className = 'docset-container';
-                            
-                            const headerHtml = `
-                                <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                    <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                    <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                    </svg>
-                                    <span><strong>${{docset.name}}</strong></span>
-                                    <span style="margin-left: auto;">
-                                        <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                            ${{docset.party}}
-                                        </span>
-                                        <span class="badge">${{facts.length}} facts</span>
+                        // Create document set container
+                        const docsetEl = document.createElement('div');
+                        docsetEl.className = 'docset-container';
+                        
+                        // Create folder header
+                        const headerHtml = `
+                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
+                                <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                <span><strong>${{docset.name}}</strong></span>
+                                <span style="margin-left: auto;">
+                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
+                                        ${{docset.party}}
                                     </span>
-                                </div>
-                                <div id="docset-content-${{docset.id}}" class="docset-content">
-                            `;
-                            
-                            let contentHtml = '';
-                            
-                            if (facts.length > 0) {{
-                                contentHtml += `
-                                    <div class="table-view-container">
-                                        <table class="table-view">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Event</th>
-                                                    <th>Source Text</th>
-                                                    <th>Page</th>
-                                                    <th>Document</th>
-                                                    <th>Doc Summary</th>
-                                                    <th>Claimant Submission</th>
-                                                    <th>Respondent Submission</th>
-                                                    <th>Status</th>
-                                                    <th>Evidence</th>
+                                    <span class="badge">${{facts.length}} facts</span>
+                                </span>
+                            </div>
+                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                        `;
+                        
+                        let contentHtml = '';
+                        
+                        if (facts.length > 0) {{
+                            // Create a single table for all facts in this category - with improved evidence formatting
+                            contentHtml += `
+                                <div class="table-view-container">
+                                    <table class="table-view">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Event</th>
+                                                <th>Source Text</th>
+                                                <th>Page</th>
+                                                <th>Document</th>
+                                                <th>Doc Summary</th>
+                                                <th>Claimant Submission</th>
+                                                <th>Respondent Submission</th>
+                                                <th>Status</th>
+                                                <th>Evidence</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${{facts.map((fact, factIndex) => `
+                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                    <td style="white-space: nowrap;">${{fact.date}}</td>
+                                                    <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
+                                                    <td style="white-space: nowrap;">${{fact.page || ''}}</td>
+                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                    <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
+                                                    <td style="white-space: nowrap;">${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                    <td style="min-width: 200px; max-width: 300px;">
+                                                        ${{(() => {{
+                                                            const evidenceContent = getEvidenceContent(fact);
+                                                            if (evidenceContent === 'None') {{
+                                                                return 'None';
+                                                            }}
+                                                            return `
+                                                                <div>
+                                                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                                                        <div style="margin-bottom: 6px;">
+                                                                            <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
+                                                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; margin: 2px 0;"
+                                                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                                                📁 ${{evidence.id}}: ${{evidence.title.length > 25 ? evidence.title.substring(0, 25) + '...' : evidence.title}}
+                                                                                <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
+                                                                            </span>
+                                                                            <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
+                                                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
+                                                                                <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
+                                                                            </div>
+                                                                        </div>
+                                                                    `).join('')}}
+                                                                </div>
+                                                            `;
+                                                        }})()}}
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${{facts.map(fact => `
-                                                    <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                        <td>${{fact.date}}</td>
-                                                        <td>${{fact.event}}</td>
-                                                        <td title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
-                                                        <td>${{fact.page || ''}}</td>
-                                                        <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
-                                                        <td title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                        <td title="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
-                                                        <td title="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
-                                                        <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                        <td>${{fact.exhibits ? fact.exhibits.join(', ') : 'None'}}</td>
-                                                    </tr>
-                                                `).join('')}}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                `;
-                            }} else {{
-                                contentHtml += '<p style="padding: 12px;">No facts found</p>';
-                            }}
-                            
-                            contentHtml += '</div>';
-                            docsetEl.innerHTML = headerHtml + contentHtml;
-                            container.appendChild(docsetEl);
-                        }});
+                                            `).join('')}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }} else {{
+                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
+                        }}
+                        
+                        contentHtml += '</div>';
+                        docsetEl.innerHTML = headerHtml + contentHtml;
+                        
+                        container.appendChild(docsetEl);
+                    }});
+                }}
+                
+                // Render facts table
+                function renderFacts(type = 'all') {{
+                    const tableBody = document.getElementById('facts-table-body');
+                    tableBody.innerHTML = '';
+                    
+                    // Filter by type and standardize
+                    let filteredFacts = factsData.map(standardizeFactData);
+                    
+                    if (type === 'disputed') {{
+                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
+                    }} else if (type === 'undisputed') {{
+                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
-                </script>
-            </body>
-            </html>
-            """
-            
-            # Render the HTML component
-            components.html(html_content, height=800, scrolling=True)
-    
-    elif st.session_state.view == "Arguments":
-        st.title("Arguments")
-        st.write("Arguments view would be implemented here.")
-    
-    elif st.session_state.view == "Exhibits":
-        st.title("Exhibits")
-        st.write("Exhibits view would be implemented here.")
+                    
+                    // Sort by date
+                    filteredFacts.sort((a, b) => {{
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
+                    
+                    // Render rows with consistent structure
+                    filteredFacts.forEach(fact => {{
+                        const row = document.createElement('tr');
+                        if (fact.isDisputed) {{
+                            row.classList.add('disputed');
+                        }}
+                        
+                        // Date column
+                        const dateCell = document.createElement('td');
+                        dateCell.textContent = fact.date;
+                        row.appendChild(dateCell);
+                        
+                        // Event column
+                        const eventCell = document.createElement('td');
+                        eventCell.textContent = fact.event;
+                        row.appendChild(eventCell);
+                        
+                        // Source Text column
+                        const sourceTextCell = document.createElement('td');
+                        sourceTextCell.textContent = fact.source_text || '';
+                        sourceTextCell.title = fact.source_text || '';
+                        row.appendChild(sourceTextCell);
+                        
+                        // Page column
+                        const pageCell = document.createElement('td');
+                        pageCell.textContent = fact.page || '';
+                        row.appendChild(pageCell);
+                        
+                        // Document column
+                        const docCell = document.createElement('td');
+                        docCell.textContent = fact.doc_name || '';
+                        docCell.title = fact.doc_summary || '';
+                        row.appendChild(docCell);
+                        
+                        // Document Summary column
+                        const docSummaryCell = document.createElement('td');
+                        docSummaryCell.textContent = fact.doc_summary || '';
+                        docSummaryCell.title = fact.doc_summary || '';
+                        row.appendChild(docSummaryCell);
+                        
+                        // Claimant Submission column
+                        const claimantSubmissionCell = document.createElement('td');
+                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission : 'No submission';
+                        claimantSubmissionCell.textContent = claimantText;
+                        claimantSubmissionCell.title = claimantText;
+                        row.appendChild(claimantSubmissionCell);
+                        
+                        // Respondent Submission column
+                        const respondentSubmissionCell = document.createElement('td');
+                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission : 'No submission';
+                        respondentSubmissionCell.textContent = respondentText;
+                        respondentSubmissionCell.title = respondentText;
+                        row.appendChild(respondentSubmissionCell);
+                        
+                        // Status column
+                        const statusCell = document.createElement('td');
+                        if (fact.isDisputed) {{
+                            const disputedBadge = document.createElement('span');
+                            disputedBadge.className = 'badge disputed-badge';
+                            disputedBadge.textContent = 'Disputed';
+                            statusCell.appendChild(disputedBadge);
+                        }} else {{
+                            statusCell.textContent = 'Undisputed';
+                        }}
+                        row.appendChild(statusCell);
+                        
+                        // Evidence column - show expandable content with normal sizing
+                        const evidenceCell = document.createElement('td');
+                        const evidenceContent = getEvidenceContent(fact);
+                        
+                        if (evidenceContent === 'None') {{
+                            evidenceCell.textContent = 'None';
+                        }} else {{
+                            // For table view, show compact badges that expand on click
+                            evidenceCell.innerHTML = `
+                                <div>
+                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                        <div style="margin-bottom: 6px;">
+                                            <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
+                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
+                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
+                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
+                                            </span>
+                                            <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
+                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
+                                                ${{evidence.summary}}
+                                            </div>
+                                        </div>
+                                    `).join('')}}
+                                </div>
+                            `;
+                        }}
+                        row.appendChild(evidenceCell);
+                        
+                        tableBody.appendChild(row);
+                    }});
+                }}
+                
+                // Initialize facts on page load
+                document.addEventListener('DOMContentLoaded', function() {{
+                    renderCardView('all');
+                }});
+                
+                // Initialize card view immediately
+                renderCardView('all');
+            </script>
+        </body>
+        </html>
+        """
+        
+        # Render the HTML component
+        st.title("Case Facts")
+        components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
-

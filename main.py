@@ -1135,10 +1135,6 @@ def main():
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        st.divider()
-        
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
         

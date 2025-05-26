@@ -654,12 +654,10 @@ def render_streamlit_card_view(filtered_facts=None):
                                 if fact.get('paragraphs'):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
-                        
-                        # Add clear separator between exhibits, but not after the last one
-                        if j < len(evidence_content) - 1:
-                            st.markdown("""
-                            <div style="margin: 15px 0; padding: 10px 0; border-bottom: 2px solid #e0e0e0;"></div>
-                            """, unsafe_allow_html=True)
+                    
+                    # Add clear separator between exhibits
+                    if j < len(evidence_content) - 1:
+                        st.divider()
             else:
                 st.markdown("*No evidence references available for this fact*")
             
@@ -757,11 +755,9 @@ def render_streamlit_timeline_view(filtered_facts=None):
                             if fact.get('source_text'):
                                 st.markdown(f"**Source Text:** *{fact['source_text']}*")
                             
-                            # Add clear separator between exhibits, but not after the last one
+                            # Add clear separator between exhibits
                             if j < len(evidence_content) - 1:
-                                st.markdown("""
-                                <div style="margin: 10px 0; padding: 5px 0; border-bottom: 1px solid #d0d0d0;"></div>
-                                """, unsafe_allow_html=True)
+                                st.divider()
                     else:
                         st.markdown("*No evidence references available*")
                     

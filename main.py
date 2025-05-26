@@ -330,103 +330,49 @@ with st.sidebar:
 
 # Only show Facts view content (since that's what we're implementing)
 if st.session_state.view == "Facts":
-    # Enhanced header section with better organization
-    st.title("📊 Case Facts Analysis")
-    st.markdown("**Comprehensive overview of factual assertions, evidence, and party submissions**")
+    st.title("Case Facts")
     
-    # Improved section with better visual hierarchy
-    st.markdown("---")
+    # View toggle buttons
+    col1, col2, col3 = st.columns(3)
     
-    # View Selection Section with descriptions
-    st.markdown("### 🔍 **View Options**")
-    st.markdown("*Choose how you want to explore the case facts:*")
-    
-    # Enhanced view toggle buttons with descriptions
-    view_col1, view_col2, view_col3 = st.columns(3)
-    
-    with view_col1:
-        card_active = st.session_state.current_view_type == "card"
-        if st.button("📋 **Card View**", use_container_width=True, 
-                    type="primary" if card_active else "secondary", key="card_btn"):
+    with col1:
+        if st.button("📋 Card View", use_container_width=True, 
+                    type="primary" if st.session_state.current_view_type == "card" else "secondary"):
             st.session_state.current_view_type = "card"
             st.rerun()
-        if card_active:
-            st.markdown("*<small>📄 Detailed expandable cards with full evidence and submissions</small>*", unsafe_allow_html=True)
     
-    with view_col2:
-        timeline_active = st.session_state.current_view_type == "timeline"
-        if st.button("📅 **Timeline View**", use_container_width=True,
-                    type="primary" if timeline_active else "secondary", key="timeline_btn"):
+    with col2:
+        if st.button("📅 Timeline View", use_container_width=True,
+                    type="primary" if st.session_state.current_view_type == "timeline" else "secondary"):
             st.session_state.current_view_type = "timeline"
             st.rerun()
-        if timeline_active:
-            st.markdown("*<small>⏰ Chronological sequence of events grouped by year</small>*", unsafe_allow_html=True)
     
-    with view_col3:
-        docset_active = st.session_state.current_view_type == "docset"
-        if st.button("📁 **Document Categories**", use_container_width=True,
-                    type="primary" if docset_active else "secondary", key="docset_btn"):
+    with col3:
+        if st.button("📁 Document Categories", use_container_width=True,
+                    type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
             st.session_state.current_view_type = "docset"
             st.rerun()
-        if docset_active:
-            st.markdown("*<small>📂 Facts organized by document sets and party submissions</small>*", unsafe_allow_html=True)
     
-    st.markdown("---")
+    st.divider()
     
-    # Filter Section with enhanced UI
-    st.markdown("### 🎯 **Fact Filtering**")
+    # Facts filter
+    filter_option = st.selectbox(
+        "Filter Facts:",
+        ["All Facts", "Disputed Facts", "Undisputed Facts"],
+        index=0
+    )
     
-    filter_col1, filter_col2 = st.columns([1, 2])
-    
-    with filter_col1:
-        filter_option = st.selectbox(
-            "**Show Facts:**",
-            ["All Facts", "Disputed Facts", "Undisputed Facts"],
-            index=0,
-            help="Filter facts based on whether they are disputed between parties"
-        )
-    
-    with filter_col2:
-        # Add summary stats
-        if filter_option == "All Facts":
-            st.session_state.current_tab_type = "all"
-            st.info("📊 **Showing all factual assertions** from both parties")
-        elif filter_option == "Disputed Facts":
-            st.session_state.current_tab_type = "disputed"
-            st.warning("⚠️ **Showing contested facts** where parties disagree")
-        else:
-            st.session_state.current_tab_type = "undisputed"
-            st.success("✅ **Showing agreed facts** accepted by both parties")
-    
-    st.markdown("---")
-    
-    # Enhanced content section header
-    view_type_labels = {
-        "card": "📋 Card View",
-        "timeline": "📅 Timeline View", 
-        "docset": "📁 Document Categories"
-    }
-    
-    filter_labels = {
-        "all": "All Facts",
-        "disputed": "Disputed Facts",
-        "undisputed": "Undisputed Facts"
-    }
-    
-    current_view_label = view_type_labels.get(st.session_state.current_view_type, "Card View")
-    current_filter_label = filter_labels.get(st.session_state.current_tab_type, "All Facts")
-    
-    st.markdown(f"### 📋 **{current_view_label}** - *{current_filter_label}*")
-    
-    # Add instructional text based on view type
-    if st.session_state.current_view_type == "card":
-        st.markdown("*Click on any fact card below to expand and view detailed evidence, source references, and party submissions.*")
-    elif st.session_state.current_view_type == "timeline":
-        st.markdown("*Facts are displayed chronologically, grouped by year. Each event shows the date, evidence, and both parties' positions.*")
+    # Set current tab type based on selection
+    if filter_option == "All Facts":
+        st.session_state.current_tab_type = "all"
+    elif filter_option == "Disputed Facts":
+        st.session_state.current_tab_type = "disputed"
     else:
-        st.markdown("*Facts are organized by document categories. Click on each category to expand and view the facts from those documents.*")
+        st.session_state.current_tab_type = "undisputed"
     
-    # Now render the React component for the main content
+    st.divider()
+    
+    # React component for the main content
     html_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -450,427 +396,222 @@ if st.session_state.view == "Facts":
                 padding: 0;
             }}
             
-            /* Enhanced Fact Cards */
             .fact-card {{
-                border: 1px solid #e1e5e9;
-                border-radius: 8px;
-                margin-bottom: 1.5rem;
+                border: 1px solid #e6e6e6;
+                border-radius: 0.5rem;
+                margin-bottom: 1rem;
                 overflow: hidden;
                 background-color: white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-                transition: all 0.3s ease;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                transition: box-shadow 0.3s ease;
             }}
             
             .fact-card:hover {{
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                transform: translateY(-2px);
             }}
             
             .fact-header {{
-                padding: 1.25rem;
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 1rem;
+                background-color: #f8f9fa;
                 cursor: pointer;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 1px solid #e1e5e9;
-                transition: all 0.2s ease;
-                position: relative;
+                border-bottom: 1px solid #e6e6e6;
+                transition: background-color 0.2s;
             }}
             
             .fact-header:hover {{
-                background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-            }}
-            
-            .fact-header::after {{
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #4D68F9, #ff6900);
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }}
-            
-            .fact-card:hover .fact-header::after {{
-                opacity: 1;
+                background-color: #e9ecef;
             }}
             
             .fact-title {{
                 font-weight: 600;
                 color: #262730;
-                font-size: 1.05rem;
-                display: flex;
-                align-items: center;
-                flex: 1;
-            }}
-            
-            .fact-date {{
-                background: #4D68F9;
-                color: white;
-                padding: 0.25rem 0.75rem;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                font-weight: 600;
-                margin-right: 1rem;
-                min-width: fit-content;
             }}
             
             .dispute-indicator {{
-                width: 16px;
-                height: 16px;
+                width: 12px;
+                height: 12px;
                 border-radius: 50%;
                 background-color: #dc3545;
-                border: 2px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                position: relative;
             }}
             
             .dispute-indicator.undisputed {{
                 background-color: #28a745;
             }}
             
-            .dispute-indicator::after {{
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 6px;
-                height: 6px;
-                background: white;
-                border-radius: 50%;
-            }}
-            
             .fact-content {{
-                padding: 0;
+                padding: 1.5rem;
                 display: none;
-                animation: slideDown 0.3s ease-out;
             }}
             
             .fact-content.expanded {{
                 display: block;
             }}
             
-            @keyframes slideDown {{
-                from {{
-                    opacity: 0;
-                    max-height: 0;
-                }}
-                to {{
-                    opacity: 1;
-                    max-height: 1000px;
-                }}
-            }}
-            
-            .content-inner {{
-                padding: 1.5rem;
-            }}
-            
-            /* Enhanced Section Headers */
             .section-header {{
-                font-size: 1.2rem;
-                font-weight: 700;
-                margin: 2rem 0 1rem 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin: 1.5rem 0 0.75rem 0;
                 color: #262730;
-                display: flex;
-                align-items: center;
-                padding-bottom: 0.5rem;
-                border-bottom: 2px solid #e1e5e9;
             }}
             
             .section-header:first-child {{
                 margin-top: 0;
             }}
             
-            /* Enhanced Evidence Items */
             .evidence-item {{
-                margin-bottom: 1.5rem;
-                padding: 1.25rem;
-                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-                border-radius: 8px;
-                border: 1px solid #e1e5e9;
-                border-left: 4px solid #4D68F9;
-                transition: all 0.2s ease;
-            }}
-            
-            .evidence-item:hover {{
-                border-left-color: #ff6900;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background-color: #f8f9fa;
+                border-radius: 0.5rem;
+                border: 1px solid #e6e6e6;
             }}
             
             .evidence-title {{
-                font-weight: 700;
-                margin-bottom: 0.75rem;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
                 color: #262730;
-                font-size: 1.05rem;
             }}
             
-            .document-summary {{
-                margin: 0.75rem 0;
-                padding: 1rem;
-                background: linear-gradient(135deg, #cce5ff 0%, #b3d9ff 100%);
-                border-radius: 6px;
-                border: 1px solid #99ccff;
-                border-left: 4px solid #4D68F9;
-            }}
-            
-            .source-text {{
-                margin: 0.75rem 0;
-                padding: 1rem;
-                background: #f8f9fa;
-                border-radius: 6px;
-                border-left: 4px solid #6c757d;
-                font-style: italic;
-                font-size: 0.95rem;
-                line-height: 1.6;
-            }}
-            
-            /* Enhanced Submissions */
             .submission-section {{
-                margin: 1.5rem 0;
+                margin: 1rem 0;
             }}
             
             .submission-header {{
-                font-weight: 700;
-                margin-bottom: 0.75rem;
-                font-size: 1.05rem;
-                display: flex;
-                align-items: center;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
             }}
             
             .submission-content {{
-                padding: 1.25rem;
-                border-radius: 8px;
+                padding: 1rem;
+                border-radius: 0.5rem;
                 font-style: italic;
                 border-left: 4px solid;
-                line-height: 1.7;
-                font-size: 0.95rem;
-                position: relative;
-                overflow: hidden;
-            }}
-            
-            .submission-content::before {{
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                opacity: 0.05;
-                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             }}
             
             .claimant-submission {{
-                background: linear-gradient(135deg, #cce5ff 0%, #e6f3ff 100%);
-                border-left-color: #4D68F9;
-                color: #1a365d;
+                background-color: #cce5ff;
+                border-left-color: #0066cc;
+                color: #003d7a;
             }}
             
             .respondent-submission {{
-                background: linear-gradient(135deg, #ffe6e6 0%, #fff2f2 100%);
-                border-left-color: #dc3545;
-                color: #7a1e1e;
+                background-color: #ffe6e6;
+                border-left-color: #cc0000;
+                color: #7a0000;
             }}
             
-            /* Enhanced Status Section */
             .status-section {{
                 display: flex;
                 gap: 2rem;
-                margin-top: 1.5rem;
-                padding: 1.25rem;
-                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-                border-radius: 8px;
-                border: 1px solid #e1e5e9;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #e6e6e6;
             }}
             
             .status-item {{
                 display: flex;
                 align-items: center;
-                gap: 0.75rem;
-                font-weight: 600;
+                gap: 0.5rem;
             }}
             
-            /* Enhanced Copy Button */
             .copy-button {{
-                padding: 0.5rem 1rem;
-                background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+                padding: 0.25rem 0.5rem;
+                background-color: #6c757d;
                 color: white;
                 border: none;
-                border-radius: 6px;
+                border-radius: 4px;
                 cursor: pointer;
-                font-size: 0.85rem;
-                font-weight: 600;
-                transition: all 0.2s ease;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                font-size: 0.8rem;
+                transition: background-color 0.2s;
             }}
             
             .copy-button:hover {{
-                background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
-                transform: translateY(-1px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                background-color: #5a6268;
             }}
             
-            .copy-button:active {{
-                transform: translateY(0);
+            .no-facts {{
+                text-align: center;
+                padding: 3rem;
+                color: #6c757d;
+                font-style: italic;
             }}
             
-            /* Enhanced Timeline Styles */
             .timeline-year {{
-                font-size: 2rem;
-                font-weight: 700;
-                margin: 3rem 0 1.5rem 0;
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin: 2rem 0 1rem 0;
                 color: #262730;
                 display: flex;
                 align-items: center;
-                gap: 1rem;
-                padding: 1rem 0;
-                border-bottom: 3px solid #e1e5e9;
-                position: relative;
-            }}
-            
-            .timeline-year::after {{
-                content: '';
-                position: absolute;
-                bottom: -3px;
-                left: 0;
-                width: 60px;
-                height: 3px;
-                background: linear-gradient(90deg, #4D68F9, #ff6900);
+                gap: 0.5rem;
             }}
             
             .timeline-event {{
-                margin-bottom: 2.5rem;
-                padding: 1.5rem;
-                border-left: 5px solid #ff6900;
-                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-                border-radius: 0 8px 8px 0;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                transition: all 0.3s ease;
-                position: relative;
-            }}
-            
-            .timeline-event:hover {{
-                border-left-color: #4D68F9;
-                transform: translateX(5px);
-                box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            }}
-            
-            .timeline-event::before {{
-                content: '';
-                position: absolute;
-                left: -8px;
-                top: 1.5rem;
-                width: 16px;
-                height: 16px;
-                background: #ff6900;
-                border-radius: 50%;
-                border: 3px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                margin-bottom: 2rem;
+                padding: 1rem;
+                border-left: 4px solid #ff6900;
+                background-color: #f8f9fa;
+                border-radius: 0 0.5rem 0.5rem 0;
             }}
             
             .timeline-header {{
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 1.5rem;
-                padding-bottom: 1rem;
-                border-bottom: 1px solid #e1e5e9;
+                margin-bottom: 1rem;
             }}
             
             .timeline-date {{
-                font-weight: 700;
+                font-weight: 600;
                 color: #ff6900;
-                font-size: 1.1rem;
-                background: rgba(255, 105, 0, 0.1);
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
             }}
             
             .timeline-title {{
-                font-weight: 700;
+                font-weight: 600;
                 flex: 1;
-                margin: 0 1.5rem;
-                font-size: 1.1rem;
+                margin: 0 1rem;
             }}
             
-            /* Enhanced Document Categories */
             .docset-container {{
-                margin-bottom: 2rem;
+                margin-bottom: 1rem;
             }}
             
             .docset-header {{
-                padding: 1.5rem;
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                padding: 1rem;
+                background-color: #f8f9fa;
                 cursor: pointer;
-                border: 1px solid #e1e5e9;
-                border-radius: 8px;
+                border: 1px solid #e6e6e6;
+                border-radius: 0.5rem;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                transition: all 0.2s ease;
-                font-weight: 600;
-                font-size: 1.1rem;
+                transition: background-color 0.2s;
             }}
             
             .docset-header:hover {{
-                background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                background-color: #e9ecef;
             }}
             
             .docset-content {{
                 display: none;
-                border: 1px solid #e1e5e9;
+                border: 1px solid #e6e6e6;
                 border-top: none;
-                border-radius: 0 0 8px 8px;
-                padding: 1.5rem;
-                background: white;
-                animation: slideDown 0.3s ease-out;
+                border-radius: 0 0 0.5rem 0.5rem;
+                padding: 1rem;
+                background-color: white;
             }}
             
             .docset-content.expanded {{
                 display: block;
             }}
             
-            /* Enhanced No Facts Message */
-            .no-facts {{
-                text-align: center;
-                padding: 4rem 2rem;
-                color: #6c757d;
-                font-style: italic;
-                font-size: 1.1rem;
-                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-                border-radius: 8px;
-                border: 2px dashed #e1e5e9;
-            }}
-            
             .divider {{
                 height: 1px;
-                background: linear-gradient(90deg, transparent, #e1e5e9, transparent);
-                margin: 1.5rem 0;
-            }}
-            
-            /* Responsive Design */
-            @media (max-width: 768px) {{
-                .fact-header {{
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 0.5rem;
-                }}
-                
-                .timeline-header {{
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 0.5rem;
-                }}
-                
-                .status-section {{
-                    flex-direction: column;
-                    gap: 1rem;
-                }}
+                background-color: #e6e6e6;
+                margin: 1rem 0;
             }}
         </style>
     </head>
@@ -886,7 +627,7 @@ if st.session_state.view == "Facts":
             const currentViewType = "{st.session_state.current_view_type}";
             const currentTabType = "{st.session_state.current_tab_type}";
 
-            // Utility functions (same as before)
+            // Utility functions
             const extractFacts = (args, party) => {{
                 const facts = [];
                 
@@ -1010,7 +751,7 @@ if st.session_state.view == "Facts":
                 return evidenceContent;
             }};
 
-            // Enhanced Components
+            // Components
             const FactCard = ({{ fact, index }}) => {{
                 const [expanded, setExpanded] = useState(false);
                 const evidenceContent = getEvidenceContent(fact);
@@ -1019,96 +760,90 @@ if st.session_state.view == "Facts":
                     <div className="fact-card">
                         <div className="fact-header" onClick={{() => setExpanded(!expanded)}}>
                             <div className="fact-title">
-                                <span className="fact-date">{{fact.date}}</span>
-                                {{fact.event}}
+                                <strong>{{fact.date}}</strong> - {{fact.event}}
                             </div>
-                            <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}} 
-                                 title={{fact.isDisputed ? 'Disputed Fact' : 'Undisputed Fact'}}></div>
+                            <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}}></div>
                         </div>
                         <div className={{`fact-content ${{expanded ? 'expanded' : ''}}`}}>
-                            <div className="content-inner">
-                                <div className="section-header">📁 Evidence & Source References</div>
-                                {{evidenceContent.length > 0 ? (
-                                    evidenceContent.map((evidence, idx) => (
-                                        <div key={{idx}} className="evidence-item">
-                                            <div className="evidence-title">
-                                                📄 <strong>{{evidence.id}}</strong> - {{evidence.title}}
-                                            </div>
-                                            {{fact.doc_summary && (
-                                                <div className="document-summary">
-                                                    <strong>📋 Document Summary:</strong> {{fact.doc_summary}}
-                                                </div>
-                                            )}}
-                                            {{fact.source_text && (
-                                                <div className="source-text">
-                                                    <strong>📝 Source Text:</strong> {{fact.source_text}}
-                                                </div>
-                                            )}}
-                                            <div style={{{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', flexWrap: 'wrap', gap: '1rem' }}}}>
-                                                <div style={{{{ fontSize: '0.9rem', color: '#6c757d' }}}}>
-                                                    <strong>📎 Exhibit:</strong> {{evidence.id}}
-                                                    {{fact.page && <span> | <strong>📄 Page:</strong> {{fact.page}}</span>}}
-                                                    {{fact.paragraphs && <span> | <strong>📝 Paragraphs:</strong> {{fact.paragraphs}}</span>}}
-                                                </div>
-                                                <button className="copy-button" onClick={{() => {{
-                                                    const refText = `Exhibit: ${{evidence.id}}${{fact.page ? `, Page: ${{fact.page}}` : ''}}${{fact.paragraphs ? `, Paragraphs: ${{fact.paragraphs}}` : ''}}`;
-                                                    navigator.clipboard.writeText(refText).then(() => {{
-                                                        // You could add a toast notification here
-                                                    }});
-                                                }}}}>
-                                                    📋 Copy Reference
-                                                </button>
-                                            </div>
-                                            {{idx < evidenceContent.length - 1 && <div className="divider"></div>}}
+                            <div className="section-header">📁 Evidence & Source References</div>
+                            {{evidenceContent.length > 0 ? (
+                                evidenceContent.map((evidence, idx) => (
+                                    <div key={{idx}} className="evidence-item">
+                                        <div className="evidence-title">
+                                            <strong>{{evidence.id}}</strong> - {{evidence.title}}
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="no-facts" style={{{{ padding: '2rem', fontSize: '0.95rem' }}}}>
-                                        📝 No evidence references available for this fact
+                                        {{fact.doc_summary && (
+                                            <div style={{{{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#d1ecf1', borderRadius: '4px' }}}}>
+                                                <strong>Document Summary:</strong> {{fact.doc_summary}}
+                                            </div>
+                                        )}}
+                                        {{fact.source_text && (
+                                            <div style={{{{ margin: '0.5rem 0', fontStyle: 'italic' }}}}>
+                                                <strong>Source Text:</strong> {{fact.source_text}}
+                                            </div>
+                                        )}}
+                                        <div style={{{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}}}>
+                                            <div>
+                                                <strong>Exhibit:</strong> {{evidence.id}}
+                                                {{fact.page && <span> | <strong>Page:</strong> {{fact.page}}</span>}}
+                                                {{fact.paragraphs && <span> | <strong>Paragraphs:</strong> {{fact.paragraphs}}</span>}}
+                                            </div>
+                                            <button className="copy-button" onClick={{() => {{
+                                                const refText = `Exhibit: ${{evidence.id}}${{fact.page ? `, Page: ${{fact.page}}` : ''}}${{fact.paragraphs ? `, Paragraphs: ${{fact.paragraphs}}` : ''}}`;
+                                                navigator.clipboard.writeText(refText);
+                                            }}}}>
+                                                📋 Copy Ref
+                                            </button>
+                                        </div>
+                                        {{idx < evidenceContent.length - 1 && <div className="divider"></div>}}
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{{{ fontStyle: 'italic', color: '#6c757d' }}}}>
+                                    No evidence references available for this fact
+                                </div>
+                            )}}
+                            
+                            <div className="section-header">⚖️ Party Submissions</div>
+                            <div className="submission-section">
+                                <div className="submission-header">🔵 Claimant Submission</div>
+                                <div className="submission-content claimant-submission">
+                                    {{fact.claimant_submission === 'No specific submission recorded' ? 
+                                        <em>No submission provided</em> : 
+                                        fact.claimant_submission
+                                    }}
+                                </div>
+                            </div>
+                            <div className="submission-section">
+                                <div className="submission-header">🔴 Respondent Submission</div>
+                                <div className="submission-content respondent-submission">
+                                    {{fact.respondent_submission === 'No specific submission recorded' ? 
+                                        <em>No submission provided</em> : 
+                                        fact.respondent_submission
+                                    }}
+                                </div>
+                            </div>
+                            
+                            <div className="section-header">📊 Status</div>
+                            <div className="status-section">
+                                <div className="status-item">
+                                    <strong>Status:</strong> 
+                                    <span style={{{{ color: fact.isDisputed ? '#dc3545' : '#28a745', marginLeft: '0.5rem' }}}}>
+                                        {{fact.isDisputed ? 'Disputed' : 'Undisputed'}}
+                                    </span>
+                                </div>
+                                {{fact.parties_involved && (
+                                    <div className="status-item">
+                                        <strong>Parties:</strong> {{fact.parties_involved.join(', ')}}
                                     </div>
                                 )}}
-                                
-                                <div className="section-header">⚖️ Party Submissions</div>
-                                <div className="submission-section">
-                                    <div className="submission-header">🔵 Appellant Submission</div>
-                                    <div className="submission-content claimant-submission">
-                                        {{fact.claimant_submission === 'No specific submission recorded' ? 
-                                            <em>📝 No submission provided by appellant</em> : 
-                                            fact.claimant_submission
-                                        }}
-                                    </div>
-                                </div>
-                                <div className="submission-section">
-                                    <div className="submission-header">🔴 Respondent Submission</div>
-                                    <div className="submission-content respondent-submission">
-                                        {{fact.respondent_submission === 'No specific submission recorded' ? 
-                                            <em>📝 No submission provided by respondent</em> : 
-                                            fact.respondent_submission
-                                        }}
-                                    </div>
-                                </div>
-                                
-                                <div className="section-header">📊 Fact Status</div>
-                                <div className="status-section">
-                                    <div className="status-item">
-                                        {{fact.isDisputed ? '⚠️' : '✅'}} <strong>Status:</strong> 
-                                        <span style={{{{ color: fact.isDisputed ? '#dc3545' : '#28a745', marginLeft: '0.5rem' }}}}>
-                                            {{fact.isDisputed ? 'Disputed' : 'Undisputed'}}
-                                        </span>
-                                    </div>
-                                    {{fact.parties_involved && (
-                                        <div className="status-item">
-                                            👥 <strong>Parties:</strong> {{fact.parties_involved.join(', ')}}
-                                        </div>
-                                    )}}
-                                </div>
                             </div>
                         </div>
                     </div>
                 );
             }};
 
-            // Enhanced Timeline View Component
+            // Timeline View Component
             const TimelineView = ({{ facts }}) => {{
                 const sortedFacts = [...facts].sort((a, b) => {{
                     const dateA = a.date.split('-')[0];
@@ -1131,6 +866,7 @@ if st.session_state.view == "Facts":
                         {{Object.entries(eventsByYear).map(([year, events]) => (
                             <div key={{year}}>
                                 <div className="timeline-year">📅 {{year}}</div>
+                                <div className="divider"></div>
                                 {{events.map((fact, index) => {{
                                     const evidenceContent = getEvidenceContent(fact);
                                     return (
@@ -1138,40 +874,39 @@ if st.session_state.view == "Facts":
                                             <div className="timeline-header">
                                                 <div className="timeline-date">📆 {{fact.date}}</div>
                                                 <div className="timeline-title">{{fact.event}}</div>
-                                                <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}} 
-                                                     title={{fact.isDisputed ? 'Disputed Fact' : 'Undisputed Fact'}}></div>
+                                                <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}}></div>
                                             </div>
                                             
-                                            <div>
+                                            <div style={{{{ marginTop: '1rem' }}}}>
                                                 <div className="section-header">📁 Evidence & Source References</div>
                                                 {{evidenceContent.length > 0 ? (
                                                     evidenceContent.map((evidence, idx) => (
-                                                        <div key={{idx}} className="evidence-item">
-                                                            <div>📄 <strong>{{evidence.id}}</strong> - {{evidence.title}}</div>
+                                                        <div key={{idx}} style={{{{ marginBottom: '1rem' }}}}>
+                                                            <div>• <strong>{{evidence.id}}</strong> - {{evidence.title}}</div>
                                                             {{fact.doc_summary && (
-                                                                <div className="document-summary">
-                                                                    <strong>📋 Document Summary:</strong> {{fact.doc_summary}}
+                                                                <div style={{{{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#d1ecf1', borderRadius: '4px' }}}}>
+                                                                    <strong>Document Summary:</strong> {{fact.doc_summary}}
                                                                 </div>
                                                             )}}
                                                             {{fact.source_text && (
-                                                                <div className="source-text">
-                                                                    <strong>📝 Source Text:</strong> {{fact.source_text}}
+                                                                <div style={{{{ margin: '0.5rem 0', fontStyle: 'italic' }}}}>
+                                                                    <strong>Source Text:</strong> {{fact.source_text}}
                                                                 </div>
                                                             )}}
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="no-facts" style={{{{ padding: '1.5rem', fontSize: '0.95rem' }}}}>
-                                                        📝 No evidence references available
+                                                    <div style={{{{ fontStyle: 'italic', color: '#6c757d' }}}}>
+                                                        No evidence references available
                                                     </div>
                                                 )}}
                                                 
                                                 <div className="section-header">⚖️ Party Submissions</div>
                                                 <div className="submission-section">
-                                                    <div className="submission-header">🔵 Appellant Submission</div>
+                                                    <div className="submission-header">🔵 Claimant Submission</div>
                                                     <div className="submission-content claimant-submission">
                                                         {{fact.claimant_submission === 'No specific submission recorded' ? 
-                                                            <em>📝 No submission provided by appellant</em> : 
+                                                            <em>No submission provided</em> : 
                                                             fact.claimant_submission
                                                         }}
                                                     </div>
@@ -1180,7 +915,7 @@ if st.session_state.view == "Facts":
                                                     <div className="submission-header">🔴 Respondent Submission</div>
                                                     <div className="submission-content respondent-submission">
                                                         {{fact.respondent_submission === 'No specific submission recorded' ? 
-                                                            <em>📝 No submission provided by respondent</em> : 
+                                                            <em>No submission provided</em> : 
                                                             fact.respondent_submission
                                                         }}
                                                     </div>
@@ -1195,7 +930,7 @@ if st.session_state.view == "Facts":
                 );
             }};
 
-            // Enhanced Document Categories View Component
+            // Document Categories View Component
             const DocumentCategoriesView = ({{ facts }}) => {{
                 const [expandedDocsets, setExpandedDocsets] = useState({{}});
                 
@@ -1275,53 +1010,50 @@ if st.session_state.view == "Facts":
                             return (
                                 <div key={{docsetId}} className="docset-container">
                                     <div className="docset-header" onClick={{() => toggleDocset(docsetId)}}>
-                                        <div>📁 {{partyColor}} <strong>{{docset.name}}</strong> <em>({{docsetFacts.length}} facts)</em></div>
-                                        <div style={{{{ fontSize: '1.2rem' }}}}>{{expandedDocsets[docsetId] ? '🔽' : '▶️'}}</div>
+                                        <div>📁 {{partyColor}} <strong>{{docset.name}}</strong> ({{docsetFacts.length}} facts)</div>
+                                        <div>{{expandedDocsets[docsetId] ? '▼' : '▶'}}</div>
                                     </div>
                                     <div className={{`docset-content ${{expandedDocsets[docsetId] ? 'expanded' : ''}}`}}>
                                         {{docsetFacts.length > 0 ? (
                                             docsetFacts.map((fact, index) => {{
                                                 const evidenceContent = getEvidenceContent(fact);
                                                 return (
-                                                    <div key={{index}} style={{{{ marginBottom: '2.5rem', paddingBottom: '1.5rem', borderBottom: index < docsetFacts.length - 1 ? '1px solid #e1e5e9' : 'none' }}}}>
-                                                        <div style={{{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', padding: '1rem', background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)', borderRadius: '6px', border: '1px solid #e1e5e9' }}}}>
-                                                            <div style={{{{ display: 'flex', alignItems: 'center', gap: '1rem' }}}}>
-                                                                <span className="fact-date">{{fact.date}}</span>
-                                                                <strong>{{fact.event}}</strong>
-                                                            </div>
-                                                            <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}} 
-                                                                 title={{fact.isDisputed ? 'Disputed Fact' : 'Undisputed Fact'}}></div>
+                                                    <div key={{index}} style={{{{ marginBottom: '2rem', paddingBottom: '1rem', borderBottom: index < docsetFacts.length - 1 ? '1px solid #e6e6e6' : 'none' }}}}>
+                                                        <div style={{{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}}}>
+                                                            <div><strong>{{fact.date}}</strong></div>
+                                                            <div style={{{{ flex: 1, margin: '0 1rem' }}}}><strong>{{fact.event}}</strong></div>
+                                                            <div className={{`dispute-indicator ${{!fact.isDisputed ? 'undisputed' : ''}}`}}></div>
                                                         </div>
                                                         
                                                         <div className="section-header">📁 Evidence & Source References</div>
                                                         {{evidenceContent.length > 0 ? (
                                                             evidenceContent.map((evidence, idx) => (
-                                                                <div key={{idx}} className="evidence-item">
-                                                                    <div>📄 <strong>{{evidence.id}}</strong> - {{evidence.title}}</div>
+                                                                <div key={{idx}} style={{{{ marginBottom: '1rem' }}}}>
+                                                                    <div>• <strong>{{evidence.id}}</strong> - {{evidence.title}}</div>
                                                                     {{fact.doc_summary && (
-                                                                        <div className="document-summary">
-                                                                            <strong>📋 Document Summary:</strong> {{fact.doc_summary}}
+                                                                        <div style={{{{ margin: '0.5rem 0', padding: '0.5rem', backgroundColor: '#d1ecf1', borderRadius: '4px' }}}}>
+                                                                            <strong>Document Summary:</strong> {{fact.doc_summary}}
                                                                         </div>
                                                                     )}}
                                                                     {{fact.source_text && (
-                                                                        <div className="source-text">
-                                                                            <strong>📝 Source Text:</strong> {{fact.source_text}}
+                                                                        <div style={{{{ margin: '0.5rem 0', fontStyle: 'italic' }}}}>
+                                                                            <strong>Source Text:</strong> {{fact.source_text}}
                                                                         </div>
                                                                     )}}
                                                                 </div>
                                                             ))
                                                         ) : (
-                                                            <div className="no-facts" style={{{{ padding: '1.5rem', fontSize: '0.95rem' }}}}>
-                                                                📝 No evidence references available
+                                                            <div style={{{{ fontStyle: 'italic', color: '#6c757d' }}}}>
+                                                                No evidence references available
                                                             </div>
                                                         )}}
                                                         
                                                         <div className="section-header">⚖️ Party Submissions</div>
                                                         <div className="submission-section">
-                                                            <div className="submission-header">🔵 Appellant Submission</div>
+                                                            <div className="submission-header">🔵 Claimant Submission</div>
                                                             <div className="submission-content claimant-submission">
                                                                 {{fact.claimant_submission === 'No specific submission recorded' ? 
-                                                                    <em>📝 No submission provided by appellant</em> : 
+                                                                    <em>No submission provided</em> : 
                                                                     fact.claimant_submission
                                                                 }}
                                                             </div>
@@ -1330,7 +1062,7 @@ if st.session_state.view == "Facts":
                                                             <div className="submission-header">🔴 Respondent Submission</div>
                                                             <div className="submission-content respondent-submission">
                                                                 {{fact.respondent_submission === 'No specific submission recorded' ? 
-                                                                    <em>📝 No submission provided by respondent</em> : 
+                                                                    <em>No submission provided</em> : 
                                                                     fact.respondent_submission
                                                                 }}
                                                             </div>
@@ -1339,7 +1071,7 @@ if st.session_state.view == "Facts":
                                                 );
                                             }})
                                         ) : (
-                                            <div className="no-facts">📂 No facts found in this document category</div>
+                                            <div className="no-facts">No facts found in this document category.</div>
                                         )}}
                                     </div>
                                 </div>
@@ -1380,10 +1112,7 @@ if st.session_state.view == "Facts":
                                             <FactCard key={{index}} fact={{fact}} index={{index}} />
                                         ))
                                     ) : (
-                                        <div className="no-facts">
-                                            🔍 No facts found matching the selected criteria.<br/>
-                                            <small>Try adjusting your filter settings above.</small>
-                                        </div>
+                                        <div className="no-facts">No facts found matching the selected criteria.</div>
                                     )}}
                                 </div>
                             );
@@ -1404,43 +1133,9 @@ if st.session_state.view == "Facts":
     """
     
     # Render the React component
-    components.html(html_content, height=800, scrolling=True)
+    components.html(html_content, height=700, scrolling=True)
 
 else:
-    # Show enhanced placeholder for other views
-    st.title(f"📑 {st.session_state.view}")
-    st.markdown(f"**{st.session_state.view} Analysis Dashboard**")
-    st.markdown("---")
-    
-    # Create attractive placeholder
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.info(f"🔧 **{st.session_state.view} view is currently under development.**")
-        st.markdown(f"""
-        The **{st.session_state.view}** section will include:
-        - Comprehensive {st.session_state.view.lower()} analysis
-        - Interactive visualizations
-        - Detailed breakdowns and summaries
-        - Cross-referencing with case facts
-        """)
-        
-        st.markdown("### ✅ Currently Available:")
-        st.success("**📊 Facts View** - Fully functional with enhanced UI")
-        
-    with col2:
-        st.markdown("### 🎯 Quick Access")
-        if st.button("🔄 Go to Facts View", type="primary", use_container_width=True):
-            st.session_state.view = "Facts"
-            st.rerun()
-        
-        st.markdown("---")
-        st.markdown("### 📋 Features in Facts View:")
-        st.markdown("""
-        - **📋 Card View**: Expandable fact cards
-        - **📅 Timeline View**: Chronological events  
-        - **📁 Document Categories**: Organized by docs
-        - **🎯 Smart Filtering**: All/Disputed/Undisputed
-        - **📎 Evidence Tracking**: Source references
-        - **📋 Copy References**: Easy citation copying
-        """)
+    # Simple placeholder for other views
+    st.title(f"{st.session_state.view}")
+    st.info(f"{st.session_state.view} view is not implemented in this demo.")

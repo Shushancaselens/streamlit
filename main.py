@@ -1144,4 +1144,3 @@ def render_view_content(view_type, filtered_facts):
 
 if __name__ == "__main__":
     main()
-

@@ -623,16 +623,13 @@ def render_streamlit_card_view(filtered_facts=None):
             
             if evidence_content:
                 for evidence in evidence_content:
+                    # Create a separate container for each evidence item
                     with st.container():
                         st.markdown(f"**{evidence['id']}** - {evidence['title']}")
                         
-                        # Document Summary
-                        if fact.get('doc_summary'):
-                            st.info(f"**Document Summary:** {fact['doc_summary']}")
-                        
-                        # Source Text
-                        if fact.get('source_text'):
-                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                        # Add evidence summary if available
+                        if evidence.get('summary'):
+                            st.markdown(f"*{evidence['summary']}*")
                         
                         # Reference information
                         col1, col2 = st.columns([3, 1])
@@ -655,7 +652,16 @@ def render_streamlit_card_view(filtered_facts=None):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
                         
-                        st.divider()
+                        # Add spacing between evidence items
+                        st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Document Summary (shown once after all evidence)
+                if fact.get('doc_summary'):
+                    st.info(f"**Document Summary:** {fact['doc_summary']}")
+                
+                # Source Text (shown once after all evidence)
+                if fact.get('source_text'):
+                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
             else:
                 st.markdown("*No evidence references available for this fact*")
             
@@ -747,11 +753,24 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     
                     if evidence_content:
                         for evidence in evidence_content:
-                            st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
-                            if fact.get('doc_summary'):
-                                st.info(f"**Document Summary:** {fact['doc_summary']}")
-                            if fact.get('source_text'):
-                                st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                            # Create a separate container for each evidence item
+                            with st.container():
+                                st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                                
+                                # Add evidence summary if available
+                                if evidence.get('summary'):
+                                    st.markdown(f"*{evidence['summary']}*")
+                                
+                                # Add spacing between evidence items
+                                st.markdown("<br>", unsafe_allow_html=True)
+                        
+                        # Document Summary (shown once after all evidence)
+                        if fact.get('doc_summary'):
+                            st.info(f"**Document Summary:** {fact['doc_summary']}")
+                        
+                        # Source Text (shown once after all evidence)
+                        if fact.get('source_text'):
+                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
                     else:
                         st.markdown("*No evidence references available*")
                     
@@ -921,11 +940,24 @@ def render_streamlit_docset_view(filtered_facts=None):
                             
                             if evidence_content:
                                 for evidence in evidence_content:
-                                    st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
-                                    if fact.get('doc_summary'):
-                                        st.info(f"**Document Summary:** {fact['doc_summary']}")
-                                    if fact.get('source_text'):
-                                        st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                    # Create a separate container for each evidence item
+                                    with st.container():
+                                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                                        
+                                        # Add evidence summary if available
+                                        if evidence.get('summary'):
+                                            st.markdown(f"*{evidence['summary']}*")
+                                        
+                                        # Add some spacing between evidence items
+                                        st.markdown("<br>", unsafe_allow_html=True)
+                                
+                                # Document Summary (shown once after all evidence)
+                                if fact.get('doc_summary'):
+                                    st.info(f"**Document Summary:** {fact['doc_summary']}")
+                                
+                                # Source Text (shown once after all evidence)
+                                if fact.get('source_text'):
+                                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
                             else:
                                 st.markdown("*No evidence references available*")
                             

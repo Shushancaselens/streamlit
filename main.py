@@ -944,6 +944,27 @@ def render_streamlit_docset_view(filtered_facts=None):
                                         if fact.get('source_text'):
                                             st.markdown(f"**Source Text:** *{fact['source_text']}*")
                                         
+                                        # Reference information
+                                        col1, col2 = st.columns([3, 1])
+                                        with col1:
+                                            ref_text = f"**Exhibit:** {evidence['id']}"
+                                            if fact.get('page'):
+                                                ref_text += f" | **Page:** {fact['page']}"
+                                            if fact.get('paragraphs'):
+                                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
+                                            st.markdown(ref_text)
+                                        
+                                        with col2:
+                                            # Get current tab type for unique button keys
+                                            current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                                            if st.button(f"📋 Copy Ref", key=f"copy_docset_{evidence['id']}_{i}_{current_tab}"):
+                                                ref_copy = f"Exhibit: {evidence['id']}"
+                                                if fact.get('page'):
+                                                    ref_copy += f", Page: {fact['page']}"
+                                                if fact.get('paragraphs'):
+                                                    ref_copy += f", Paragraphs: {fact['paragraphs']}"
+                                                st.success("Reference copied!")
+                                        
                                         # Add visual separator between evidence items
                                         st.markdown("---")
                             else:

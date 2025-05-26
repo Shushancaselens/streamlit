@@ -1,386 +1,374 @@
-import streamlit as st
-import pandas as pd
-from datetime import datetime
+import React, { useState } from 'react';
+import { 
+  FileText, 
+  Clock, 
+  AlertCircle, 
+  Activity, 
+  Search, 
+  Upload, 
+  Database, 
+  CircleEllipsis, 
+  Eye, 
+  ChevronDown, 
+  ChevronRight 
+} from 'lucide-react';
 
-# Set page configuration
-st.set_page_config(
-    page_title="CaseLens Timeline",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+// Fixed color components
+const GrayIcon = ({ children }) => (
+  <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-gray-50">
+    {children}
+  </div>
+);
 
-# Load the data directly in Python without JSON parsing
-@st.cache_data
-def load_data():
-    # Create the data structure directly
-    data = {
-        "events": [
-            {
-                "date": "1965-00-00",
-                "end_date": None,
-                "event": "Martineek Herald began publishing reliable everyday news.",
-                "source_text": [
-                    "FDI Moot CENTER FOR INTERNATIONAL LEGAL STUDIES <LINE: 415> CLAIMANT'S EXHIBIT C9 – Martineek Herald Article of 19 December 2022 VOL. XXIX NO. 83 MONDAY, DECEMBER 19, 2022 MARTINEEK HERALD RELIABLE EVERYDAY NEWS"
-                ],
-                "page": ["1"],
-                "pdf_name": ["CLAIMANT'S EXHIBIT C9 – Martineek Herald Article of 19 December 2022.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"]
-            },
-            {
-                "date": "2007-12-28",
-                "end_date": None,
-                "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                "source_text": [
-                    "29.12.2007 Official Journal of the Republic of Martineek L 425 LAW DECREE 53/20 07 of 28 December 2007 ON THE CONTROL OF FOREIGN TRADE IN DEFENCE AND DUAL-USE MATERIAL"
-                ],
-                "page": ["1"],
-                "pdf_name": ["RESPONDENT'S EXHIBIT R1 - Law Decree 53:2007 on the Control of Foreign Trade in Defence and Dual-Use Material.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [],
-                "respondent_arguments": [
-                    {
-                        "fragment_start": "LAW DECREE",
-                        "fragment_end": "Claimant's investment.",
-                        "page": "13",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "LAW DECREE 53/2007,11 that is, Dual-Use Regulation, has been promulgated on 28 December 2007, which is the basis for judging the legitimacy of Claimant's investment."
-                    },
-                    {
-                        "fragment_start": "According to",
-                        "fragment_end": "Dual-Use Material33",
-                        "page": "17",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "According to the Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material33"
-                    },
-                    {
-                        "fragment_start": "It was",
-                        "fragment_end": "Dual-Use Material35",
-                        "page": "17",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "It was clearly stated in the Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material35"
-                    }
-                ]
-            },
-            {
-                "date": "2013-06-28",
-                "end_date": None,
-                "event": "The Martineek-Albion BIT was ratified.",
-                "source_text": [
-                    "rtineek and Albion terminated the 1993 Agreement on Encouragement and Reciprocal Protection of Investments between the Republic of Martineek and the Federation of Albion and replaced it with a revised Agreement on Encouragement and Reciprocal Protection of Investments between the Republic of Martineek and the Federation of Albion (the 'Martineek-Albion BIT'). The Martineek-Albion BIT was ratified on"
-                ],
-                "page": ["1"],
-                "pdf_name": ["Statement of Uncontested Facts.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [
-                    {
-                        "fragment_start": "Martineek and",
-                        "fragment_end": "28 June 2013.",
-                        "page": "16",
-                        "event": "The Martineek-Albion BIT was ratified.",
-                        "source_text": "Martineek and Albion ratified the BIT on 28 June 2013."
-                    }
-                ],
-                "respondent_arguments": []
-            },
-            {
-                "date": "2016-00-00",
-                "end_date": None,
-                "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                "source_text": [
-                    "6. In late 2016, with technological advances in the Archipelago, Martineek became one of the world's leading manufacturers of industrial robots."
-                ],
-                "page": ["1"],
-                "pdf_name": ["Statement of Uncontested Facts.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [
-                    {
-                        "fragment_start": "In late",
-                        "fragment_end": "competitive purposes",
-                        "page": "19",
-                        "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                        "source_text": "In late 2016, Martineek became one of the world's leading manufacturers of industrial robots,37 while the rapid development in technology of Albion might be in advance of Martineek's entities. Respondent's actions were more likely for competitive purposes"
-                    }
-                ],
-                "respondent_arguments": [
-                    {
-                        "fragment_start": "Through a",
-                        "fragment_end": "robotic industry.",
-                        "page": "6",
-                        "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                        "source_text": "Through a raft of major reforms, Martineek made significant efforts to attract foreign investments and became a global leader in the robotic industry."
-                    }
-                ]
-            }
-        ]
+const BlueIcon = ({ children }) => (
+  <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-blue-50">
+    {children}
+  </div>
+);
+
+const RedIcon = ({ children }) => (
+  <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-red-50">
+    {children}
+  </div>
+);
+
+const GreenIcon = ({ children }) => (
+  <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-green-50">
+    {children}
+  </div>
+);
+
+const OrangeIcon = ({ children }) => (
+  <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-orange-50">
+    {children}
+  </div>
+);
+
+const ModernLegalInterface = () => {
+  const [expandedEvents, setExpandedEvents] = useState({0: true});
+
+  const toggleEvent = (index) => {
+    setExpandedEvents((prev) => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const timelineEvents = [
+    {
+      date: '14 March 2000',
+      title: 'Contract Execution - Al-Ghaida Road Project',
+      tags: ['Contract', 'Phase II', 'Construction'],
+      description: 'The Parties concluded a contract for the construction of 19 km of Phase II of the Al-Ghaida internal roads.',
+      citations: 6,
+      parties: ['Claimant', 'Respondent']
+    },
+    {
+      date: '15 April 2000',
+      title: 'Notice to Proceed Issued',
+      tags: ['Notice', 'Commencement'],
+      description: 'Official notice to proceed with construction works was issued by the Ministry of Public Works.',
+      citations: 4,
+      parties: ['Claimant']
+    },
+    {
+      date: '30 June 2000',
+      title: 'Site Access Delay',
+      tags: ['Delay', 'Site Access'],
+      description: 'Contractor reported difficulties accessing certain sections of the project site due to local disputes.',
+      citations: 8,
+      parties: ['Claimant', 'Respondent']
+    },
+    {
+      date: '15 September 2000',
+      title: 'First Progress Payment',
+      tags: ['Payment', 'Milestone'],
+      description: 'First milestone payment of USD 2.5M processed for completed earthworks and preliminary road foundation.',
+      citations: 3,
+      parties: ['Claimant']
+    },
+    {
+      date: '22 December 2000',
+      title: 'Force Majeure Notice',
+      tags: ['Force Majeure', 'Delay'],
+      description: 'Contractor submitted force majeure notice due to unprecedented rainfall causing significant site flooding.',
+      citations: 12,
+      parties: ['Claimant', 'Respondent']
     }
-    return data
+  ];
 
-# Function to parse date
-def parse_date(date_str):
-    if not date_str or date_str == "null":
-        return None
-    
-    # Handle cases like "2016-00-00"
-    if "-00-00" in date_str:
-        date_str = date_str.replace("-00-00", "-01-01")
-    elif "-00" in date_str:
-        date_str = date_str.replace("-00", "-01")
-    
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
-    except:
-        return None
+  const documents = [
+    {
+      title: 'DLP Board Minutes',
+      exhibit: 'Exh. C-22, p. 3-4',
+      type: 'Minutes',
+      description: 'Minutes of DLP Board of Directors\' extraordinary meeting approving Al-Ghaida roads contract.',
+      date: '14 March 2000',
+      size: '1.2 MB'
+    },
+    {
+      title: 'DLP-Yemen Contract',
+      exhibit: 'Exh. C-21, p. 1-15',
+      type: 'Contract',
+      description: 'Contract for Phase II Al-Ghaida roads project (19km), value: USD 12.5M with 24-month completion period.',
+      date: '14 March 2000',
+      size: '2.4 MB'
+    }
+  ];
 
-# Function to format date for display
-def format_date(date_str):
-    date = parse_date(date_str)
-    if not date:
-        return "Unknown date"
-    
-    # If we have only the year (original had -00-00)
-    if "-00-00" in date_str:
-        return date.strftime("%Y")
-    # If we have year and month (original had -00)
-    elif "-00" in date_str:
-        return date.strftime("%B %Y")
-    # Full date
-    else:
-        return date.strftime("%d %B %Y")
+  const agents = [
+    { icon: Database, title: 'Central Database', desc: 'Connected to all agents', color: 'gray' },
+    { icon: Clock, title: 'Event Timeline', desc: 'Create case event chronology', color: 'blue' },
+    { icon: Search, title: 'Document Investigation', desc: 'Autoreview document for specific tasks', color: 'red' },
+    { icon: CircleEllipsis, title: 'Compliance Check', desc: 'Checking submission against procedural rules', color: 'green' },
+    { icon: FileText, title: 'Citation Check', desc: 'Validate your citation against facts', color: 'orange' }
+  ];
 
-# Function to generate timeline text for copying
-def generate_timeline_text(events):
-    text = ""
-    for event in sorted(events, key=lambda x: parse_date(x["date"]) or datetime.min):
-        # Format the event text with date in bold
-        date_formatted = format_date(event["date"])
-        text += f"**{date_formatted}** {event['event']}[1]\n\n"
-        
-        # Sources for footnote
-        sources = []
-        if event.get("claimant_arguments"):
-            sources.extend([f"{arg['fragment_start']}... (Page {arg['page']})" for arg in event["claimant_arguments"]])
-        if event.get("respondent_arguments"):
-            sources.extend([f"{arg['fragment_start']}... (Page {arg['page']})" for arg in event["respondent_arguments"]])
-        if event.get("pdf_name"):
-            sources.extend(event["pdf_name"])
-        
-        if sources:
-            text += f"[1] {'; '.join(sources)}\n\n"
-    
-    return text
+  const renderAgentIcon = (agent) => {
+    const Icon = agent.icon;
+    switch (agent.color) {
+      case 'blue':
+        return <BlueIcon><Icon className="w-5 h-5 text-blue-500" /></BlueIcon>;
+      case 'red':
+        return <RedIcon><Icon className="w-5 h-5 text-red-500" /></RedIcon>;
+      case 'green':
+        return <GreenIcon><Icon className="w-5 h-5 text-green-500" /></GreenIcon>;
+      case 'orange':
+        return <OrangeIcon><Icon className="w-5 h-5 text-orange-500" /></OrangeIcon>;
+      default:
+        return <GrayIcon><Icon className="w-5 h-5 text-gray-500" /></GrayIcon>;
+    }
+  };
 
-# Improved search function that checks all relevant fields
-def search_event(event, query):
-    if not query:
-        return True
-    
-    query = query.lower()
-    
-    # Check main event text
-    if query in event["event"].lower():
-        return True
-    
-    # Check source texts
-    for source in event.get("source_text", []):
-        if query in source.lower():
-            return True
-    
-    # Check document names
-    for doc in event.get("pdf_name", []):
-        if query in doc.lower():
-            return True
-    
-    # Check claimant arguments
-    for arg in event.get("claimant_arguments", []):
-        if query in arg.get("source_text", "").lower():
-            return True
-    
-    # Check respondent arguments
-    for arg in event.get("respondent_arguments", []):
-        if query in arg.get("source_text", "").lower():
-            return True
-            
-    return False
+  const AgentItem = ({ agent }) => {
+    let containerClass = "flex items-center gap-3 p-4 rounded-lg cursor-pointer ";
+    switch (agent.color) {
+      case 'blue':
+        containerClass += "hover:bg-blue-50";
+        break;
+      case 'red':
+        containerClass += "hover:bg-red-50";
+        break;
+      case 'green':
+        containerClass += "hover:bg-green-50";
+        break;
+      case 'orange':
+        containerClass += "hover:bg-orange-50";
+        break;
+      default:
+        containerClass += "hover:bg-gray-50";
+    }
 
-# Main app function
-def main():
-    # Load data
-    data = load_data()
-    events = data["events"]
-    
-    # Sidebar - Logo and title
-    with st.sidebar:
-        st.title("🔍 CaseLens")
-        st.divider()
-        
-        # Search with improved explanation
-        st.subheader("Search Events")
-        search_query = st.text_input("", placeholder="Search across all event data...", label_visibility="collapsed")
-        if search_query:
-            st.caption("Searching in event descriptions, document names, and all arguments")
-        
-        # Date Range
-        st.subheader("Date Range")
-        
-        # Get min and max dates
-        valid_dates = [parse_date(event["date"]) for event in events if parse_date(event["date"])]
-        min_date = min(valid_dates) if valid_dates else datetime(1965, 1, 1)
-        max_date = max(valid_dates) if valid_dates else datetime(2022, 1, 1)
-        
-        start_date = st.date_input("Start Date", min_date)
-        end_date = st.date_input("End Date", max_date)
-    
-    # Main content area
-    st.title("Desert Line Projects (DLP) and The Republic of Yemen")
-    
-    # Button to copy timeline
-    if st.button("📋 Copy Timeline", type="primary"):
-        timeline_text = generate_timeline_text(events)
-        st.code(timeline_text, language="markdown")
-        st.download_button(
-            label="Download Timeline as Text",
-            data=timeline_text,
-            file_name="timeline.md",
-            mime="text/markdown",
-        )
-    
-    # Filter events - IMPROVED SEARCH
-    filtered_events = events.copy()
-    
-    # Apply search filter
-    if search_query:
-        filtered_events = [event for event in filtered_events if search_event(event, search_query)]
-        st.success(f"Found {len(filtered_events)} events matching '{search_query}'")
-    
-    # Apply date filter
-    filtered_events = [
-        event for event in filtered_events
-        if parse_date(event["date"]) and start_date <= parse_date(event["date"]).date() <= end_date
-    ]
-    
-    # Sort events by date
-    filtered_events = sorted(filtered_events, key=lambda x: parse_date(x["date"]) or datetime.min)
-    
-    # Display events
-    if not filtered_events:
-        st.warning("No events match your search criteria. Try adjusting your search or date range.")
-    
-    for event in filtered_events:
-        date_formatted = format_date(event["date"])
-        
-        # Create expander for each event
-        with st.expander(f"{date_formatted}: {event['event']}"):
-            # Calculate citation counts
-            claimant_count = len(event.get("claimant_arguments", []))
-            respondent_count = len(event.get("respondent_arguments", []))
-            doc_count = len(event.get("pdf_name", []))
-            total_count = claimant_count + respondent_count + doc_count
-            
-            # Determine if each party has addressed this event
-            has_claimant = claimant_count > 0
-            has_respondent = respondent_count > 0
-            
-            # Citation counter and badges using pure Streamlit
-            st.divider()
-            
-            # Citation counter
-            col1, col2 = st.columns([1, 4])
-            with col1:
-                st.metric("Citations", total_count)
-            
-            with col2:
-                st.write("**Addressed by:**")
-                
-                # Use pure Streamlit components for badges
-                badge_cols = st.columns(2)
-                with badge_cols[0]:
-                    if has_claimant:
-                        st.info("Claimant")
-                    else:
-                        st.text("Claimant")
-                with badge_cols[1]:
-                    if has_respondent:
-                        st.error("Respondent")
-                    else:
-                        st.text("Respondent")
-            
-            st.divider()
-            
-            # Supporting Documents section
-            if event.get("pdf_name") or event.get("source_text"):
-                st.subheader("📄 Supporting Documents")
-                
-                for i, pdf_name in enumerate(event.get("pdf_name", [])):
-                    source_text = event.get("source_text", [""])[i] if i < len(event.get("source_text", [])) else ""
+    return (
+      <div className={containerClass}>
+        {renderAgentIcon(agent)}
+        <div>
+          <div className="text-sm font-medium text-gray-900">{agent.title}</div>
+          <div className="text-xs text-gray-500">{agent.desc}</div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex p-4 h-full">
+        <div className="w-72 bg-white rounded-2xl border border-gray-100 m-4 flex flex-col justify-between">
+          <div>
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-12">
+                <div className="bg-blue-600 rounded-lg p-1.5">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-3xl font-bold">caselens</span>
+              </div>
+              <button className="w-full bg-blue-50 text-blue-600 rounded-lg py-2.5 px-4 flex items-center justify-center gap-2 border border-blue-100">
+                <Upload className="w-4 h-4" />
+                <span className="text-sm font-medium">Upload records</span>
+              </button>
+            </div>
+
+            <div className="px-4 pb-4 mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-medium text-gray-500">Legal Agents</h2>
+                <span className="text-xs text-gray-400">Drag to connect</span>
+              </div>
+              <div className="flex items-center gap-4 mb-4">
+                <span className="flex-1 h-px bg-gray-100"></span>
+                <span className="text-xs text-gray-400">5 agents available</span>
+                <span className="flex-1 h-px bg-gray-100"></span>
+              </div>
+              <div className="space-y-3">
+                {agents.map((agent, index) => (
+                  <AgentItem key={index} agent={agent} />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-4 mt-auto border-t border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                JD
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-900">John Doe</div>
+                <div className="text-xs text-gray-500">Senior Legal Analyst</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 p-4">
+          <div className="bg-white rounded-2xl p-8 mb-6 border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Timeline Events</h2>
+            <div className="border-l-2 border-gray-100 pl-8 space-y-12">
+              {timelineEvents.map((event, index) => (
+                <div key={index} className="relative group">
+                  <div className="absolute -left-10 w-5 h-5 rounded-full bg-blue-600 shadow-md border-2 border-white transition-all duration-200 group-hover:scale-110 group-hover:bg-blue-700" />
+                  <div className="absolute -left-[3.25rem] h-full w-px bg-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <div className="mb-3">
+                    <span className="text-blue-600 text-sm font-medium bg-blue-50 px-3 py-1 rounded-full">{event.date}</span>
+                  </div>
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md">
+                    <button 
+                      onClick={() => toggleEvent(index)}
+                      className="w-full flex items-start justify-between p-5 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <div className="flex flex-col gap-3">
+                        <h3 className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors duration-200">{event.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {event.tags.map((tag, tagIndex) => {
+                            let tagClass = "px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ";
+                            if (tag === 'Delay' || tag === 'Force Majeure') {
+                              tagClass += "text-amber-600 bg-amber-50 hover:bg-amber-100";
+                            } else if (tag === 'Payment') {
+                              tagClass += "text-emerald-600 bg-emerald-50 hover:bg-emerald-100";
+                            } else if (tag === 'Contract') {
+                              tagClass += "text-blue-600 bg-blue-50 hover:bg-blue-100";
+                            } else {
+                              tagClass += "text-gray-600 bg-gray-50 hover:bg-gray-100";
+                            }
+                            return (
+                              <span key={tagIndex} className={tagClass}>
+                                {tag}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                          {event.citations} citations
+                        </span>
+                        {expandedEvents[index] ? (
+                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                        ) : (
+                          <ChevronRight className="w-5 h-5 text-gray-400" />
+                        )}
+                      </div>
+                    </button>
                     
-                    # Use color to indicate search matches
-                    with st.container():
-                        if search_query and search_query.lower() in pdf_name.lower():
-                            st.success(f"**{pdf_name}**")
-                        else:
-                            st.write(f"**{pdf_name}**")
-                            
-                        if search_query and search_query.lower() in source_text.lower():
-                            st.success(source_text)
-                        else:
-                            st.caption(source_text)
-                            
-                        st.button("Open Document", key=f"doc_{event['date']}_{i}")
-                    st.divider()
-            
-            # Submissions section
-            st.subheader("📝 Submissions")
-            
-            # Two-column layout for claimant and respondent
-            claimant_col, respondent_col = st.columns(2)
-            
-            # Claimant submissions - with Streamlit colors
-            with claimant_col:
-                # Use info color for claimant
-                st.info("**Claimant**")
-                
-                if event.get("claimant_arguments"):
-                    for idx, arg in enumerate(event["claimant_arguments"]):
-                        source_text = arg.get('source_text', '')
+                    {expandedEvents[index] && (
+                      <div className="p-4 border-t border-gray-100">
+                        <p className="text-gray-900 mb-4">{event.description}</p>
+                        <div className="flex items-center gap-4">
+                          <span className="text-blue-600 text-sm">{event.citations} Citations</span>
+                          <span className="text-gray-500 text-sm">Addressed by:</span>
+                          {event.parties.map((party, partyIndex) => (
+                            <span 
+                              key={partyIndex} 
+                              className={party === 'Claimant' ? 'text-blue-600 text-sm' : 'text-red-600 text-sm'}
+                            >
+                              {party}
+                            </span>
+                          ))}
+                        </div>
                         
-                        with st.container():
-                            st.write(f"**Page {arg['page']}**")
-                            
-                            # Highlight matched search terms with success color
-                            if search_query and search_query.lower() in source_text.lower():
-                                st.success(source_text)
-                            else:
-                                st.caption(source_text)
-                                
-                        st.divider()
-                else:
-                    st.caption("No claimant submissions")
-            
-            # Respondent submissions - with Streamlit colors
-            with respondent_col:
-                # Use error color for respondent
-                st.error("**Respondent**")
-                
-                if event.get("respondent_arguments"):
-                    for idx, arg in enumerate(event["respondent_arguments"]):
-                        source_text = arg.get('source_text', '')
-                        
-                        with st.container():
-                            st.write(f"**Page {arg['page']}**")
-                            
-                            # Highlight matched search terms with success color
-                            if search_query and search_query.lower() in source_text.lower():
-                                st.success(source_text)
-                            else:
-                                st.caption(source_text)
-                                
-                        st.divider()
-                else:
-                    st.caption("No respondent submissions")
+                        {index === 0 && (
+                          <>
+                            <div className="mt-8">
+                              <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-medium text-gray-600">Supporting Documents</h3>
+                                <div className="flex gap-2">
+                                  <button className="text-sm text-gray-500 flex items-center gap-1">Filter</button>
+                                  <button className="text-sm text-gray-500 flex items-center gap-1">Sort by Date</button>
+                                </div>
+                              </div>
 
-if __name__ == "__main__":
-    main()
+                              <div className="space-y-4">
+                                {documents.map((doc, docIndex) => (
+                                  <div key={docIndex} className="flex items-start gap-4 bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                                    <div className="p-3 bg-white rounded-lg">
+                                      <FileText className="w-5 h-5 text-gray-400" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-medium">{doc.title}</span>
+                                        <span className="text-gray-500">({doc.exhibit})</span>
+                                        <span className="text-blue-600">{doc.type}</span>
+                                      </div>
+                                      <p className="text-sm text-gray-600 mb-2">{doc.description}</p>
+                                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>{doc.date}</span>
+                                        <span>PDF • {doc.size}</span>
+                                      </div>
+                                    </div>
+                                    <button className="p-2">
+                                      <Eye className="w-5 h-5 text-gray-400" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="mt-6">
+                              <h3 className="font-medium text-gray-600 mb-4">Party Submissions</h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                      <FileText className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <div className="font-medium">Claimant Memorial</div>
+                                      <div className="text-blue-600 text-sm">¶145-148</div>
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-gray-600">
+                                    The contract was signed after a competitive bidding process where the Claimant's bid was found to be the most technically and financially advantageous.
+                                  </p>
+                                </div>
+
+                                <div className="bg-red-50 p-4 rounded-lg">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                      <FileText className="w-4 h-4 text-red-600" />
+                                    </div>
+                                    <div>
+                                      <div className="font-medium">Respondent Counter-Memorial</div>
+                                      <div className="text-red-600 text-sm">¶203-205</div>
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-gray-600">
+                                    While the contract was indeed signed on the stated date, the Respondent maintains that the Claimant failed to properly mobilize within the timeframe.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ModernLegalInterface;

@@ -618,7 +618,7 @@ def render_streamlit_card_view(filtered_facts=None):
         
         with st.expander(expander_title, expanded=False):
             # Evidence & Source References section
-            st.subheader("📁 Evidence & Source References")
+            st.markdown("#### Evidence & Source References")
             evidence_content = get_evidence_content(fact)
             
             if evidence_content:
@@ -742,7 +742,7 @@ def render_streamlit_timeline_view(filtered_facts=None):
                 # Show details directly instead of using expander
                 with st.container():
                     # Evidence section
-                    st.markdown("**📁 Evidence & Source References**")
+                    st.markdown("#### Evidence & Source References")
                     evidence_content = get_evidence_content(fact)
                     
                     if evidence_content:
@@ -871,7 +871,7 @@ def render_streamlit_docset_view(filtered_facts=None):
                         # Show details directly (no nested expander)
                         with st.container():
                             # Evidence section
-                            st.markdown("**📁 Evidence & Source References**")
+                            st.markdown("#### Evidence & Source References")
                             evidence_content = get_evidence_content(fact)
                             
                             if evidence_content:

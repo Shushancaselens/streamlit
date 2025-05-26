@@ -2159,9 +2159,9 @@ def main():
                     const notification = document.getElementById('copy-notification');
                     notification.classList.add('show');
                     
-                    setTimeout(() => {
+                    setTimeout(() => {{
                         notification.classList.remove('show');
-                    }, 2000);
+                    }}, 2000);
                 }
                 
                 // Export functions
@@ -2190,12 +2190,12 @@ def main():
                     let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\n";
                     let rows = '';
                     
-                    currentFacts.forEach(fact => {
+                    currentFacts.forEach(fact => {{
                         const evidenceContent = getEvidenceContent(fact);
                         let evidenceText = 'None';
-                        if (evidenceContent !== 'None') {
-                            evidenceText = evidenceContent.map(ev => `${ev.id}: ${ev.title} - ${ev.summary}`).join(' | ');
-                        }
+                        if (evidenceContent !== 'None') {{
+                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
+                        }}
                         
                         const sourceText = (fact.source_text || '').replace(/"/g, '""');
                         const docName = (fact.doc_name || '').replace(/"/g, '""');
@@ -2204,8 +2204,8 @@ def main():
                         const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
                         const evidenceForCsv = evidenceText.replace(/"/g, '""');
                         
-                        rows += `"${fact.date}","${fact.event}","${sourceText}","${fact.page || ''}","${docName}","${docSummary}","${claimantSubmission}","${respondentSubmission}","${fact.isDisputed ? 'Disputed' : 'Undisputed'}","${evidenceForCsv}"\n`;
-                    });
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
+                    }});
                     
                     const csvContent = headers + rows;
                     const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
@@ -2291,23 +2291,23 @@ def main():
                     }
                     
                     // Sort the rows
-                    rows.sort((a, b) => {
+                    rows.sort((a, b) => {{
                         const cellA = a.cells[columnIndex].textContent.trim();
                         const cellB = b.cells[columnIndex].textContent.trim();
                         
                         // Handle date sorting
-                        if (columnIndex === 0) {
+                        if (columnIndex === 0) {{
                             // Attempt to parse as dates
                             const dateA = new Date(cellA);
                             const dateB = new Date(cellB);
                             
-                            if (!isNaN(dateA) && !isNaN(dateB)) {
+                            if (!isNaN(dateA) && !isNaN(dateB)) {{
                                 return dir * (dateA - dateB);
-                            }
-                        }
+                            }}
+                        }}
                         
                         return dir * cellA.localeCompare(cellB);
-                    });
+                    }});
                     
                     // Remove existing rows and append in new order
                     rows.forEach(row => table.appendChild(row));
@@ -2391,14 +2391,14 @@ def main():
                     }
                     
                     // Sort by date
-                    filteredFacts.sort((a, b) => {
+                    filteredFacts.sort((a, b) => {{
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
-                    });
+                    }});
                     
                     // Render each fact as a card
-                    filteredFacts.forEach((fact, index) => {
+                    filteredFacts.forEach((fact, index) => {{
                         const cardContainer = document.createElement('div');
                         cardContainer.className = `card-fact-container${fact.isDisputed ? ' disputed' : ''}`;
                         
@@ -2430,14 +2430,14 @@ def main():
                         badgesEl.className = 'card-fact-badges';
                         
                         // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {
-                            fact.parties_involved.forEach(party => {
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
                                 const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}`;
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
                                 partyBadge.textContent = party;
                                 badgesEl.appendChild(partyBadge);
-                            });
-                        }
+                            }});
+                        }}
                         
                         // Disputed badge
                         if (fact.isDisputed) {
@@ -2618,18 +2618,18 @@ def main():
                     }
                     
                     // Sort by date
-                    filteredData.sort((a, b) => {
+                    filteredData.sort((a, b) => {{
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
-                    });
+                    }});
                     
                     // Track years for year markers
                     let currentYear = '';
                     let prevYear = '';
                     
                     // Create timeline items
-                    filteredData.forEach(fact => {
+                    filteredData.forEach(fact => {{
                         // Get the year and check if we need a year marker
                         currentYear = getYear(fact.date);
                         if (currentYear && currentYear !== prevYear) {
@@ -2672,14 +2672,14 @@ def main():
                         badgesEl.className = 'timeline-badges';
                         
                         // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {
-                            fact.parties_involved.forEach(party => {
+                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
+                            fact.parties_involved.forEach(party => {{
                                 const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}`;
+                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
                                 partyBadge.textContent = party;
                                 badgesEl.appendChild(partyBadge);
-                            });
-                        }
+                            }});
+                        }}
                         
                         // Status badge
                         const statusBadge = document.createElement('span');
@@ -2805,59 +2805,59 @@ def main():
                     const docsWithFacts = {};
                     
                     // Initialize all groups
-                    documentSets.forEach(ds => {
-                        if (ds.isGroup) {
-                            docsWithFacts[ds.id] = {
+                    documentSets.forEach(ds => {{
+                        if (ds.isGroup) {{
+                            docsWithFacts[ds.id] = {{
                                 docset: ds,
                                 facts: []
-                            };
-                        }
-                    });
+                            }};
+                        }}
+                    }});
                     
                     // Distribute facts to categories based on document
-                    filteredFacts.forEach((fact, index) => {
+                    filteredFacts.forEach((fact, index) => {{
                         // Find which document this fact belongs to based on source
                         let factAssigned = false;
                         
-                        documentSets.forEach(ds => {
-                            if (ds.isGroup) {
-                                ds.documents.forEach(doc => {
+                        documentSets.forEach(ds => {{
+                            if (ds.isGroup) {{
+                                ds.documents.forEach(doc => {{
                                     // Check if the fact's source contains the document number
-                                    if (fact.source && fact.source.includes(doc.id + '.')) {
-                                        docsWithFacts[ds.id].facts.push({ 
+                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
+                                        docsWithFacts[ds.id].facts.push({{ 
                                             ...fact, 
                                             documentName: doc.name
-                                        });
+                                        }});
                                         factAssigned = true;
-                                    }
-                                });
-                            }
-                        });
+                                    }}
+                                }});
+                            }}
+                        }});
                         
                         // If not assigned by source, assign by party matching
-                        if (!factAssigned) {
-                            documentSets.forEach(ds => {
-                                if (ds.isGroup) {
-                                    ds.documents.forEach(doc => {
+                        if (!factAssigned) {{
+                            documentSets.forEach(ds => {{
+                                if (ds.isGroup) {{
+                                    ds.documents.forEach(doc => {{
                                         if (doc.party === 'Mixed' || 
                                             (fact.parties_involved && fact.parties_involved.includes('Appellant') && doc.party === 'Appellant') ||
-                                            (fact.parties_involved && fact.parties_involved.includes('Respondent') && doc.party === 'Respondent')) {
-                                            docsWithFacts[ds.id].facts.push({ 
+                                            (fact.parties_involved && fact.parties_involved.includes('Respondent') && doc.party === 'Respondent')) {{
+                                            docsWithFacts[ds.id].facts.push({{ 
                                                 ...fact, 
                                                 documentName: doc.name
-                                            });
+                                            }});
                                             factAssigned = true;
                                             return;
-                                        }
-                                    });
+                                        }}
+                                    }});
                                     if (factAssigned) return;
-                                }
-                            });
-                        }
-                    });
+                                }}
+                            }});
+                        }}
+                    }});
                     
                     // Create document sets UI with direct table display and improved evidence formatting
-                    Object.values(docsWithFacts).forEach(docWithFacts => {
+                    Object.values(docsWithFacts).forEach(docWithFacts => {{
                         const docset = docWithFacts.docset;
                         const facts = docWithFacts.facts;
                         
@@ -2977,14 +2977,14 @@ def main():
                     }
                     
                     // Sort by date
-                    filteredFacts.sort((a, b) => {
+                    filteredFacts.sort((a, b) => {{
                         const dateA = a.date.split('-')[0];
                         const dateB = b.date.split('-')[0];
                         return new Date(dateA) - new Date(dateB);
-                    });
+                    }});
                     
                     // Render rows with consistent structure and clickable document links
-                    filteredFacts.forEach(fact => {
+                    filteredFacts.forEach(fact => {{
                         const row = document.createElement('tr');
                         if (fact.isDisputed) {
                             row.classList.add('disputed');
@@ -3086,9 +3086,9 @@ def main():
                 }
                 
                 // Initialize facts on page load
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function() {{
                     renderCardView('all');
-                });
+                }});
                 
                 // Initialize card view immediately
                 renderCardView('all');

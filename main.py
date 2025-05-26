@@ -1033,7 +1033,7 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling and connected tab appearance
+        # Custom CSS for button styling - matching sidebar style
         st.markdown("""
         <style>
         .stButton > button {
@@ -1048,64 +1048,33 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Connected tab strip styling */
+        /* View selector buttons styling - matching sidebar */
         div[data-testid="column"] > div > div > div > button {
+            border-radius: 6px !important;
+            height: 50px !important;
             font-weight: 500 !important;
-            font-size: 14px !important;
-            height: 40px !important;
-            padding: 8px 16px !important;
-            transition: all 0.2s ease !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            border-right: none !important;
+            transition: all 0.3s !important;
+            margin-bottom: 10px !important;
         }
         
-        /* First tab - left rounded corners */
-        div[data-testid="column"]:first-child > div > div > div > button {
-            border-radius: 8px 0 0 8px !important;
-            border-right: 1px solid #dee2e6 !important;
+        /* View selector button hover effects - matching sidebar */
+        div[data-testid="column"] > div > div > div > button:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
         }
         
-        /* Last tab - right rounded corners */
-        div[data-testid="column"]:last-child > div > div > div > button {
-            border-radius: 0 8px 8px 0 !important;
-            border-right: 1px solid #dee2e6 !important;
-        }
-        
-        /* Active tab styling */
+        /* Remove the gradient styling for primary buttons in view selector */
         div[data-testid="column"] > div > div > div > button[kind="primary"] {
-            background-color: #4285f4 !important;
+            background-color: #ff4b4b !important;
+            border: none !important;
             color: white !important;
-            border: 1px solid #4285f4 !important;
-            box-shadow: none !important;
-            z-index: 2 !important;
-            position: relative !important;
         }
         
-        /* Inactive tab styling */
+        /* Keep secondary buttons clean */
         div[data-testid="column"] > div > div > div > button[kind="secondary"] {
-            background-color: #f8f9fa !important;
-            color: #5f6368 !important;
-            border: 1px solid #dee2e6 !important;
-            box-shadow: none !important;
-            border-bottom: 1px solid #dee2e6 !important;
-        }
-        
-        /* Hover effects */
-        div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
-            background-color: #f1f3f4 !important;
-            color: #3c4043 !important;
-            transform: none !important;
-        }
-        
-        div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
-            background-color: #3367d6 !important;
-            transform: none !important;
-        }
-        
-        /* Remove gap between columns for connected appearance */
-        .row-widget.stHorizontal > div {
-            gap: 0 !important;
+            background-color: white !important;
+            color: #262730 !important;
+            border: 1px solid #d0d0d0 !important;
         }
         </style>
         """, unsafe_allow_html=True)

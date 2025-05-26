@@ -1033,9 +1033,10 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling and compact view selector
+        # Custom CSS for compact view selector buttons and tabs
         st.markdown("""
         <style>
+        /* Sidebar button styling */
         .stButton > button {
             width: 100%;
             border-radius: 6px;
@@ -1048,45 +1049,63 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Compact view selector buttons styling */
-        div[data-testid="column"] > div > div > div > button {
+        /* Specific targeting for view selector buttons - make them compact like tabs */
+        button[data-testid="baseButton-secondary"][key="card_view_btn"],
+        button[data-testid="baseButton-primary"][key="card_view_btn"],
+        button[data-testid="baseButton-secondary"][key="table_view_btn"], 
+        button[data-testid="baseButton-primary"][key="table_view_btn"],
+        button[data-testid="baseButton-secondary"][key="docset_view_btn"],
+        button[data-testid="baseButton-primary"][key="docset_view_btn"] {
+            height: 35px !important;
+            font-size: 14px !important;
+            padding: 8px 16px !important;
+            margin: 0 !important;
             border-radius: 6px !important;
             font-weight: 500 !important;
-            font-size: 14px !important;
-            height: 35px !important;
-            padding: 8px 16px !important;
-            transition: all 0.2s ease !important;
-            margin-bottom: 0px !important;
         }
         
-        /* Active view button styling */
-        div[data-testid="column"] > div > div > div > button[kind="primary"] {
+        /* Override default button styles for view selectors */
+        .stButton button[data-testid*="baseButton"] {
+            height: 35px !important;
+            font-size: 14px !important;
+            padding: 8px 16px !important;
+            margin: 0 !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            min-height: 35px !important;
+            max-height: 35px !important;
+        }
+        
+        /* Active state for view selector buttons */
+        .stButton button[data-testid="baseButton-primary"] {
             background-color: #1f77b4 !important;
             color: white !important;
             border: 1px solid #1f77b4 !important;
             box-shadow: none !important;
         }
         
-        /* Inactive view button styling */
-        div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+        /* Inactive state for view selector buttons */
+        .stButton button[data-testid="baseButton-secondary"] {
             background-color: white !important;
             color: #666 !important;
             border: 1px solid #e1e5e9 !important;
+            box-shadow: none !important;
         }
         
-        div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
+        /* Hover effects for view selector buttons */
+        .stButton button[data-testid="baseButton-secondary"]:hover {
             background-color: #f8f9fa !important;
             color: #333 !important;
             border-color: #adb5bd !important;
             transform: none !important;
         }
         
-        div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
+        .stButton button[data-testid="baseButton-primary"]:hover {
             background-color: #1565c0 !important;
             transform: none !important;
         }
         
-        /* Custom compact tab styling for facts filter */
+        /* Facts filter tabs styling */
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
             background-color: transparent;

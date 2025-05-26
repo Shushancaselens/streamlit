@@ -2088,38 +2088,35 @@ def main():
                         timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
                         timelineItem.appendChild(timelinePoint);
                         
-                        // Create timeline content with card-like structure
+                        // Create timeline content with card-like styling but proper timeline structure
                         const contentEl = document.createElement('div');
-                        contentEl.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
-                        contentEl.style.cssText = 'margin-left: 32px; flex-grow: 1; margin-bottom: 0;';
+                        contentEl.className = 'timeline-content';
                         
-                        // Create card header (same as Card View)
+                        // Create timeline header with card-like styling
                         const headerEl = document.createElement('div');
-                        headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
+                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
+                        headerEl.style.cssText = `padding: 16px; background-color: ${{fact.isDisputed ? 'rgba(229, 62, 62, 0.05)' : '#f8fafc'}}; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;`;
                         
-                        // Create title section
+                        // Date and Event together (like card title)
                         const titleEl = document.createElement('div');
-                        titleEl.className = 'card-fact-title';
+                        titleEl.style.cssText = 'display: flex; align-items: center; gap: 12px; flex-grow: 1;';
                         
-                        // Date
                         const dateEl = document.createElement('div');
-                        dateEl.className = 'card-fact-date';
+                        dateEl.style.cssText = 'font-weight: 600; color: #2d3748; min-width: 120px;';
                         dateEl.textContent = formatDate(fact.date);
                         titleEl.appendChild(dateEl);
                         
-                        // Event
                         const eventEl = document.createElement('div');
-                        eventEl.className = 'card-fact-event';
+                        eventEl.style.cssText = 'font-weight: 500; color: #1a202c; flex-grow: 1;';
                         eventEl.textContent = fact.event;
                         titleEl.appendChild(eventEl);
                         
                         headerEl.appendChild(titleEl);
                         
-                        // Create badges section (same as Card View)
+                        // Status badge only (like card badges)
                         const badgesEl = document.createElement('div');
-                        badgesEl.className = 'card-fact-badges';
+                        badgesEl.style.cssText = 'display: flex; gap: 6px; align-items: center;';
                         
-                        // Status badge only
                         if (fact.isDisputed) {{
                             const disputedBadge = document.createElement('span');
                             disputedBadge.className = 'badge disputed-badge';
@@ -2130,21 +2127,19 @@ def main():
                         headerEl.appendChild(badgesEl);
                         contentEl.appendChild(headerEl);
                         
-                        // Create card content (same structure as Card View)
-                        const cardContentEl = document.createElement('div');
-                        cardContentEl.className = 'card-fact-content show'; // Always expanded in timeline
-                        cardContentEl.style.display = 'block';
+                        // Create timeline body with card content structure
+                        const bodyEl = document.createElement('div');
+                        bodyEl.className = 'timeline-body';
+                        bodyEl.style.cssText = 'padding: 20px; background-color: white;';
                         
                         // Evidence section (same as Card View)
                         const evidenceContent = getEvidenceContent(fact);
-                        const evidenceSection = document.createElement('div');
-                        evidenceSection.className = 'card-detail-section';
-                        evidenceSection.style.marginTop = '16px';
-                        
-                        let evidenceHtml = '';
-                        
                         if (evidenceContent !== 'None') {{
-                            evidenceHtml = `
+                            const evidenceSection = document.createElement('div');
+                            evidenceSection.className = 'card-detail-section';
+                            evidenceSection.style.marginBottom = '16px';
+                            
+                            evidenceSection.innerHTML = `
                                 <div class="card-detail-label">Evidence & Source References (${{evidenceContent.length}} items)</div>
                                 <div class="card-detail-value">
                                     ${{evidenceContent.map((evidence, evidenceIndex) => `
@@ -2190,17 +2185,56 @@ def main():
                                     `).join('')}}
                                 </div>
                             `;
+                            bodyEl.appendChild(evidenceSection);
                         }} else {{
-                            evidenceHtml = `
+                            const evidenceSection = document.createElement('div');
+                            evidenceSection.className = 'card-detail-section';
+                            evidenceSection.style.marginBottom = '16px';
+                            evidenceSection.innerHTML = `
                                 <div class="card-detail-label">Evidence & Source References</div>
                                 <div class="card-detail-value">
                                     <div style="font-style: italic; color: #9ca3af;">No evidence references available for this fact</div>
                                 </div>
                             `;
+                            bodyEl.appendChild(evidenceSection);
                         }}
                         
-                        evidenceSection.innerHTML = evidenceHtml;
-                        cardContentEl.appendChild(evidenceSection);
+                        // Claimant Submission (same as Card View)
+                        const claimantSubmissionEl = document.createElement('div');
+                        claimantSubmissionEl.className = 'card-source-text claimant-submission';
+                        claimantSubmissionEl.style.marginBottom = '16px';
+                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission 
+                            : 'No submission provided';
+                        claimantSubmissionEl.innerHTML = `
+                            <div class="submission-header">Claimant Submission</div>
+                            <div style="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{claimantText}}</div>
+                        `;
+                        bodyEl.appendChild(claimantSubmissionEl);
+                        
+                        // Respondent Submission (same as Card View)
+                        const respondentSubmissionEl = document.createElement('div');
+                        respondentSubmissionEl.className = 'card-source-text respondent-submission';
+                        respondentSubmissionEl.style.marginBottom = '16px';
+                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission 
+                            : 'No submission provided';
+                        respondentSubmissionEl.innerHTML = `
+                            <div class="submission-header">Respondent Submission</div>
+                            <div style="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{respondentText}}</div>
+                        `;
+                        bodyEl.appendChild(respondentSubmissionEl);
+                        
+                        // Status section (same as Card View)
+                        const statusSection = document.createElement('div');
+                        statusSection.className = 'card-detail-section';
+                        statusSection.innerHTML = `
+                            <div class="card-detail-label">Status</div>
+                            <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
+                        `;
+                        bodyEl.appendChild(statusSection);
+                        
+                        contentEl.appendChild(bodyEl);
                         
 
                         

@@ -1033,7 +1033,7 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for button styling and view selector
+        # Custom CSS for button styling and compact view selector
         st.markdown("""
         <style>
         .stButton > button {
@@ -1048,35 +1048,45 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Improve button appearance */
+        /* Compact view selector buttons styling */
         div[data-testid="column"] > div > div > div > button {
-            border-radius: 8px !important;
+            border-radius: 6px !important;
             font-weight: 500 !important;
+            font-size: 14px !important;
+            height: 35px !important;
+            padding: 8px 16px !important;
             transition: all 0.2s ease !important;
+            margin-bottom: 0px !important;
         }
         
-        /* Active button styling */
+        /* Active view button styling */
         div[data-testid="column"] > div > div > div > button[kind="primary"] {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            border: none !important;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+            background-color: #1f77b4 !important;
+            color: white !important;
+            border: 1px solid #1f77b4 !important;
+            box-shadow: none !important;
         }
         
-        /* Inactive button styling */
+        /* Inactive view button styling */
         div[data-testid="column"] > div > div > div > button[kind="secondary"] {
             background-color: white !important;
-            color: #6c757d !important;
-            border: 1px solid #dee2e6 !important;
+            color: #666 !important;
+            border: 1px solid #e1e5e9 !important;
         }
         
         div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
             background-color: #f8f9fa !important;
-            color: #495057 !important;
+            color: #333 !important;
             border-color: #adb5bd !important;
-            transform: translateY(-1px) !important;
+            transform: none !important;
         }
         
-        /* Custom compact tab styling */
+        div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
+            background-color: #1565c0 !important;
+            transform: none !important;
+        }
+        
+        /* Custom compact tab styling for facts filter */
         .stTabs [data-baseweb="tab-list"] {
             gap: 8px;
             background-color: transparent;

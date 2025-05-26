@@ -931,7 +931,7 @@ def render_streamlit_docset_view(filtered_facts=None):
                             evidence_content = get_evidence_content(fact)
                             
                             if evidence_content:
-                                for evidence in evidence_content:
+                                for evidence_idx, evidence in enumerate(evidence_content):
                                     # Create a separate container for each evidence item with better separation
                                     with st.container():
                                         st.markdown(f"**{evidence['id']}** - {evidence['title']}")
@@ -957,7 +957,9 @@ def render_streamlit_docset_view(filtered_facts=None):
                                         with col2:
                                             # Get current tab type for unique button keys
                                             current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                                            if st.button(f"📋 Copy Ref", key=f"copy_docset_{evidence['id']}_{i}_{current_tab}"):
+                                            # Make button key unique with docset_id, fact index, evidence index, and tab
+                                            unique_key = f"copy_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
+                                            if st.button(f"📋 Copy Ref", key=unique_key):
                                                 ref_copy = f"Exhibit: {evidence['id']}"
                                                 if fact.get('page'):
                                                     ref_copy += f", Page: {fact['page']}"

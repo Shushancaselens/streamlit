@@ -752,175 +752,327 @@ def main():
         </style>
         """
 
-        # JavaScript switching functions
-        view_switching_js = f"""
-        <script>
-        // =============================================================================
-        // DATA INITIALIZATION
-        // =============================================================================
+# Streamlit Native Card View Implementation
+def render_streamlit_card_view(filtered_facts=None):
+    # Get facts data
+    if filtered_facts is None:
+        facts_data = get_all_facts()
+    else:
+        facts_data = filtered_facts
+    
+    # Sort by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    if not facts_data:
+        st.info("No facts found matching the selected criteria.")
+        return
+    
+    # Display each fact as a card using Streamlit expander
+    for i, fact in enumerate(facts_data):
+        # Create expander title with date and event
+        expander_title = f"**{fact['date']}** - {fact['event']}"
+        if fact['isDisputed']:
+            expander_title += " 🔴"
         
-        const factsData = {facts_json};
-        const argsData = {args_json};
-        const documentSets = {document_sets_json};
-        const timelineData = {timeline_json};
-        
-        // =============================================================================
-        // VIEW SWITCHING FUNCTIONS
-        // =============================================================================
+        with st.expander(expander_title, expanded=False):
+            # Evidence & Source References section
+            st.subheader("📁 Evidence & Source References")
+            evidence_content = get_evidence_content(fact)
+            
+            if evidence_content:
+                for evidence in evidence_content:
+                    with st.container():
+                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                        
+                        # Document Summary
+                        if fact.get('doc_summary'):
+                            st.info(f"**Document Summary:** {fact['doc_summary']}")
+                        
+                        # Source Text
+                        if fact.get('source_text'):
+                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                        
+                        # Reference information
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            ref_text = f"**Exhibit:** {evidence['id']}"
+                            if fact.get('page'):
+                                ref_text += f" | **Page:** {fact['page']}"
+                            if fact.get('paragraphs'):
+                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
+                            st.markdown(ref_text)
+                        
+                        with col2:
+                            if st.button(f"📋 Copy Ref", key=f"copy_{evidence['id']}_{i}"):
+                                ref_copy = f"Exhibit: {evidence['id']}"
+                                if fact.get('page'):
+                                    ref_copy += f", Page: {fact['page']}"
+                                if fact.get('paragraphs'):
+                                    ref_copy += f", Paragraphs: {fact['paragraphs']}"
+                                st.success("Reference copied!")
+                        
+                        st.divider()
+            else:
+                st.markdown("*No evidence references available for this fact*")
+            
+            # Party Submissions section
+            st.subheader("⚖️ Party Submissions")
+            
+            # Claimant submission
+            st.markdown("**🔵 Claimant Submission**")
+            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+            if claimant_text == 'No specific submission recorded':
+                st.markdown("*No submission provided*")
+            else:
+                st.info(claimant_text)
+            
+            # Respondent submission
+            st.markdown("**🔴 Respondent Submission**")
+            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+            if respondent_text == 'No specific submission recorded':
+                st.markdown("*No submission provided*")
+            else:
+                st.warning(respondent_text)
+            
+            # Status section
+            st.subheader("📊 Status")
+            status_col1, status_col2 = st.columns(2)
+            
+            with status_col1:
+                if fact['isDisputed']:
+                    st.error("**Status:** Disputed")
+                else:
+                    st.success("**Status:** Undisputed")
+            
+            with status_col2:
+                if fact.get('parties_involved'):
+                    st.markdown(f"**Parties:** {', '.join(fact['parties_involved'])}")
 
-        // Switch between main views (card, table, timeline, docset)
-        function switchView(viewType) {{
-            const tableBtn = document.getElementById('table-view-btn');
-            const cardBtn = document.getElementById('card-view-btn');
-            const timelineBtn = document.getElementById('timeline-view-btn');
-            const docsetBtn = document.getElementById('docset-view-btn');
-            
-            const tableContent = document.getElementById('table-view-content');
-            const cardContent = document.getElementById('card-view-content');
-            const timelineContent = document.getElementById('timeline-view-content');
-            const docsetContent = document.getElementById('docset-view-content');
-            
-            // Remove active class from all buttons
-            if (tableBtn) tableBtn.classList.remove('active');
-            if (cardBtn) cardBtn.classList.remove('active');
-            if (timelineBtn) timelineBtn.classList.remove('active');
-            if (docsetBtn) docsetBtn.classList.remove('active');
-            
-            // Hide all content
-            if (tableContent) tableContent.style.display = 'none';
-            if (cardContent) cardContent.style.display = 'none';
-            if (timelineContent) timelineContent.style.display = 'none';
-            if (docsetContent) docsetContent.style.display = 'none';
-            
-            // Activate the selected view
-            if (viewType === 'card') {{
-                if (cardBtn) cardBtn.classList.add('active');
-                if (cardContent) cardContent.style.display = 'block';
-                renderCardView();
-            }} else if (viewType === 'table') {{
-                if (tableBtn) tableBtn.classList.add('active');
-                if (tableContent) tableContent.style.display = 'block';
-                renderTableView();
-            }} else if (viewType === 'timeline') {{
-                if (timelineBtn) timelineBtn.classList.add('active');
-                if (timelineContent) timelineContent.style.display = 'block';
-                renderTimeline();
-            }} else if (viewType === 'docset') {{
-                if (docsetBtn) docsetBtn.classList.add('active');
-                if (docsetContent) docsetContent.style.display = 'block';
-                renderDocumentSets();
-            }}
-        }}
-
-        // Switch between fact tabs (all, disputed, undisputed)
-        function switchFactsTab(tabType) {{
-            const allBtn = document.getElementById('all-facts-btn');
-            const disputedBtn = document.getElementById('disputed-facts-btn');
-            const undisputedBtn = document.getElementById('undisputed-facts-btn');
-            
-            // Remove active class from all
-            if (allBtn) allBtn.classList.remove('active');
-            if (disputedBtn) disputedBtn.classList.remove('active');
-            if (undisputedBtn) undisputedBtn.classList.remove('active');
-            
-            // Add active to selected
-            if (tabType === 'all') {{
-                if (allBtn) allBtn.classList.add('active');
-            }} else if (tabType === 'disputed') {{
-                if (disputedBtn) disputedBtn.classList.add('active');
-            }} else {{
-                if (undisputedBtn) undisputedBtn.classList.add('active');
-            }}
-            
-            // Update active view based on current view type
-            const tableContent = document.getElementById('table-view-content');
-            const cardContent = document.getElementById('card-view-content');
-            const timelineContent = document.getElementById('timeline-view-content');
-            const docsetContent = document.getElementById('docset-view-content');
-            
-            if (cardContent && cardContent.style.display !== 'none') {{
-                renderCardView(tabType);
-            }} else if (tableContent && tableContent.style.display !== 'none') {{
-                renderTableView(tabType);
-            }} else if (timelineContent && timelineContent.style.display !== 'none') {{
-                renderTimeline(tabType);
-            }} else if (docsetContent && docsetContent.style.display !== 'none') {{
-                renderDocumentSets(tabType);
-            }}
-        }}
-
-        // =============================================================================
-        // RENDERING FUNCTIONS
-        // =============================================================================
+# Streamlit Native Timeline View Implementation
+def render_streamlit_timeline_view(filtered_facts=None):
+    # Get facts data
+    if filtered_facts is None:
+        facts_data = get_all_facts()
+    else:
+        facts_data = filtered_facts
+    
+    # Sort by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    if not facts_data:
+        st.info("No timeline events found matching the selected criteria.")
+        return
+    
+    # Group by year for year markers
+    events_by_year = {}
+    for fact in facts_data:
+        year = fact['date'].split('-')[0] if '-' in fact['date'] else fact['date'][:4]
+        if year not in events_by_year:
+            events_by_year[year] = []
+        events_by_year[year].append(fact)
+    
+    # Display timeline events
+    for year, events in events_by_year.items():
+        # Year marker
+        st.markdown(f"## 📅 {year}")
+        st.divider()
         
-        function renderCardView(filterType = 'all') {{
-            const container = document.getElementById('card-view-content');
-            if (!container) return;
-            
-            let filteredFacts = factsData;
-            if (filterType === 'disputed') {{
-                filteredFacts = factsData.filter(fact => fact.isDisputed);
-            }} else if (filterType === 'undisputed') {{
-                filteredFacts = factsData.filter(fact => !fact.isDisputed);
-            }}
-            
-            container.innerHTML = '<h4>Card View - ' + filteredFacts.length + ' facts</h4><p>Card view implementation would go here with the filtered facts data.</p>';
-        }}
-        
-        function renderTableView(filterType = 'all') {{
-            const container = document.getElementById('table-view-content');
-            if (!container) return;
-            
-            let filteredFacts = factsData;
-            if (filterType === 'disputed') {{
-                filteredFacts = factsData.filter(fact => fact.isDisputed);
-            }} else if (filterType === 'undisputed') {{
-                filteredFacts = factsData.filter(fact => !fact.isDisputed);
-            }}
-            
-            container.innerHTML = '<h4>Table View - ' + filteredFacts.length + ' facts</h4><p>Table view implementation would go here.</p>';
-        }}
-        
-        function renderTimeline(filterType = 'all') {{
-            const container = document.getElementById('timeline-view-content');
-            if (!container) return;
-            
-            let filteredFacts = factsData;
-            if (filterType === 'disputed') {{
-                filteredFacts = factsData.filter(fact => fact.isDisputed);
-            }} else if (filterType === 'undisputed') {{
-                filteredFacts = factsData.filter(fact => !fact.isDisputed);
-            }}
-            
-            container.innerHTML = '<h4>Timeline View - ' + filteredFacts.length + ' facts</h4><p>Timeline view implementation would go here.</p>';
-        }}
-        
-        function renderDocumentSets(filterType = 'all') {{
-            const container = document.getElementById('docset-view-content');
-            if (!container) return;
-            
-            let filteredFacts = factsData;
-            if (filterType === 'disputed') {{
-                filteredFacts = factsData.filter(fact => fact.isDisputed);
-            }} else if (filterType === 'undisputed') {{
-                filteredFacts = factsData.filter(fact => !fact.isDisputed);
-            }}
-            
-            container.innerHTML = '<h4>Document Categories - ' + filteredFacts.length + ' facts</h4><p>Document sets view implementation would go here.</p>';
-        }}
+        for i, fact in enumerate(events):
+            # Create container for timeline event
+            with st.container():
+                # Event header with date and dispute status
+                col1, col2, col3 = st.columns([2, 3, 1])
+                
+                with col1:
+                    st.markdown(f"**📆 {fact['date']}**")
+                
+                with col2:
+                    st.markdown(f"**{fact['event']}**")
+                
+                with col3:
+                    if fact['isDisputed']:
+                        st.error("Disputed")
+                    else:
+                        st.success("Undisputed")
+                
+                # Show details directly instead of using expander
+                with st.container():
+                    # Evidence section
+                    st.markdown("**📁 Evidence & Source References**")
+                    evidence_content = get_evidence_content(fact)
+                    
+                    if evidence_content:
+                        for evidence in evidence_content:
+                            st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                            if fact.get('doc_summary'):
+                                st.info(f"**Document Summary:** {fact['doc_summary']}")
+                            if fact.get('source_text'):
+                                st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                    else:
+                        st.markdown("*No evidence references available*")
+                    
+                    # Party submissions
+                    st.markdown("**⚖️ Party Submissions**")
+                    
+                    # Claimant submission
+                    st.markdown("**🔵 Claimant Submission**")
+                    claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                    if claimant_text == 'No specific submission recorded':
+                        st.markdown("*No submission provided*")
+                    else:
+                        st.info(claimant_text)
+                    
+                    # Respondent submission
+                    st.markdown("**🔴 Respondent Submission**")
+                    respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                    if respondent_text == 'No specific submission recorded':
+                        st.markdown("*No submission provided*")
+                    else:
+                        st.warning(respondent_text)
+                
+                # Add separator between events
+                if i < len(events) - 1:
+                    st.divider()
 
-        // =============================================================================
-        // INITIALIZATION
-        // =============================================================================
+# Streamlit Native Document Categories View Implementation  
+def render_streamlit_docset_view(filtered_facts=None):
+    # Get facts and document sets data
+    if filtered_facts is None:
+        facts_data = get_all_facts()
+    else:
+        facts_data = filtered_facts
+        
+    document_sets = get_document_sets()
+    
+    # Sort facts by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    # Group facts by document categories
+    docs_with_facts = {}
+    
+    # Initialize all groups
+    for ds in document_sets:
+        if ds.get('isGroup'):
+            docs_with_facts[ds['id']] = {
+                'docset': ds,
+                'facts': []
+            }
+    
+    # Distribute facts to categories
+    for fact in facts_data:
+        fact_assigned = False
+        
+        # Try to assign based on source matching
+        for ds in document_sets:
+            if ds.get('isGroup'):
+                for doc in ds.get('documents', []):
+                    if fact.get('source') and doc['id'] + '.' in fact['source']:
+                        docs_with_facts[ds['id']]['facts'].append({
+                            **fact,
+                            'documentName': doc['name']
+                        })
+                        fact_assigned = True
+                        break
+                if fact_assigned:
+                    break
+        
+        # If not assigned by source, assign by party matching
+        if not fact_assigned:
+            for ds in document_sets:
+                if ds.get('isGroup'):
+                    for doc in ds.get('documents', []):
+                        parties = fact.get('parties_involved', [])
+                        if (doc['party'] == 'Mixed' or 
+                            (doc['party'] == 'Appellant' and 'Appellant' in parties) or
+                            (doc['party'] == 'Respondent' and 'Respondent' in parties)):
+                            docs_with_facts[ds['id']]['facts'].append({
+                                **fact,
+                                'documentName': doc['name']
+                            })
+                            fact_assigned = True
+                            break
+                    if fact_assigned:
+                        break
+    
+    # Display document categories
+    for docset_id, doc_with_facts in docs_with_facts.items():
+        docset = doc_with_facts['docset']
+        facts = doc_with_facts['facts']
+        
+        # Document set header
+        party_color = ("🔵" if docset['party'] == 'Appellant' else 
+                      "🔴" if docset['party'] == 'Respondent' else "⚪")
+        
+        # Use a single level expander for each document category
+        with st.expander(f"📁 {party_color} **{docset['name']}** ({len(facts)} facts)", expanded=False):
+            if facts:
+                for i, fact in enumerate(facts):
+                    # Create a container for each fact instead of nested expander
+                    with st.container():
+                        # Fact header
+                        col1, col2, col3 = st.columns([2, 4, 1])
+                        
+                        with col1:
+                            st.markdown(f"**{fact['date']}**")
+                        
+                        with col2:
+                            st.markdown(f"**{fact['event']}**")
+                        
+                        with col3:
+                            if fact['isDisputed']:
+                                st.error("🔴")
+                            else:
+                                st.success("🟢")
+                        
+                        # Show details directly (no nested expander)
+                        with st.container():
+                            # Evidence section
+                            st.markdown("**📁 Evidence & Source References**")
+                            evidence_content = get_evidence_content(fact)
+                            
+                            if evidence_content:
+                                for evidence in evidence_content:
+                                    st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                                    if fact.get('doc_summary'):
+                                        st.info(f"**Document Summary:** {fact['doc_summary']}")
+                                    if fact.get('source_text'):
+                                        st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                            else:
+                                st.markdown("*No evidence references available*")
+                            
+                            # Party submissions
+                            st.markdown("**⚖️ Party Submissions**")
+                            
+                            # Claimant submission
+                            st.markdown("**🔵 Claimant Submission**")
+                            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                            if claimant_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.info(claimant_text)
+                            
+                            # Respondent submission
+                            st.markdown("**🔴 Respondent Submission**")
+                            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                            if respondent_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.warning(respondent_text)
+                        
+                        # Separator between facts
+                        if i < len(facts) - 1:
+                            st.divider()
+            else:
+                st.info("No facts found in this document category.")
 
-        // Initialize default view state
-        document.addEventListener('DOMContentLoaded', function() {{
-            // Set default active states
-            switchView('card'); // Default to card view
-            switchFactsTab('all'); // Default to all facts
-        }});
-        </script>
-        """
+# Helper function to render the appropriate view content
+def render_view_content(view_type, filtered_facts):
+    if view_type == "card":
+        render_streamlit_card_view(filtered_facts)
+    elif view_type == "timeline":
+        render_streamlit_timeline_view(filtered_facts)
+    elif view_type == "docset":
+        render_streamlit_docset_view(filtered_facts)
 
         # HTML structure for the switchers
         html_switcher_structure = """

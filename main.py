@@ -622,45 +622,40 @@ def render_streamlit_card_view(filtered_facts=None):
             evidence_content = get_evidence_content(fact)
             
             if evidence_content:
-                for j, evidence in enumerate(evidence_content):
-                    # Add visual separation between evidence items
-                    if j > 0:
-                        st.markdown("<br><br>", unsafe_allow_html=True)
-                    
-                    # Evidence header with improved styling
-                    st.markdown(f"**📋 {evidence['id']}** - {evidence['title']}")
-                    st.markdown("---")
-                    
-                    # Document Summary with better presentation
-                    if fact.get('doc_summary'):
-                        st.info(f"**📄 Document Summary:** {fact['doc_summary']}")
-                    
-                    # Source Text with blockquote styling
-                    if fact.get('source_text'):
-                        st.markdown("**📝 Source Text:**")
-                        st.markdown(f"> *{fact['source_text']}*")
-                    
-                    # Reference information section
-                    st.markdown("**🔗 Reference Details:**")
-                    col1, col2 = st.columns([3, 1])
-                    with col1:
-                        ref_parts = [f"**Exhibit:** {evidence['id']}"]
-                        if fact.get('page'):
-                            ref_parts.append(f"**Page:** {fact['page']}")
-                        if fact.get('paragraphs'):
-                            ref_parts.append(f"**Paragraphs:** {fact['paragraphs']}")
-                        st.markdown(" • ".join(ref_parts))
-                    
-                    with col2:
-                        # Get current tab type for unique button keys
-                        current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                        if st.button(f"📋 Copy", key=f"copy_{evidence['id']}_{i}_{j}_{current_tab}"):
-                            ref_copy = f"Exhibit: {evidence['id']}"
+                for evidence in evidence_content:
+                    with st.container():
+                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                        
+                        # Document Summary
+                        if fact.get('doc_summary'):
+                            st.info(f"**Document Summary:** {fact['doc_summary']}")
+                        
+                        # Source Text
+                        if fact.get('source_text'):
+                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                        
+                        # Reference information
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            ref_text = f"**Exhibit:** {evidence['id']}"
                             if fact.get('page'):
-                                ref_copy += f", Page: {fact['page']}"
+                                ref_text += f" | **Page:** {fact['page']}"
                             if fact.get('paragraphs'):
-                                ref_copy += f", Paragraphs: {fact['paragraphs']}"
-                            st.success("Reference copied!")
+                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
+                            st.markdown(ref_text)
+                        
+                        with col2:
+                            # Get current tab type for unique button keys
+                            current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                            if st.button(f"📋 Copy Ref", key=f"copy_{evidence['id']}_{i}_{current_tab}"):
+                                ref_copy = f"Exhibit: {evidence['id']}"
+                                if fact.get('page'):
+                                    ref_copy += f", Page: {fact['page']}"
+                                if fact.get('paragraphs'):
+                                    ref_copy += f", Paragraphs: {fact['paragraphs']}"
+                                st.success("Reference copied!")
+                        
+                        st.divider()
             else:
                 st.markdown("*No evidence references available for this fact*")
             
@@ -751,26 +746,12 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     evidence_content = get_evidence_content(fact)
                     
                     if evidence_content:
-                        for j, evidence in enumerate(evidence_content):
-                            # Add spacing between evidence items
-                            if j > 0:
-                                st.markdown("<br>", unsafe_allow_html=True)
-                            
-                            # Evidence header with better styling
-                            st.markdown(f"#### **{evidence['id']}** - {evidence['title']}")
-                            
-                            # Document Summary in a more prominent box
+                        for evidence in evidence_content:
+                            st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
                             if fact.get('doc_summary'):
                                 st.info(f"**Document Summary:** {fact['doc_summary']}")
-                            
-                            # Source Text with better formatting
                             if fact.get('source_text'):
-                                st.markdown("**Source Text:**")
-                                st.markdown(f"> *{fact['source_text']}*")
-                            
-                            # Add separator only if not the last evidence item
-                            if j < len(evidence_content) - 1:
-                                st.markdown("---")
+                                st.markdown(f"**Source Text:** *{fact['source_text']}*")
                     else:
                         st.markdown("*No evidence references available*")
                     

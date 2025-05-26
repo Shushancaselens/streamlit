@@ -915,156 +915,38 @@ def render_streamlit_docset_view(filtered_facts=None):
                         
                         # Show details directly (no nested expander)
                         with st.container():
-                            # Evidence section with improved UI
+                            # Evidence section
                             st.markdown("#### Evidence & Source References")
                             evidence_content = get_evidence_content(fact)
                             
                             if evidence_content:
-                                # Create tabs for different evidence items if multiple
-                                if len(evidence_content) > 1:
-                                    evidence_tabs = st.tabs([f"Exhibit {evidence['id']}" for evidence in evidence_content])
-                                    
-                                    for idx, evidence in enumerate(evidence_content):
-                                        with evidence_tabs[idx]:
-                                            # Evidence details in organized layout
-                                            col_left, col_right = st.columns([2, 1])
-                                            
-                                            with col_left:
-                                                st.markdown(f"**{evidence['title']}**")
-                                                st.write(evidence['summary'])
-                                                
-                                                # Document information
-                                                if fact.get('doc_summary'):
-                                                    with st.expander("📄 Document Details", expanded=False):
-                                                        st.info(fact['doc_summary'])
-                                                
-                                                # Source text
-                                                if fact.get('source_text'):
-                                                    with st.expander("📝 Source Text", expanded=False):
-                                                        st.markdown(f"*{fact['source_text']}*")
-                                            
-                                            with col_right:
-                                                # Reference card
-                                                st.markdown("**Quick Reference**")
-                                                ref_container = st.container()
-                                                with ref_container:
-                                                    st.metric("Exhibit", evidence['id'])
-                                                    if fact.get('page'):
-                                                        st.metric("Page", fact['page'])
-                                                    if fact.get('paragraphs'):
-                                                        st.metric("Paragraphs", fact['paragraphs'])
-                                                    
-                                                    # Copy button with better placement
-                                                    current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                                                    if st.button("📋 Copy Reference", 
-                                                                key=f"copy_docset_{evidence['id']}_{i}_{idx}_{current_tab}",
-                                                                use_container_width=True,
-                                                                type="secondary"):
-                                                        ref_copy = f"Exhibit: {evidence['id']}"
-                                                        if fact.get('page'):
-                                                            ref_copy += f", Page: {fact['page']}"
-                                                        if fact.get('paragraphs'):
-                                                            ref_copy += f", Paragraphs: {fact['paragraphs']}"
-                                                        st.success("✅ Reference copied!")
-                                else:
-                                    # Single evidence item with enhanced layout
-                                    evidence = evidence_content[0]
-                                    
-                                    # Main evidence card
-                                    with st.container():
-                                        st.markdown(f"""
-                                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #007bff; margin: 10px 0;">
-                                            <h5 style="margin: 0 0 10px 0; color: #007bff;">{evidence['id']} - {evidence['title']}</h5>
-                                            <p style="margin: 0; color: #6c757d;">{evidence['summary']}</p>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                    
-                                    # Details in columns
-                                    detail_col1, detail_col2 = st.columns([3, 1])
-                                    
-                                    with detail_col1:
-                                        # Document and source info
-                                        if fact.get('doc_summary'):
-                                            st.markdown("**Document Summary**")
-                                            st.info(fact['doc_summary'])
-                                        
-                                        if fact.get('source_text'):
-                                            st.markdown("**Source Text**")
-                                            st.markdown(f"> *{fact['source_text']}*")
-                                    
-                                    with detail_col2:
-                                        st.markdown("**Reference Info**")
-                                        
-                                        # Reference metrics
-                                        if fact.get('page'):
-                                            st.metric("Page", fact['page'])
-                                        if fact.get('paragraphs'):
-                                            st.metric("Paragraphs", fact['paragraphs'])
-                                        
-                                        # Copy button
-                                        current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                                        if st.button("📋 Copy Reference", 
-                                                    key=f"copy_docset_{evidence['id']}_{i}_{current_tab}",
-                                                    use_container_width=True,
-                                                    type="secondary"):
-                                            ref_copy = f"Exhibit: {evidence['id']}"
-                                            if fact.get('page'):
-                                                ref_copy += f", Page: {fact['page']}"
-                                            if fact.get('paragraphs'):
-                                                ref_copy += f", Paragraphs: {fact['paragraphs']}"
-                                            st.success("✅ Reference copied!")
+                                for evidence in evidence_content:
+                                    st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                                    if fact.get('doc_summary'):
+                                        st.info(f"**Document Summary:** {fact['doc_summary']}")
+                                    if fact.get('source_text'):
+                                        st.markdown(f"**Source Text:** *{fact['source_text']}*")
                             else:
-                                st.warning("⚠️ No evidence references available for this fact")
+                                st.markdown("*No evidence references available*")
                             
-                            # Party submissions with enhanced UI
-                            st.markdown("#### Party Submissions")
+                            # Party submissions
+                            st.markdown("**⚖️ Party Submissions**")
                             
-                            # Create columns for party submissions
-                            submission_col1, submission_col2 = st.columns(2)
+                            # Claimant submission
+                            st.markdown("**🔵 Claimant Submission**")
+                            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                            if claimant_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.info(claimant_text)
                             
-                            with submission_col1:
-                                st.markdown("**🔵 Claimant Submission**")
-                                claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
-                                
-                                if claimant_text == 'No specific submission recorded':
-                                    st.markdown('<div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c757d;"><em>No submission provided</em></div>', unsafe_allow_html=True)
-                                else:
-                                    st.markdown(f"""
-                                    <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
-                                        <p style="margin: 0; color: #1565c0;">{claimant_text}</p>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-                            
-                            with submission_col2:
-                                st.markdown("**🔴 Respondent Submission**")
-                                respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
-                                
-                                if respondent_text == 'No specific submission recorded':
-                                    st.markdown('<div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c757d;"><em>No submission provided</em></div>', unsafe_allow_html=True)
-                                else:
-                                    st.markdown(f"""
-                                    <div style="background-color: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #f44336;">
-                                        <p style="margin: 0; color: #c62828;">{respondent_text}</p>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-                            
-                            # Status and additional info
-                            st.markdown("#### Status & Information")
-                            status_col1, status_col2, status_col3 = st.columns(3)
-                            
-                            with status_col1:
-                                if fact['isDisputed']:
-                                    st.error("🔴 **Status:** Disputed")
-                                else:
-                                    st.success("🟢 **Status:** Undisputed")
-                            
-                            with status_col2:
-                                if fact.get('parties_involved'):
-                                    st.info(f"👥 **Parties:** {', '.join(fact['parties_involved'])}")
-                            
-                            with status_col3:
-                                if fact.get('doc_name'):
-                                    st.info(f"📄 **Document:** {fact['doc_name']}")
+                            # Respondent submission
+                            st.markdown("**🔴 Respondent Submission**")
+                            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                            if respondent_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.warning(respondent_text)
                         
                         # Separator between facts
                         if i < len(facts) - 1:

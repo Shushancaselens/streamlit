@@ -1856,103 +1856,49 @@ def main():
                 }}
                 
                 // Function to open document manager
-                function openDocumentManager() {
-                    const documentList = Object.keys(documentPreviewUrls).map(docName => 
-                        `<li><span class="document-link" onclick="openDocumentPreview('${docName}')">${docName}</span></li>`
-                    ).join('');
+                function openDocumentManager() {{
+                    const documentList = Object.keys(documentPreviewUrls).map(function(docName) {{
+                        return '<li><span class="document-link" onclick="openDocumentPreview(\'' + docName + '\')">' + docName + '</span></li>';
+                    }}).join('');
                     
-                    const documentManagerContent = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>Document Manager - Case Documents</title>
-                            <style>
-                                body {
-                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                                    line-height: 1.6;
-                                    margin: 0;
-                                    padding: 20px;
-                                    background: #f5f5f5;
-                                }
-                                .container {
-                                    max-width: 800px;
-                                    margin: 0 auto;
-                                    background: white;
-                                    padding: 30px;
-                                    border-radius: 8px;
-                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                                }
-                                .header {
-                                    text-align: center;
-                                    margin-bottom: 30px;
-                                    padding-bottom: 20px;
-                                    border-bottom: 2px solid #e2e8f0;
-                                }
-                                .title {
-                                    font-size: 24px;
-                                    font-weight: bold;
-                                    color: #2d3748;
-                                    margin-bottom: 10px;
-                                }
-                                .subtitle {
-                                    color: #718096;
-                                    font-size: 16px;
-                                }
-                                .document-list {
-                                    list-style: none;
-                                    padding: 0;
-                                }
-                                .document-list li {
-                                    padding: 12px;
-                                    margin-bottom: 8px;
-                                    background: #f8fafc;
-                                    border-radius: 6px;
-                                    border-left: 4px solid #4299e1;
-                                    transition: all 0.2s ease;
-                                }
-                                .document-list li:hover {
-                                    background: #e2e8f0;
-                                    transform: translateX(4px);
-                                }
-                                .document-link {
-                                    color: #4299e1;
-                                    cursor: pointer;
-                                    font-weight: 500;
-                                    text-decoration: none;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 8px;
-                                }
-                                .document-link:hover {
-                                    color: #2b6cb0;
-                                }
-                                .document-link:before {
-                                    content: '📄';
-                                    font-size: 16px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="container">
-                                <div class="header">
-                                    <div class="title">📁 Case Document Manager</div>
-                                    <div class="subtitle">Athletic Club United Legal Case Documents</div>
-                                </div>
-                                <ul class="document-list">
-                                    ${documentList}
-                                </ul>
-                                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px;">
-                                    Click on any document to open it in a new tab
-                                </div>
-                            </div>
-                        </body>
-                        </html>
-                    `;
+                    const documentManagerContent = '<!DOCTYPE html>' +
+                        '<html>' +
+                        '<head>' +
+                        '<title>Document Manager - Case Documents</title>' +
+                        '<style>' +
+                        'body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background: #f5f5f5; }}' +
+                        '.container {{ max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}' +
+                        '.header {{ text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; }}' +
+                        '.title {{ font-size: 24px; font-weight: bold; color: #2d3748; margin-bottom: 10px; }}' +
+                        '.subtitle {{ color: #718096; font-size: 16px; }}' +
+                        '.document-list {{ list-style: none; padding: 0; }}' +
+                        '.document-list li {{ padding: 12px; margin-bottom: 8px; background: #f8fafc; border-radius: 6px; border-left: 4px solid #4299e1; transition: all 0.2s ease; }}' +
+                        '.document-list li:hover {{ background: #e2e8f0; transform: translateX(4px); }}' +
+                        '.document-link {{ color: #4299e1; cursor: pointer; font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 8px; }}' +
+                        '.document-link:hover {{ color: #2b6cb0; }}' +
+                        '.document-link:before {{ content: "📄"; font-size: 16px; }}' +
+                        '</style>' +
+                        '</head>' +
+                        '<body>' +
+                        '<div class="container">' +
+                        '<div class="header">' +
+                        '<div class="title">📁 Case Document Manager</div>' +
+                        '<div class="subtitle">Athletic Club United Legal Case Documents</div>' +
+                        '</div>' +
+                        '<ul class="document-list">' +
+                        documentList +
+                        '</ul>' +
+                        '<div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px;">' +
+                        'Click on any document to open it in a new tab' +
+                        '</div>' +
+                        '</div>' +
+                        '</body>' +
+                        '</html>';
                     
                     const newWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
                     newWindow.document.write(documentManagerContent);
                     newWindow.document.close();
-                }
+                }}
                 
                 // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{

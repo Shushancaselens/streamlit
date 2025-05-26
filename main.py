@@ -622,7 +622,7 @@ def render_streamlit_card_view(filtered_facts=None):
             evidence_content = get_evidence_content(fact)
             
             if evidence_content:
-                for j, evidence in enumerate(evidence_content):
+                for evidence in evidence_content:
                     with st.container():
                         st.markdown(f"**{evidence['id']}** - {evidence['title']}")
                         
@@ -654,9 +654,7 @@ def render_streamlit_card_view(filtered_facts=None):
                                 if fact.get('paragraphs'):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
-                    
-                    # Add clear separator between exhibits
-                    if j < len(evidence_content) - 1:
+                        
                         st.divider()
             else:
                 st.markdown("*No evidence references available for this fact*")
@@ -748,16 +746,12 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     evidence_content = get_evidence_content(fact)
                     
                     if evidence_content:
-                        for j, evidence in enumerate(evidence_content):
+                        for evidence in evidence_content:
                             st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
                             if fact.get('doc_summary'):
                                 st.info(f"**Document Summary:** {fact['doc_summary']}")
                             if fact.get('source_text'):
                                 st.markdown(f"**Source Text:** *{fact['source_text']}*")
-                            
-                            # Add clear separator between exhibits
-                            if j < len(evidence_content) - 1:
-                                st.divider()
                     else:
                         st.markdown("*No evidence references available*")
                     

@@ -10,12 +10,6 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
     st.session_state.view = "Facts"
-if 'facts_filter' not in st.session_state:
-    st.session_state.facts_filter = "All Facts"
-if 'view_type' not in st.session_state:
-    st.session_state.view_type = "Card View"
-if 'export_format' not in st.session_state:
-    st.session_state.export_format = "Select Format"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -554,47 +548,6 @@ def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
     return href
 
-# Export function
-def export_data(export_format, view_type, facts_filter):
-    facts_data = get_all_facts()
-    
-    # Filter facts based on current filter
-    if facts_filter == "Disputed Facts":
-        facts_data = [fact for fact in facts_data if fact['isDisputed']]
-    elif facts_filter == "Undisputed Facts":
-        facts_data = [fact for fact in facts_data if not fact['isDisputed']]
-    
-    if export_format == "CSV":
-        # Create DataFrame
-        df_data = []
-        for fact in facts_data:
-            df_data.append({
-                'Date': fact['date'],
-                'Event': fact['event'],
-                'Source Text': fact['source_text'],
-                'Page': fact['page'],
-                'Document': fact['doc_name'],
-                'Doc Summary': fact['doc_summary'],
-                'Claimant Submission': fact['claimant_submission'] if fact['claimant_submission'] != 'No specific submission recorded' else 'No submission',
-                'Respondent Submission': fact['respondent_submission'] if fact['respondent_submission'] != 'No specific submission recorded' else 'No submission',
-                'Status': 'Disputed' if fact['isDisputed'] else 'Undisputed',
-                'Evidence': ', '.join(fact['exhibits']) if fact['exhibits'] else 'None'
-            })
-        
-        df = pd.DataFrame(df_data)
-        csv = df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download CSV",
-            data=csv,
-            file_name=f"facts_{view_type.lower().replace(' ', '_')}_{facts_filter.lower().replace(' ', '_')}.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-    elif export_format == "PDF":
-        st.info("PDF export functionality would be implemented here")
-    elif export_format == "Word":
-        st.info("Word export functionality would be implemented here")
-
 # Main app
 def main():
     # Get the data for JavaScript
@@ -666,41 +619,6 @@ def main():
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-        
-        # Add Streamlit native controls for Facts view
-        if st.session_state.view == "Facts":
-            st.markdown("---")
-            st.markdown("**View Options**")
-            
-            # View type radio buttons
-            view_type = st.radio(
-                "Select View:",
-                ["Card View", "Table View", "Document Categories", "Timeline View"],
-                index=0,
-                key="view_type_radio"
-            )
-            st.session_state.view_type = view_type
-            
-            # Facts filter radio buttons
-            facts_filter = st.radio(
-                "Filter Facts:",
-                ["All Facts", "Disputed Facts", "Undisputed Facts"],
-                index=0,
-                key="facts_filter_radio"
-            )
-            st.session_state.facts_filter = facts_filter
-            
-            # Export options
-            st.markdown("**Export Options**")
-            export_format = st.selectbox(
-                "Export Format:",
-                ["Select Format", "CSV", "PDF", "Word"],
-                index=0,
-                key="export_format_select"
-            )
-            
-            if export_format != "Select Format":
-                export_data(export_format, view_type, facts_filter)
     
     # Create the facts HTML component
     if st.session_state.view == "Facts":
@@ -792,6 +710,62 @@ def main():
                     background-color: rgba(229, 62, 62, 0.05);
                 }}
                 
+                /* Action buttons */
+                .action-buttons {{
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    display: flex;
+                    gap: 10px;
+                }}
+                
+                .action-button {{
+                    padding: 8px 16px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #e1e4e8;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    cursor: pointer;
+                }}
+                
+                .action-button:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown {{
+                    position: relative;
+                    display: inline-block;
+                }}
+                
+                .export-dropdown-content {{
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    background-color: #f9f9f9;
+                    min-width: 160px;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                    z-index: 1;
+                    border-radius: 4px;
+                }}
+                
+                .export-dropdown-content a {{
+                    color: black;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    cursor: pointer;
+                }}
+                
+                .export-dropdown-content a:hover {{
+                    background-color: #f1f1f1;
+                }}
+                
+                .export-dropdown:hover .export-dropdown-content {{
+                    display: block;
+                }}
+                
                 /* Copy notification */
                 .copy-notification {{
                     position: fixed;
@@ -813,6 +787,25 @@ def main():
                 /* Facts styling */
                 .facts-container {{
                     margin-top: 20px;
+                }}
+                
+                .facts-header {{
+                    display: flex;
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                }}
+                
+                .tab-button {{
+                    padding: 10px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                }}
+                
+                .tab-button.active {{
+                    border-bottom: 2px solid #4299e1;
+                    color: #4299e1;
+                    font-weight: 500;
                 }}
                 
                 .facts-content {{
@@ -955,6 +948,44 @@ def main():
                 
                 .table-view-container::-webkit-scrollbar-thumb:hover {{
                     background: #a8a8a8;
+                }}
+                
+                /* View toggle */
+                .view-toggle {{
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 16px;
+                }}
+                
+                .view-toggle button {{
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                }}
+                
+                .view-toggle button.active {{
+                    background-color: #4299e1;
+                    color: white;
+                    border-color: #4299e1;
+                }}
+                
+                .view-toggle button:first-child {{
+                    border-radius: 4px 0 0 4px;
+                }}
+                
+                .view-toggle button:nth-child(2) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:nth-child(3) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:last-child {{
+                    border-radius: 0 4px 4px 0;
                 }}
                 
                 /* Document sets */
@@ -1396,9 +1427,47 @@ def main():
             <div class="container">
                 <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
                 
+                <div class="action-buttons">
+                    <button class="action-button" onclick="copyAllContent()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        Copy
+                    </button>
+                    <div class="export-dropdown">
+                        <button class="action-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export
+                        </button>
+                        <div class="export-dropdown-content">
+                            <a onclick="exportAsCsv()">CSV</a>
+                            <a onclick="exportAsPdf()">PDF</a>
+                            <a onclick="exportAsWord()">Word</a>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Facts Section -->
                 <div id="facts" class="content-section active">
                     <div class="section-title">Case Facts</div>
+                    
+                    <div class="view-toggle">
+                        <button id="card-view-btn" class="active" onclick="switchView('card')">Card View</button>
+                        <button id="table-view-btn" onclick="switchView('table')">Table View</button>
+                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
+                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
+                    </div>
+                    
+                    <div class="facts-header">
+                        <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
+                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
+                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                    </div>
                     
                     <!-- Card View -->
                     <div id="card-view-content" class="facts-content">
@@ -1450,10 +1519,6 @@ def main():
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
-                
-                // Get current selections from Streamlit session state
-                const currentViewType = "{st.session_state.view_type}";
-                const currentFactsFilter = "{st.session_state.facts_filter}";
                 
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
@@ -1563,12 +1628,23 @@ def main():
                     }};
                 }}
                 
-                // Switch view based on Streamlit selection
+                // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const cardBtn = document.getElementById('card-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
+                    
                     const tableContent = document.getElementById('table-view-content');
                     const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    cardBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
                     
                     // Hide all content
                     tableContent.style.display = 'none';
@@ -1577,18 +1653,274 @@ def main():
                     docsetContent.style.display = 'none';
                     
                     // Activate the selected view
-                    if (viewType === 'Card View') {{
+                    if (viewType === 'card') {{
+                        cardBtn.classList.add('active');
                         cardContent.style.display = 'block';
                         renderCardView();
-                    }} else if (viewType === 'Table View') {{
+                    }} else if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
                         tableContent.style.display = 'block';
-                        renderFacts();
-                    }} else if (viewType === 'Timeline View') {{
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
                         renderTimeline();
-                    }} else if (viewType === 'Document Categories') {{
+                    }} else if (viewType === 'docset') {{
+                        docsetBtn.classList.add('active');
                         docsetContent.style.display = 'block';
                         renderDocumentSets();
+                    }}
+                }}
+                
+                // Copy all content function
+                function copyAllContent() {{
+                    let contentToCopy = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        // Copy card data
+                        contentToCopy += 'Case Facts (Card View)\\n\\n';
+                        
+                        const cardItems = document.querySelectorAll('.card-fact-container');
+                        cardItems.forEach(card => {{
+                            const dateEl = card.querySelector('.card-fact-date');
+                            const eventEl = card.querySelector('.card-fact-event');
+                            const partyEls = card.querySelectorAll('.badge');
+                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
+                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
+                            
+                            if (dateEl && eventEl) {{
+                                const date = dateEl.textContent.trim();
+                                const event = eventEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
+                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
+                                
+                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
+                                if (claimantSubmission) {{
+                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
+                                }}
+                                if (respondentSubmission) {{
+                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
+                                }}
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else if (tableContent.style.display !== 'none') {{
+                        // Copy table data
+                        const table = document.querySelector('.table-view');
+                        const headers = Array.from(table.querySelectorAll('th'))
+                            .map(th => th.textContent.trim())
+                            .join('\\t');
+                        
+                        contentToCopy += 'Case Facts\\n\\n';
+                        contentToCopy += headers + '\\n';
+                        
+                        // Get rows
+                        const rows = table.querySelectorAll('tbody tr');
+                        rows.forEach(row => {{
+                            const rowText = Array.from(row.querySelectorAll('td'))
+                                .map(td => td.textContent.trim())
+                                .join('\\t');
+                            
+                            contentToCopy += rowText + '\\n';
+                        }});
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        // Copy timeline data
+                        contentToCopy += 'Case Timeline\\n\\n';
+                        
+                        const timelineItems = document.querySelectorAll('.timeline-item');
+                        timelineItems.forEach(item => {{
+                            const dateEl = item.querySelector('.timeline-date');
+                            const factEl = item.querySelector('.timeline-fact');
+                            const partyEls = item.querySelectorAll('.badge');
+                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
+                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
+                            
+                            if (dateEl && factEl) {{
+                                const date = dateEl.textContent.trim();
+                                const fact = factEl.textContent.trim();
+                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
+                                
+                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
+                                
+                                if (claimantEl) {{
+                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
+                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
+                                }}
+                                
+                                if (respondentEl) {{
+                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
+                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
+                                }}
+                                
+                                contentToCopy += '\\n';
+                            }}
+                        }});
+                    }} else {{
+                        // Copy document sets data (just a basic representation)
+                        contentToCopy += 'Case Facts by Document\\n\\n';
+                        
+                        // This is a simplified version since the full structure would be complex
+                        const docsetContainers = document.querySelectorAll('.docset-container');
+                        docsetContainers.forEach(container => {{
+                            const header = container.querySelector('.docset-header');
+                            const title = header.querySelector('span').textContent;
+                            contentToCopy += `=== ${{title}} ===\\n`;
+                            
+                            // Get facts from this document
+                            const tableFacts = container.querySelectorAll('tbody tr');
+                            tableFacts.forEach(fact => {{
+                                const cells = Array.from(fact.querySelectorAll('td'));
+                                const date = cells[1] ? cells[1].textContent : '';
+                                const event = cells[2] ? cells[2].textContent : '';
+                                const claimantSub = cells[6] ? cells[6].textContent : '';
+                                const respondentSub = cells[7] ? cells[7].textContent : '';
+                                
+                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
+                                if (claimantSub && claimantSub !== 'No submission') {{
+                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
+                                }}
+                                if (respondentSub && respondentSub !== 'No submission') {{
+                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
+                                }}
+                            }});
+                            
+                            contentToCopy += '\\n';
+                        }});
+                    }}
+                    
+                    // Create a temporary textarea to copy the content
+                    const textarea = document.createElement('textarea');
+                    textarea.value = contentToCopy;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Show notification
+                    const notification = document.getElementById('copy-notification');
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {{
+                        notification.classList.remove('show');
+                    }}, 2000);
+                }}
+                
+                // Export functions
+                function exportAsCsv() {{
+                    let contentToCsv = '';
+                    
+                    // Determine which view is active
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    // Get currently active tab filter
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    let currentFacts = factsData.map(standardizeFactData);
+                    if (disputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
+                    }} else if (undisputedBtn.classList.contains('active')) {{
+                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
+                    }}
+                    
+                    // Standard headers for all views
+                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
+                    let rows = '';
+                    
+                    currentFacts.forEach(fact => {{
+                        const evidenceContent = getEvidenceContent(fact);
+                        let evidenceText = 'None';
+                        if (evidenceContent !== 'None') {{
+                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
+                        }}
+                        
+                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
+                        const docName = (fact.doc_name || '').replace(/"/g, '""');
+                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
+                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
+                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
+                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
+                        
+                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
+                    }});
+                    
+                    const csvContent = headers + rows;
+                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    
+                    // Set filename based on active view
+                    let filename = "facts.csv";
+                    if (cardContent.style.display !== 'none') {{
+                        filename = "facts_cards.csv";
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        filename = "facts_timeline.csv";
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        filename = "facts_documents.csv";
+                    }} else {{
+                        filename = "facts_table.csv";
+                    }}
+                    
+                    link.setAttribute("download", filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }}
+                
+                function exportAsPdf() {{
+                    alert("PDF export functionality would be implemented here");
+                }}
+                
+                function exportAsWord() {{
+                    alert("Word export functionality would be implemented here");
+                }}
+                
+                // Switch facts tab
+                function switchFactsTab(tabType) {{
+                    const allBtn = document.getElementById('all-facts-btn');
+                    const disputedBtn = document.getElementById('disputed-facts-btn');
+                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
+                    
+                    // Remove active class from all
+                    allBtn.classList.remove('active');
+                    disputedBtn.classList.remove('active');
+                    undisputedBtn.classList.remove('active');
+                    
+                    // Add active to selected
+                    if (tabType === 'all') {{
+                        allBtn.classList.add('active');
+                        renderFacts('all');
+                    }} else if (tabType === 'disputed') {{
+                        disputedBtn.classList.add('active');
+                        renderFacts('disputed');
+                    }} else {{
+                        undisputedBtn.classList.add('active');
+                        renderFacts('undisputed');
+                    }}
+                    
+                    // Update active view
+                    const tableContent = document.getElementById('table-view-content');
+                    const cardContent = document.getElementById('card-view-content');
+                    const timelineContent = document.getElementById('timeline-view-content');
+                    const docsetContent = document.getElementById('docset-view-content');
+                    
+                    if (cardContent.style.display !== 'none') {{
+                        renderCardView(tabType);
+                    }} else if (tableContent.style.display !== 'none') {{
+                        renderFacts(tabType);
+                    }} else if (timelineContent.style.display !== 'none') {{
+                        renderTimeline(tabType);
+                    }} else if (docsetContent.style.display !== 'none') {{
+                        renderDocumentSets(tabType);
                     }}
                 }}
                 
@@ -1691,23 +2023,13 @@ def main():
                     return date.getFullYear().toString();
                 }}
                 
-                // Get current filter type based on Streamlit selection
-                function getCurrentFilterType() {{
-                    switch(currentFactsFilter) {{
-                        case 'Disputed Facts': return 'disputed';
-                        case 'Undisputed Facts': return 'undisputed';
-                        default: return 'all';
-                    }}
-                }}
-                
                 // Render card view with dropdown containers for each fact
-                function renderCardView() {{
+                function renderCardView(tabType = 'all') {{
                     const container = document.getElementById('card-facts-container');
                     container.innerHTML = '';
                     
                     // Filter facts based on tab type and standardize
                     let filteredFacts = factsData.map(standardizeFactData);
-                    const tabType = getCurrentFilterType();
                     if (tabType === 'disputed') {{
                         filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
                     }} else if (tabType === 'undisputed') {{
@@ -1929,13 +2251,12 @@ def main():
                 }}
                 
                 // Render enhanced timeline view
-                function renderTimeline() {{
+                function renderTimeline(tabType = 'all') {{
                     const container = document.getElementById('timeline-events');
                     container.innerHTML = '';
                     
                     // Use factsData and standardize it, not separate timelineData
                     let filteredData = factsData.map(standardizeFactData);
-                    const tabType = getCurrentFilterType();
                     if (tabType === 'disputed') {{
                         filteredData = filteredData.filter(item => item.isDisputed);
                     }} else if (tabType === 'undisputed') {{
@@ -2114,13 +2435,12 @@ def main():
                 }}
                 
                 // Render document sets view with table-like evidence formatting
-                function renderDocumentSets() {{
+                function renderDocumentSets(tabType = 'all') {{
                     const container = document.getElementById('document-sets-container');
                     container.innerHTML = '';
                     
                     // Filter facts based on tab type and standardize
                     let filteredFacts = factsData.map(standardizeFactData);
-                    const tabType = getCurrentFilterType();
                     if (tabType === 'disputed') {{
                         filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
                     }} else if (tabType === 'undisputed') {{
@@ -2289,17 +2609,16 @@ def main():
                 }}
                 
                 // Render facts table
-                function renderFacts() {{
+                function renderFacts(type = 'all') {{
                     const tableBody = document.getElementById('facts-table-body');
                     tableBody.innerHTML = '';
                     
                     // Filter by type and standardize
                     let filteredFacts = factsData.map(standardizeFactData);
-                    const tabType = getCurrentFilterType();
                     
-                    if (tabType === 'disputed') {{
+                    if (type === 'disputed') {{
                         filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
+                    }} else if (type === 'undisputed') {{
                         filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
@@ -2412,13 +2731,13 @@ def main():
                     }});
                 }}
                 
-                // Initialize based on current Streamlit selections
+                // Initialize facts on page load
                 document.addEventListener('DOMContentLoaded', function() {{
-                    switchView(currentViewType);
+                    renderCardView('all');
                 }});
                 
-                // Initialize the correct view immediately
-                switchView(currentViewType);
+                // Initialize card view immediately
+                renderCardView('all');
             </script>
         </body>
         </html>

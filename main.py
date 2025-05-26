@@ -623,13 +623,17 @@ def render_streamlit_card_view(filtered_facts=None):
             
             if evidence_content:
                 for evidence in evidence_content:
-                    # Create a separate container for each evidence item
+                    # Create a separate container for each evidence item with better separation
                     with st.container():
                         st.markdown(f"**{evidence['id']}** - {evidence['title']}")
                         
-                        # Add evidence summary if available
-                        if evidence.get('summary'):
-                            st.markdown(f"*{evidence['summary']}*")
+                        # Document Summary for this evidence
+                        if fact.get('doc_summary'):
+                            st.info(f"**Document Summary:** {fact['doc_summary']}")
+                        
+                        # Source Text for this evidence
+                        if fact.get('source_text'):
+                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
                         
                         # Reference information
                         col1, col2 = st.columns([3, 1])
@@ -652,16 +656,8 @@ def render_streamlit_card_view(filtered_facts=None):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
                         
-                        # Add spacing between evidence items
-                        st.markdown("<br>", unsafe_allow_html=True)
-                
-                # Document Summary (shown once after all evidence)
-                if fact.get('doc_summary'):
-                    st.info(f"**Document Summary:** {fact['doc_summary']}")
-                
-                # Source Text (shown once after all evidence)
-                if fact.get('source_text'):
-                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                        # Add visual separator between evidence items
+                        st.markdown("---")
             else:
                 st.markdown("*No evidence references available for this fact*")
             
@@ -753,24 +749,20 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     
                     if evidence_content:
                         for evidence in evidence_content:
-                            # Create a separate container for each evidence item
+                            # Create a separate container for each evidence item with better separation
                             with st.container():
                                 st.markdown(f"**{evidence['id']}** - {evidence['title']}")
                                 
-                                # Add evidence summary if available
-                                if evidence.get('summary'):
-                                    st.markdown(f"*{evidence['summary']}*")
+                                # Document Summary for this evidence
+                                if fact.get('doc_summary'):
+                                    st.info(f"**Document Summary:** {fact['doc_summary']}")
                                 
-                                # Add spacing between evidence items
-                                st.markdown("<br>", unsafe_allow_html=True)
-                        
-                        # Document Summary (shown once after all evidence)
-                        if fact.get('doc_summary'):
-                            st.info(f"**Document Summary:** {fact['doc_summary']}")
-                        
-                        # Source Text (shown once after all evidence)
-                        if fact.get('source_text'):
-                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                # Source Text for this evidence
+                                if fact.get('source_text'):
+                                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                
+                                # Add visual separator between evidence items
+                                st.markdown("---")
                     else:
                         st.markdown("*No evidence references available*")
                     
@@ -940,24 +932,20 @@ def render_streamlit_docset_view(filtered_facts=None):
                             
                             if evidence_content:
                                 for evidence in evidence_content:
-                                    # Create a separate container for each evidence item
+                                    # Create a separate container for each evidence item with better separation
                                     with st.container():
                                         st.markdown(f"**{evidence['id']}** - {evidence['title']}")
                                         
-                                        # Add evidence summary if available
-                                        if evidence.get('summary'):
-                                            st.markdown(f"*{evidence['summary']}*")
+                                        # Document Summary for this evidence
+                                        if fact.get('doc_summary'):
+                                            st.info(f"**Document Summary:** {fact['doc_summary']}")
                                         
-                                        # Add some spacing between evidence items
-                                        st.markdown("<br>", unsafe_allow_html=True)
-                                
-                                # Document Summary (shown once after all evidence)
-                                if fact.get('doc_summary'):
-                                    st.info(f"**Document Summary:** {fact['doc_summary']}")
-                                
-                                # Source Text (shown once after all evidence)
-                                if fact.get('source_text'):
-                                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                        # Source Text for this evidence
+                                        if fact.get('source_text'):
+                                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                        
+                                        # Add visual separator between evidence items
+                                        st.markdown("---")
                             else:
                                 st.markdown("*No evidence references available*")
                             

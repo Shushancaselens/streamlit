@@ -1404,6 +1404,56 @@ def main():
                     background-color: rgba(221, 107, 32, 0.2);
                 }}
                 
+                /* Document link styling */
+                .document-link {{
+                    color: #4299e1;
+                    cursor: pointer;
+                    text-decoration: none;
+                    border-bottom: 1px dotted #4299e1;
+                    transition: all 0.2s ease;
+                    display: inline-block;
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                }}
+                
+                .document-link:hover {{
+                    background-color: rgba(66, 153, 225, 0.1);
+                    border-bottom: 1px solid #4299e1;
+                    transform: translateY(-1px);
+                }}
+                
+                .document-link strong {{
+                    font-weight: 600;
+                }}
+                
+                /* Document preview button styling */
+                .doc-preview-btn {{
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    padding: 4px 8px;
+                    background-color: rgba(66, 153, 225, 0.1);
+                    color: #4299e1;
+                    border: 1px solid rgba(66, 153, 225, 0.3);
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 12px;
+                    font-weight: 500;
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                }}
+                
+                .doc-preview-btn:hover {{
+                    background-color: rgba(66, 153, 225, 0.2);
+                    border-color: #4299e1;
+                    transform: translateY(-1px);
+                }}
+                
+                .doc-preview-btn svg {{
+                    width: 14px;
+                    height: 14px;
+                }}
+                
                 @keyframes slideDown {{
                     from {{
                         opacity: 0;
@@ -1428,6 +1478,16 @@ def main():
                 <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
                 
                 <div class="action-buttons">
+                    <button class="action-button" onclick="openDocumentManager()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Documents
+                    </button>
                     <button class="action-button" onclick="copyAllContent()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -1519,6 +1579,173 @@ def main():
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
+                
+                // Document preview URLs mapping (in a real app, these would be actual document URLs)
+                const documentPreviewUrls = {{
+                    "Statement of Appeal": "https://example.com/docs/statement-of-appeal.pdf",
+                    "Answer to Request for Provisional Measures": "https://example.com/docs/answer-provisional-measures.pdf",
+                    "Appeal Brief": "https://example.com/docs/appeal-brief.pdf",
+                    "Reply to Objection to Admissibility": "https://example.com/docs/reply-objection-admissibility.pdf",
+                    "Request for a Stay": "https://example.com/docs/request-stay.pdf",
+                    "Answer to PM": "https://example.com/docs/answer-pm.pdf",
+                    "Brief on Admissibility": "https://example.com/docs/brief-admissibility.pdf",
+                    "Challenge": "https://example.com/docs/challenge.pdf",
+                    "ChatGPT": "https://example.com/docs/chatgpt-analysis.pdf",
+                    "Swiss Court": "https://example.com/docs/swiss-court.pdf",
+                    "Jurisprudence": "https://example.com/docs/jurisprudence.pdf",
+                    "Objection to Admissibility": "https://example.com/docs/objection-admissibility.pdf"
+                }};
+                
+                // Function to open document preview
+                function openDocumentPreview(docName, page = null) {{
+                    if (!docName) {{
+                        alert('Document name not available');
+                        return;
+                    }}
+                    
+                    // Check if we have a preview URL for this document
+                    const previewUrl = documentPreviewUrls[docName];
+                    
+                    if (previewUrl) {{
+                        // Open the actual document URL
+                        let urlToOpen = previewUrl;
+                        if (page) {{
+                            // Append page number if supported (for PDF viewers)
+                            urlToOpen += `#page=${{page}}`;
+                        }}
+                        window.open(urlToOpen, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+                    }} else {{
+                        // Create a mock document preview page
+                        const mockDocContent = generateMockDocumentPreview(docName, page);
+                        const newWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+                        newWindow.document.write(mockDocContent);
+                        newWindow.document.close();
+                    }}
+                }}
+                
+                // Generate mock document preview (for demonstration purposes)
+                function generateMockDocumentPreview(docName, page = null) {{
+                    return `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${{docName}} - Document Preview</title>
+                            <style>
+                                body {{
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    line-height: 1.6;
+                                    margin: 0;
+                                    padding: 20px;
+                                    background: #f5f5f5;
+                                }}
+                                .document-container {{
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    background: white;
+                                    padding: 40px;
+                                    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                                    border-radius: 8px;
+                                }}
+                                .document-header {{
+                                    border-bottom: 2px solid #333;
+                                    padding-bottom: 20px;
+                                    margin-bottom: 30px;
+                                }}
+                                .document-title {{
+                                    font-size: 24px;
+                                    font-weight: bold;
+                                    color: #333;
+                                    margin-bottom: 10px;
+                                }}
+                                .document-meta {{
+                                    color: #666;
+                                    font-size: 14px;
+                                }}
+                                .document-content {{
+                                    color: #333;
+                                    font-size: 16px;
+                                }}
+                                .page-info {{
+                                    position: fixed;
+                                    top: 20px;
+                                    right: 20px;
+                                    background: #4299e1;
+                                    color: white;
+                                    padding: 8px 16px;
+                                    border-radius: 20px;
+                                    font-size: 12px;
+                                }}
+                                .highlight {{
+                                    background-color: yellow;
+                                    padding: 2px 4px;
+                                }}
+                                .section {{
+                                    margin-bottom: 25px;
+                                }}
+                                .section-title {{
+                                    font-weight: bold;
+                                    color: #2d3748;
+                                    margin-bottom: 10px;
+                                    font-size: 18px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            ${{page ? '<div class="page-info">Page ' + page + '</div>' : ''}}
+                            <div class="document-container">
+                                <div class="document-header">
+                                    <div class="document-title">${{docName}}</div>
+                                    <div class="document-meta">
+                                        Legal Document • Athletic Club United Case<br>
+                                        Generated for preview purposes
+                                    </div>
+                                </div>
+                                <div class="document-content">
+                                    <div class="section">
+                                        <div class="section-title">Document Overview</div>
+                                        <p>This is a preview of <strong>${{docName}}</strong>. In a real implementation, this would display the actual document content.</p>
+                                    </div>
+                                    
+                                    <div class="section">
+                                        <div class="section-title">Key Points</div>
+                                        <p>• Legal arguments regarding sporting succession and club identity</p>
+                                        <p>• Evidence of continuous operations and organizational structure</p>
+                                        <p>• Analysis of regulatory compliance and federation requirements</p>
+                                    </div>
+                                    
+                                    <div class="section">
+                                        <div class="section-title">Related Evidence</div>
+                                        <p>This document contains references to various exhibits including registration records, competition participation data, and media coverage archives.</p>
+                                    </div>
+                                    
+                                    ${{page ? '<div class="section"><div class="section-title">Page ' + page + ' Content</div><p>You have requested to view page ' + page + ' of this document. <span class="highlight">This would show the specific content for that page.</span></p></div>' : ''}}
+                                    
+                                    <div class="section">
+                                        <div class="section-title">Integration Note</div>
+                                        <p><em>In a production environment, this preview would integrate with document management systems like SharePoint, Google Drive, or dedicated legal document platforms to display actual document content with proper formatting, annotations, and search capabilities.</em></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                }}
+                
+                // Create clickable document link
+                function createDocumentLink(docName, page = null, displayText = null) {{
+                    if (!docName) return displayText || 'N/A';
+                    
+                    const linkText = displayText || docName;
+                    const pageInfo = page ? ` (Page ${{page}})` : '';
+                    
+                    return `
+                        <span class="document-link" 
+                              onclick="openDocumentPreview('${{docName}}', ${{page ? "'" + page + "'" : 'null'}})"
+                              title="Click to preview ${{docName}}${{pageInfo}}">
+                            📄 <strong>${{linkText}}</strong>${{pageInfo}}
+                        </span>
+                    `;
+                }}
                 
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
@@ -1626,6 +1853,129 @@ def main():
                         argTitle: item.argTitle || '',
                         paragraphs: item.paragraphs || ''
                     }};
+                }}
+                
+                // Function to open document manager
+                function openDocumentManager() {{
+                    const documentList = Object.keys(documentPreviewUrls).map(docName => 
+                        `<li><span class="document-link" onclick="openDocumentPreview('${{docName}}')">${{docName}}</span></li>`
+                    ).join('');
+                    
+                    const documentManagerContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Document Manager - Case Documents</title>
+                            <style>
+                                body {{
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    line-height: 1.6;
+                                    margin: 0;
+                                    padding: 20px;
+                                    background: #f5f5f5;
+                                }}
+                                .container {{
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    background: white;
+                                    padding: 30px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                }}
+                                .header {{
+                                    text-align: center;
+                                    margin-bottom: 30px;
+                                    padding-bottom: 20px;
+                                    border-bottom: 2px solid #e2e8f0;
+                                }}
+                                .title {{
+                                    font-size: 24px;
+                                    font-weight: bold;
+                                    color: #2d3748;
+                                    margin-bottom: 10px;
+                                }}
+                                .subtitle {{
+                                    color: #718096;
+                                    font-size: 16px;
+                                }}
+                                .document-list {{
+                                    list-style: none;
+                                    padding: 0;
+                                }}
+                                .document-list li {{
+                                    padding: 12px;
+                                    margin-bottom: 8px;
+                                    background: #f8fafc;
+                                    border-radius: 6px;
+                                    border-left: 4px solid #4299e1;
+                                    transition: all 0.2s ease;
+                                }}
+                                .document-list li:hover {{
+                                    background: #e2e8f0;
+                                    transform: translateX(4px);
+                                }}
+                                .document-link {{
+                                    color: #4299e1;
+                                    cursor: pointer;
+                                    font-weight: 500;
+                                    text-decoration: none;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                }}
+                                .document-link:hover {{
+                                    color: #2b6cb0;
+                                }}
+                                .document-link:before {{
+                                    content: '📄';
+                                    font-size: 16px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <div class="header">
+                                    <div class="title">📁 Case Document Manager</div>
+                                    <div class="subtitle">Athletic Club United Legal Case Documents</div>
+                                </div>
+                                <ul class="document-list">
+                                    ${{documentList}}
+                                </ul>
+                                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #718096; font-size: 14px;">
+                                    Click on any document to open it in a new tab
+                                </div>
+                            </div>
+                            <script>
+                                function openDocumentPreview(docName, page = null) {{
+                                    const documentPreviewUrls = ${{JSON.stringify(documentPreviewUrls)}};
+                                    const previewUrl = documentPreviewUrls[docName];
+                                    
+                                    if (previewUrl) {{
+                                        let urlToOpen = previewUrl;
+                                        if (page) {{
+                                            urlToOpen += \`#page=\${{page}}\`;
+                                        }}
+                                        window.open(urlToOpen, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+                                    }} else {{
+                                        // Create mock document preview (same as parent function)
+                                        const mockDocContent = generateMockDocumentPreview(docName, page);
+                                        const newWindow = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+                                        newWindow.document.write(mockDocContent);
+                                        newWindow.document.close();
+                                    }}
+                                }}
+                                
+                                function generateMockDocumentPreview(docName, page = null) {{
+                                    return \`<!DOCTYPE html><html><head><title>\${{docName}} - Document Preview</title><style>body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;margin:0;padding:20px;background:#f5f5f5}}.document-container{{max-width:800px;margin:0 auto;background:white;padding:40px;box-shadow:0 0 20px rgba(0,0,0,0.1);border-radius:8px}}.document-header{{border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px}}.document-title{{font-size:24px;font-weight:bold;color:#333;margin-bottom:10px}}.document-meta{{color:#666;font-size:14px}}.document-content{{color:#333;font-size:16px}}.section{{margin-bottom:25px}}.section-title{{font-weight:bold;color:#2d3748;margin-bottom:10px;font-size:18px}}</style></head><body><div class="document-container"><div class="document-header"><div class="document-title">\${{docName}}</div><div class="document-meta">Legal Document • Athletic Club United Case<br>Generated for preview purposes</div></div><div class="document-content"><div class="section"><div class="section-title">Document Overview</div><p>This is a preview of <strong>\${{docName}}</strong>. In a real implementation, this would display the actual document content.</p></div><div class="section"><div class="section-title">Key Points</div><p>• Legal arguments regarding sporting succession and club identity</p><p>• Evidence of continuous operations and organizational structure</p><p>• Analysis of regulatory compliance and federation requirements</p></div></div></div></body></html>\`;
+                                }}
+                            </script>
+                        </body>
+                        </html>
+                    `;
+                    
+                    const newWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
+                    newWindow.document.write(documentManagerContent);
+                    newWindow.document.close();
                 }}
                 
                 // Switch view between table, card, timeline, and document sets
@@ -2122,8 +2472,7 @@ def main():
                         docSection.innerHTML = `
                             <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                <strong>${{fact.doc_name || 'N/A'}}</strong>
-                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                                ${{createDocumentLink(fact.doc_name, fact.page, fact.doc_name)}}
                             </div>
                         `;
                         detailsEl.appendChild(docSection);
@@ -2352,7 +2701,7 @@ def main():
                         docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
                         docInfoEl.innerHTML = `
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div><strong>Document:</strong> ${{createDocumentLink(fact.doc_name, fact.page, fact.doc_name)}}</div>
                                 <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
                                 <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
                                 <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
@@ -2559,7 +2908,7 @@ def main():
                                                     <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
                                                     <td style="white-space: nowrap;">${{fact.page || ''}}</td>
-                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;">${{createDocumentLink(fact.doc_name, fact.page, fact.doc_name)}}</td>
                                                     <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
@@ -2659,7 +3008,7 @@ def main():
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || '';
+                        docCell.innerHTML = createDocumentLink(fact.doc_name, fact.page, fact.doc_name);
                         docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
                         

@@ -1001,31 +1001,24 @@ def main():
         st.divider()
         
         # Facts filter using tabs
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["All", "Disputed", "Undisputed", "Claimant", "Respondent"])
+        tab1, tab2, tab3 = st.tabs(["All", "Disputed Facts", "Undisputed Facts"])
         
         with tab1:
-            # All Facts
+            st.session_state.current_tab_type = "all"
             filtered_facts = get_all_facts()
+            # Render the appropriate native view based on current view type
             render_view_content(st.session_state.current_view_type, filtered_facts)
         
         with tab2:
-            # Disputed Facts
+            st.session_state.current_tab_type = "disputed"
             filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
+            # Render the appropriate native view based on current view type
             render_view_content(st.session_state.current_view_type, filtered_facts)
         
         with tab3:
-            # Undisputed Facts
+            st.session_state.current_tab_type = "undisputed"
             filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
-            render_view_content(st.session_state.current_view_type, filtered_facts)
-        
-        with tab4:
-            # Claimant Facts
-            filtered_facts = [fact for fact in get_all_facts() if 'Appellant' in fact.get('parties_involved', [])]
-            render_view_content(st.session_state.current_view_type, filtered_facts)
-        
-        with tab5:
-            # Respondent Facts
-            filtered_facts = [fact for fact in get_all_facts() if 'Respondent' in fact.get('parties_involved', [])]
+            # Render the appropriate native view based on current view type
             render_view_content(st.session_state.current_view_type, filtered_facts)
 
 # Helper function to render the appropriate view content

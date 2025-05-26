@@ -1,128 +1,298 @@
 import streamlit as st
 import json
+import streamlit.components.v1 as components
 import pandas as pd
 import base64
-from datetime import datetime
 
-# Set page config with better styling
-st.set_page_config(
-    page_title="CaseLens - Legal Analysis", 
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'About': "CaseLens - Advanced Legal Case Analysis Tool"
-    }
-)
+# Set page config
+st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
-# Custom CSS for better styling
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1f77b4;
-        margin-bottom: 1rem;
-        text-align: center;
-        border-bottom: 3px solid #1f77b4;
-        padding-bottom: 1rem;
+# Initialize session state to track selected view and current view type
+if 'view' not in st.session_state:
+    st.session_state.view = "Facts"
+if 'current_view_type' not in st.session_state:
+    st.session_state.current_view_type = "card"
+
+# Enhanced CSS styling
+def inject_custom_css():
+    st.markdown("""
+    <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global styles */
+    .main .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
     
-    .section-header {
-        font-size: 1.5rem;
+    /* Custom button styling */
+    .stButton > button {
+        border-radius: 8px;
+        border: 1px solid #e0e7ff;
+        background: white;
+        color: #374151;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(77, 104, 249, 0.15);
+        border-color: #4D68F9;
+    }
+    
+    /* Primary button styling */
+    .stButton > button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #4D68F9 0%, #6366f1 100%);
+        color: white;
+        border: none;
         font-weight: 600;
-        color: #2c3e50;
-        margin: 1.5rem 0 1rem 0;
-        padding: 0.5rem 0;
-        border-left: 4px solid #3498db;
-        padding-left: 1rem;
     }
     
+    .stButton > button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #3f56e8 0%, #5855eb 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(77, 104, 249, 0.3);
+    }
+    
+    /* Fact card styling */
     .fact-card {
-        border: 1px solid #e1e5e9;
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+    
+    .fact-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+    
+    /* Status badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    
+    .status-disputed {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+    
+    .status-undisputed {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+    
+    /* Party badges */
+    .party-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+    
+    .party-appellant {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+    }
+    
+    .party-respondent {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+    
+    /* Section headers */
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0 1rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .section-header h3 {
+        margin: 0;
+        color: #374151;
+        font-weight: 600;
+    }
+    
+    .section-icon {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    /* Evidence boxes */
+    .evidence-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
         padding: 1rem;
-        margin: 1rem 0;
-        background: #f8f9fa;
+        margin: 0.75rem 0;
     }
     
-    .party-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
+    .evidence-title {
         font-weight: 600;
-        margin: 0.25rem;
+        color: #374151;
+        margin-bottom: 0.5rem;
     }
     
-    .appellant-badge {
-        background-color: #e3f2fd;
-        color: #1976d2;
-        border: 1px solid #bbdefb;
+    /* Submission boxes */
+    .submission-box {
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.75rem 0;
+        border-left: 4px solid;
     }
     
-    .respondent-badge {
-        background-color: #ffebee;
-        color: #d32f2f;
-        border: 1px solid #ffcdd2;
+    .submission-appellant {
+        background: #eff6ff;
+        border-left-color: #2563eb;
     }
     
-    .disputed-indicator {
-        background-color: #fff3e0;
-        color: #f57c00;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
+    .submission-respondent {
+        background: #fef2f2;
+        border-left-color: #dc2626;
+    }
+    
+    /* Timeline styling */
+    .timeline-year {
+        background: #4D68F9;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
         font-weight: 600;
-    }
-    
-    .undisputed-indicator {
-        background-color: #e8f5e8;
-        color: #2e7d32;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: 600;
+        margin: 2rem 0 1rem 0;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(77, 104, 249, 0.3);
     }
     
     .timeline-event {
         position: relative;
         padding-left: 2rem;
         margin-bottom: 2rem;
-        border-left: 3px solid #3498db;
     }
     
     .timeline-event::before {
         content: '';
         position: absolute;
-        left: -8px;
-        top: 0;
+        left: 0;
+        top: 0.5rem;
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background-color: #3498db;
+        background: #4D68F9;
     }
     
-    .evidence-tag {
-        background-color: #f1f3f4;
-        color: #5f6368;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        margin: 0.25rem;
-        display: inline-block;
+    .timeline-event.disputed::before {
+        background: #dc2626;
     }
-</style>
-""", unsafe_allow_html=True)
+    
+    /* Metrics styling */
+    .metric-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.25rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+    }
+    
+    .metric-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4D68F9;
+        margin-bottom: 0.25rem;
+    }
+    
+    .metric-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    /* Improved expander styling */
+    .streamlit-expanderHeader {
+        background-color: #fafbfc;
+        border-radius: 8px;
+        border: 1px solid #e1e5e9;
+        font-weight: 600;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        background-color: #f0f2f6;
+        border-color: #4D68F9;
+    }
+    
+    /* Search and filter styling */
+    .filter-container {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Copy button styling */
+    .copy-button {
+        background: #f1f5f9;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    .copy-button:hover {
+        background: #e5e7eb;
+        color: #4D68F9;
+    }
+    
+    /* Document category styling */
+    .doc-category {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1rem;
+    }
+    
+    .doc-category-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 1rem;
+        border-radius: 10px 10px 0 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .fact-card {
+            padding: 1rem;
+        }
+        
+        .metric-number {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'current_section' not in st.session_state:
-    st.session_state.current_section = "Facts"
-if 'current_view' not in st.session_state:
-    st.session_state.current_view = "Card View"
-if 'selected_filter' not in st.session_state:
-    st.session_state.selected_filter = "All Facts"
-
-# Data functions (keeping the same data structure)
+# Create data structures as JSON for embedded components
 def get_argument_data():
     claimant_args = {
         "1": {
@@ -373,10 +543,12 @@ def get_argument_data():
         "topics": topics
     }
 
+# Get all facts from the data with enhanced submissions structure
 def get_all_facts():
     args_data = get_argument_data()
     facts = []
     
+    # Helper function to extract facts from arguments
     def extract_facts(arg, party):
         if not arg:
             return
@@ -384,7 +556,7 @@ def get_all_facts():
         if 'factualPoints' in arg and arg['factualPoints']:
             for point in arg['factualPoints']:
                 fact = {
-                    'event': point['point'],
+                    'event': point['point'],  # Renamed from 'point' to 'event'
                     'date': point['date'],
                     'isDisputed': point['isDisputed'],
                     'party': party,
@@ -401,21 +573,26 @@ def get_all_facts():
                 }
                 facts.append(fact)
                 
+        # Process children
         if 'children' in arg and arg['children']:
             for child_id, child in arg['children'].items():
                 extract_facts(child, party)
     
+    # Extract from claimant args
     for arg_id, arg in args_data['claimantArgs'].items():
         extract_facts(arg, 'Appellant')
         
+    # Extract from respondent args
     for arg_id, arg in args_data['respondentArgs'].items():
         extract_facts(arg, 'Respondent')
     
+    # Now enhance facts with both parties' submissions
     enhanced_facts = []
     fact_groups = {}
     
+    # Group facts by date and similar events
     for fact in facts:
-        key = f"{fact['date']}_{fact['event'][:50]}"
+        key = f"{fact['date']}_{fact['event'][:50]}"  # Group by date and first 50 chars of event
         if key not in fact_groups:
             fact_groups[key] = {
                 'event': fact['event'],
@@ -434,6 +611,7 @@ def get_all_facts():
                 'parties_involved': []
             }
         
+        # Add party-specific information
         if fact['party'] == 'Appellant':
             fact_groups[key]['claimant_submission'] = fact['source_text']
         else:
@@ -441,9 +619,11 @@ def get_all_facts():
         
         fact_groups[key]['parties_involved'].append(fact['party'])
         
+        # Update disputed status if either party contests it
         if fact['isDisputed']:
             fact_groups[key]['isDisputed'] = True
     
+    # Create enhanced facts with proper submissions structure
     for key, group in fact_groups.items():
         enhanced_fact = {
             'event': group['event'],
@@ -459,20 +639,207 @@ def get_all_facts():
             'argTitle': group['argTitle'],
             'claimant_submission': group['claimant_submission'] or 'No specific submission recorded',
             'respondent_submission': group['respondent_submission'] or 'No specific submission recorded',
-            'parties_involved': list(set(group['parties_involved']))
+            'parties_involved': list(set(group['parties_involved']))  # Remove duplicates
         }
         enhanced_facts.append(enhanced_fact)
     
     return enhanced_facts
 
+# Get enhanced timeline data with claimant and respondent submissions
+def get_timeline_data():
+    # Create enhanced timeline events with both parties' positions
+    timeline_events = [
+        {
+            "event": "Club founded and officially registered in the Football Federation",
+            "date": "1950-01-12",
+            "isDisputed": False,
+            "claimant_submission": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
+            "respondent_submission": "No specific counter-submission recorded",
+            "exhibits": ["C-1"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
+            "page": 15,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
+            "parties_involved": ["Appellant"]
+        },
+        {
+            "event": "Operations ceased between 1975-1976",
+            "date": "1975-1976",
+            "isDisputed": True,
+            "claimant_submission": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
+            "respondent_submission": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
+            "exhibits": ["C-2", "R-1", "R-2"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Both parties - Statement of Appeal & Answer to PM",
+            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
+            "page": 127,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "Club colors established as blue and white",
+            "date": "1956-03-10",
+            "isDisputed": True,
+            "claimant_submission": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
+            "respondent_submission": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
+            "exhibits": ["C-4", "R-4"],
+            "argId": "1.2",
+            "argTitle": "Club Colors Analysis",
+            "source": "Appeal - Statement of Appeal",
+            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
+            "page": 67,
+            "doc_name": "Statement of Appeal",
+            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "First National Championship won",
+            "date": "1955-05-20",
+            "isDisputed": False,
+            "claimant_submission": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
+            "respondent_submission": "No specific counter-submission recorded",
+            "exhibits": ["C-3"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "Appeal - Appeal Brief",
+            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
+            "page": 42,
+            "doc_name": "Appeal Brief",
+            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
+            "parties_involved": ["Appellant"]
+        },
+        {
+            "event": "Club registration formally terminated",
+            "date": "1975-04-30",
+            "isDisputed": True,
+            "claimant_submission": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely, but this was a temporary administrative measure that did not affect the club's legal identity.",
+            "respondent_submission": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional measures - Answer to Request for PM",
+            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
+            "page": 158,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "New entity registered with similar name",
+            "date": "1976-09-15",
+            "isDisputed": True,
+            "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
+            "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
+            "exhibits": ["R-2"],
+            "argId": "1.1.1",
+            "argTitle": "Registration Gap Evidence",
+            "source": "provisional measures - Answer to Request for PM",
+            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
+            "page": 162,
+            "doc_name": "Answer to Request for Provisional Measures",
+            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+            "parties_involved": ["Appellant", "Respondent"]
+        },
+        {
+            "event": "Federation officially recognizes club history spanning pre and post 1976",
+            "date": "2010-05-18",
+            "isDisputed": True,
+            "claimant_submission": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.",
+            "respondent_submission": "The 2010 federation recognition was a purely administrative convenience that does not override the documented legal and operational discontinuity that occurred in 1975-1976.",
+            "exhibits": ["C-10"],
+            "argId": "1",
+            "argTitle": "Sporting Succession",
+            "source": "admissibility - Reply to Objection to Admissibility",
+            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
+            "page": 234,
+            "doc_name": "Reply to Objection to Admissibility",
+            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
+            "parties_involved": ["Appellant", "Respondent"]
+        }
+    ]
+    
+    # Sort events chronologically
+    timeline_events.sort(key=lambda x: x['date'])
+    
+    return timeline_events
+
+# Sample document sets for demonstrating the document set view
+def get_document_sets():
+    # Return grouped document sets with individual document subfolders
+    return [
+        {
+            "id": "appeal",
+            "name": "Appeal",
+            "party": "Mixed",
+            "category": "Appeal",
+            "isGroup": True,
+            "documents": [
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
+            ]
+        },
+        {
+            "id": "provisional_measures",
+            "name": "provisional measures",
+            "party": "Respondent",
+            "category": "provisional measures",
+            "isGroup": True,
+            "documents": [
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional measures"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional measures"}
+            ]
+        },
+        {
+            "id": "admissibility",
+            "name": "admissibility",
+            "party": "Mixed",
+            "category": "admissibility",
+            "isGroup": True,
+            "documents": [
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
+            ]
+        },
+        {
+            "id": "challenge",
+            "name": "challenge",
+            "party": "Mixed",
+            "category": "challenge",
+            "isGroup": True,
+            "documents": [
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
+            ]
+        }
+    ]
+
+# Function to create CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
+
+# Helper function to get evidence content
 def get_evidence_content(fact):
     if not fact.get('exhibits') or len(fact['exhibits']) == 0:
         return []
     
+    # Get evidence details from the argument data
     args_data = get_argument_data()
     evidence_content = []
     
     for exhibit_id in fact['exhibits']:
+        # Search through all arguments to find evidence details
         def find_evidence(args):
             for arg_key in args:
                 arg = args[arg_key]
@@ -486,6 +853,7 @@ def get_evidence_content(fact):
                         return child_evidence
             return None
         
+        # Look in both claimant and respondent args
         evidence = find_evidence(args_data['claimantArgs']) or find_evidence(args_data['respondentArgs'])
         
         if evidence:
@@ -503,299 +871,571 @@ def get_evidence_content(fact):
     
     return evidence_content
 
-# Improved UI Components
-def render_header():
-    st.markdown('<div class="main-header">⚖️ CaseLens Legal Analysis</div>', unsafe_allow_html=True)
-    st.markdown("---")
-
-def render_sidebar():
-    with st.sidebar:
-        st.markdown("### 🏛️ Case Navigation")
-        
-        # Navigation buttons with better styling
-        sections = ["📊 Facts", "📑 Arguments", "📁 Exhibits"]
-        current_section = st.radio(
-            "Select Section:",
-            sections,
-            index=0,
-            key="section_nav"
-        )
-        
-        st.session_state.current_section = current_section.split(" ", 1)[1]  # Remove emoji
-        
-        st.markdown("---")
-        
-        # Case summary metrics
-        facts_data = get_all_facts()
-        total_facts = len(facts_data)
-        disputed_facts = len([f for f in facts_data if f['isDisputed']])
-        undisputed_facts = total_facts - disputed_facts
-        
-        st.markdown("### 📈 Case Summary")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("Total Facts", total_facts)
-            st.metric("Disputed", disputed_facts, delta=f"{disputed_facts/total_facts*100:.0f}%")
-        with col2:
-            st.metric("Undisputed", undisputed_facts, delta=f"{undisputed_facts/total_facts*100:.0f}%")
-        
-        st.markdown("---")
-        
-        # Quick filters
-        st.markdown("### 🔍 Quick Filters")
-        filter_options = ["All Facts", "Disputed Only", "Undisputed Only", "Appellant Claims", "Respondent Claims"]
-        st.session_state.selected_filter = st.selectbox(
-            "Filter by:",
-            filter_options,
-            key="fact_filter"
-        )
-
-def render_fact_card(fact, index):
-    with st.container():
-        # Card header with status and date
-        col1, col2, col3 = st.columns([3, 1, 1])
-        
-        with col1:
-            st.markdown(f"### {fact['event']}")
-        
-        with col2:
-            if fact['isDisputed']:
-                st.markdown('<span class="disputed-indicator">⚠️ DISPUTED</span>', unsafe_allow_html=True)
-            else:
-                st.markdown('<span class="undisputed-indicator">✅ UNDISPUTED</span>', unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown(f"**📅 {fact['date']}**")
-        
-        # Parties involved
-        if fact.get('parties_involved'):
-            party_tags = ""
-            for party in fact['parties_involved']:
-                if party == 'Appellant':
-                    party_tags += '<span class="party-badge appellant-badge">🔵 Appellant</span>'
-                else:
-                    party_tags += '<span class="party-badge respondent-badge">🔴 Respondent</span>'
-            st.markdown(party_tags, unsafe_allow_html=True)
-        
-        # Expandable details
-        with st.expander("📋 View Details", expanded=False):
-            # Tabs for different content
-            tab1, tab2, tab3 = st.tabs(["📝 Submissions", "📁 Evidence", "ℹ️ Source"])
-            
-            with tab1:
-                st.markdown("#### 🔵 Appellant Submission")
-                if fact['claimant_submission'] != 'No specific submission recorded':
-                    st.info(fact['claimant_submission'])
-                else:
-                    st.markdown("*No submission provided*")
-                
-                st.markdown("#### 🔴 Respondent Submission")
-                if fact['respondent_submission'] != 'No specific submission recorded':
-                    st.warning(fact['respondent_submission'])
-                else:
-                    st.markdown("*No submission provided*")
-            
-            with tab2:
-                evidence_content = get_evidence_content(fact)
-                if evidence_content:
-                    for evidence in evidence_content:
-                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
-                        st.caption(evidence['summary'])
-                        st.markdown('<span class="evidence-tag">📎 Evidence</span>', unsafe_allow_html=True)
-                else:
-                    st.info("No evidence references available")
-            
-            with tab3:
-                info_col1, info_col2 = st.columns(2)
-                with info_col1:
-                    if fact.get('doc_name'):
-                        st.markdown(f"**Document:** {fact['doc_name']}")
-                    if fact.get('page'):
-                        st.markdown(f"**Page:** {fact['page']}")
-                with info_col2:
-                    if fact.get('paragraphs'):
-                        st.markdown(f"**Paragraphs:** {fact['paragraphs']}")
-                    if fact.get('argId'):
-                        st.markdown(f"**Argument ID:** {fact['argId']}")
-        
-        st.markdown("---")
-
-def render_timeline_view(facts):
-    st.markdown('<div class="section-header">📅 Timeline View</div>', unsafe_allow_html=True)
+# Enhanced facts summary component
+def render_facts_summary(facts_data):
+    total_facts = len(facts_data)
+    disputed_facts = len([f for f in facts_data if f['isDisputed']])
+    undisputed_facts = total_facts - disputed_facts
     
-    # Sort facts by date
-    sorted_facts = sorted(facts, key=lambda x: x['date'])
-    
-    # Group by year
-    years = {}
-    for fact in sorted_facts:
-        year = fact['date'].split('-')[0] if '-' in fact['date'] else fact['date'][:4]
-        if year not in years:
-            years[year] = []
-        years[year].append(fact)
-    
-    for year, year_facts in years.items():
-        st.markdown(f"## 📆 {year}")
-        
-        for fact in year_facts:
-            st.markdown('<div class="timeline-event">', unsafe_allow_html=True)
-            
-            # Event header
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.markdown(f"**{fact['date']}** - {fact['event']}")
-            with col2:
-                if fact['isDisputed']:
-                    st.error("Disputed")
-                else:
-                    st.success("Undisputed")
-            
-            # Quick summary
-            if fact.get('source_text'):
-                with st.expander("View Details"):
-                    st.info(fact['source_text'])
-                    
-                    # Evidence tags
-                    if fact.get('exhibits'):
-                        evidence_tags = " ".join([f'<span class="evidence-tag">{ex}</span>' for ex in fact['exhibits']])
-                        st.markdown(evidence_tags, unsafe_allow_html=True)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown("---")
-
-def render_card_view(facts):
-    st.markdown('<div class="section-header">📋 Card View</div>', unsafe_allow_html=True)
-    
-    if not facts:
-        st.info("No facts match the current filter criteria.")
-        return
-    
-    # Sort facts by date
-    sorted_facts = sorted(facts, key=lambda x: x['date'])
-    
-    for i, fact in enumerate(sorted_facts):
-        render_fact_card(fact, i)
-
-def render_summary_view(facts):
-    st.markdown('<div class="section-header">📊 Summary Dashboard</div>', unsafe_allow_html=True)
-    
-    # Summary metrics
     col1, col2, col3, col4 = st.columns(4)
     
-    total_facts = len(facts)
-    disputed = len([f for f in facts if f['isDisputed']])
-    undisputed = total_facts - disputed
-    unique_exhibits = len(set([ex for f in facts for ex in f.get('exhibits', [])]))
-    
     with col1:
-        st.metric("Total Facts", total_facts)
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-number">{}</div>
+            <div class="metric-label">Total Facts</div>
+        </div>
+        """.format(total_facts), unsafe_allow_html=True)
+    
     with col2:
-        st.metric("Disputed Facts", disputed, delta=f"{disputed/total_facts*100:.1f}%" if total_facts > 0 else "0%")
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-number" style="color: #dc2626;">{}</div>
+            <div class="metric-label">Disputed</div>
+        </div>
+        """.format(disputed_facts), unsafe_allow_html=True)
+    
     with col3:
-        st.metric("Undisputed Facts", undisputed, delta=f"{undisputed/total_facts*100:.1f}%" if total_facts > 0 else "0%")
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-number" style="color: #16a34a;">{}</div>
+            <div class="metric-label">Undisputed</div>
+        </div>
+        """.format(undisputed_facts), unsafe_allow_html=True)
+    
     with col4:
-        st.metric("Evidence Items", unique_exhibits)
-    
-    st.markdown("---")
-    
-    # Facts by year chart
-    if facts:
-        years_data = {}
-        for fact in facts:
-            year = fact['date'].split('-')[0] if '-' in fact['date'] else fact['date'][:4]
-            if year not in years_data:
-                years_data[year] = {'disputed': 0, 'undisputed': 0}
-            if fact['isDisputed']:
-                years_data[year]['disputed'] += 1
-            else:
-                years_data[year]['undisputed'] += 1
-        
-        # Create DataFrame for chart
-        chart_data = []
-        for year, data in years_data.items():
-            chart_data.append({'Year': int(year), 'Disputed': data['disputed'], 'Undisputed': data['undisputed']})
-        
-        if chart_data:
-            df = pd.DataFrame(chart_data)
-            st.markdown("### 📈 Facts Distribution by Year")
-            st.bar_chart(df.set_index('Year')[['Disputed', 'Undisputed']])
+        if total_facts > 0:
+            dispute_rate = round((disputed_facts / total_facts) * 100)
+        else:
+            dispute_rate = 0
+        st.markdown("""
+        <div class="metric-card">
+            <div class="metric-number" style="color: #ea580c;">{}%</div>
+            <div class="metric-label">Dispute Rate</div>
+        </div>
+        """.format(dispute_rate), unsafe_allow_html=True)
 
-def filter_facts(facts, filter_type):
-    if filter_type == "All Facts":
-        return facts
-    elif filter_type == "Disputed Only":
-        return [f for f in facts if f['isDisputed']]
-    elif filter_type == "Undisputed Only":
-        return [f for f in facts if not f['isDisputed']]
-    elif filter_type == "Appellant Claims":
-        return [f for f in facts if 'Appellant' in f.get('parties_involved', [])]
-    elif filter_type == "Respondent Claims":
-        return [f for f in facts if 'Respondent' in f.get('parties_involved', [])]
-    return facts
-
-def main():
-    render_header()
-    render_sidebar()
-    
-    # Main content area
-    if st.session_state.current_section == "Facts":
+# Enhanced Streamlit Card View Implementation
+def render_streamlit_card_view(filtered_facts=None):
+    # Get facts data
+    if filtered_facts is None:
         facts_data = get_all_facts()
-        filtered_facts = filter_facts(facts_data, st.session_state.selected_filter)
-        
-        # View selection tabs
-        tab1, tab2, tab3 = st.tabs(["📋 Card View", "📅 Timeline", "📊 Summary"])
-        
-        with tab1:
-            render_card_view(filtered_facts)
-        
-        with tab2:
-            render_timeline_view(filtered_facts)
-        
-        with tab3:
-            render_summary_view(filtered_facts)
+    else:
+        facts_data = filtered_facts
     
-    elif st.session_state.current_section == "Arguments":
-        st.markdown('<div class="section-header">📑 Legal Arguments</div>', unsafe_allow_html=True)
-        st.info("Arguments section - Coming soon! This will display the structured legal arguments from both parties.")
+    # Sort by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    if not facts_data:
+        st.info("🔍 No facts found matching the selected criteria.")
+        return
+    
+    # Display each fact as an enhanced card
+    for i, fact in enumerate(facts_data):
+        # Create main fact card
+        st.markdown('<div class="fact-card">', unsafe_allow_html=True)
         
-        # Placeholder for arguments structure
-        args_data = get_argument_data()
+        # Header section with date, title, and status
+        col1, col2 = st.columns([3, 1])
         
-        col1, col2 = st.columns(2)
         with col1:
-            st.markdown("### 🔵 Appellant Arguments")
-            for arg_id, arg in args_data['claimantArgs'].items():
-                with st.expander(f"{arg['title']} (¶{arg['paragraphs']})"):
-                    for point in arg['overview']['points']:
-                        st.markdown(f"• {point}")
+            # Date and event title
+            st.markdown(f"### 📅 {fact['date']}")
+            st.markdown(f"**{fact['event']}**")
+            
+            # Party badges
+            if fact.get('parties_involved'):
+                party_badges = ""
+                for party in fact['parties_involved']:
+                    badge_class = "party-appellant" if party == "Appellant" else "party-respondent"
+                    party_badges += f'<span class="party-badge {badge_class}">{party}</span>'
+                st.markdown(party_badges, unsafe_allow_html=True)
         
         with col2:
-            st.markdown("### 🔴 Respondent Arguments")
-            for arg_id, arg in args_data['respondentArgs'].items():
-                with st.expander(f"{arg['title']} (¶{arg['paragraphs']})"):
-                    for point in arg['overview']['points']:
-                        st.markdown(f"• {point}")
-    
-    elif st.session_state.current_section == "Exhibits":
-        st.markdown('<div class="section-header">📁 Evidence & Exhibits</div>', unsafe_allow_html=True)
-        st.info("Exhibits section - Coming soon! This will display all evidence and supporting documents.")
+            # Status badge
+            if fact['isDisputed']:
+                st.markdown('<span class="status-badge status-disputed">⚠️ Disputed</span>', unsafe_allow_html=True)
+            else:
+                st.markdown('<span class="status-badge status-undisputed">✅ Undisputed</span>', unsafe_allow_html=True)
         
-        # Show evidence summary
+        st.markdown("---")
+        
+        # Create expandable sections
+        with st.expander("📁 Evidence & Source References", expanded=False):
+            evidence_content = get_evidence_content(fact)
+            
+            if evidence_content:
+                for evidence in evidence_content:
+                    st.markdown(f"""
+                    <div class="evidence-box">
+                        <div class="evidence-title">📋 {evidence['id']} - {evidence['title']}</div>
+                        <p><strong>Summary:</strong> {evidence['summary']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Document and source information
+                    if fact.get('doc_summary'):
+                        st.info(f"**📄 Document:** {fact['doc_summary']}")
+                    
+                    if fact.get('source_text'):
+                        st.markdown(f"**💬 Source Text:** _{fact['source_text']}_")
+                    
+                    # Reference information in columns
+                    ref_col1, ref_col2 = st.columns([4, 1])
+                    with ref_col1:
+                        ref_text = f"**📋 Exhibit:** {evidence['id']}"
+                        if fact.get('page'):
+                            ref_text += f" | **📄 Page:** {fact['page']}"
+                        if fact.get('paragraphs'):
+                            ref_text += f" | **📝 Paragraphs:** {fact['paragraphs']}"
+                        st.markdown(ref_text)
+                    
+                    with ref_col2:
+                        if st.button(f"📋 Copy", key=f"copy_{evidence['id']}_{i}", help="Copy reference"):
+                            st.success("✅ Copied!")
+                    
+                    if len(evidence_content) > 1:
+                        st.markdown("---")
+            else:
+                st.info("ℹ️ No evidence references available for this fact")
+        
+        # Party submissions with enhanced styling
+        with st.expander("⚖️ Party Submissions", expanded=False):
+            # Appellant submission
+            st.markdown("#### 🔵 Appellant Submission")
+            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+            if claimant_text == 'No specific submission recorded':
+                st.markdown("_No submission provided_")
+            else:
+                st.markdown(f"""
+                <div class="submission-box submission-appellant">
+                    {claimant_text}
+                </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("---")
+            
+            # Respondent submission
+            st.markdown("#### 🔴 Respondent Submission")
+            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+            if respondent_text == 'No specific submission recorded':
+                st.markdown("_No submission provided_")
+            else:
+                st.markdown(f"""
+                <div class="submission-box submission-respondent">
+                    {respondent_text}
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
+
+# Enhanced Timeline View Implementation
+def render_streamlit_timeline_view(filtered_facts=None):
+    # Get facts data
+    if filtered_facts is None:
         facts_data = get_all_facts()
-        all_exhibits = set()
-        for fact in facts_data:
-            all_exhibits.update(fact.get('exhibits', []))
+    else:
+        facts_data = filtered_facts
+    
+    # Sort by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    if not facts_data:
+        st.info("🔍 No timeline events found matching the selected criteria.")
+        return
+    
+    # Group by year for year markers
+    events_by_year = {}
+    for fact in facts_data:
+        year = fact['date'].split('-')[0] if '-' in fact['date'] else fact['date'][:4]
+        if year not in events_by_year:
+            events_by_year[year] = []
+        events_by_year[year].append(fact)
+    
+    # Display timeline events with enhanced styling
+    for year, events in events_by_year.items():
+        # Enhanced year marker
+        st.markdown(f"""
+        <div class="timeline-year">
+            📅 {year}
+        </div>
+        """, unsafe_allow_html=True)
         
-        st.markdown(f"### Total Evidence Items: {len(all_exhibits)}")
+        for i, fact in enumerate(events):
+            # Timeline event container with status-based styling
+            disputed_class = "disputed" if fact['isDisputed'] else ""
+            
+            st.markdown(f"""
+            <div class="timeline-event {disputed_class}">
+            """, unsafe_allow_html=True)
+            
+            # Event header
+            col1, col2, col3 = st.columns([2, 4, 1])
+            
+            with col1:
+                st.markdown(f"**📆 {fact['date']}**")
+            
+            with col2:
+                st.markdown(f"### {fact['event']}")
+                # Party badges
+                if fact.get('parties_involved'):
+                    party_badges = ""
+                    for party in fact['parties_involved']:
+                        badge_class = "party-appellant" if party == "Appellant" else "party-respondent"
+                        party_badges += f'<span class="party-badge {badge_class}">{party}</span>'
+                    st.markdown(party_badges, unsafe_allow_html=True)
+            
+            with col3:
+                if fact['isDisputed']:
+                    st.markdown('<span class="status-badge status-disputed">⚠️ Disputed</span>', unsafe_allow_html=True)
+                else:
+                    st.markdown('<span class="status-badge status-undisputed">✅ Undisputed</span>', unsafe_allow_html=True)
+            
+            # Event details
+            with st.container():
+                # Evidence section
+                st.markdown("#### 📁 Evidence & Source References")
+                evidence_content = get_evidence_content(fact)
+                
+                if evidence_content:
+                    for evidence in evidence_content:
+                        st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                        if fact.get('doc_summary'):
+                            st.info(f"**📄 Document:** {fact['doc_summary']}")
+                        if fact.get('source_text'):
+                            st.markdown(f"**💬 Source:** _{fact['source_text']}_")
+                else:
+                    st.info("ℹ️ No evidence references available")
+                
+                # Party submissions with enhanced styling
+                st.markdown("#### ⚖️ Party Submissions")
+                
+                # Create submission columns
+                sub_col1, sub_col2 = st.columns(2)
+                
+                with sub_col1:
+                    st.markdown("**🔵 Appellant Position**")
+                    claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                    if claimant_text == 'No specific submission recorded':
+                        st.markdown("_No submission provided_")
+                    else:
+                        st.markdown(f"""
+                        <div class="submission-box submission-appellant">
+                            {claimant_text}
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                with sub_col2:
+                    st.markdown("**🔴 Respondent Position**")
+                    respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                    if respondent_text == 'No specific submission recorded':
+                        st.markdown("_No submission provided_")
+                    else:
+                        st.markdown(f"""
+                        <div class="submission-box submission-respondent">
+                            {respondent_text}
+                        </div>
+                        """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Add separator between events
+            if i < len(events) - 1:
+                st.markdown("---")
+
+# Enhanced Document Categories View Implementation
+def render_streamlit_docset_view(filtered_facts=None):
+    # Get facts and document sets data
+    if filtered_facts is None:
+        facts_data = get_all_facts()
+    else:
+        facts_data = filtered_facts
         
-        exhibit_cols = st.columns(3)
-        for i, exhibit in enumerate(sorted(all_exhibits)):
-            with exhibit_cols[i % 3]:
-                st.markdown(f"**{exhibit}**")
-                evidence_details = get_evidence_content({'exhibits': [exhibit]})
-                if evidence_details:
-                    st.caption(evidence_details[0]['title'])
+    document_sets = get_document_sets()
+    
+    # Sort facts by date
+    facts_data.sort(key=lambda x: x['date'].split('-')[0])
+    
+    # Group facts by document categories
+    docs_with_facts = {}
+    
+    # Initialize all groups
+    for ds in document_sets:
+        if ds.get('isGroup'):
+            docs_with_facts[ds['id']] = {
+                'docset': ds,
+                'facts': []
+            }
+    
+    # Distribute facts to categories
+    for fact in facts_data:
+        fact_assigned = False
+        
+        # Try to assign based on source matching
+        for ds in document_sets:
+            if ds.get('isGroup'):
+                for doc in ds.get('documents', []):
+                    if fact.get('source') and doc['id'] + '.' in fact['source']:
+                        docs_with_facts[ds['id']]['facts'].append({
+                            **fact,
+                            'documentName': doc['name']
+                        })
+                        fact_assigned = True
+                        break
+                if fact_assigned:
+                    break
+        
+        # If not assigned by source, assign by party matching
+        if not fact_assigned:
+            for ds in document_sets:
+                if ds.get('isGroup'):
+                    for doc in ds.get('documents', []):
+                        parties = fact.get('parties_involved', [])
+                        if (doc['party'] == 'Mixed' or 
+                            (doc['party'] == 'Appellant' and 'Appellant' in parties) or
+                            (doc['party'] == 'Respondent' and 'Respondent' in parties)):
+                            docs_with_facts[ds['id']]['facts'].append({
+                                **fact,
+                                'documentName': doc['name']
+                            })
+                            fact_assigned = True
+                            break
+                    if fact_assigned:
+                        break
+    
+    # Display document categories with enhanced styling
+    for docset_id, doc_with_facts in docs_with_facts.items():
+        docset = doc_with_facts['docset']
+        facts = doc_with_facts['facts']
+        
+        # Enhanced document set header
+        party_icon = ("🔵" if docset['party'] == 'Appellant' else 
+                     "🔴" if docset['party'] == 'Respondent' else "⚪")
+        
+        disputed_count = len([f for f in facts if f['isDisputed']])
+        
+        # Create enhanced expander with stats
+        expander_title = f"📁 {party_icon} **{docset['name'].title()}** ({len(facts)} facts"
+        if disputed_count > 0:
+            expander_title += f", {disputed_count} disputed"
+        expander_title += ")"
+        
+        with st.expander(expander_title, expanded=False):
+            if facts:
+                # Add mini summary for the document category
+                undisputed_count = len(facts) - disputed_count
+                
+                st.markdown(f"""
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #4D68F9;">
+                    <strong>📊 Category Summary:</strong> {len(facts)} total facts 
+                    | <span style="color: #16a34a;">✅ {undisputed_count} undisputed</span> 
+                    | <span style="color: #dc2626;">⚠️ {disputed_count} disputed</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                for i, fact in enumerate(facts):
+                    # Enhanced fact container
+                    st.markdown('<div style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">', unsafe_allow_html=True)
+                    
+                    # Fact header with enhanced layout
+                    col1, col2, col3 = st.columns([2, 5, 1])
+                    
+                    with col1:
+                        st.markdown(f"**📅 {fact['date']}**")
+                    
+                    with col2:
+                        st.markdown(f"**{fact['event']}**")
+                        # Party badges
+                        if fact.get('parties_involved'):
+                            party_badges = ""
+                            for party in fact['parties_involved']:
+                                badge_class = "party-appellant" if party == "Appellant" else "party-respondent"
+                                party_badges += f'<span class="party-badge {badge_class}">{party}</span>'
+                            st.markdown(party_badges, unsafe_allow_html=True)
+                    
+                    with col3:
+                        if fact['isDisputed']:
+                            st.markdown('<span class="status-badge status-disputed">⚠️</span>', unsafe_allow_html=True)
+                        else:
+                            st.markdown('<span class="status-badge status-undisputed">✅</span>', unsafe_allow_html=True)
+                    
+                    # Quick preview of key information
+                    evidence_content = get_evidence_content(fact)
+                    if evidence_content:
+                        st.markdown(f"**📋 Evidence:** {', '.join([e['id'] for e in evidence_content[:3]])}")
+                        if len(evidence_content) > 3:
+                            st.markdown(f"_... and {len(evidence_content) - 3} more_")
+                    
+                    # Show submissions in compact format
+                    if fact.get('claimant_submission') and fact['claimant_submission'] != 'No specific submission recorded':
+                        st.markdown(f"""
+                        <div class="submission-box submission-appellant" style="margin: 0.5rem 0; padding: 0.75rem;">
+                            <strong>🔵 Appellant:</strong> {fact['claimant_submission'][:150]}{"..." if len(fact['claimant_submission']) > 150 else ""}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    if fact.get('respondent_submission') and fact['respondent_submission'] != 'No specific submission recorded':
+                        st.markdown(f"""
+                        <div class="submission-box submission-respondent" style="margin: 0.5rem 0; padding: 0.75rem;">
+                            <strong>🔴 Respondent:</strong> {fact['respondent_submission'][:150]}{"..." if len(fact['respondent_submission']) > 150 else ""}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                st.info("📋 No facts found in this document category.")
+
+# Main app
+def main():
+    # Inject custom CSS
+    inject_custom_css()
+    
+    # Get the data for JavaScript
+    args_data = get_argument_data()
+    facts_data = get_all_facts()
+    document_sets = get_document_sets()
+    timeline_data = get_timeline_data()
+    
+    # Convert data to JSON for JavaScript use
+    args_json = json.dumps(args_data)
+    facts_json = json.dumps(facts_data)
+    document_sets_json = json.dumps(document_sets)
+    timeline_json = json.dumps(timeline_data)
+    
+    # Enhanced sidebar with original styling preserved
+    with st.sidebar:
+        # Add the logo and CaseLens text (unchanged)
+        st.markdown("""
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
+              <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
+                <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
+              </mask>
+              <g mask="url(#whatsapp-mask)">
+                <!-- Rounded square background -->
+                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
+                <!-- WhatsApp phone icon -->
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
+              </g>
+            </svg>
+            <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
+        
+        # Enhanced button styling (keeping original hover effects)
+        st.markdown("""
+        <style>
+        .stButton > button {
+            width: 100%;
+            border-radius: 6px;
+            height: 50px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .stButton > button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Define button click handlers (unchanged)
+        def set_arguments_view():
+            st.session_state.view = "Arguments"
+            
+        def set_facts_view():
+            st.session_state.view = "Facts"
+            
+        def set_exhibits_view():
+            st.session_state.view = "Exhibits"
+        
+        # Create buttons with names (unchanged)
+        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+    
+    # Enhanced Facts view
+    if st.session_state.view == "Facts":
+        # Enhanced page header
+        st.markdown("""
+        <div style="text-align: center; padding: 2rem 0; background: linear-gradient(135deg, #4D68F9 0%, #6366f1 100%); 
+                    border-radius: 12px; margin-bottom: 2rem; color: white;">
+            <h1 style="margin: 0; font-weight: 700;">⚖️ Case Facts Analysis</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Comprehensive overview of factual disputes and evidence</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Get facts for summary
+        all_facts = get_all_facts()
+        render_facts_summary(all_facts)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Enhanced view toggle with better styling
+        st.markdown("### 🔄 View Options")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("📋 Card View", use_container_width=True, 
+                        type="primary" if st.session_state.current_view_type == "card" else "secondary"):
+                st.session_state.current_view_type = "card"
+                st.rerun()
+        
+        with col2:
+            if st.button("📅 Timeline View", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "timeline" else "secondary"):
+                st.session_state.current_view_type = "timeline"
+                st.rerun()
+        
+        with col3:
+            if st.button("📁 Document Categories", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
+                st.session_state.current_view_type = "docset"
+                st.rerun()
+        
+        # Enhanced filter section
+        st.markdown("### 🔍 Filter Facts")
+        
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            filter_option = st.selectbox(
+                "Choose fact type:",
+                ["All Facts", "Disputed Facts", "Undisputed Facts"],
+                index=0
+            )
+        
+        with col2:
+            # Add search functionality placeholder
+            st.text_input("🔍 Search facts", placeholder="Search by keyword...")
+        
+        # Set current tab type based on selection
+        if filter_option == "All Facts":
+            st.session_state.current_tab_type = "all"
+            filtered_facts = get_all_facts()
+        elif filter_option == "Disputed Facts":
+            st.session_state.current_tab_type = "disputed"
+            filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
+        else:
+            st.session_state.current_tab_type = "undisputed"
+            filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+        
+        st.markdown("---")
+        
+        # Render the appropriate enhanced view
+        render_view_content(st.session_state.current_view_type, filtered_facts)
+
+# Helper function to render the appropriate view content
+def render_view_content(view_type, filtered_facts):
+    if view_type == "card":
+        render_streamlit_card_view(filtered_facts)
+    elif view_type == "timeline":
+        render_streamlit_timeline_view(filtered_facts)
+    elif view_type == "docset":
+        render_streamlit_docset_view(filtered_facts)
 
 if __name__ == "__main__":
     main()

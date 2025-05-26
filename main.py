@@ -1000,28 +1000,33 @@ def main():
         
         st.divider()
         
-        # Facts filter using selectbox instead of tabs to avoid nesting issues
-        filter_option = st.selectbox(
-            "Filter Facts:",
-            ["All Facts", "Disputed Facts", "Undisputed Facts"],
-            index=0
-        )
+        # Facts filter using tabs
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["All", "Disputed", "Undisputed", "Claimant", "Respondent"])
         
-        # Set current tab type based on selection
-        if filter_option == "All Facts":
-            st.session_state.current_tab_type = "all"
+        with tab1:
+            # All Facts
             filtered_facts = get_all_facts()
-        elif filter_option == "Disputed Facts":
-            st.session_state.current_tab_type = "disputed"
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        with tab2:
+            # Disputed Facts
             filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
-        else:
-            st.session_state.current_tab_type = "undisputed"
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        with tab3:
+            # Undisputed Facts
             filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+            render_view_content(st.session_state.current_view_type, filtered_facts)
         
-        st.divider()
+        with tab4:
+            # Claimant Facts
+            filtered_facts = [fact for fact in get_all_facts() if 'Appellant' in fact.get('parties_involved', [])]
+            render_view_content(st.session_state.current_view_type, filtered_facts)
         
-        # Render the appropriate native view based on current view type
-        render_view_content(st.session_state.current_view_type, filtered_facts)
+        with tab5:
+            # Respondent Facts
+            filtered_facts = [fact for fact in get_all_facts() if 'Respondent' in fact.get('parties_involved', [])]
+            render_view_content(st.session_state.current_view_type, filtered_facts)
 
 # Helper function to render the appropriate view content
 def render_view_content(view_type, filtered_facts):

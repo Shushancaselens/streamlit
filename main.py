@@ -1048,15 +1048,6 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Enhanced view selector styling */
-        .view-selector-container {
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            padding: 8px;
-            margin: 16px 0;
-            border: 1px solid #e9ecef;
-        }
-        
         /* Improve button appearance */
         div[data-testid="column"] > div > div > div > button {
             border-radius: 8px !important;
@@ -1120,9 +1111,6 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Enhanced view toggle with better styling
-        st.markdown('<div class="view-selector-container">', unsafe_allow_html=True)
-        
         # Create view selector buttons with better styling
         col1, col2, col3 = st.columns(3)
         
@@ -1147,7 +1135,6 @@ def main():
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown('</div>', unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
         
         st.divider()

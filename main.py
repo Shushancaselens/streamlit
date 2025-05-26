@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-import streamlit.components.v1 as components
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -8,6 +7,9 @@ st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
     st.session_state.view = "Facts"
+
+if 'facts_filter' not in st.session_state:
+    st.session_state.facts_filter = "All Facts"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -273,17 +275,154 @@ def get_all_facts():
     
     return enhanced_facts
 
+def get_evidence_details(exhibits, args_data):
+    """Get evidence details for given exhibit IDs"""
+    evidence_details = []
+    
+    def find_evidence(args, exhibit_id):
+        for arg_key in args:
+            arg = args[arg_key]
+            if 'evidence' in arg and arg['evidence']:
+                for evidence in arg['evidence']:
+                    if evidence['id'] == exhibit_id:
+                        return evidence
+            if 'children' in arg and arg['children']:
+                child_evidence = find_evidence(arg['children'], exhibit_id)
+                if child_evidence:
+                    return child_evidence
+        return None
+    
+    for exhibit_id in exhibits:
+        evidence = (find_evidence(args_data['claimantArgs'], exhibit_id) or 
+                   find_evidence(args_data['respondentArgs'], exhibit_id))
+        
+        if evidence:
+            evidence_details.append({
+                'id': exhibit_id,
+                'title': evidence['title'],
+                'summary': evidence['summary']
+            })
+        else:
+            evidence_details.append({
+                'id': exhibit_id,
+                'title': exhibit_id,
+                'summary': 'Evidence details not available'
+            })
+    
+    return evidence_details
+
+def render_fact_card(fact, args_data):
+    """Render a single fact card using Streamlit components"""
+    
+    # Determine card styling based on disputed status
+    if fact['isDisputed']:
+        card_style = """
+        <div style="
+            border-left: 4px solid #e53e3e; 
+            background-color: rgba(229, 62, 62, 0.02); 
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        ">
+        """
+    else:
+        card_style = """
+        <div style="
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: white;
+        ">
+        """
+    
+    # Create the card header with badges
+    party_badges = ""
+    if fact['parties_involved']:
+        for party in fact['parties_involved']:
+            if party == 'Appellant':
+                party_badges += '<span style="background-color: rgba(49, 130, 206, 0.1); color: #3182ce; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Appellant</span>'
+            else:
+                party_badges += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Respondent</span>'
+    
+    if fact['isDisputed']:
+        party_badges += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>'
+    
+    # Card title with date and event
+    card_title = f"**{fact['date']}** - {fact['event']}"
+    
+    st.markdown(card_style, unsafe_allow_html=True)
+    
+    # Use expander for the card functionality
+    with st.expander(card_title, expanded=False):
+        # Add badges at the top
+        if party_badges:
+            st.markdown(party_badges, unsafe_allow_html=True)
+            st.markdown("---")
+        
+        # Create two columns for document and argument info
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**📄 Document**")
+            st.markdown(f"**{fact['doc_name'] or 'N/A'}**")
+            if fact['page']:
+                st.markdown(f"*Page {fact['page']}*")
+        
+        with col2:
+            st.markdown("**📋 Argument**")
+            st.markdown(f"**{fact['argId']}. {fact['argTitle']}**")
+            if fact['paragraphs']:
+                st.markdown(f"*Paragraphs: {fact['paragraphs']}*")
+        
+        # Source text
+        if fact['source_text'] and fact['source_text'] != 'No specific submission recorded':
+            st.markdown("**📝 Source Text:**")
+            st.info(fact['source_text'])
+        
+        # Submissions
+        if fact['claimant_submission'] and fact['claimant_submission'] != 'No specific submission recorded':
+            st.markdown("**👤 Claimant Submission:**")
+            st.markdown(f'<div style="background-color: rgba(49, 130, 206, 0.03); border-left: 4px solid #3182ce; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["claimant_submission"]}</div>', unsafe_allow_html=True)
+        
+        if fact['respondent_submission'] and fact['respondent_submission'] != 'No specific submission recorded':
+            st.markdown("**👤 Respondent Submission:**")
+            st.markdown(f'<div style="background-color: rgba(229, 62, 62, 0.03); border-left: 4px solid #e53e3e; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["respondent_submission"]}</div>', unsafe_allow_html=True)
+        
+        # Document summary
+        if fact['doc_summary']:
+            st.markdown("**📖 Document Summary:**")
+            st.markdown(f"*{fact['doc_summary']}*")
+        
+        # Status and Evidence in two columns
+        col3, col4 = st.columns(2)
+        
+        with col3:
+            st.markdown("**⚖️ Status**")
+            if fact['isDisputed']:
+                st.markdown('<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>', unsafe_allow_html=True)
+            else:
+                st.markdown("Undisputed")
+        
+        with col4:
+            st.markdown("**📎 Evidence**")
+            if fact['exhibits']:
+                evidence_details = get_evidence_details(fact['exhibits'], args_data)
+                for evidence in evidence_details:
+                    with st.expander(f"📁 {evidence['id']}: {evidence['title']}", expanded=False):
+                        st.markdown(evidence['summary'])
+            else:
+                st.markdown("None")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
 # Main app
 def main():
-    # Get the data for JavaScript
+    # Get the data
     args_data = get_argument_data()
     facts_data = get_all_facts()
     
-    # Convert data to JSON for JavaScript use
-    args_json = json.dumps(args_data)
-    facts_json = json.dumps(facts_data)
-    
-    # Add Streamlit sidebar with navigation buttons only
+    # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
         # Add the logo and CaseLens text
         st.markdown("""
@@ -335,583 +474,54 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the Card View HTML component
+    # Main content area
     if st.session_state.view == "Facts":
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                    line-height: 1.5;
-                    color: #333;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #fff;
-                }}
-                
-                .container {{
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }}
-                
-                .badge {{
-                    display: inline-block;
-                    padding: 3px 8px;
-                    border-radius: 12px;
-                    font-size: 12px;
-                    font-weight: 500;
-                }}
-                
-                .appellant-badge {{
-                    background-color: rgba(49, 130, 206, 0.1);
-                    color: #3182ce;
-                }}
-                
-                .respondent-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                .disputed-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                .section-title {{
-                    font-size: 1.5rem;
-                    font-weight: 600;
-                    margin-bottom: 1rem;
-                    padding-bottom: 0.5rem;
-                    border-bottom: 1px solid #eaeaea;
-                }}
-                
-                .facts-header {{
-                    display: flex;
-                    margin-bottom: 20px;
-                    border-bottom: 1px solid #dee2e6;
-                }}
-                
-                .tab-button {{
-                    padding: 10px 20px;
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                }}
-                
-                .tab-button.active {{
-                    border-bottom: 2px solid #4299e1;
-                    color: #4299e1;
-                    font-weight: 500;
-                }}
-                
-                .card-fact-container {{
-                    margin-bottom: 16px;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 8px;
-                    background-color: white;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                
-                .card-fact-container.disputed {{
-                    border-left: 4px solid #e53e3e;
-                    background-color: rgba(229, 62, 62, 0.02);
-                }}
-                
-                .card-fact-header {{
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 16px;
-                    background-color: #f8fafc;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                }}
-                
-                .card-fact-header:hover {{
-                    background-color: #e2e8f0;
-                }}
-                
-                .card-fact-header.disputed {{
-                    background-color: rgba(229, 62, 62, 0.05);
-                }}
-                
-                .card-fact-header.disputed:hover {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                }}
-                
-                .card-fact-title {{
-                    display: flex;
-                    align-items: center;
-                    flex-grow: 1;
-                    gap: 12px;
-                }}
-                
-                .card-fact-date {{
-                    font-weight: 600;
-                    color: #2d3748;
-                    min-width: 120px;
-                }}
-                
-                .card-fact-event {{
-                    font-weight: 500;
-                    color: #1a202c;
-                    flex-grow: 1;
-                }}
-                
-                .card-fact-badges {{
-                    display: flex;
-                    gap: 6px;
-                    align-items: center;
-                }}
-                
-                .card-chevron {{
-                    transition: transform 0.2s;
-                    color: #718096;
-                    margin-left: 8px;
-                }}
-                
-                .card-chevron.expanded {{
-                    transform: rotate(90deg);
-                }}
-                
-                .card-fact-content {{
-                    display: none;
-                    padding: 20px;
-                    border-top: 1px solid #e2e8f0;
-                    background-color: white;
-                }}
-                
-                .card-fact-content.show {{
-                    display: block;
-                }}
-                
-                .card-fact-details {{
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 20px;
-                    margin-bottom: 16px;
-                }}
-                
-                .card-detail-section {{
-                    background-color: #f7fafc;
-                    padding: 12px 16px;
-                    border-radius: 6px;
-                    border: 1px solid #e2e8f0;
-                }}
-                
-                .card-detail-label {{
-                    font-weight: 600;
-                    color: #4a5568;
-                    font-size: 12px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                    margin-bottom: 4px;
-                }}
-                
-                .card-detail-value {{
-                    color: #2d3748;
-                    font-size: 14px;
-                    line-height: 1.4;
-                }}
-                
-                .card-source-text {{
-                    background-color: #f7fafc;
-                    padding: 16px;
-                    border-radius: 6px;
-                    border-left: 4px solid #4299e1;
-                    margin: 16px 0;
-                    font-style: italic;
-                    color: #4a5568;
-                    line-height: 1.5;
-                }}
-                
-                .card-source-text.claimant-submission {{
-                    border-left-color: #3182ce;
-                    background-color: rgba(49, 130, 206, 0.03);
-                }}
-                
-                .card-source-text.respondent-submission {{
-                    border-left-color: #e53e3e;
-                    background-color: rgba(229, 62, 62, 0.03);
-                }}
-                
-                .submission-header {{
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    font-size: 11px;
-                    letter-spacing: 0.05em;
-                    margin-bottom: 8px;
-                    color: inherit;
-                }}
-                
-                .claimant-submission .submission-header {{
-                    color: #3182ce;
-                }}
-                
-                .respondent-submission .submission-header {{
-                    color: #e53e3e;
-                }}
-                
-                @media (max-width: 768px) {{
-                    .card-fact-details {{
-                        grid-template-columns: 1fr;
-                    }}
-                    
-                    .card-fact-title {{
-                        flex-direction: column;
-                        align-items: flex-start;
-                        gap: 8px;
-                    }}
-                    
-                    .card-fact-date {{
-                        min-width: auto;
-                    }}
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="section-title">Case Facts</div>
-                
-                <div class="facts-header">
-                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                </div>
-                
-                <div id="card-facts-container"></div>
-            </div>
-            
-            <script>
-                const factsData = {facts_json};
-                const args_data = {args_json};
-                
-                function standardizeFactData(fact) {{
-                    return {{
-                        date: fact.date,
-                        event: fact.event,
-                        source_text: fact.source_text || '',
-                        page: fact.page || '',
-                        doc_name: fact.doc_name || '',
-                        doc_summary: fact.doc_summary || '',
-                        claimant_submission: fact.claimant_submission || 'No specific submission recorded',
-                        respondent_submission: fact.respondent_submission || 'No specific submission recorded',
-                        isDisputed: fact.isDisputed,
-                        exhibits: fact.exhibits || [],
-                        parties_involved: fact.parties_involved || [],
-                        argId: fact.argId || '',
-                        argTitle: fact.argTitle || '',
-                        paragraphs: fact.paragraphs || ''
-                    }};
-                }}
-                
-                function getEvidenceContent(fact) {{
-                    if (!fact.exhibits || fact.exhibits.length === 0) {{
-                        return 'None';
-                    }}
-                    
-                    let evidenceContent = [];
-                    
-                    fact.exhibits.forEach(exhibitId => {{
-                        function findEvidence(args) {{
-                            for (const argKey in args) {{
-                                const arg = args[argKey];
-                                if (arg.evidence) {{
-                                    const evidence = arg.evidence.find(e => e.id === exhibitId);
-                                    if (evidence) {{
-                                        return evidence;
-                                    }}
-                                }}
-                                if (arg.children) {{
-                                    const childEvidence = findEvidence(arg.children);
-                                    if (childEvidence) return childEvidence;
-                                }}
-                            }}
-                            return null;
-                        }}
-                        
-                        let evidence = findEvidence(args_data.claimantArgs) || findEvidence(args_data.respondentArgs);
-                        
-                        if (evidence) {{
-                            evidenceContent.push({{
-                                id: exhibitId,
-                                title: evidence.title,
-                                summary: evidence.summary
-                            }});
-                        }} else {{
-                            evidenceContent.push({{
-                                id: exhibitId,
-                                title: exhibitId,
-                                summary: 'Evidence details not available'
-                            }});
-                        }}
-                    }});
-                    
-                    return evidenceContent;
-                }}
-                
-                function toggleEvidence(evidenceId, factIndex) {{
-                    const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
-                    const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
-                    
-                    if (content.style.display === 'none' || content.style.display === '') {{
-                        content.style.display = 'block';
-                        icon.textContent = '−';
-                    }} else {{
-                        content.style.display = 'none';
-                        icon.textContent = '+';
-                    }}
-                }}
-                
-                function toggleCardFact(factIndex) {{
-                    const content = document.getElementById(`card-fact-content-${{factIndex}}`);
-                    const chevron = document.getElementById(`card-chevron-${{factIndex}}`);
-                    
-                    if (content.classList.contains('show')) {{
-                        content.classList.remove('show');
-                        chevron.classList.remove('expanded');
-                    }} else {{
-                        content.classList.add('show');
-                        chevron.classList.add('expanded');
-                    }}
-                }}
-                
-                function switchFactsTab(tabType) {{
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    allBtn.classList.remove('active');
-                    disputedBtn.classList.remove('active');
-                    undisputedBtn.classList.remove('active');
-                    
-                    if (tabType === 'all') {{
-                        allBtn.classList.add('active');
-                    }} else if (tabType === 'disputed') {{
-                        disputedBtn.classList.add('active');
-                    }} else {{
-                        undisputedBtn.classList.add('active');
-                    }}
-                    
-                    renderCardView(tabType);
-                }}
-                
-                function renderCardView(tabType = 'all') {{
-                    const container = document.getElementById('card-facts-container');
-                    container.innerHTML = '';
-                    
-                    let filteredFacts = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    filteredFacts.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    filteredFacts.forEach((fact, index) => {{
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
-                        
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
-                        headerEl.onclick = () => toggleCardFact(index);
-                        
-                        const titleEl = document.createElement('div');
-                        titleEl.className = 'card-fact-title';
-                        
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'card-fact-date';
-                        dateEl.textContent = fact.date;
-                        titleEl.appendChild(dateEl);
-                        
-                        const eventEl = document.createElement('div');
-                        eventEl.className = 'card-fact-event';
-                        eventEl.textContent = fact.event;
-                        titleEl.appendChild(eventEl);
-                        
-                        headerEl.appendChild(titleEl);
-                        
-                        const badgesEl = document.createElement('div');
-                        badgesEl.className = 'card-fact-badges';
-                        
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
-                        
-                        const chevronEl = document.createElement('div');
-                        chevronEl.className = 'card-chevron';
-                        chevronEl.id = `card-chevron-${{index}}`;
-                        chevronEl.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                        `;
-                        
-                        badgesEl.appendChild(chevronEl);
-                        headerEl.appendChild(badgesEl);
-                        cardContainer.appendChild(headerEl);
-                        
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'card-fact-content';
-                        contentEl.id = `card-fact-content-${{index}}`;
-                        
-                        const detailsEl = document.createElement('div');
-                        detailsEl.className = 'card-fact-details';
-                        
-                        const docSection = document.createElement('div');
-                        docSection.className = 'card-detail-section';
-                        docSection.innerHTML = `
-                            <div class="card-detail-label">Document</div>
-                            <div class="card-detail-value">
-                                <strong>${{fact.doc_name || 'N/A'}}</strong>
-                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
-                            </div>
-                        `;
-                        detailsEl.appendChild(docSection);
-                        
-                        const argSection = document.createElement('div');
-                        argSection.className = 'card-detail-section';
-                        argSection.innerHTML = `
-                            <div class="card-detail-label">Argument</div>
-                            <div class="card-detail-value">
-                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
-                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
-                            </div>
-                        `;
-                        detailsEl.appendChild(argSection);
-                        
-                        contentEl.appendChild(detailsEl);
-                        
-                        if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'card-source-text';
-                            sourceTextEl.innerHTML = `
-                                <div class="submission-header">Source Text</div>
-                                <div>${{fact.source_text}}</div>
-                            `;
-                            contentEl.appendChild(sourceTextEl);
-                        }}
-                        
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            const claimantSubmissionEl = document.createElement('div');
-                            claimantSubmissionEl.className = 'card-source-text claimant-submission';
-                            claimantSubmissionEl.innerHTML = `
-                                <div class="submission-header">Claimant Submission</div>
-                                <div>${{fact.claimant_submission}}</div>
-                            `;
-                            contentEl.appendChild(claimantSubmissionEl);
-                        }}
-                        
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            const respondentSubmissionEl = document.createElement('div');
-                            respondentSubmissionEl.className = 'card-source-text respondent-submission';
-                            respondentSubmissionEl.innerHTML = `
-                                <div class="submission-header">Respondent Submission</div>
-                                <div>${{fact.respondent_submission}}</div>
-                            `;
-                            contentEl.appendChild(respondentSubmissionEl);
-                        }}
-                        
-                        if (fact.doc_summary) {{
-                            const summaryEl = document.createElement('div');
-                            summaryEl.className = 'card-detail-section';
-                            summaryEl.style.marginTop = '16px';
-                            summaryEl.innerHTML = `
-                                <div class="card-detail-label">Document Summary</div>
-                                <div class="card-detail-value">${{fact.doc_summary}}</div>
-                            `;
-                            contentEl.appendChild(summaryEl);
-                        }}
-                        
-                        const statusExhibitsEl = document.createElement('div');
-                        statusExhibitsEl.className = 'card-fact-details';
-                        statusExhibitsEl.style.marginTop = '16px';
-                        
-                        const statusSection = document.createElement('div');
-                        statusSection.className = 'card-detail-section';
-                        statusSection.innerHTML = `
-                            <div class="card-detail-label">Status</div>
-                            <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
-                        `;
-                        statusExhibitsEl.appendChild(statusSection);
-                        
-                        const evidenceSection = document.createElement('div');
-                        evidenceSection.className = 'card-detail-section';
-                        const evidenceContent = getEvidenceContent(fact);
-                        
-                        if (evidenceContent === 'None') {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence</div>
-                                <div class="card-detail-value">None</div>
-                            `;
-                        }} else {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
-                                <div class="card-detail-value">
-                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
-                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                                <div>
-                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
-                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
-                                                </div>
-                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
-                                            </div>
-                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
-                                            </div>
-                                        </div>
-                                    `).join('')}}
-                                </div>
-                            `;
-                        }}
-                        statusExhibitsEl.appendChild(evidenceSection);
-                        
-                        contentEl.appendChild(statusExhibitsEl);
-                        cardContainer.appendChild(contentEl);
-                        container.appendChild(cardContainer);
-                    }});
-                    
-                    if (filteredFacts.length === 0) {{
-                        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No facts found matching the selected criteria.</p>';
-                    }}
-                }}
-                
-                // Initialize on page load
-                renderCardView('all');
-            </script>
-        </body>
-        </html>
-        """
-        
         st.title("Case Facts")
-        components.html(html_content, height=800, scrolling=True)
+        
+        # Create tabs for filtering
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            if st.button("All Facts", key="all_facts", use_container_width=True):
+                st.session_state.facts_filter = "All Facts"
+        
+        with col2:
+            if st.button("Disputed Facts", key="disputed_facts", use_container_width=True):
+                st.session_state.facts_filter = "Disputed Facts"
+        
+        with col3:
+            if st.button("Undisputed Facts", key="undisputed_facts", use_container_width=True):
+                st.session_state.facts_filter = "Undisputed Facts"
+        
+        # Add some styling for active tab
+        st.markdown(f"""
+        <style>
+        .stButton > button {{
+            background-color: {'#4299e1' if st.session_state.facts_filter == 'All Facts' else 'transparent'};
+            color: {'white' if st.session_state.facts_filter == 'All Facts' else 'black'};
+        }}
+        </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        
+        # Filter facts based on selection
+        if st.session_state.facts_filter == "Disputed Facts":
+            filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
+        elif st.session_state.facts_filter == "Undisputed Facts":
+            filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
+        else:
+            filtered_facts = facts_data
+        
+        # Sort facts by date
+        filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
+        
+        # Display facts as cards
+        if filtered_facts:
+            for fact in filtered_facts:
+                render_fact_card(fact, args_data)
+        else:
+            st.info("No facts found matching the selected criteria.")
     
     elif st.session_state.view == "Arguments":
         st.title("Arguments")

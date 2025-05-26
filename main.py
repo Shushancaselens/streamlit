@@ -844,63 +844,65 @@ def render_streamlit_docset_view(filtered_facts=None):
         party_color = ("🔵" if docset['party'] == 'Appellant' else 
                       "🔴" if docset['party'] == 'Respondent' else "⚪")
         
+        # Use a single level expander for each document category
         with st.expander(f"📁 {party_color} **{docset['name']}** ({len(facts)} facts)", expanded=False):
             if facts:
                 for i, fact in enumerate(facts):
-                    # Fact header
-                    col1, col2, col3 = st.columns([2, 4, 1])
-                    
-                    with col1:
-                        st.markdown(f"**{fact['date']}**")
-                    
-                    with col2:
-                        st.markdown(f"{fact['event']}")
-                    
-                    with col3:
-                        if fact['isDisputed']:
-                            st.error("🔴")
-                        else:
-                            st.success("🟢")
-                    
-                    # Fact details in nested expander
-                    with st.expander("📋 Details", expanded=False):
-                        # Evidence section
-                        st.subheader("📁 Evidence & Source References")
-                        evidence_content = get_evidence_content(fact)
+                    # Create a container for each fact instead of nested expander
+                    with st.container():
+                        # Fact header
+                        col1, col2, col3 = st.columns([2, 4, 1])
                         
-                        if evidence_content:
-                            for evidence in evidence_content:
-                                st.markdown(f"**{evidence['id']}** - {evidence['title']}")
-                                if fact.get('doc_summary'):
-                                    st.info(f"**Document Summary:** {fact['doc_summary']}")
-                                if fact.get('source_text'):
-                                    st.markdown(f"**Source Text:** *{fact['source_text']}*")
-                                st.divider()
-                        else:
-                            st.markdown("*No evidence references available*")
+                        with col1:
+                            st.markdown(f"**{fact['date']}**")
                         
-                        # Party submissions
-                        st.subheader("⚖️ Party Submissions")
+                        with col2:
+                            st.markdown(f"**{fact['event']}**")
                         
-                        # Claimant submission
-                        st.markdown("**🔵 Claimant Submission**")
-                        claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
-                        if claimant_text == 'No specific submission recorded':
-                            st.markdown("*No submission provided*")
-                        else:
-                            st.info(claimant_text)
+                        with col3:
+                            if fact['isDisputed']:
+                                st.error("🔴")
+                            else:
+                                st.success("🟢")
                         
-                        # Respondent submission
-                        st.markdown("**🔴 Respondent Submission**")
-                        respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
-                        if respondent_text == 'No specific submission recorded':
-                            st.markdown("*No submission provided*")
-                        else:
-                            st.warning(respondent_text)
-                    
-                    # Separator between facts
-                    if i < len(facts) - 1:
-                        st.markdown("---")
+                        # Show details directly (no nested expander)
+                        with st.container():
+                            # Evidence section
+                            st.markdown("**📁 Evidence & Source References**")
+                            evidence_content = get_evidence_content(fact)
+                            
+                            if evidence_content:
+                                for evidence in evidence_content:
+                                    st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                                    if fact.get('doc_summary'):
+                                        st.info(f"**Document Summary:** {fact['doc_summary']}")
+                                    if fact.get('source_text'):
+                                        st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                            else:
+                                st.markdown("*No evidence references available*")
+                            
+                            # Party submissions
+                            st.markdown("**⚖️ Party Submissions**")
+                            
+                            # Claimant submission
+                            st.markdown("**🔵 Claimant Submission**")
+                            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                            if claimant_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.info(claimant_text)
+                            
+                            # Respondent submission
+                            st.markdown("**🔴 Respondent Submission**")
+                            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                            if respondent_text == 'No specific submission recorded':
+                                st.markdown("*No submission provided*")
+                            else:
+                                st.warning(respondent_text)
+                        
+                        # Separator between facts
+                        if i < len(facts) - 1:
+                            st.divider()
             else:
                 st.info("No facts found in this document category.")
 

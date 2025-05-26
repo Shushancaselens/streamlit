@@ -972,468 +972,59 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts HTML component with native card replacement
+    # Create the facts view with native components
     if st.session_state.view == "Facts":
-        # Modified HTML that renders native cards when card view is selected
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                /* All original CSS styles exactly as they were */
-                body {{
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                    line-height: 1.5;
-                    color: #333;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #fff;
-                }}
-                
-                .container {{
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 20px;
-                }}
-                
-                .content-section {{
-                    display: none;
-                }}
-                
-                .content-section.active {{
-                    display: block;
-                }}
-                
-                .badge {{
-                    display: inline-block;
-                    padding: 4px 10px;
-                    border-radius: 12px;
-                    font-size: 13px;
-                    font-weight: 500;
-                }}
-                
-                .appellant-badge {{
-                    background-color: rgba(49, 130, 206, 0.1);
-                    color: #3182ce;
-                }}
-                
-                .respondent-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                .shared-badge {{
-                    background-color: rgba(128, 128, 128, 0.1);
-                    color: #666;
-                }}
-                
-                .exhibit-badge {{
-                    background-color: rgba(221, 107, 32, 0.1);
-                    color: #dd6b20;
-                }}
-                
-                .disputed-badge {{
-                    background-color: rgba(229, 62, 62, 0.1);
-                    color: #e53e3e;
-                }}
-                
-                .copy-reference-btn {{
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 4px;
-                    padding: 4px 8px;
-                    background-color: #f7fafc;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 11px;
-                    color: #4a5568;
-                    transition: all 0.2s;
-                    margin-left: 8px;
-                }}
-                
-                .copy-reference-btn:hover {{
-                    background-color: #edf2f7;
-                    border-color: #cbd5e0;
-                    transform: translateY(-1px);
-                }}
-                
-                .copy-reference-btn svg {{
-                    width: 12px;
-                    height: 12px;
-                }}
-                
-                .reference-container {{
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin-top: 8px;
-                    padding: 8px;
-                    background-color: #f8fafc;
-                    border-radius: 4px;
-                    border-left: 3px solid #a0aec0;
-                }}
-                
-                .reference-text {{
-                    font-size: 12px;
-                    color: #4a5568;
-                    font-weight: 500;
-                    flex-grow: 1;
-                    margin-right: 12px;
-                }}
-                
-                .action-buttons {{
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    display: flex;
-                    gap: 10px;
-                }}
-                
-                .action-button {{
-                    padding: 8px 16px;
-                    background-color: #f9f9f9;
-                    border: 1px solid #e1e4e8;
-                    border-radius: 4px;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    cursor: pointer;
-                }}
-                
-                .action-button:hover {{
-                    background-color: #f1f1f1;
-                }}
-                
-                .export-dropdown {{
-                    position: relative;
-                    display: inline-block;
-                }}
-                
-                .export-dropdown-content {{
-                    display: none;
-                    position: absolute;
-                    right: 0;
-                    background-color: #f9f9f9;
-                    min-width: 160px;
-                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                    z-index: 1;
-                    border-radius: 4px;
-                }}
-                
-                .export-dropdown-content a {{
-                    color: black;
-                    padding: 12px 16px;
-                    text-decoration: none;
-                    display: block;
-                    cursor: pointer;
-                }}
-                
-                .export-dropdown-content a:hover {{
-                    background-color: #f1f1f1;
-                }}
-                
-                .export-dropdown:hover .export-dropdown-content {{
-                    display: block;
-                }}
-                
-                .copy-notification {{
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background-color: #2d3748;
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 4px;
-                    z-index: 1000;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                }}
-                
-                .copy-notification.show {{
-                    opacity: 1;
-                }}
-                
-                .facts-container {{
-                    margin-top: 20px;
-                }}
-                
-                .facts-header {{
-                    display: flex;
-                    margin-bottom: 20px;
-                    border-bottom: 1px solid #dee2e6;
-                }}
-                
-                .tab-button {{
-                    padding: 10px 20px;
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                }}
-                
-                .tab-button.active {{
-                    border-bottom: 2px solid #4299e1;
-                    color: #4299e1;
-                    font-weight: 500;
-                }}
-                
-                .facts-content {{
-                    margin-top: 20px;
-                }}
-                
-                .section-title {{
-                    font-size: 1.5rem;
-                    font-weight: 600;
-                    margin-bottom: 1rem;
-                    padding-bottom: 0.5rem;
-                    border-bottom: 1px solid #eaeaea;
-                }}
-                
-                .view-toggle {{
-                    display: flex;
-                    justify-content: flex-end;
-                    margin-bottom: 16px;
-                }}
-                
-                .view-toggle button {{
-                    padding: 8px 16px;
-                    border: 1px solid #e2e8f0;
-                    background-color: #f7fafc;
-                    cursor: pointer;
-                }}
-                
-                .view-toggle button.active {{
-                    background-color: #4299e1;
-                    color: white;
-                    border-color: #4299e1;
-                }}
-                
-                .view-toggle button:first-child {{
-                    border-radius: 4px 0 0 4px;
-                }}
-                
-                .view-toggle button:nth-child(2) {{
-                    border-left: none;
-                    border-right: none;
-                }}
-                
-                .view-toggle button:last-child {{
-                    border-radius: 0 4px 4px 0;
-                }}
-                
-                /* Hide HTML card container when using native cards */
-                #card-facts-container {{
-                    display: none;
-                }}
-                
-                .native-cards-notice {{
-                    background-color: #f0f9ff;
-                    border: 1px solid #bae6fd;
-                    border-radius: 8px;
-                    padding: 12px 16px;
-                    margin: 10px 0;
-                    color: #0c4a6e;
-                    font-size: 14px;
-                    text-align: center;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-                
-                <div class="action-buttons">
-                    <button class="action-button" onclick="copyAllContent()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        Copy
-                    </button>
-                    <div class="export-dropdown">
-                        <button class="action-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            Export
-                        </button>
-                        <div class="export-dropdown-content">
-                            <a onclick="exportAsCsv()">CSV</a>
-                            <a onclick="exportAsPdf()">PDF</a>
-                            <a onclick="exportAsWord()">Word</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Facts Section -->
-                <div id="facts" class="content-section active">
-                    <div class="section-title">Case Facts</div>
-                    
-                    <div class="view-toggle">
-                        <button id="card-view-btn" class="active" onclick="switchView('card')">Card View</button>
-                        <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
-                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
-                    </div>
-                    
-                    <div class="facts-header">
-                        <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                        <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                        <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                    </div>
-                    
-                    <!-- All views now use native Streamlit components -->
-                    <div id="card-view-content" class="facts-content">
-                        <div class="native-cards-notice">
-                            📋 All views now use native Streamlit components for better integration
-                        </div>
-                    </div>
-                    
-                    <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div class="native-cards-notice">
-                            📅 Timeline view is now using native Streamlit components
-                        </div>
-                    </div>
-                    
-                    <div id="docset-view-content" class="facts-content" style="display: none;">
-                        <div class="native-cards-notice">
-                            📁 Document Categories view is now using native Streamlit components
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <script>
-                // All original JavaScript code with view switching that communicates to Streamlit
-                const factsData = {facts_json};
-                const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
-                
-                function switchView(viewType) {{
-                    const cardBtn = document.getElementById('card-view-btn');
-                    const timelineBtn = document.getElementById('timeline-view-btn');
-                    const docsetBtn = document.getElementById('docset-view-btn');
-                    
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    cardBtn.classList.remove('active');
-                    timelineBtn.classList.remove('active');
-                    docsetBtn.classList.remove('active');
-                    
-                    cardContent.style.display = 'none';
-                    timelineContent.style.display = 'none';
-                    docsetContent.style.display = 'none';
-                    
-                    if (viewType === 'card') {{
-                        cardBtn.classList.add('active');
-                        cardContent.style.display = 'block';
-                    }} else if (viewType === 'timeline') {{
-                        timelineBtn.classList.add('active');
-                        timelineContent.style.display = 'block';
-                    }} else if (viewType === 'docset') {{
-                        docsetBtn.classList.add('active');
-                        docsetContent.style.display = 'block';
-                    }}
-                    
-                    // Notify Streamlit of view change
-                    window.parent.postMessage({{
-                        type: 'streamlit:setComponentValue',
-                        value: {{viewType: viewType}}
-                    }}, '*');
-                }}
-                
-                function switchFactsTab(tabType) {{
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    allBtn.classList.remove('active');
-                    disputedBtn.classList.remove('active');
-                    undisputedBtn.classList.remove('active');
-                    
-                    if (tabType === 'all') {{
-                        allBtn.classList.add('active');
-                    }} else if (tabType === 'disputed') {{
-                        disputedBtn.classList.add('active');
-                    }} else {{
-                        undisputedBtn.classList.add('active');
-                    }}
-                    
-                    // Notify Streamlit of tab change
-                    window.parent.postMessage({{
-                        type: 'streamlit:setComponentValue',
-                        value: {{tabType: tabType}}
-                    }}, '*');
-                }}
-                
-                // Export and copy functions (simplified for demo)
-                function copyAllContent() {{
-                    console.log('Copy all content requested');
-                }}
-                
-                function exportAsCsv() {{
-                    console.log('CSV export requested');
-                }}
-                
-                function exportAsPdf() {{
-                    console.log('PDF export requested');
-                }}
-                
-                function exportAsWord() {{
-                    console.log('Word export requested');
-                }}
-            </script>
-        </body>
-        </html>
-        """
-        
-        # Render the HTML component first
         st.title("Case Facts")
-        component_value = components.html(html_content, height=250, scrolling=False, key="facts_header")
         
-        # Debug info (can be removed in production)
-        with st.sidebar:
-            st.write("**Debug Info:**")
-            st.write(f"Current View: {st.session_state.current_view_type}")
-            st.write(f"Current Tab: {st.session_state.get('current_tab_type', 'all')}")
-            if component_value:
-                st.write(f"Component Value: {component_value}")
+        # Create a simple header with view toggle and tabs using Streamlit components
+        col1, col2, col3 = st.columns(3)
         
-        # Handle component value changes (view switching and tab switching)
-        if component_value:
-            if 'viewType' in component_value:
-                st.session_state.current_view_type = component_value['viewType']
-            if 'tabType' in component_value:
-                st.session_state.current_tab_type = component_value.get('tabType', 'all')
+        with col1:
+            if st.button("📋 Card View", use_container_width=True, 
+                        type="primary" if st.session_state.current_view_type == "card" else "secondary"):
+                st.session_state.current_view_type = "card"
+                st.rerun()
         
-        # Initialize default values if not set
-        if 'current_tab_type' not in st.session_state:
-            st.session_state.current_tab_type = 'all'
+        with col2:
+            if st.button("📅 Timeline View", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "timeline" else "secondary"):
+                st.session_state.current_view_type = "timeline"
+                st.rerun()
         
-        # Filter facts based on current tab type
-        def get_filtered_facts():
-            facts_data = get_all_facts()
-            if st.session_state.current_tab_type == 'disputed':
-                return [fact for fact in facts_data if fact['isDisputed']]
-            elif st.session_state.current_tab_type == 'undisputed':
-                return [fact for fact in facts_data if not fact['isDisputed']]
-            else:
-                return facts_data
+        with col3:
+            if st.button("📁 Document Categories", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
+                st.session_state.current_view_type = "docset"
+                st.rerun()
         
-        filtered_facts = get_filtered_facts()
+        st.divider()
         
-        # Render the appropriate native view based on current view type
-        if st.session_state.current_view_type == "card":
-            render_streamlit_card_view(filtered_facts)
-            
-        elif st.session_state.current_view_type == "timeline":
-            render_streamlit_timeline_view(filtered_facts)
-            
-        elif st.session_state.current_view_type == "docset":
-            render_streamlit_docset_view(filtered_facts)
+        # Facts filter tabs using Streamlit
+        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+        
+        with tab1:
+            st.session_state.current_tab_type = "all"
+            filtered_facts = get_all_facts()
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        with tab2:
+            st.session_state.current_tab_type = "disputed"
+            filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        with tab3:
+            st.session_state.current_tab_type = "undisputed"
+            filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+
+# Helper function to render the appropriate view content
+def render_view_content(view_type, filtered_facts):
+    if view_type == "card":
+        render_streamlit_card_view(filtered_facts)
+    elif view_type == "timeline":
+        render_streamlit_timeline_view(filtered_facts)
+    elif view_type == "docset":
+        render_streamlit_docset_view(filtered_facts)
 
 if __name__ == "__main__":
     main()

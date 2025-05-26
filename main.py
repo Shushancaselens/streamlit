@@ -541,159 +541,6 @@ def get_document_sets():
         }
     ]
 
-# Sample document content for preview
-def get_document_content():
-    return {
-        "Statement of Appeal": {
-            "title": "Statement of Appeal",
-            "party": "Appellant",
-            "date": "2024-01-15",
-            "pages": 45,
-            "content": """
-            <h2>COURT OF ARBITRATION FOR SPORT (CAS)</h2>
-            <h3>STATEMENT OF APPEAL</h3>
-            
-            <div class="doc-section">
-                <h4>I. PARTIES</h4>
-                <p><strong>Appellant:</strong> Athletic Club United<br>
-                <strong>Address:</strong> 123 Sports Avenue, City, Country<br>
-                <strong>Legal Representative:</strong> John Smith, Attorney at Law</p>
-                
-                <p><strong>Respondent:</strong> National Football Federation<br>
-                <strong>Address:</strong> 456 Federation Street, Capital City, Country<br>
-                <strong>Legal Representative:</strong> Jane Doe, Legal Counsel</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>II. FACTUAL BACKGROUND</h4>
-                <p>1. Athletic Club United (the "Club") was officially founded and registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a competitive sporting entity.</p>
-                
-                <p>2. The Club has maintained continuous operation under the same name "Athletic Club United" since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.</p>
-                
-                <p>3. During the period 1975-1976, the Club experienced financial difficulties which resulted in temporary administrative restructuring. However, the Club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.</p>
-                
-                <p>4. The Club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>III. LEGAL ARGUMENTS</h4>
-                <h5>A. Sporting Succession</h5>
-                <p>5. The concept of sporting succession is well-established in sports law and requires analysis of multiple criteria including:</p>
-                <ul>
-                    <li>Continuous use of identifying elements (name, colors, logo)</li>
-                    <li>Public recognition of the entity's identity</li>
-                    <li>Preservation of sporting records and achievements</li>
-                    <li>Consistent participation in competitions under the same identity</li>
-                </ul>
-                
-                <p>6. As established in CAS 2016/A/4576, the key factors for sporting succession include: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>IV. EVIDENCE</h4>
-                <p>7. The Appellant submits the following evidence in support of this appeal:</p>
-                <ul>
-                    <li><strong>Exhibit C-1:</strong> Historical Registration Documents</li>
-                    <li><strong>Exhibit C-2:</strong> Competition Participation Records</li>
-                    <li><strong>Exhibit C-4:</strong> Media Coverage Archive</li>
-                    <li><strong>Exhibit C-5:</strong> Photographic Evidence</li>
-                </ul>
-            </div>
-            
-            <div class="doc-section">
-                <h4>V. PRAYER FOR RELIEF</h4>
-                <p>8. WHEREFORE, the Appellant respectfully requests that this Honorable Panel:</p>
-                <ul>
-                    <li>Find that Athletic Club United has maintained continuous sporting succession since 1950;</li>
-                    <li>Recognize the Club's uninterrupted legal and sporting identity;</li>
-                    <li>Grant such other relief as this Panel deems just and proper.</li>
-                </ul>
-            </div>
-            """
-        },
-        "Answer to Request for Provisional Measures": {
-            "title": "Answer to Request for Provisional Measures",
-            "party": "Respondent",
-            "date": "2024-02-01",
-            "pages": 32,
-            "content": """
-            <h2>COURT OF ARBITRATION FOR SPORT (CAS)</h2>
-            <h3>ANSWER TO REQUEST FOR PROVISIONAL MEASURES</h3>
-            
-            <div class="doc-section">
-                <h4>I. INTRODUCTION</h4>
-                <p>1. The National Football Federation ("Federation" or "Respondent") hereby submits its Answer to the Request for Provisional Measures filed by Athletic Club United ("Appellant" or "Club").</p>
-                
-                <p>2. The Federation respectfully submits that the Appellant's request should be denied in its entirety as it lacks both factual and legal foundation.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>II. FACTUAL DISPUTES</h4>
-                <h5>A. Operational Discontinuity (1975-1976)</h5>
-                <p>3. Contrary to the Appellant's claims, the Club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.</p>
-                
-                <p>4. The Club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.</p>
-                
-                <p>5. Independent auditor reports from 1975-1976 document the complete cessation of club operations, closure of all bank accounts, and termination of all contractual obligations, establishing a clear operational break.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>III. LEGAL ARGUMENTS</h4>
-                <h5>A. Lack of Sporting Succession</h5>
-                <p>6. As established in CAS 2017/A/5465, actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict.</p>
-                
-                <p>7. The Panel in CAS 2017/A/5465 specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.</p>
-                
-                <p>8. The Appellant has failed to provide any credible evidence of continuous operation during the critical 1975-1976 period.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>IV. EVIDENCE</h4>
-                <p>9. The Respondent submits the following evidence:</p>
-                <ul>
-                    <li><strong>Exhibit R-1:</strong> Federation Records (1975-1976)</li>
-                    <li><strong>Exhibit R-2:</strong> Financial Audit Reports</li>
-                    <li><strong>Exhibit R-3:</strong> Official Termination Notices</li>
-                </ul>
-            </div>
-            
-            <div class="doc-section">
-                <h4>V. CONCLUSION</h4>
-                <p>10. For the foregoing reasons, the Federation respectfully requests that this Panel deny the Appellant's request for provisional measures in its entirety.</p>
-            </div>
-            """
-        },
-        "Appeal Brief": {
-            "title": "Appeal Brief",
-            "party": "Appellant",
-            "date": "2024-02-15",
-            "pages": 67,
-            "content": """
-            <h2>COMPREHENSIVE APPEAL BRIEF</h2>
-            <h3>Athletic Club United v. National Football Federation</h3>
-            
-            <div class="doc-section">
-                <h4>EXECUTIVE SUMMARY</h4>
-                <p>This comprehensive brief supports the appeal regarding sporting succession and club identity continuity. The evidence demonstrates uninterrupted legal and sporting identity since 1950.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>DETAILED CHRONOLOGY</h4>
-                <p><strong>1950-1955: Foundation Period</strong></p>
-                <p>Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.</p>
-                
-                <p><strong>1975-1976: Administrative Restructuring</strong></p>
-                <p>While administrative challenges occurred, sporting activities continued without interruption. The club maintained its competitive roster and participated in regional competitions.</p>
-            </div>
-            
-            <div class="doc-section">
-                <h4>LEGAL PRECEDENTS</h4>
-                <p>Multiple CAS decisions support the principle of sporting succession based on continuity of identity rather than mere administrative formalities.</p>
-            </div>
-            """
-        }
-    }
-
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     csv = df.to_csv(index=False)
@@ -708,14 +555,12 @@ def main():
     facts_data = get_all_facts()
     document_sets = get_document_sets()
     timeline_data = get_timeline_data()
-    document_content = get_document_content()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
     timeline_json = json.dumps(timeline_data)
-    document_content_json = json.dumps(document_content)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -778,7 +623,7 @@ def main():
     # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
-        html_content = """
+        html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -1570,175 +1415,11 @@ def main():
                     }}
                 }}
                 
-                /* Document preview styles */
-                .document-preview {{
-                    max-width: 900px;
-                    margin: 0 auto;
-                    background: white;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                
-                .document-header {{
-                    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-                    color: white;
-                    padding: 24px;
-                    position: relative;
-                }}
-                
-                .document-header h1 {{
-                    margin: 0 0 8px 0;
-                    font-size: 1.5rem;
-                    font-weight: 600;
-                }}
-                
-                .document-meta {{
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                    gap: 16px;
-                    opacity: 0.9;
-                    font-size: 14px;
-                }}
-                
-                .document-meta-item {{
-                    display: flex;
-                    flex-direction: column;
-                }}
-                
-                .document-meta-label {{
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                    opacity: 0.8;
-                    margin-bottom: 2px;
-                }}
-                
-                .document-meta-value {{
-                    font-weight: 500;
-                }}
-                
-                .document-content {{
-                    padding: 32px;
-                    line-height: 1.6;
-                    color: #2d3748;
-                }}
-                
-                .document-content h2 {{
-                    color: #1a202c;
-                    font-size: 1.25rem;
-                    margin: 24px 0 16px 0;
-                    padding-bottom: 8px;
-                    border-bottom: 2px solid #e2e8f0;
-                }}
-                
-                .document-content h3 {{
-                    color: #2d3748;
-                    font-size: 1.1rem;
-                    margin: 20px 0 12px 0;
-                    font-weight: 600;
-                }}
-                
-                .document-content h4 {{
-                    color: #4a5568;
-                    font-size: 1rem;
-                    margin: 16px 0 8px 0;
-                    font-weight: 600;
-                }}
-                
-                .document-content h5 {{
-                    color: #4a5568;
-                    font-size: 0.95rem;
-                    margin: 12px 0 6px 0;
-                    font-weight: 600;
-                }}
-                
-                .document-content p {{
-                    margin: 12px 0;
-                    text-align: justify;
-                }}
-                
-                .document-content ul {{
-                    margin: 12px 0;
-                    padding-left: 24px;
-                }}
-                
-                .document-content li {{
-                    margin: 6px 0;
-                }}
-                
-                .doc-section {{
-                    margin: 24px 0;
-                    padding: 20px;
-                    background-color: #f8fafc;
-                    border-left: 4px solid #4299e1;
-                    border-radius: 0 6px 6px 0;
-                }}
-                
-                .back-button {{
-                    position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    background: rgba(255,255,255,0.2);
-                    border: 1px solid rgba(255,255,255,0.3);
-                    color: white;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    transition: all 0.2s;
-                }}
-                
-                .back-button:hover {{
-                    background: rgba(255,255,255,0.3);
-                    transform: translateY(-1px);
-                }}
-                
-                .document-link {{
-                    color: #3182ce;
-                    cursor: pointer;
-                    text-decoration: underline;
-                    font-weight: 500;
-                }}
-                
-                .document-link:hover {{
-                    color: #2c5aa0;
-                    text-decoration: none;
-                }}
-                
-                .document-navigation {{
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    display: none;
-                    align-items: center;
-                    gap: 10px;
-                }}
-                
-                .nav-button {{
-                    background: #4299e1;
-                    color: white;
-                    border: none;
-                    padding: 10px 16px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-weight: 500;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    transition: all 0.2s;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                }}
-                
-                .nav-button:hover {{
-                    background: #3182ce;
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                .timeline-year-line {{
+                    flex-grow: 1;
+                    height: 2px;
+                    background-color: #e2e8f0;
+                    margin-left: 12px;
                 }}
             </style>
         </head>
@@ -1747,6 +1428,16 @@ def main():
                 <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
                 
                 <div class="action-buttons">
+                    <button class="action-button" onclick="previewDocument('Statement of Appeal')" title="Preview sample document">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Preview Demo
+                    </button>
                     <button class="action-button" onclick="copyAllContent()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -1786,6 +1477,9 @@ def main():
                         <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
                         <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
                         <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+                        <div style="margin-left: auto; display: flex; align-items: center; color: #718096; font-size: 12px;">
+                            <span style="margin-right: 8px;">💡 Click document names to preview</span>
+                        </div>
                     </div>
                     
                     <!-- Card View -->
@@ -1838,6 +1532,377 @@ def main():
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
                 const timelineData = {timeline_json};
+                
+                // Mock document content for preview functionality
+                const documentContent = {
+                    "Statement of Appeal": {
+                        title: "Statement of Appeal",
+                        type: "PDF",
+                        pages: 45,
+                        summary: "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
+                        content: `
+                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+                                <h1 style="text-align: center; margin-bottom: 30px;">STATEMENT OF APPEAL</h1>
+                                <h2 style="text-align: center; margin-bottom: 40px;">Athletic Club United v. National Football Federation</h2>
+                                
+                                <h3>I. INTRODUCTION</h3>
+                                <p>This Statement of Appeal is filed pursuant to Article 61 of the FIFA Statutes and concerns the decision rendered by the National Football Federation Appeals Committee on [DATE], which denied the Appellant's request for recognition of sporting succession.</p>
+                                
+                                <h3>II. FACTUAL BACKGROUND</h3>
+                                <p><strong>Paragraph 15:</strong> Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a sporting entity.</p>
+                                
+                                <p><strong>Paragraph 16:</strong> Since its founding, the club has maintained continuous operation under the same name 'Athletic Club United', as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.</p>
+                                
+                                <p><strong>Paragraph 17:</strong> The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.</p>
+                                
+                                <p><strong>Paragraph 18:</strong> Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.</p>
+                                
+                                <h3>III. LEGAL ARGUMENTS</h3>
+                                <p><strong>Sporting Succession Criteria:</strong> The criteria for sporting succession as established in CAS jurisprudence include: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.</p>
+                                
+                                <h3>IV. RELIEF SOUGHT</h3>
+                                <p>The Appellant respectfully requests that this Tribunal:</p>
+                                <ul>
+                                    <li>Overturn the decision of the National Football Federation Appeals Committee;</li>
+                                    <li>Recognize the Appellant's right to sporting succession;</li>
+                                    <li>Order costs against the Respondent.</li>
+                                </ul>
+                                
+                                <div style="margin-top: 40px; text-align: right;">
+                                    <p><strong>Respectfully submitted,</strong></p>
+                                    <p style="margin-top: 20px;">[Legal Counsel Name]<br>Attorney for Appellant</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    "Answer to Request for Provisional Measures": {
+                        title: "Answer to Request for Provisional Measures", 
+                        type: "PDF",
+                        pages: 28,
+                        summary: "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
+                        content: `
+                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+                                <h1 style="text-align: center; margin-bottom: 30px;">ANSWER TO REQUEST FOR PROVISIONAL MEASURES</h1>
+                                <h2 style="text-align: center; margin-bottom: 40px;">National Football Federation v. Athletic Club United</h2>
+                                
+                                <h3>I. PROCEDURAL BACKGROUND</h3>
+                                <p>The Respondent hereby submits this Answer to the Request for Provisional Measures filed by the Appellant on [DATE], and respectfully requests that the Tribunal deny the request in its entirety.</p>
+                                
+                                <h3>II. FACTUAL DISPUTE</h3>
+                                <p><strong>Paragraph 206:</strong> Contrary to the Appellant's assertions, the club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.</p>
+                                
+                                <p><strong>Paragraph 207:</strong> The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.</p>
+                                
+                                <p><strong>Paragraph 208:</strong> A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.</p>
+                                
+                                <h3>III. LEGAL ANALYSIS</h3>
+                                <p><strong>Operational Continuity Requirement:</strong> As established in CAS 2017/A/5465, actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict.</p>
+                                
+                                <p><strong>Evidence of Discontinuity:</strong> The complete cessation of operations during 1975-1976, evidenced by:</p>
+                                <ul>
+                                    <li>Official withdrawal notification dated May 15, 1975;</li>
+                                    <li>Closure of all bank accounts;</li>
+                                    <li>Termination of all contractual obligations;</li>
+                                    <li>Absence from competition records.</li>
+                                </ul>
+                                
+                                <h3>IV. CONCLUSION</h3>
+                                <p>The Respondent respectfully submits that the Appellant has failed to demonstrate any basis for provisional measures and requests that the Tribunal deny the request with costs.</p>
+                                
+                                <div style="margin-top: 40px; text-align: right;">
+                                    <p><strong>Respectfully submitted,</strong></p>
+                                    <p style="margin-top: 20px;">[Federation Legal Counsel]<br>Attorney for Respondent</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    "Appeal Brief": {
+                        title: "Appeal Brief",
+                        type: "PDF", 
+                        pages: 67,
+                        summary: "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
+                        content: `
+                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+                                <h1 style="text-align: center; margin-bottom: 30px;">COMPREHENSIVE APPEAL BRIEF</h1>
+                                <h2 style="text-align: center; margin-bottom: 40px;">Athletic Club United v. National Football Federation</h2>
+                                
+                                <h3>TABLE OF CONTENTS</h3>
+                                <ol style="margin-bottom: 30px;">
+                                    <li>Statement of Issues</li>
+                                    <li>Statement of Facts</li>
+                                    <li>Legal Standards</li>
+                                    <li>Arguments</li>
+                                    <li>Conclusion</li>
+                                </ol>
+                                
+                                <h3>I. STATEMENT OF ISSUES</h3>
+                                <p>Whether the Appellant, Athletic Club United, has demonstrated sufficient continuity to establish sporting succession under applicable FIFA and CAS precedent.</p>
+                                
+                                <h3>II. DETAILED FACTUAL CHRONOLOGY</h3>
+                                <p><strong>1950-1975: Foundation Period</strong></p>
+                                <p>Athletic Club United was established on January 12, 1950, and operated continuously for 25 years, achieving significant sporting success including the 1955 National Championship.</p>
+                                
+                                <p><strong>1975-1976: Transition Period</strong></p>
+                                <p>While acknowledging administrative difficulties during this period, the Appellant maintains that core identity elements remained intact throughout.</p>
+                                
+                                <p><strong>1976-Present: Continuation</strong></p>
+                                <p>Operations resumed under identical management structure, maintaining traditional colors, stadium, and fan base.</p>
+                                
+                                <h3>III. LEGAL STANDARDS FOR SPORTING SUCCESSION</h3>
+                                <p>The established criteria from CAS jurisprudence require analysis of:</p>
+                                <ul>
+                                    <li>Continuity of identifying elements (name, colors, logo)</li>
+                                    <li>Public recognition and perception</li>
+                                    <li>Maintenance of sporting history and records</li>
+                                    <li>Continuity of fan base and community support</li>
+                                </ul>
+                                
+                                <h3>IV. COMPREHENSIVE ARGUMENTS</h3>
+                                <p><strong>A. Name Continuity:</strong> The club has maintained substantially identical naming throughout its existence, with only minor administrative variations that do not affect public recognition.</p>
+                                
+                                <p><strong>B. Visual Identity:</strong> The club's colors (royal blue and white) have remained constant since 1956, providing clear visual continuity recognized by supporters and competitors alike.</p>
+                                
+                                <p><strong>C. Community Recognition:</strong> Local media, supporters, and sporting community have consistently recognized the club as the same entity throughout the alleged discontinuity period.</p>
+                                
+                                <h3>V. CONCLUSION</h3>
+                                <p>The totality of evidence demonstrates clear sporting succession. The Appellant respectfully requests favorable determination of this appeal.</p>
+                            </div>
+                        `
+                    },
+                    "Reply to Objection to Admissibility": {
+                        title: "Reply to Objection to Admissibility",
+                        type: "PDF",
+                        pages: 23,
+                        summary: "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
+                        content: `
+                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+                                <h1 style="text-align: center; margin-bottom: 30px;">REPLY TO OBJECTION TO ADMISSIBILITY</h1>
+                                <h2 style="text-align: center; margin-bottom: 40px;">Athletic Club United v. National Football Federation</h2>
+                                
+                                <h3>I. INTRODUCTION</h3>
+                                <p>The Appellant hereby submits this Reply to the Respondent's Objection to Admissibility dated [DATE], and respectfully requests that the Tribunal admit all evidence submitted in support of the appeal.</p>
+                                
+                                <h3>II. PROCEDURAL STANDARDS</h3>
+                                <p>Under the applicable procedural rules, evidence should be admitted unless it is clearly irrelevant or obtained through improper means. The Respondent has failed to meet this standard.</p>
+                                
+                                <h3>III. RESPONSE TO SPECIFIC OBJECTIONS</h3>
+                                <p><strong>Federation Recognition Document (2010):</strong> The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.</p>
+                                
+                                <p>This document is highly relevant as it represents the considered judgment of the very entity that now contests the club's continuity. Such official recognition cannot be dismissed as mere "administrative convenience" as suggested by the Respondent.</p>
+                                
+                                <p><strong>Historical Media Coverage:</strong> The extensive archive of media coverage spanning 1950-2024 demonstrates consistent public recognition of the club's identity and provides objective evidence of community perception.</p>
+                                
+                                <p><strong>Competition Records:</strong> Participation records from national and regional competitions provide concrete evidence of operational continuity and should be afforded significant weight.</p>
+                                
+                                <h3>IV. LEGAL PRECEDENT ON ADMISSIBILITY</h3>
+                                <p>CAS panels have consistently favored broad admissibility standards, particularly in cases involving institutional recognition and historical documentation.</p>
+                                
+                                <h3>V. CONCLUSION</h3>
+                                <p>All submitted evidence meets applicable admissibility standards and is directly relevant to the central issues in this proceeding. The Tribunal should overrule the Respondent's objections and admit the evidence in full.</p>
+                            </div>
+                        `
+                    }
+                };
+                
+                // Function to preview document in new tab
+                function previewDocument(docName) {
+                    const doc = documentContent[docName];
+                    if (!doc) {
+                        // If no specific content, show a generic document preview
+                        openGenericDocumentPreview(docName);
+                        return;
+                    }
+                    
+                    const newWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
+                    
+                    const htmlContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${doc.title} - Document Preview</title>
+                            <meta charset="UTF-8">
+                            <style>
+                                body {
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    margin: 0;
+                                    padding: 0;
+                                    background-color: #f5f5f5;
+                                }
+                                .header {
+                                    background-color: #4299e1;
+                                    color: white;
+                                    padding: 15px 20px;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                }
+                                .header h1 {
+                                    margin: 0;
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                }
+                                .header-info {
+                                    display: flex;
+                                    gap: 20px;
+                                    font-size: 14px;
+                                }
+                                .document-container {
+                                    max-width: 900px;
+                                    margin: 20px auto;
+                                    background: white;
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                }
+                                .document-content {
+                                    padding: 40px;
+                                    background: white;
+                                    min-height: 600px;
+                                }
+                                .close-btn {
+                                    background: rgba(255,255,255,0.2);
+                                    border: 1px solid rgba(255,255,255,0.3);
+                                    color: white;
+                                    padding: 6px 12px;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                }
+                                .close-btn:hover {
+                                    background: rgba(255,255,255,0.3);
+                                }
+                                .document-meta {
+                                    background: #f8fafc;
+                                    padding: 15px 20px;
+                                    border-bottom: 1px solid #e2e8f0;
+                                    font-size: 14px;
+                                    color: #4a5568;
+                                }
+                                @media print {
+                                    .header, .document-meta { display: none; }
+                                    .document-container { box-shadow: none; margin: 0; }
+                                    .document-content { padding: 20px; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>📄 ${doc.title}</h1>
+                                <div class="header-info">
+                                    <span>Type: ${doc.type}</span>
+                                    <span>Pages: ${doc.pages}</span>
+                                    <button class="close-btn" onclick="window.close()">Close</button>
+                                </div>
+                            </div>
+                            <div class="document-meta">
+                                <strong>Summary:</strong> ${doc.summary}
+                            </div>
+                            <div class="document-container">
+                                <div class="document-content">
+                                    ${doc.content}
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                    
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    newWindow.focus();
+                }
+                
+                // Function to show generic document preview for unknown documents
+                function openGenericDocumentPreview(docName) {
+                    const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                    
+                    const htmlContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${docName} - Document Preview</title>
+                            <style>
+                                body {
+                                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    margin: 0;
+                                    padding: 40px;
+                                    background-color: #f5f5f5;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    min-height: 100vh;
+                                }
+                                .preview-container {
+                                    background: white;
+                                    padding: 40px;
+                                    border-radius: 12px;
+                                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                                    text-align: center;
+                                    max-width: 500px;
+                                }
+                                .document-icon {
+                                    font-size: 64px;
+                                    margin-bottom: 20px;
+                                    color: #4299e1;
+                                }
+                                h1 {
+                                    color: #2d3748;
+                                    margin-bottom: 10px;
+                                }
+                                p {
+                                    color: #718096;
+                                    margin-bottom: 30px;
+                                    line-height: 1.6;
+                                }
+                                .close-btn {
+                                    background: #4299e1;
+                                    color: white;
+                                    border: none;
+                                    padding: 10px 20px;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                }
+                                .close-btn:hover {
+                                    background: #3182ce;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="preview-container">
+                                <div class="document-icon">📄</div>
+                                <h1>${docName}</h1>
+                                <p>This document is available for preview. In a full implementation, this would display the actual document content, PDF viewer, or connect to a document management system.</p>
+                                <button class="close-btn" onclick="window.close()">Close Preview</button>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                    
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    newWindow.focus();
+                }
+                
+                // Function to create clickable document links
+                function createDocumentLink(docName, displayText = null) {
+                    const text = displayText || docName;
+                    if (!docName || docName === 'N/A') {
+                        return text;
+                    }
+                    
+                    return `<span class="document-link" onclick="previewDocument('${docName}')" title="Click to preview document">${text}<span class="preview-icon">🔍</span></span>`;
+                }
+                
+                // Function to create document badge (for more compact display)
+                function createDocumentBadge(docName, displayText = null) {
+                    const text = displayText || docName;
+                    if (!docName || docName === 'N/A') {
+                        return `<span class="badge">${text}</span>`;
+                    }
+                    
+                    return `<span class="document-badge" onclick="previewDocument('${docName}')" title="Click to preview document">📄 ${text}</span>`;
+                }
                 
                 // Standardize data structure across all views
                 function standardizeFactData(fact) {{
@@ -1910,764 +1975,85 @@ def main():
                     return evidenceContent;
                 }}
                 
-                // Copy all content function
-                function copyAllContent() {{
-                    let contentToCopy = 'Case Facts Data\\n\\n';
-                    const currentFacts = factsData.map(standardizeFactData);
+                // Toggle evidence expansion
+                function toggleEvidence(evidenceId, factIndex) {{
+                    const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
+                    const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
                     
-                    currentFacts.forEach(fact => {{
-                        contentToCopy += `${{fact.date}} - ${{fact.event}}\\n`;
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            contentToCopy += `Claimant: ${{fact.claimant_submission}}\\n`;
-                        }}
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            contentToCopy += `Respondent: ${{fact.respondent_submission}}\\n`;
-                        }}
-                        contentToCopy += '\\n';
-                    }});
-                    
-                    // Create a temporary textarea to copy the content
-                    const textarea = document.createElement('textarea');
-                    textarea.value = contentToCopy;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    
-                    // Show notification
-                    const notification = document.getElementById('copy-notification');
-                    notification.classList.add('show');
-                    
-                    setTimeout(() => {{
-                        notification.classList.remove('show');
-                    }}, 2000);
-                }}
-                
-                // Export functions
-                function exportAsCsv() {{
-                    const currentFacts = factsData.map(standardizeFactData);
-                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
-                    let rows = '';
-                    
-                    currentFacts.forEach(fact => {{
-                        const evidenceContent = getEvidenceContent(fact);
-                        let evidenceText = 'None';
-                        if (evidenceContent !== 'None') {{
-                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}}`).join(' | ');
-                        }}
-                        
-                        rows += `"${{fact.date}}","${{fact.event}}","${{fact.source_text || ''}}","${{fact.page || ''}}","${{fact.doc_name || ''}}","${{fact.doc_summary || ''}}","${{fact.claimant_submission || 'No submission'}}","${{fact.respondent_submission || 'No submission'}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceText}}"\\n`;
-                    }});
-                    
-                    const csvContent = headers + rows;
-                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", "facts.csv");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }}
-                
-                function exportAsPdf() {{
-                    alert("PDF export functionality would be implemented here");
-                }}
-                
-                function exportAsWord() {{
-                    alert("Word export functionality would be implemented here");
-                }}
-                
-                // Switch facts tab
-                function switchFactsTab(tabType) {{
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    // Remove active class from all
-                    allBtn.classList.remove('active');
-                    disputedBtn.classList.remove('active');
-                    undisputedBtn.classList.remove('active');
-                    
-                    // Add active to selected
-                    if (tabType === 'all') {{
-                        allBtn.classList.add('active');
-                    }} else if (tabType === 'disputed') {{
-                        disputedBtn.classList.add('active');
+                    if (content.style.display === 'none' || content.style.display === '') {{
+                        content.style.display = 'block';
+                        icon.textContent = '−';
+                        icon.style.transform = 'rotate(0deg)';
                     }} else {{
-                        undisputedBtn.classList.add('active');
+                        content.style.display = 'none';
+                        icon.textContent = '+';
+                        icon.style.transform = 'rotate(0deg)';
                     }}
+                }}
+                
+                // Standardize timeline data to match facts structure
+                function standardizeTimelineData(item) {{
+                    return {{
+                        date: item.date,
+                        event: item.event,
+                        source_text: item.source_text || '',
+                        page: item.page || '',
+                        doc_name: item.doc_name || '',
+                        doc_summary: item.doc_summary || '',
+                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
+                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
+                        isDisputed: item.isDisputed,
+                        exhibits: item.exhibits || [],
+                        evidence: item.evidence || [],
+                        parties_involved: item.parties_involved || [],
+                        argId: item.argId || '',
+                        argTitle: item.argTitle || '',
+                        paragraphs: item.paragraphs || ''
+                    }};
+                }}
+                
+                // Switch view between table, card, timeline, and document sets
+                function switchView(viewType) {{
+                    const tableBtn = document.getElementById('table-view-btn');
+                    const cardBtn = document.getElementById('card-view-btn');
+                    const timelineBtn = document.getElementById('timeline-view-btn');
+                    const docsetBtn = document.getElementById('docset-view-btn');
                     
-                    // Update active view
                     const tableContent = document.getElementById('table-view-content');
                     const cardContent = document.getElementById('card-view-content');
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
-                    if (cardContent.style.display !== 'none') {{
-                        renderCardView(tabType);
-                    }} else if (tableContent.style.display !== 'none') {{
-                        renderFacts(tabType);
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        renderTimeline(tabType);
-                    }} else if (docsetContent.style.display !== 'none') {{
-                        renderDocumentSets(tabType);
+                    // Remove active class from all buttons
+                    tableBtn.classList.remove('active');
+                    cardBtn.classList.remove('active');
+                    timelineBtn.classList.remove('active');
+                    docsetBtn.classList.remove('active');
+                    
+                    // Hide all content
+                    tableContent.style.display = 'none';
+                    cardContent.style.display = 'none';
+                    timelineContent.style.display = 'none';
+                    docsetContent.style.display = 'none';
+                    
+                    // Activate the selected view
+                    if (viewType === 'card') {{
+                        cardBtn.classList.add('active');
+                        cardContent.style.display = 'block';
+                        renderCardView();
+                    }} else if (viewType === 'table') {{
+                        tableBtn.classList.add('active');
+                        tableContent.style.display = 'block';
+                    }} else if (viewType === 'timeline') {{
+                        timelineBtn.classList.add('active');
+                        timelineContent.style.display = 'block';
+                        renderTimeline();
+                    }} else if (viewType === 'docset') {{
+                        docsetBtn.classList.add('active');
+                        docsetContent.style.display = 'block';
+                        renderDocumentSets();
                     }}
                 }}
-                
-                // Sort table function
-                function sortTable(tableId, columnIndex) {{
-                    const table = document.getElementById(tableId);
-                    const rows = Array.from(table.rows);
-                    let dir = 1;
-                    
-                    // Sort the rows
-                    rows.sort((a, b) => {{
-                        const cellA = a.cells[columnIndex].textContent.trim();
-                        const cellB = b.cells[columnIndex].textContent.trim();
-                        
-                        if (columnIndex === 0) {{
-                            const dateA = new Date(cellA);
-                            const dateB = new Date(cellB);
-                            
-                            if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                return dir * (dateA - dateB);
-                            }}
-                        }}
-                        
-                        return dir * cellA.localeCompare(cellB);
-                    }});
-                    
-                    rows.forEach(row => table.appendChild(row));
-                }}
-                
-                // Toggle card fact visibility
-                function toggleCardFact(factIndex) {{
-                    const content = document.getElementById(`card-fact-content-${{factIndex}}`);
-                    const chevron = document.getElementById(`card-chevron-${{factIndex}}`);
-                    
-                    if (content.classList.contains('show')) {{
-                        content.classList.remove('show');
-                        chevron.classList.remove('expanded');
-                    }} else {{
-                        content.classList.add('show');
-                        chevron.classList.add('expanded');
-                    }}
-                }}
-                
-                // Toggle document set visibility
-                function toggleDocSet(docsetId) {{
-                    const content = document.getElementById(`docset-content-${{docsetId}}`);
-                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
-                    
-                    if (content.style.display === 'none') {{
-                        content.style.display = 'block';
-                        chevron.style.transform = 'rotate(90deg)';
-                    }} else {{
-                        content.style.display = 'none';
-                        chevron.style.transform = 'rotate(0deg)';
-                    }}
-                }}
-                
-                // Format date for display
-                function formatDate(dateString) {{
-                    if (dateString.includes('-')) {{
-                        return dateString;
-                    }}
-                    
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return dateString;
-                    }}
-                    
-                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
-                    return date.toLocaleDateString(undefined, options);
-                }}
-                
-                
-                // Render card view with dropdown containers for each fact
-                function renderCardView(tabType = 'all') {{
-                    const container = document.getElementById('card-facts-container');
-                    container.innerHTML = '';
-                    
-                    // Filter facts based on tab type and standardize
-                    let filteredFacts = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredFacts.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Render each fact as a card
-                    filteredFacts.forEach((fact, index) => {{
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
-                        
-                        // Create card header
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
-                        headerEl.onclick = () => toggleCardFact(index);
-                        
-                        // Create title section
-                        const titleEl = document.createElement('div');
-                        titleEl.className = 'card-fact-title';
-                        
-                        // Date
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'card-fact-date';
-                        dateEl.textContent = fact.date;
-                        titleEl.appendChild(dateEl);
-                        
-                        // Event
-                        const eventEl = document.createElement('div');
-                        eventEl.className = 'card-fact-event';
-                        eventEl.textContent = fact.event;
-                        titleEl.appendChild(eventEl);
-                        
-                        headerEl.appendChild(titleEl);
-                        
-                        // Create badges section
-                        const badgesEl = document.createElement('div');
-                        badgesEl.className = 'card-fact-badges';
-                        
-                        // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        // Disputed badge
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
-                        
-                        // Chevron
-                        const chevronEl = document.createElement('div');
-                        chevronEl.className = 'card-chevron';
-                        chevronEl.id = `card-chevron-${{index}}`;
-                        chevronEl.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                        `;
-                        
-                        badgesEl.appendChild(chevronEl);
-                        headerEl.appendChild(badgesEl);
-                        cardContainer.appendChild(headerEl);
-                        
-                        // Create card content with standardized structure
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'card-fact-content';
-                        contentEl.id = `card-fact-content-${{index}}`;
-                        
-                        // Create details grid
-                        const detailsEl = document.createElement('div');
-                        detailsEl.className = 'card-fact-details';
-                        
-                        // Document info
-                        const docSection = document.createElement('div');
-                        docSection.className = 'card-detail-section';
-                        docSection.innerHTML = `
-                            <div class="card-detail-label">Document</div>
-                            <div class="card-detail-value">
-                                <strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong>
-                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
-                            </div>
-                        `;
-                        detailsEl.appendChild(docSection);
-                        
-                        // Argument info
-                        const argSection = document.createElement('div');
-                        argSection.className = 'card-detail-section';
-                        argSection.innerHTML = `
-                            <div class="card-detail-label">Argument</div>
-                            <div class="card-detail-value">
-                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
-                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
-                            </div>
-                        `;
-                        detailsEl.appendChild(argSection);
-                        
-                        contentEl.appendChild(detailsEl);
-                        
-                        // Source Text (always show if available)
-                        if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'card-source-text';
-                            sourceTextEl.innerHTML = `
-                                <div class="submission-header">Source Text</div>
-                                <div>${{fact.source_text}}</div>
-                            `;
-                            contentEl.appendChild(sourceTextEl);
-                        }}
-                        
-                        // Claimant Submission
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            const claimantSubmissionEl = document.createElement('div');
-                            claimantSubmissionEl.className = 'card-source-text claimant-submission';
-                            claimantSubmissionEl.innerHTML = `
-                                <div class="submission-header">Claimant Submission</div>
-                                <div>${{fact.claimant_submission}}</div>
-                            `;
-                            contentEl.appendChild(claimantSubmissionEl);
-                        }}
-                        
-                        // Respondent Submission
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            const respondentSubmissionEl = document.createElement('div');
-                            respondentSubmissionEl.className = 'card-source-text respondent-submission';
-                            respondentSubmissionEl.innerHTML = `
-                                <div class="submission-header">Respondent Submission</div>
-                                <div>${{fact.respondent_submission}}</div>
-                            `;
-                            contentEl.appendChild(respondentSubmissionEl);
-                        }}
-                        
-                        // Document summary
-                        if (fact.doc_summary) {{
-                            const summaryEl = document.createElement('div');
-                            summaryEl.className = 'card-detail-section';
-                            summaryEl.style.marginTop = '16px';
-                            summaryEl.innerHTML = `
-                                <div class="card-detail-label">Document Summary</div>
-                                <div class="card-detail-value">${{fact.doc_summary}}</div>
-                            `;
-                            contentEl.appendChild(summaryEl);
-                        }}
-                        
-                        // Status and Exhibits section
-                        const statusExhibitsEl = document.createElement('div');
-                        statusExhibitsEl.className = 'card-fact-details';
-                        statusExhibitsEl.style.marginTop = '16px';
-                        
-                        // Status
-                        const statusSection = document.createElement('div');
-                        statusSection.className = 'card-detail-section';
-                        statusSection.innerHTML = `
-                            <div class="card-detail-label">Status</div>
-                            <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
-                        `;
-                        statusExhibitsEl.appendChild(statusSection);
-                        
-                        // Evidence
-                        const evidenceSection = document.createElement('div');
-                        evidenceSection.className = 'card-detail-section';
-                        const evidenceContent = getEvidenceContent(fact);
-                        
-                        if (evidenceContent === 'None') {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence</div>
-                                <div class="card-detail-value">None</div>
-                            `;
-                        }} else {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
-                                <div class="card-detail-value">
-                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
-                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                                <div>
-                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
-                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
-                                                </div>
-                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
-                                            </div>
-                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
-                                            </div>
-                                        </div>
-                                    `).join('')}}
-                                </div>
-                            `;
-                        }}
-                        statusExhibitsEl.appendChild(evidenceSection);
-                        
-                        contentEl.appendChild(statusExhibitsEl);
-                        cardContainer.appendChild(contentEl);
-                        container.appendChild(cardContainer);
-                    }});
-                    
-                    // If no facts found
-                    if (filteredFacts.length === 0) {{
-                        container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No facts found matching the selected criteria.</p>';
-                    }}
-                }}
-                
-                // Render facts table
-                function renderFacts(type = 'all') {{
-                    const tableBody = document.getElementById('facts-table-body');
-                    tableBody.innerHTML = '';
-                    
-                    // Filter by type and standardize
-                    let filteredFacts = factsData.map(standardizeFactData);
-                    
-                    if (type === 'disputed') {{
-                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (type === 'undisputed') {{
-                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredFacts.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Render rows with consistent structure
-                    filteredFacts.forEach(fact => {{
-                        const row = document.createElement('tr');
-                        if (fact.isDisputed) {{
-                            row.classList.add('disputed');
-                        }}
-                        
-                        // Date column
-                        const dateCell = document.createElement('td');
-                        dateCell.textContent = fact.date;
-                        row.appendChild(dateCell);
-                        
-                        // Event column
-                        const eventCell = document.createElement('td');
-                        eventCell.textContent = fact.event;
-                        row.appendChild(eventCell);
-                        
-                        // Source Text column
-                        const sourceTextCell = document.createElement('td');
-                        sourceTextCell.textContent = fact.source_text || '';
-                        sourceTextCell.title = fact.source_text || '';
-                        row.appendChild(sourceTextCell);
-                        
-                        // Page column
-                        const pageCell = document.createElement('td');
-                        pageCell.textContent = fact.page || '';
-                        row.appendChild(pageCell);
-                        
-                        // Document column
-                        const docCell = document.createElement('td');
-                        docCell.innerHTML = makeDocumentClickable(fact.doc_name || '');
-                        docCell.title = fact.doc_summary || '';
-                        row.appendChild(docCell);
-                        
-                        // Document Summary column
-                        const docSummaryCell = document.createElement('td');
-                        docSummaryCell.textContent = fact.doc_summary || '';
-                        docSummaryCell.title = fact.doc_summary || '';
-                        row.appendChild(docSummaryCell);
-                        
-                        // Claimant Submission column
-                        const claimantSubmissionCell = document.createElement('td');
-                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
-                            ? fact.claimant_submission : 'No submission';
-                        claimantSubmissionCell.textContent = claimantText;
-                        claimantSubmissionCell.title = claimantText;
-                        row.appendChild(claimantSubmissionCell);
-                        
-                        // Respondent Submission column
-                        const respondentSubmissionCell = document.createElement('td');
-                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
-                            ? fact.respondent_submission : 'No submission';
-                        respondentSubmissionCell.textContent = respondentText;
-                        respondentSubmissionCell.title = respondentText;
-                        row.appendChild(respondentSubmissionCell);
-                        
-                        // Status column
-                        const statusCell = document.createElement('td');
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            statusCell.appendChild(disputedBadge);
-                        }} else {{
-                            statusCell.textContent = 'Undisputed';
-                        }}
-                        row.appendChild(statusCell);
-                        
-                        // Evidence column - show expandable content
-                        const evidenceCell = document.createElement('td');
-                        const evidenceContent = getEvidenceContent(fact);
-                        
-                        if (evidenceContent === 'None') {{
-                            evidenceCell.textContent = 'None';
-                        }} else {{
-                            evidenceCell.innerHTML = `
-                                <div>
-                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 6px;">
-                                            <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
-                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
-                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
-                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
-                                            </span>
-                                            <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
-                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
-                                                ${{evidence.summary}}
-                                            </div>
-                                        </div>
-                                    `).join('')}}
-                                </div>
-                            `;
-                        }}
-                        row.appendChild(evidenceCell);
-                        
-                        tableBody.appendChild(row);
-                    }});
-                }}
-                
-                
-                // Render timeline view
-                function renderTimeline(tabType = 'all') {{
-                    const container = document.getElementById('timeline-events');
-                    container.innerHTML = '';
-                    
-                    let filteredData = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredData = filteredData.filter(item => item.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredData = filteredData.filter(item => !item.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredData.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Create timeline items
-                    filteredData.forEach(fact => {{
-                        const timelineItem = document.createElement('div');
-                        timelineItem.className = 'timeline-item';
-                        
-                        const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                        timelineItem.appendChild(timelinePoint);
-                        
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'timeline-content';
-                        
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
-                        
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'timeline-date';
-                        dateEl.textContent = formatDate(fact.date);
-                        headerEl.appendChild(dateEl);
-                        
-                        const badgesEl = document.createElement('div');
-                        badgesEl.className = 'timeline-badges';
-                        
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        const statusBadge = document.createElement('span');
-                        statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
-                        statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
-                        badgesEl.appendChild(statusBadge);
-                        
-                        headerEl.appendChild(badgesEl);
-                        contentEl.appendChild(headerEl);
-                        
-                        const bodyEl = document.createElement('div');
-                        bodyEl.className = 'timeline-body';
-                        
-                        const factContent = document.createElement('div');
-                        factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.event;
-                        bodyEl.appendChild(factContent);
-                        
-                        const docInfoEl = document.createElement('div');
-                        docInfoEl.className = 'timeline-meta';
-                        docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
-                        docInfoEl.innerHTML = `
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{makeDocumentClickable(fact.doc_name || 'N/A')}}</div>
-                                <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
-                                <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
-                                <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
-                            </div>
-                            ${{fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}}
-                        `;
-                        bodyEl.appendChild(docInfoEl);
-                        
-                        contentEl.appendChild(bodyEl);
-                        timelineItem.appendChild(contentEl);
-                        container.appendChild(timelineItem);
-                    }});
-                    
-                    if (filteredData.length === 0) {{
-                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
-                    }}
-                }}
-                
-                // Render document sets view
-                function renderDocumentSets(tabType = 'all') {{
-                    const container = document.getElementById('document-sets-container');
-                    container.innerHTML = '';
-                    
-                    let filteredFacts = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    const docsWithFacts = {{}};
-                    
-                    documentSets.forEach(ds => {{
-                        if (ds.isGroup) {{
-                            docsWithFacts[ds.id] = {{
-                                docset: ds,
-                                facts: []
-                            }};
-                        }}
-                    }});
-                    
-                    // Distribute facts to categories
-                    filteredFacts.forEach((fact, index) => {{
-                        let factAssigned = false;
-                        
-                        // Assign by party matching or default to first group
-                        if (!factAssigned) {{
-                            // For demo purposes, distribute facts among document sets
-                            const docsetKeys = Object.keys(docsWithFacts);
-                            const assignedDocset = docsetKeys[index % docsetKeys.length];
-                            docsWithFacts[assignedDocset].facts.push(fact);
-                        }}
-                    }});
-                    
-                    // Create document sets UI
-                    Object.values(docsWithFacts).forEach(docWithFacts => {{
-                        const docset = docWithFacts.docset;
-                        const facts = docWithFacts.facts;
-                        
-                        const docsetEl = document.createElement('div');
-                        docsetEl.className = 'docset-container';
-                        
-                        const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span><strong>${{docset.name}}</strong></span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
-                                    </span>
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
-                        `;
-                        
-                        let contentHtml = '';
-                        
-                        if (facts.length > 0) {{
-                            contentHtml += `
-                                <div class="table-view-container">
-                                    <table class="table-view">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Event</th>
-                                                <th>Source Text</th>
-                                                <th>Page</th>
-                                                <th>Document</th>
-                                                <th>Doc Summary</th>
-                                                <th>Claimant Submission</th>
-                                                <th>Respondent Submission</th>
-                                                <th>Status</th>
-                                                <th>Evidence</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${{facts.map((fact, factIndex) => `
-                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                    <td style="white-space: nowrap;">${{fact.date}}</td>
-                                                    <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
-                                                    <td style="white-space: nowrap;">${{fact.page || ''}}</td>
-                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong></td>
-                                                    <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
-                                                    <td style="white-space: nowrap;">${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                    <td style="min-width: 200px; max-width: 300px;">
-                                                        ${{(() => {{
-                                                            const evidenceContent = getEvidenceContent(fact);
-                                                            if (evidenceContent === 'None') {{
-                                                                return 'None';
-                                                            }}
-                                                            return `
-                                                                <div>
-                                                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                                                        <div style="margin-bottom: 6px;">
-                                                                            <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
-                                                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; margin: 2px 0;"
-                                                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                                                📁 ${{evidence.id}}: ${{evidence.title.length > 25 ? evidence.title.substring(0, 25) + '...' : evidence.title}}
-                                                                                <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
-                                                                            </span>
-                                                                            <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
-                                                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
-                                                                                <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
-                                                                            </div>
-                                                                        </div>
-                                                                    `).join('')}}
-                                                                </div>
-                                                            `;
-                                                        }})()}}
-                                                    </td>
-                                                </tr>
-                                            `).join('')}}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
-                        }} else {{
-                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
-                        }}
-                        
-                        contentHtml += '</div>';
-                        docsetEl.innerHTML = headerHtml + contentHtml;
-                        
-                        container.appendChild(docsetEl);
-                    }});
-                }}
-            </script>
-        </body>
-        </html>
-        """
-
                 
                 // Copy all content function
                 function copyAllContent() {{
@@ -3120,8 +2506,10 @@ def main():
                         docSection.innerHTML = `
                             <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                <strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong>
-                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                                ${fact.doc_name && fact.doc_name !== 'N/A' ? 
+                                    `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document"><strong>${fact.doc_name}</strong><span class="preview-icon">🔍</span></span>` : 
+                                    '<strong>N/A</strong>'}
+                                ${fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}
                             </div>
                         `;
                         detailsEl.appendChild(docSection);
@@ -3350,12 +2738,14 @@ def main():
                         docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
                         docInfoEl.innerHTML = `
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{makeDocumentClickable(fact.doc_name || 'N/A')}}</div>
-                                <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
-                                <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
-                                <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
+                                <div><strong>Document:</strong> ${fact.doc_name && fact.doc_name !== 'N/A' ? 
+                                    `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document">${fact.doc_name}<span class="preview-icon">🔍</span></span>` : 
+                                    'N/A'}</div>
+                                <div><strong>Page:</strong> ${fact.page || 'N/A'}</div>
+                                <div><strong>Argument:</strong> ${fact.argId}. ${fact.argTitle}</div>
+                                <div><strong>Paragraphs:</strong> ${fact.paragraphs || 'N/A'}</div>
                             </div>
-                            ${{fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}}
+                            ${fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}
                         `;
                         bodyEl.appendChild(docInfoEl);
                         
@@ -3553,11 +2943,15 @@ def main():
                                         <tbody>
                                             ${{facts.map((fact, factIndex) => `
                                                 <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                    <td style="white-space: nowrap;">${{fact.date}}</td>
-                                                    <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
-                                                    <td style="white-space: nowrap;">${{fact.page || ''}}</td>
-                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong></td>
+                                                    <td style="white-space: nowrap;">${fact.date}</td>
+                                                    <td style="max-width: 300px; word-wrap: break-word;">${fact.event}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${(fact.source_text || '').replace(/"/g, '&quot;')}">${fact.source_text || ''}</td>
+                                                    <td style="white-space: nowrap;">${fact.page || ''}</td>
+                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;">
+                                                        ${fact.doc_name && fact.doc_name !== 'N/A' ? 
+                                                            `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document"><strong>${fact.doc_name}</strong><span class="preview-icon">🔍</span></span>` : 
+                                                            '<strong>N/A</strong>'}
+                                                    </td>
                                                     <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
@@ -3657,7 +3051,11 @@ def main():
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.innerHTML = makeDocumentClickable(fact.doc_name || '');
+                        if (fact.doc_name && fact.doc_name !== 'N/A') {
+                            docCell.innerHTML = `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document">${fact.doc_name}<span class="preview-icon">🔍</span></span>`;
+                        } else {
+                            docCell.textContent = 'N/A';
+                        }
                         docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
                         
@@ -3743,13 +3141,7 @@ def main():
         
         # Render the HTML component
         st.title("Case Facts")
-        components.html(html_content.format(
-            facts_json=facts_json,
-            document_sets_json=document_sets_json,
-            timeline_json=timeline_json,
-            args_json=args_json,
-            document_content_json=document_content_json
-        ), height=800, scrolling=True)
+        components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()

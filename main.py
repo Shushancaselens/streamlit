@@ -364,129 +364,6 @@ def get_all_facts():
     
     return enhanced_facts
 
-# Get enhanced timeline data with claimant and respondent submissions
-def get_timeline_data():
-    # Create enhanced timeline events with both parties' positions
-    timeline_events = [
-        {
-            "event": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "page": 15,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
-            "isDisputed": True,
-            "claimant_submission": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
-            "respondent_submission": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "exhibits": ["C-2", "R-1", "R-2"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Both parties - Statement of Appeal & Answer to PM",
-            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "page": 127,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": True,
-            "claimant_submission": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "respondent_submission": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
-            "exhibits": ["C-4", "R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "page": 67,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "page": 42,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": True,
-            "claimant_submission": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely, but this was a temporary administrative measure that did not affect the club's legal identity.",
-            "respondent_submission": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
-            "page": 158,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "New entity registered with similar name",
-            "date": "1976-09-15",
-            "isDisputed": True,
-            "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
-            "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
-            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
-            "page": 162,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Federation officially recognizes club history spanning pre and post 1976",
-            "date": "2010-05-18",
-            "isDisputed": True,
-            "claimant_submission": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.",
-            "respondent_submission": "The 2010 federation recognition was a purely administrative convenience that does not override the documented legal and operational discontinuity that occurred in 1975-1976.",
-            "exhibits": ["C-10"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility",
-            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
-            "page": 234,
-            "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
-            "parties_involved": ["Appellant", "Respondent"]
-        }
-    ]
-    
-    # Sort events chronologically
-    timeline_events.sort(key=lambda x: x['date'])
-    
-    return timeline_events
-
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     # Return grouped document sets with individual document subfolders
@@ -541,26 +418,17 @@ def get_document_sets():
         }
     ]
 
-# Function to create CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
-
 # Main app
 def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
     facts_data = get_all_facts()
     document_sets = get_document_sets()
-    timeline_data = get_timeline_data()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
-    timeline_json = json.dumps(timeline_data)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -628,7 +496,6 @@ def main():
         <html>
         <head>
             <style>
-                /* Minimalistic base styling */
                 body {{
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                     line-height: 1.5;
@@ -638,14 +505,12 @@ def main():
                     background-color: #fff;
                 }}
                 
-                /* Simple container */
                 .container {{
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 20px;
                 }}
                 
-                /* Content sections */
                 .content-section {{
                     display: none;
                 }}
@@ -654,13 +519,34 @@ def main():
                     display: block;
                 }}
                 
-                /* Badge styling */
                 .badge {{
                     display: inline-block;
                     padding: 3px 8px;
                     border-radius: 12px;
                     font-size: 12px;
                     font-weight: 500;
+                }}
+                
+                .document-link {{
+                    color: #4299e1;
+                    cursor: pointer;
+                    text-decoration: none;
+                    border-bottom: 1px dashed #4299e1;
+                    transition: all 0.2s ease;
+                }}
+                
+                .document-link:hover {{
+                    background-color: rgba(66, 153, 225, 0.1);
+                    border-bottom: 1px solid #4299e1;
+                    padding: 2px 4px;
+                    border-radius: 3px;
+                }}
+                
+                .preview-icon {{
+                    display: inline-block;
+                    margin-left: 4px;
+                    font-size: 10px;
+                    opacity: 0.7;
                 }}
                 
                 .appellant-badge {{
@@ -673,22 +559,11 @@ def main():
                     color: #e53e3e;
                 }}
                 
-                .shared-badge {{
-                    background-color: rgba(128, 128, 128, 0.1);
-                    color: #666;
-                }}
-                
-                .exhibit-badge {{
-                    background-color: rgba(221, 107, 32, 0.1);
-                    color: #dd6b20;
-                }}
-                
                 .disputed-badge {{
                     background-color: rgba(229, 62, 62, 0.1);
                     color: #e53e3e;
                 }}
                 
-                /* Tables */
                 table {{
                     width: 100%;
                     border-collapse: collapse;
@@ -710,7 +585,6 @@ def main():
                     background-color: rgba(229, 62, 62, 0.05);
                 }}
                 
-                /* Action buttons */
                 .action-buttons {{
                     position: absolute;
                     top: 20px;
@@ -766,7 +640,6 @@ def main():
                     display: block;
                 }}
                 
-                /* Copy notification */
                 .copy-notification {{
                     position: fixed;
                     bottom: 20px;
@@ -784,15 +657,11 @@ def main():
                     opacity: 1;
                 }}
                 
-                /* Facts styling */
-                .facts-container {{
-                    margin-top: 20px;
-                }}
-                
                 .facts-header {{
                     display: flex;
                     margin-bottom: 20px;
                     border-bottom: 1px solid #dee2e6;
+                    align-items: center;
                 }}
                 
                 .tab-button {{
@@ -812,7 +681,6 @@ def main():
                     margin-top: 20px;
                 }}
                 
-                /* Section title */
                 .section-title {{
                     font-size: 1.5rem;
                     font-weight: 600;
@@ -821,7 +689,6 @@ def main():
                     border-bottom: 1px solid #eaeaea;
                 }}
                 
-                /* Table view with horizontal scroll */
                 .table-view-container {{
                     overflow-x: auto;
                     border: 1px solid #dee2e6;
@@ -831,9 +698,9 @@ def main():
                 
                 .table-view {{
                     width: 100%;
-                    min-width: 1200px; /* Ensure minimum width for readability */
+                    min-width: 1200px;
                     border-collapse: collapse;
-                    font-size: 14px; /* Normal readable size */
+                    font-size: 14px;
                 }}
                 
                 .table-view th {{
@@ -856,7 +723,7 @@ def main():
                 .table-view td {{
                     padding: 12px;
                     border-bottom: 1px solid #dee2e6;
-                    font-size: 13px; /* Normal readable size */
+                    font-size: 13px;
                     vertical-align: top;
                     line-height: 1.4;
                 }}
@@ -865,61 +732,59 @@ def main():
                     background-color: #f8f9fa;
                 }}
                 
-                /* Column-specific widths for better readability */
-                .table-view td:nth-child(1) {{ /* Date */
+                .table-view td:nth-child(1) {{
                     min-width: 120px;
                     white-space: nowrap;
                 }}
                 
-                .table-view td:nth-child(2) {{ /* Event */
+                .table-view td:nth-child(2) {{
                     min-width: 250px;
                     max-width: 300px;
                 }}
                 
-                .table-view td:nth-child(3) {{ /* Source Text */
+                .table-view td:nth-child(3) {{
                     min-width: 300px;
                     max-width: 400px;
                 }}
                 
-                .table-view td:nth-child(4) {{ /* Page */
+                .table-view td:nth-child(4) {{
                     min-width: 80px;
                     white-space: nowrap;
                 }}
                 
-                .table-view td:nth-child(5) {{ /* Document */
+                .table-view td:nth-child(5) {{
                     min-width: 200px;
                     max-width: 250px;
                     font-weight: 500;
                 }}
                 
-                .table-view td:nth-child(6) {{ /* Doc Summary */
+                .table-view td:nth-child(6) {{
                     min-width: 250px;
                     max-width: 350px;
                     font-style: italic;
                     color: #666;
                 }}
                 
-                .table-view td:nth-child(7) {{ /* Claimant Submission */
+                .table-view td:nth-child(7) {{
                     min-width: 300px;
                     max-width: 400px;
                 }}
                 
-                .table-view td:nth-child(8) {{ /* Respondent Submission */
+                .table-view td:nth-child(8) {{
                     min-width: 300px;
                     max-width: 400px;
                 }}
                 
-                .table-view td:nth-child(9) {{ /* Status */
+                .table-view td:nth-child(9) {{
                     min-width: 100px;
                     white-space: nowrap;
                 }}
                 
-                .table-view td:nth-child(10) {{ /* Evidence */
+                .table-view td:nth-child(10) {{
                     min-width: 200px;
                     max-width: 300px;
                 }}
                 
-                /* Text wrapping for content cells */
                 .table-view td:nth-child(2),
                 .table-view td:nth-child(3),
                 .table-view td:nth-child(5),
@@ -931,7 +796,6 @@ def main():
                     overflow-wrap: break-word;
                 }}
                 
-                /* Horizontal scroll indicator */
                 .table-view-container::-webkit-scrollbar {{
                     height: 8px;
                 }}
@@ -950,7 +814,6 @@ def main():
                     background: #a8a8a8;
                 }}
                 
-                /* View toggle */
                 .view-toggle {{
                     display: flex;
                     justify-content: flex-end;
@@ -988,7 +851,6 @@ def main():
                     border-radius: 0 4px 4px 0;
                 }}
                 
-                /* Document sets */
                 .docset-header {{
                     display: flex;
                     align-items: center;
@@ -1004,18 +866,9 @@ def main():
                     background-color: #e9ecef;
                 }}
                 
-                .docset-icon {{
-                    margin-right: 10px;
-                    color: #4299e1;
-                }}
-                
                 .docset-content {{
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
-                    padding: 0 0 20px 0;
-                }}
-                
-                .docset-content.show {{
                     display: block;
+                    padding: 0 0 20px 0;
                 }}
                 
                 .folder-icon {{
@@ -1026,24 +879,13 @@ def main():
                 .chevron {{
                     transition: transform 0.2s;
                     margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
+                    transform: rotate(90deg);
                 }}
                 
                 .chevron.expanded {{
                     transform: rotate(90deg);
                 }}
                 
-                /* Enhanced Timeline styling */
-                .timeline-container {{
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 20px;
-                    position: relative;
-                    max-width: 1000px;
-                    margin: 0 auto;
-                }}
-                
-                /* Card View styling */
                 .card-fact-container {{
                     margin-bottom: 16px;
                     border: 1px solid #e2e8f0;
@@ -1193,13 +1035,6 @@ def main():
                     color: #e53e3e;
                 }}
                 
-                .card-exhibits {{
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                    margin-top: 12px;
-                }}
-                
                 @media (max-width: 768px) {{
                     .card-fact-details {{
                         grid-template-columns: 1fr;
@@ -1214,212 +1049,6 @@ def main():
                     .card-fact-date {{
                         min-width: auto;
                     }}
-                }}
-                
-                .timeline-wrapper {{
-                    position: relative;
-                    margin-left: 20px;
-                }}
-                
-                .timeline-line {{
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
-                    width: 4px;
-                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
-                    border-radius: 4px;
-                }}
-                
-                .timeline-item {{
-                    display: flex;
-                    margin-bottom: 32px;
-                    position: relative;
-                }}
-                
-                .timeline-point {{
-                    position: absolute;
-                    left: -12px;
-                    top: 18px;
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    background-color: #4299e1;
-                    border: 4px solid white;
-                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-                    z-index: 10;
-                }}
-                
-                .timeline-point.disputed {{
-                    background-color: #e53e3e;
-                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
-                }}
-                
-                .timeline-content {{
-                    margin-left: 32px;
-                    flex-grow: 1;
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-                    overflow: hidden;
-                    transition: all 0.2s;
-                }}
-                
-                .timeline-content:hover {{
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-                    transform: translateY(-2px);
-                }}
-                
-                .timeline-header {{
-                    padding: 12px 16px;
-                    border-bottom: 1px solid #e2e8f0;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    background-color: #f8fafc;
-                }}
-                
-                .timeline-header-disputed {{
-                    background-color: rgba(229, 62, 62, 0.05);
-                }}
-                
-                .timeline-date {{
-                    font-weight: 600;
-                    color: #1a202c;
-                }}
-                
-                .timeline-badges {{
-                    display: flex;
-                    gap: 6px;
-                }}
-                
-                .timeline-body {{
-                    padding: 16px;
-                }}
-                
-                .timeline-fact {{
-                    margin-bottom: 12px;
-                    font-size: 15px;
-                    color: #2d3748;
-                }}
-                
-                .timeline-footer {{
-                    padding: 12px 16px;
-                    background-color: #f8fafc;
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                    border-top: 1px solid #e2e8f0;
-                }}
-                
-                .timeline-meta {{
-                    font-size: 13px;
-                    color: #718096;
-                    margin-top: 8px;
-                }}
-                
-                .timeline-meta span {{
-                    display: inline-block;
-                    margin-right: 12px;
-                }}
-                
-                .timeline-year-marker {{
-                    display: flex;
-                    align-items: center;
-                    margin: 24px 0;
-                    position: relative;
-                }}
-                
-                .timeline-year {{
-                    background-color: #4299e1;
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 16px;
-                    font-weight: 600;
-                    position: relative;
-                    z-index: 10;
-                    margin-left: 32px;
-                }}
-                
-                /* Enhanced Evidence styling */
-                .evidence-item {{
-                    border: 1px solid #e2e8f0;
-                    border-radius: 6px;
-                    overflow: hidden;
-                    margin-bottom: 6px;
-                    transition: all 0.2s ease;
-                }}
-                
-                .evidence-header {{
-                    padding: 8px 12px;
-                    background-color: rgba(221, 107, 32, 0.05);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    transition: background-color 0.2s ease;
-                }}
-                
-                .evidence-header:hover {{
-                    background-color: rgba(221, 107, 32, 0.1);
-                }}
-                
-                .evidence-content {{
-                    display: none;
-                    padding: 12px;
-                    background-color: white;
-                    border-top: 1px solid #e2e8f0;
-                    animation: slideDown 0.2s ease;
-                }}
-                
-                .evidence-icon {{
-                    width: 16px;
-                    height: 16px;
-                    background-color: #dd6b20;
-                    color: white;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 10px;
-                    font-weight: bold;
-                    transition: transform 0.2s ease;
-                }}
-                
-                .evidence-badge {{
-                    display: inline-flex;
-                    align-items: center;
-                    padding: 3px 6px;
-                    background-color: rgba(221, 107, 32, 0.1);
-                    color: #dd6b20;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    font-size: 10px;
-                    font-weight: 600;
-                    transition: background-color 0.2s ease;
-                    margin: 2px;
-                }}
-                
-                .evidence-badge:hover {{
-                    background-color: rgba(221, 107, 32, 0.2);
-                }}
-                
-                @keyframes slideDown {{
-                    from {{
-                        opacity: 0;
-                        max-height: 0;
-                    }}
-                    to {{
-                        opacity: 1;
-                        max-height: 200px;
-                    }}
-                }}
-                
-                .timeline-year-line {{
-                    flex-grow: 1;
-                    height: 2px;
-                    background-color: #e2e8f0;
-                    margin-left: 12px;
                 }}
             </style>
         </head>
@@ -1462,7 +1091,6 @@ def main():
                     </div>
                 </div>
                 
-                <!-- Facts Section -->
                 <div id="facts" class="content-section active">
                     <div class="section-title">Case Facts</div>
                     
@@ -1482,12 +1110,10 @@ def main():
                         </div>
                     </div>
                     
-                    <!-- Card View -->
                     <div id="card-view-content" class="facts-content">
                         <div id="card-facts-container"></div>
                     </div>
                     
-                    <!-- Table View -->
                     <div id="table-view-content" class="facts-content" style="display: none;">
                         <div class="table-view-container">
                             <table class="table-view">
@@ -1510,17 +1136,10 @@ def main():
                         </div>
                     </div>
                     
-                    <!-- Timeline View -->
                     <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div class="timeline-container">
-                            <div class="timeline-wrapper">
-                                <div class="timeline-line"></div>
-                                <div id="timeline-events"></div>
-                            </div>
-                        </div>
+                        <div id="timeline-events"></div>
                     </div>
                     
-                    <!-- Document Sets View -->
                     <div id="docset-view-content" class="facts-content" style="display: none;">
                         <div id="document-sets-container"></div>
                     </div>
@@ -1528,14 +1147,13 @@ def main():
             </div>
             
             <script>
-                // Initialize data - ensure all views use the same core data structure
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
+                const argsData = {args_json};
                 
                 // Mock document content for preview functionality
-                const documentContent = {
-                    "Statement of Appeal": {
+                const documentContent = {{
+                    "Statement of Appeal": {{
                         title: "Statement of Appeal",
                         type: "PDF",
                         pages: 45,
@@ -1574,8 +1192,8 @@ def main():
                                 </div>
                             </div>
                         `
-                    },
-                    "Answer to Request for Provisional Measures": {
+                    }},
+                    "Answer to Request for Provisional Measures": {{
                         title: "Answer to Request for Provisional Measures", 
                         type: "PDF",
                         pages: 28,
@@ -1593,125 +1211,19 @@ def main():
                                 
                                 <p><strong>Paragraph 207:</strong> The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.</p>
                                 
-                                <p><strong>Paragraph 208:</strong> A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.</p>
-                                
                                 <h3>III. LEGAL ANALYSIS</h3>
                                 <p><strong>Operational Continuity Requirement:</strong> As established in CAS 2017/A/5465, actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict.</p>
-                                
-                                <p><strong>Evidence of Discontinuity:</strong> The complete cessation of operations during 1975-1976, evidenced by:</p>
-                                <ul>
-                                    <li>Official withdrawal notification dated May 15, 1975;</li>
-                                    <li>Closure of all bank accounts;</li>
-                                    <li>Termination of all contractual obligations;</li>
-                                    <li>Absence from competition records.</li>
-                                </ul>
-                                
-                                <h3>IV. CONCLUSION</h3>
-                                <p>The Respondent respectfully submits that the Appellant has failed to demonstrate any basis for provisional measures and requests that the Tribunal deny the request with costs.</p>
-                                
-                                <div style="margin-top: 40px; text-align: right;">
-                                    <p><strong>Respectfully submitted,</strong></p>
-                                    <p style="margin-top: 20px;">[Federation Legal Counsel]<br>Attorney for Respondent</p>
-                                </div>
                             </div>
                         `
-                    },
-                    "Appeal Brief": {
-                        title: "Appeal Brief",
-                        type: "PDF", 
-                        pages: 67,
-                        summary: "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
-                        content: `
-                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
-                                <h1 style="text-align: center; margin-bottom: 30px;">COMPREHENSIVE APPEAL BRIEF</h1>
-                                <h2 style="text-align: center; margin-bottom: 40px;">Athletic Club United v. National Football Federation</h2>
-                                
-                                <h3>TABLE OF CONTENTS</h3>
-                                <ol style="margin-bottom: 30px;">
-                                    <li>Statement of Issues</li>
-                                    <li>Statement of Facts</li>
-                                    <li>Legal Standards</li>
-                                    <li>Arguments</li>
-                                    <li>Conclusion</li>
-                                </ol>
-                                
-                                <h3>I. STATEMENT OF ISSUES</h3>
-                                <p>Whether the Appellant, Athletic Club United, has demonstrated sufficient continuity to establish sporting succession under applicable FIFA and CAS precedent.</p>
-                                
-                                <h3>II. DETAILED FACTUAL CHRONOLOGY</h3>
-                                <p><strong>1950-1975: Foundation Period</strong></p>
-                                <p>Athletic Club United was established on January 12, 1950, and operated continuously for 25 years, achieving significant sporting success including the 1955 National Championship.</p>
-                                
-                                <p><strong>1975-1976: Transition Period</strong></p>
-                                <p>While acknowledging administrative difficulties during this period, the Appellant maintains that core identity elements remained intact throughout.</p>
-                                
-                                <p><strong>1976-Present: Continuation</strong></p>
-                                <p>Operations resumed under identical management structure, maintaining traditional colors, stadium, and fan base.</p>
-                                
-                                <h3>III. LEGAL STANDARDS FOR SPORTING SUCCESSION</h3>
-                                <p>The established criteria from CAS jurisprudence require analysis of:</p>
-                                <ul>
-                                    <li>Continuity of identifying elements (name, colors, logo)</li>
-                                    <li>Public recognition and perception</li>
-                                    <li>Maintenance of sporting history and records</li>
-                                    <li>Continuity of fan base and community support</li>
-                                </ul>
-                                
-                                <h3>IV. COMPREHENSIVE ARGUMENTS</h3>
-                                <p><strong>A. Name Continuity:</strong> The club has maintained substantially identical naming throughout its existence, with only minor administrative variations that do not affect public recognition.</p>
-                                
-                                <p><strong>B. Visual Identity:</strong> The club's colors (royal blue and white) have remained constant since 1956, providing clear visual continuity recognized by supporters and competitors alike.</p>
-                                
-                                <p><strong>C. Community Recognition:</strong> Local media, supporters, and sporting community have consistently recognized the club as the same entity throughout the alleged discontinuity period.</p>
-                                
-                                <h3>V. CONCLUSION</h3>
-                                <p>The totality of evidence demonstrates clear sporting succession. The Appellant respectfully requests favorable determination of this appeal.</p>
-                            </div>
-                        `
-                    },
-                    "Reply to Objection to Admissibility": {
-                        title: "Reply to Objection to Admissibility",
-                        type: "PDF",
-                        pages: 23,
-                        summary: "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
-                        content: `
-                            <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
-                                <h1 style="text-align: center; margin-bottom: 30px;">REPLY TO OBJECTION TO ADMISSIBILITY</h1>
-                                <h2 style="text-align: center; margin-bottom: 40px;">Athletic Club United v. National Football Federation</h2>
-                                
-                                <h3>I. INTRODUCTION</h3>
-                                <p>The Appellant hereby submits this Reply to the Respondent's Objection to Admissibility dated [DATE], and respectfully requests that the Tribunal admit all evidence submitted in support of the appeal.</p>
-                                
-                                <h3>II. PROCEDURAL STANDARDS</h3>
-                                <p>Under the applicable procedural rules, evidence should be admitted unless it is clearly irrelevant or obtained through improper means. The Respondent has failed to meet this standard.</p>
-                                
-                                <h3>III. RESPONSE TO SPECIFIC OBJECTIONS</h3>
-                                <p><strong>Federation Recognition Document (2010):</strong> The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.</p>
-                                
-                                <p>This document is highly relevant as it represents the considered judgment of the very entity that now contests the club's continuity. Such official recognition cannot be dismissed as mere "administrative convenience" as suggested by the Respondent.</p>
-                                
-                                <p><strong>Historical Media Coverage:</strong> The extensive archive of media coverage spanning 1950-2024 demonstrates consistent public recognition of the club's identity and provides objective evidence of community perception.</p>
-                                
-                                <p><strong>Competition Records:</strong> Participation records from national and regional competitions provide concrete evidence of operational continuity and should be afforded significant weight.</p>
-                                
-                                <h3>IV. LEGAL PRECEDENT ON ADMISSIBILITY</h3>
-                                <p>CAS panels have consistently favored broad admissibility standards, particularly in cases involving institutional recognition and historical documentation.</p>
-                                
-                                <h3>V. CONCLUSION</h3>
-                                <p>All submitted evidence meets applicable admissibility standards and is directly relevant to the central issues in this proceeding. The Tribunal should overrule the Respondent's objections and admit the evidence in full.</p>
-                            </div>
-                        `
-                    }
-                };
+                    }}
+                }};
                 
-                // Function to preview document in new tab
-                function previewDocument(docName) {
+                function previewDocument(docName) {{
                     const doc = documentContent[docName];
-                    if (!doc) {
-                        // If no specific content, show a generic document preview
+                    if (!doc) {{
                         openGenericDocumentPreview(docName);
                         return;
-                    }
+                    }}
                     
                     const newWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
                     
@@ -1719,16 +1231,16 @@ def main():
                         <!DOCTYPE html>
                         <html>
                         <head>
-                            <title>${doc.title} - Document Preview</title>
+                            <title>${{doc.title}} - Document Preview</title>
                             <meta charset="UTF-8">
                             <style>
-                                body {
+                                body {{
                                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                                     margin: 0;
                                     padding: 0;
                                     background-color: #f5f5f5;
-                                }
-                                .header {
+                                }}
+                                .header {{
                                     background-color: #4299e1;
                                     color: white;
                                     padding: 15px 20px;
@@ -1736,31 +1248,31 @@ def main():
                                     justify-content: space-between;
                                     align-items: center;
                                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                }
-                                .header h1 {
+                                }}
+                                .header h1 {{
                                     margin: 0;
                                     font-size: 18px;
                                     font-weight: 600;
-                                }
-                                .header-info {
+                                }}
+                                .header-info {{
                                     display: flex;
                                     gap: 20px;
                                     font-size: 14px;
-                                }
-                                .document-container {
+                                }}
+                                .document-container {{
                                     max-width: 900px;
                                     margin: 20px auto;
                                     background: white;
                                     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
                                     border-radius: 8px;
                                     overflow: hidden;
-                                }
-                                .document-content {
+                                }}
+                                .document-content {{
                                     padding: 40px;
                                     background: white;
                                     min-height: 600px;
-                                }
-                                .close-btn {
+                                }}
+                                .close-btn {{
                                     background: rgba(255,255,255,0.2);
                                     border: 1px solid rgba(255,255,255,0.3);
                                     color: white;
@@ -1768,39 +1280,34 @@ def main():
                                     border-radius: 4px;
                                     cursor: pointer;
                                     font-size: 14px;
-                                }
-                                .close-btn:hover {
+                                }}
+                                .close-btn:hover {{
                                     background: rgba(255,255,255,0.3);
-                                }
-                                .document-meta {
+                                }}
+                                .document-meta {{
                                     background: #f8fafc;
                                     padding: 15px 20px;
                                     border-bottom: 1px solid #e2e8f0;
                                     font-size: 14px;
                                     color: #4a5568;
-                                }
-                                @media print {
-                                    .header, .document-meta { display: none; }
-                                    .document-container { box-shadow: none; margin: 0; }
-                                    .document-content { padding: 20px; }
-                                }
+                                }}
                             </style>
                         </head>
                         <body>
                             <div class="header">
-                                <h1>📄 ${doc.title}</h1>
+                                <h1>📄 ${{doc.title}}</h1>
                                 <div class="header-info">
-                                    <span>Type: ${doc.type}</span>
-                                    <span>Pages: ${doc.pages}</span>
+                                    <span>Type: ${{doc.type}}</span>
+                                    <span>Pages: ${{doc.pages}}</span>
                                     <button class="close-btn" onclick="window.close()">Close</button>
                                 </div>
                             </div>
                             <div class="document-meta">
-                                <strong>Summary:</strong> ${doc.summary}
+                                <strong>Summary:</strong> ${{doc.summary}}
                             </div>
                             <div class="document-container">
                                 <div class="document-content">
-                                    ${doc.content}
+                                    ${{doc.content}}
                                 </div>
                             </div>
                         </body>
@@ -1810,19 +1317,18 @@ def main():
                     newWindow.document.write(htmlContent);
                     newWindow.document.close();
                     newWindow.focus();
-                }
+                }}
                 
-                // Function to show generic document preview for unknown documents
-                function openGenericDocumentPreview(docName) {
+                function openGenericDocumentPreview(docName) {{
                     const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
                     
                     const htmlContent = `
                         <!DOCTYPE html>
                         <html>
                         <head>
-                            <title>${docName} - Document Preview</title>
+                            <title>${{docName}} - Document Preview</title>
                             <style>
-                                body {
+                                body {{
                                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                                     margin: 0;
                                     padding: 40px;
@@ -1831,30 +1337,30 @@ def main():
                                     align-items: center;
                                     justify-content: center;
                                     min-height: 100vh;
-                                }
-                                .preview-container {
+                                }}
+                                .preview-container {{
                                     background: white;
                                     padding: 40px;
                                     border-radius: 12px;
                                     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
                                     text-align: center;
                                     max-width: 500px;
-                                }
-                                .document-icon {
+                                }}
+                                .document-icon {{
                                     font-size: 64px;
                                     margin-bottom: 20px;
                                     color: #4299e1;
-                                }
-                                h1 {
+                                }}
+                                h1 {{
                                     color: #2d3748;
                                     margin-bottom: 10px;
-                                }
-                                p {
+                                }}
+                                p {{
                                     color: #718096;
                                     margin-bottom: 30px;
                                     line-height: 1.6;
-                                }
-                                .close-btn {
+                                }}
+                                .close-btn {{
                                     background: #4299e1;
                                     color: white;
                                     border: none;
@@ -1862,16 +1368,16 @@ def main():
                                     border-radius: 6px;
                                     cursor: pointer;
                                     font-size: 14px;
-                                }
-                                .close-btn:hover {
+                                }}
+                                .close-btn:hover {{
                                     background: #3182ce;
-                                }
+                                }}
                             </style>
                         </head>
                         <body>
                             <div class="preview-container">
                                 <div class="document-icon">📄</div>
-                                <h1>${docName}</h1>
+                                <h1>${{docName}}</h1>
                                 <p>This document is available for preview. In a full implementation, this would display the actual document content, PDF viewer, or connect to a document management system.</p>
                                 <button class="close-btn" onclick="window.close()">Close Preview</button>
                             </div>
@@ -1882,29 +1388,8 @@ def main():
                     newWindow.document.write(htmlContent);
                     newWindow.document.close();
                     newWindow.focus();
-                }
+                }}
                 
-                // Function to create clickable document links
-                function createDocumentLink(docName, displayText = null) {
-                    const text = displayText || docName;
-                    if (!docName || docName === 'N/A') {
-                        return text;
-                    }
-                    
-                    return `<span class="document-link" onclick="previewDocument('${docName}')" title="Click to preview document">${text}<span class="preview-icon">🔍</span></span>`;
-                }
-                
-                // Function to create document badge (for more compact display)
-                function createDocumentBadge(docName, displayText = null) {
-                    const text = displayText || docName;
-                    if (!docName || docName === 'N/A') {
-                        return `<span class="badge">${text}</span>`;
-                    }
-                    
-                    return `<span class="document-badge" onclick="previewDocument('${docName}')" title="Click to preview document">📄 ${text}</span>`;
-                }
-                
-                // Standardize data structure across all views
                 function standardizeFactData(fact) {{
                     return {{
                         date: fact.date,
@@ -1917,7 +1402,6 @@ def main():
                         respondent_submission: fact.respondent_submission || 'No specific submission recorded',
                         isDisputed: fact.isDisputed,
                         exhibits: fact.exhibits || [],
-                        evidence: fact.evidence || [], // Add evidence details
                         parties_involved: fact.parties_involved || [],
                         argId: fact.argId || '',
                         argTitle: fact.argTitle || '',
@@ -1925,18 +1409,14 @@ def main():
                     }};
                 }}
                 
-                // Function to get evidence content with expandable functionality
-                function getEvidenceContent(fact, viewType = 'card') {{
+                function getEvidenceContent(fact) {{
                     if (!fact.exhibits || fact.exhibits.length === 0) {{
                         return 'None';
                     }}
                     
-                    // Get evidence details from the argument data
-                    const args_data = {args_json};
                     let evidenceContent = [];
                     
                     fact.exhibits.forEach(exhibitId => {{
-                        // Search through all arguments to find evidence details
                         function findEvidence(args) {{
                             for (const argKey in args) {{
                                 const arg = args[argKey];
@@ -1954,8 +1434,7 @@ def main():
                             return null;
                         }}
                         
-                        // Look in both claimant and respondent args
-                        let evidence = findEvidence(args_data.claimantArgs) || findEvidence(args_data.respondentArgs);
+                        let evidence = findEvidence(argsData.claimantArgs) || findEvidence(argsData.respondentArgs);
                         
                         if (evidence) {{
                             evidenceContent.push({{
@@ -1975,44 +1454,21 @@ def main():
                     return evidenceContent;
                 }}
                 
-                // Toggle evidence expansion
                 function toggleEvidence(evidenceId, factIndex) {{
                     const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
                     const icon = document.getElementById(`evidence-icon-${{evidenceId}}-${{factIndex}}`);
                     
-                    if (content.style.display === 'none' || content.style.display === '') {{
-                        content.style.display = 'block';
-                        icon.textContent = '−';
-                        icon.style.transform = 'rotate(0deg)';
-                    }} else {{
-                        content.style.display = 'none';
-                        icon.textContent = '+';
-                        icon.style.transform = 'rotate(0deg)';
+                    if (content && icon) {{
+                        if (content.style.display === 'none' || content.style.display === '') {{
+                            content.style.display = 'block';
+                            icon.textContent = '−';
+                        }} else {{
+                            content.style.display = 'none';
+                            icon.textContent = '+';
+                        }}
                     }}
                 }}
                 
-                // Standardize timeline data to match facts structure
-                function standardizeTimelineData(item) {{
-                    return {{
-                        date: item.date,
-                        event: item.event,
-                        source_text: item.source_text || '',
-                        page: item.page || '',
-                        doc_name: item.doc_name || '',
-                        doc_summary: item.doc_summary || '',
-                        claimant_submission: item.claimant_submission || 'No specific submission recorded',
-                        respondent_submission: item.respondent_submission || 'No specific submission recorded',
-                        isDisputed: item.isDisputed,
-                        exhibits: item.exhibits || [],
-                        evidence: item.evidence || [],
-                        parties_involved: item.parties_involved || [],
-                        argId: item.argId || '',
-                        argTitle: item.argTitle || '',
-                        paragraphs: item.paragraphs || ''
-                    }};
-                }}
-                
-                // Switch view between table, card, timeline, and document sets
                 function switchView(viewType) {{
                     const tableBtn = document.getElementById('table-view-btn');
                     const cardBtn = document.getElementById('card-view-btn');
@@ -2024,19 +1480,16 @@ def main():
                     const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
-                    // Remove active class from all buttons
                     tableBtn.classList.remove('active');
                     cardBtn.classList.remove('active');
                     timelineBtn.classList.remove('active');
                     docsetBtn.classList.remove('active');
                     
-                    // Hide all content
                     tableContent.style.display = 'none';
                     cardContent.style.display = 'none';
                     timelineContent.style.display = 'none';
                     docsetContent.style.display = 'none';
                     
-                    // Activate the selected view
                     if (viewType === 'card') {{
                         cardBtn.classList.add('active');
                         cardContent.style.display = 'block';
@@ -2044,6 +1497,7 @@ def main():
                     }} else if (viewType === 'table') {{
                         tableBtn.classList.add('active');
                         tableContent.style.display = 'block';
+                        renderFacts('all');
                     }} else if (viewType === 'timeline') {{
                         timelineBtn.classList.add('active');
                         timelineContent.style.display = 'block';
@@ -2055,209 +1509,22 @@ def main():
                     }}
                 }}
                 
-                // Copy all content function
                 function copyAllContent() {{
-                    let contentToCopy = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    
-                    if (cardContent.style.display !== 'none') {{
-                        // Copy card data
-                        contentToCopy += 'Case Facts (Card View)\\n\\n';
-                        
-                        const cardItems = document.querySelectorAll('.card-fact-container');
-                        cardItems.forEach(card => {{
-                            const dateEl = card.querySelector('.card-fact-date');
-                            const eventEl = card.querySelector('.card-fact-event');
-                            const partyEls = card.querySelectorAll('.badge');
-                            const claimantSubmissionEl = card.querySelector('.card-source-text:nth-of-type(1) div:last-child');
-                            const respondentSubmissionEl = card.querySelector('.card-source-text:nth-of-type(2) div:last-child');
-                            
-                            if (dateEl && eventEl) {{
-                                const date = dateEl.textContent.trim();
-                                const event = eventEl.textContent.trim();
-                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
-                                const claimantSubmission = claimantSubmissionEl ? claimantSubmissionEl.textContent.trim() : '';
-                                const respondentSubmission = respondentSubmissionEl ? respondentSubmissionEl.textContent.trim() : '';
-                                
-                                contentToCopy += `${{date}} - ${{event}} (${{parties}})\\n`;
-                                if (claimantSubmission) {{
-                                    contentToCopy += `Claimant: ${{claimantSubmission}}\\n`;
-                                }}
-                                if (respondentSubmission) {{
-                                    contentToCopy += `Respondent: ${{respondentSubmission}}\\n`;
-                                }}
-                                contentToCopy += '\\n';
-                            }}
-                        }});
-                    }} else if (tableContent.style.display !== 'none') {{
-                        // Copy table data
-                        const table = document.querySelector('.table-view');
-                        const headers = Array.from(table.querySelectorAll('th'))
-                            .map(th => th.textContent.trim())
-                            .join('\\t');
-                        
-                        contentToCopy += 'Case Facts\\n\\n';
-                        contentToCopy += headers + '\\n';
-                        
-                        // Get rows
-                        const rows = table.querySelectorAll('tbody tr');
-                        rows.forEach(row => {{
-                            const rowText = Array.from(row.querySelectorAll('td'))
-                                .map(td => td.textContent.trim())
-                                .join('\\t');
-                            
-                            contentToCopy += rowText + '\\n';
-                        }});
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        // Copy timeline data
-                        contentToCopy += 'Case Timeline\\n\\n';
-                        
-                        const timelineItems = document.querySelectorAll('.timeline-item');
-                        timelineItems.forEach(item => {{
-                            const dateEl = item.querySelector('.timeline-date');
-                            const factEl = item.querySelector('.timeline-fact');
-                            const partyEls = item.querySelectorAll('.badge');
-                            const claimantEl = item.querySelector('.timeline-source-text[style*="3182ce"]');
-                            const respondentEl = item.querySelector('.timeline-source-text[style*="e53e3e"]');
-                            
-                            if (dateEl && factEl) {{
-                                const date = dateEl.textContent.trim();
-                                const fact = factEl.textContent.trim();
-                                const parties = Array.from(partyEls).map(el => el.textContent.trim()).filter(text => text !== 'Disputed').join(', ');
-                                
-                                contentToCopy += `${{date}} - ${{fact}} (${{parties}})\\n`;
-                                
-                                if (claimantEl) {{
-                                    const claimantText = claimantEl.textContent.replace('Claimant Submission:', '').trim();
-                                    contentToCopy += `Claimant: ${{claimantText}}\\n`;
-                                }}
-                                
-                                if (respondentEl) {{
-                                    const respondentText = respondentEl.textContent.replace('Respondent Submission:', '').trim();
-                                    contentToCopy += `Respondent: ${{respondentText}}\\n`;
-                                }}
-                                
-                                contentToCopy += '\\n';
-                            }}
-                        }});
-                    }} else {{
-                        // Copy document sets data (just a basic representation)
-                        contentToCopy += 'Case Facts by Document\\n\\n';
-                        
-                        // This is a simplified version since the full structure would be complex
-                        const docsetContainers = document.querySelectorAll('.docset-container');
-                        docsetContainers.forEach(container => {{
-                            const header = container.querySelector('.docset-header');
-                            const title = header.querySelector('span').textContent;
-                            contentToCopy += `=== ${{title}} ===\\n`;
-                            
-                            // Get facts from this document
-                            const tableFacts = container.querySelectorAll('tbody tr');
-                            tableFacts.forEach(fact => {{
-                                const cells = Array.from(fact.querySelectorAll('td'));
-                                const date = cells[1] ? cells[1].textContent : '';
-                                const event = cells[2] ? cells[2].textContent : '';
-                                const claimantSub = cells[6] ? cells[6].textContent : '';
-                                const respondentSub = cells[7] ? cells[7].textContent : '';
-                                
-                                contentToCopy += `- ${{date}} | ${{event}}\\n`;
-                                if (claimantSub && claimantSub !== 'No submission') {{
-                                    contentToCopy += `  Claimant: ${{claimantSub}}\\n`;
-                                }}
-                                if (respondentSub && respondentSub !== 'No submission') {{
-                                    contentToCopy += `  Respondent: ${{respondentSub}}\\n`;
-                                }}
-                            }});
-                            
-                            contentToCopy += '\\n';
-                        }});
-                    }}
-                    
-                    // Create a temporary textarea to copy the content
+                    // Basic copy functionality - simplified for demo
                     const textarea = document.createElement('textarea');
-                    textarea.value = contentToCopy;
+                    textarea.value = 'Case Facts Content - Full implementation would copy current view data';
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
                     
-                    // Show notification
                     const notification = document.getElementById('copy-notification');
                     notification.classList.add('show');
-                    
-                    setTimeout(() => {{
-                        notification.classList.remove('show');
-                    }}, 2000);
+                    setTimeout(() => notification.classList.remove('show'), 2000);
                 }}
                 
-                // Export functions
                 function exportAsCsv() {{
-                    let contentToCsv = '';
-                    
-                    // Determine which view is active
-                    const tableContent = document.getElementById('table-view-content');
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    // Get currently active tab filter
-                    const allBtn = document.getElementById('all-facts-btn');
-                    const disputedBtn = document.getElementById('disputed-facts-btn');
-                    const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                    
-                    let currentFacts = factsData.map(standardizeFactData);
-                    if (disputedBtn.classList.contains('active')) {{
-                        currentFacts = currentFacts.filter(fact => fact.isDisputed);
-                    }} else if (undisputedBtn.classList.contains('active')) {{
-                        currentFacts = currentFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Standard headers for all views
-                    let headers = "Date,Event,Source Text,Page,Document,Doc Summary,Claimant Submission,Respondent Submission,Status,Evidence\\n";
-                    let rows = '';
-                    
-                    currentFacts.forEach(fact => {{
-                        const evidenceContent = getEvidenceContent(fact);
-                        let evidenceText = 'None';
-                        if (evidenceContent !== 'None') {{
-                            evidenceText = evidenceContent.map(ev => `${{ev.id}}: ${{ev.title}} - ${{ev.summary}}`).join(' | ');
-                        }}
-                        
-                        const sourceText = (fact.source_text || '').replace(/"/g, '""');
-                        const docName = (fact.doc_name || '').replace(/"/g, '""');
-                        const docSummary = (fact.doc_summary || '').replace(/"/g, '""');
-                        const claimantSubmission = (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '""');
-                        const respondentSubmission = (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '""');
-                        const evidenceForCsv = evidenceText.replace(/"/g, '""');
-                        
-                        rows += `"${{fact.date}}","${{fact.event}}","${{sourceText}}","${{fact.page || ''}}","${{docName}}","${{docSummary}}","${{claimantSubmission}}","${{respondentSubmission}}","${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}","${{evidenceForCsv}}"\\n`;
-                    }});
-                    
-                    const csvContent = headers + rows;
-                    const encodedUri = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    
-                    // Set filename based on active view
-                    let filename = "facts.csv";
-                    if (cardContent.style.display !== 'none') {{
-                        filename = "facts_cards.csv";
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        filename = "facts_timeline.csv";
-                    }} else if (docsetContent.style.display !== 'none') {{
-                        filename = "facts_documents.csv";
-                    }} else {{
-                        filename = "facts_table.csv";
-                    }}
-                    
-                    link.setAttribute("download", filename);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    alert("CSV export functionality would be implemented here");
                 }}
                 
                 function exportAsPdf() {{
@@ -2268,151 +1535,48 @@ def main():
                     alert("Word export functionality would be implemented here");
                 }}
                 
-                // Switch facts tab
                 function switchFactsTab(tabType) {{
                     const allBtn = document.getElementById('all-facts-btn');
                     const disputedBtn = document.getElementById('disputed-facts-btn');
                     const undisputedBtn = document.getElementById('undisputed-facts-btn');
                     
-                    // Remove active class from all
                     allBtn.classList.remove('active');
                     disputedBtn.classList.remove('active');
                     undisputedBtn.classList.remove('active');
                     
-                    // Add active to selected
                     if (tabType === 'all') {{
                         allBtn.classList.add('active');
-                        renderFacts('all');
                     }} else if (tabType === 'disputed') {{
                         disputedBtn.classList.add('active');
-                        renderFacts('disputed');
                     }} else {{
                         undisputedBtn.classList.add('active');
-                        renderFacts('undisputed');
                     }}
                     
-                    // Update active view
-                    const tableContent = document.getElementById('table-view-content');
-                    const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
-                    const docsetContent = document.getElementById('docset-view-content');
-                    
-                    if (cardContent.style.display !== 'none') {{
-                        renderCardView(tabType);
-                    }} else if (tableContent.style.display !== 'none') {{
-                        renderFacts(tabType);
-                    }} else if (timelineContent.style.display !== 'none') {{
-                        renderTimeline(tabType);
-                    }} else if (docsetContent.style.display !== 'none') {{
-                        renderDocumentSets(tabType);
-                    }}
+                    renderCardView(tabType);
+                    renderFacts(tabType);
                 }}
                 
-                // Sort table function
-                function sortTable(tableId, columnIndex) {{
-                    const table = document.getElementById(tableId);
-                    const rows = Array.from(table.rows);
-                    let dir = 1; // 1 for ascending, -1 for descending
-                    
-                    // Check if already sorted in this direction
-                    if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                        table.getAttribute('data-sort-dir') === '1') {{
-                        dir = -1;
-                    }}
-                    
-                    // Sort the rows
-                    rows.sort((a, b) => {{
-                        const cellA = a.cells[columnIndex].textContent.trim();
-                        const cellB = b.cells[columnIndex].textContent.trim();
-                        
-                        // Handle date sorting
-                        if (columnIndex === 0) {{
-                            // Attempt to parse as dates
-                            const dateA = new Date(cellA);
-                            const dateB = new Date(cellB);
-                            
-                            if (!isNaN(dateA) && !isNaN(dateB)) {{
-                                return dir * (dateA - dateB);
-                            }}
-                        }}
-                        
-                        return dir * cellA.localeCompare(cellB);
-                    }});
-                    
-                    // Remove existing rows and append in new order
-                    rows.forEach(row => table.appendChild(row));
-                    
-                    // Store current sort direction and column
-                    table.setAttribute('data-sort-column', columnIndex);
-                    table.setAttribute('data-sort-dir', dir);
-                }}
-                
-                // Toggle card fact visibility
                 function toggleCardFact(factIndex) {{
                     const content = document.getElementById(`card-fact-content-${{factIndex}}`);
                     const chevron = document.getElementById(`card-chevron-${{factIndex}}`);
                     
-                    if (content.classList.contains('show')) {{
-                        content.classList.remove('show');
-                        chevron.classList.remove('expanded');
-                    }} else {{
-                        content.classList.add('show');
-                        chevron.classList.add('expanded');
+                    if (content && chevron) {{
+                        if (content.classList.contains('show')) {{
+                            content.classList.remove('show');
+                            chevron.classList.remove('expanded');
+                        }} else {{
+                            content.classList.add('show');
+                            chevron.classList.add('expanded');
+                        }}
                     }}
                 }}
                 
-                // Toggle document set visibility
-                function toggleDocSet(docsetId) {{
-                    const content = document.getElementById(`docset-content-${{docsetId}}`);
-                    const chevron = document.getElementById(`chevron-${{docsetId}}`);
-                    
-                    if (content.style.display === 'none') {{
-                        content.style.display = 'block';
-                        chevron.style.transform = 'rotate(90deg)';
-                    }} else {{
-                        content.style.display = 'none';
-                        chevron.style.transform = 'rotate(0deg)';
-                    }}
-                }}
-                
-                // Format date for display
-                function formatDate(dateString) {{
-                    // If it's a range, just return it as is
-                    if (dateString.includes('-')) {{
-                        return dateString;
-                    }}
-                    
-                    // Try to parse as a date
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return dateString;
-                    }}
-                    
-                    // Format the date
-                    const options = {{ year: 'numeric', month: 'short', day: 'numeric' }};
-                    return date.toLocaleDateString(undefined, options);
-                }}
-                
-                // Helper to extract year from date
-                function getYear(dateString) {{
-                    if (dateString.includes('-')) {{
-                        return dateString.split('-')[0];
-                    }}
-                    
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return '';
-                    }}
-                    
-                    return date.getFullYear().toString();
-                }}
-                
-                // Render card view with dropdown containers for each fact
                 function renderCardView(tabType = 'all') {{
                     const container = document.getElementById('card-facts-container');
+                    if (!container) return;
+                    
                     container.innerHTML = '';
                     
-                    // Filter facts based on tab type and standardize
                     let filteredFacts = factsData.map(standardizeFactData);
                     if (tabType === 'disputed') {{
                         filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
@@ -2420,34 +1584,24 @@ def main():
                         filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
-                    // Sort by date
-                    filteredFacts.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
+                    filteredFacts.sort((a, b) => new Date(a.date) - new Date(b.date));
                     
-                    // Render each fact as a card
                     filteredFacts.forEach((fact, index) => {{
                         const cardContainer = document.createElement('div');
                         cardContainer.className = `card-fact-container${{fact.isDisputed ? ' disputed' : ''}}`;
                         
-                        // Create card header
                         const headerEl = document.createElement('div');
                         headerEl.className = `card-fact-header${{fact.isDisputed ? ' disputed' : ''}}`;
                         headerEl.onclick = () => toggleCardFact(index);
                         
-                        // Create title section
                         const titleEl = document.createElement('div');
                         titleEl.className = 'card-fact-title';
                         
-                        // Date
                         const dateEl = document.createElement('div');
                         dateEl.className = 'card-fact-date';
                         dateEl.textContent = fact.date;
                         titleEl.appendChild(dateEl);
                         
-                        // Event
                         const eventEl = document.createElement('div');
                         eventEl.className = 'card-fact-event';
                         eventEl.textContent = fact.event;
@@ -2455,11 +1609,9 @@ def main():
                         
                         headerEl.appendChild(titleEl);
                         
-                        // Create badges section
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'card-fact-badges';
                         
-                        // Parties involved badges
                         if (fact.parties_involved && fact.parties_involved.length > 0) {{
                             fact.parties_involved.forEach(party => {{
                                 const partyBadge = document.createElement('span');
@@ -2469,7 +1621,6 @@ def main():
                             }});
                         }}
                         
-                        // Disputed badge
                         if (fact.isDisputed) {{
                             const disputedBadge = document.createElement('span');
                             disputedBadge.className = 'badge disputed-badge';
@@ -2477,7 +1628,6 @@ def main():
                             badgesEl.appendChild(disputedBadge);
                         }}
                         
-                        // Chevron
                         const chevronEl = document.createElement('div');
                         chevronEl.className = 'card-chevron';
                         chevronEl.id = `card-chevron-${{index}}`;
@@ -2491,30 +1641,26 @@ def main():
                         headerEl.appendChild(badgesEl);
                         cardContainer.appendChild(headerEl);
                         
-                        // Create card content with standardized structure
                         const contentEl = document.createElement('div');
                         contentEl.className = 'card-fact-content';
                         contentEl.id = `card-fact-content-${{index}}`;
                         
-                        // Create details grid
                         const detailsEl = document.createElement('div');
                         detailsEl.className = 'card-fact-details';
                         
-                        // Document info
                         const docSection = document.createElement('div');
                         docSection.className = 'card-detail-section';
                         docSection.innerHTML = `
                             <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                ${fact.doc_name && fact.doc_name !== 'N/A' ? 
-                                    `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document"><strong>${fact.doc_name}</strong><span class="preview-icon">🔍</span></span>` : 
-                                    '<strong>N/A</strong>'}
-                                ${fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}
+                                ${{fact.doc_name && fact.doc_name !== 'N/A' ? 
+                                    `<span class="document-link" onclick="previewDocument('${{fact.doc_name}}')" title="Click to preview document"><strong>${{fact.doc_name}}</strong><span class="preview-icon">🔍</span></span>` : 
+                                    '<strong>N/A</strong>'}}
+                                ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
                             </div>
                         `;
                         detailsEl.appendChild(docSection);
                         
-                        // Argument info
                         const argSection = document.createElement('div');
                         argSection.className = 'card-detail-section';
                         argSection.innerHTML = `
@@ -2528,7 +1674,6 @@ def main():
                         
                         contentEl.appendChild(detailsEl);
                         
-                        // Source Text (always show if available)
                         if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
                             const sourceTextEl = document.createElement('div');
                             sourceTextEl.className = 'card-source-text';
@@ -2539,7 +1684,6 @@ def main():
                             contentEl.appendChild(sourceTextEl);
                         }}
                         
-                        // Claimant Submission
                         if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantSubmissionEl = document.createElement('div');
                             claimantSubmissionEl.className = 'card-source-text claimant-submission';
@@ -2550,7 +1694,6 @@ def main():
                             contentEl.appendChild(claimantSubmissionEl);
                         }}
                         
-                        // Respondent Submission
                         if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
                             const respondentSubmissionEl = document.createElement('div');
                             respondentSubmissionEl.className = 'card-source-text respondent-submission';
@@ -2561,7 +1704,6 @@ def main():
                             contentEl.appendChild(respondentSubmissionEl);
                         }}
                         
-                        // Document summary
                         if (fact.doc_summary) {{
                             const summaryEl = document.createElement('div');
                             summaryEl.className = 'card-detail-section';
@@ -2573,12 +1715,10 @@ def main():
                             contentEl.appendChild(summaryEl);
                         }}
                         
-                        // Status and Exhibits section
                         const statusExhibitsEl = document.createElement('div');
                         statusExhibitsEl.className = 'card-fact-details';
                         statusExhibitsEl.style.marginTop = '16px';
                         
-                        // Status
                         const statusSection = document.createElement('div');
                         statusSection.className = 'card-detail-section';
                         statusSection.innerHTML = `
@@ -2587,7 +1727,6 @@ def main():
                         `;
                         statusExhibitsEl.appendChild(statusSection);
                         
-                        // Evidence
                         const evidenceSection = document.createElement('div');
                         evidenceSection.className = 'card-detail-section';
                         const evidenceContent = getEvidenceContent(fact);
@@ -2630,382 +1769,17 @@ def main():
                         container.appendChild(cardContainer);
                     }});
                     
-                    // If no facts found
                     if (filteredFacts.length === 0) {{
                         container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">No facts found matching the selected criteria.</p>';
                     }}
                 }}
                 
-                // Render enhanced timeline view
-                function renderTimeline(tabType = 'all') {{
-                    const container = document.getElementById('timeline-events');
-                    container.innerHTML = '';
-                    
-                    // Use factsData and standardize it, not separate timelineData
-                    let filteredData = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredData = filteredData.filter(item => item.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredData = filteredData.filter(item => !item.isDisputed);
-                    }}
-                    
-                    // Sort by date
-                    filteredData.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    // Track years for year markers
-                    let currentYear = '';
-                    let prevYear = '';
-                    
-                    // Create timeline items
-                    filteredData.forEach(fact => {{
-                        // Get the year and check if we need a year marker
-                        currentYear = getYear(fact.date);
-                        if (currentYear && currentYear !== prevYear) {{
-                            // Add year marker
-                            const yearMarker = document.createElement('div');
-                            yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = `
-                                <div class="timeline-year">${{currentYear}}</div>
-                                <div class="timeline-year-line"></div>
-                            `;
-                            container.appendChild(yearMarker);
-                            prevYear = currentYear;
-                        }}
-                    
-                        // Create timeline item
-                        const timelineItem = document.createElement('div');
-                        timelineItem.className = 'timeline-item';
-                        
-                        // Create timeline point
-                        const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                        timelineItem.appendChild(timelinePoint);
-                        
-                        // Create timeline content
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'timeline-content';
-                        
-                        // Create timeline header
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
-                        
-                        // Date
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'timeline-date';
-                        dateEl.textContent = formatDate(fact.date);
-                        headerEl.appendChild(dateEl);
-                        
-                        // Badges
-                        const badgesEl = document.createElement('div');
-                        badgesEl.className = 'timeline-badges';
-                        
-                        // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        // Status badge
-                        const statusBadge = document.createElement('span');
-                        statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
-                        statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
-                        badgesEl.appendChild(statusBadge);
-                        
-                        headerEl.appendChild(badgesEl);
-                        contentEl.appendChild(headerEl);
-                        
-                        // Create timeline body
-                        const bodyEl = document.createElement('div');
-                        bodyEl.className = 'timeline-body';
-                        
-                        // Event content
-                        const factContent = document.createElement('div');
-                        factContent.className = 'timeline-fact';
-                        factContent.textContent = fact.event;
-                        bodyEl.appendChild(factContent);
-                        
-                        // Document and reference information section
-                        const docInfoEl = document.createElement('div');
-                        docInfoEl.className = 'timeline-meta';
-                        docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
-                        docInfoEl.innerHTML = `
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${fact.doc_name && fact.doc_name !== 'N/A' ? 
-                                    `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document">${fact.doc_name}<span class="preview-icon">🔍</span></span>` : 
-                                    'N/A'}</div>
-                                <div><strong>Page:</strong> ${fact.page || 'N/A'}</div>
-                                <div><strong>Argument:</strong> ${fact.argId}. ${fact.argTitle}</div>
-                                <div><strong>Paragraphs:</strong> ${fact.paragraphs || 'N/A'}</div>
-                            </div>
-                            ${fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}
-                        `;
-                        bodyEl.appendChild(docInfoEl);
-                        
-                        // Source Text (if different from submissions and available)
-                        if (fact.source_text && fact.source_text !== 'No specific submission recorded' && 
-                            fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 12px; background-color: rgba(74, 85, 104, 0.05); border-left: 4px solid #4a5568; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            sourceTextEl.innerHTML = `<strong>Source Text:</strong><br>${{fact.source_text}}`;
-                            bodyEl.appendChild(sourceTextEl);
-                        }}
-                        
-                        // Add claimant submission
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            const claimantTextEl = document.createElement('div');
-                            claimantTextEl.className = 'timeline-source-text';
-                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}`;
-                            bodyEl.appendChild(claimantTextEl);
-                        }}
-                        
-                        // Add respondent submission
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            const respondentTextEl = document.createElement('div');
-                            respondentTextEl.className = 'timeline-source-text';
-                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
-                            bodyEl.appendChild(respondentTextEl);
-                        }}
-                        
-                        contentEl.appendChild(bodyEl);
-                        
-                        // Add footer if there are exhibits - show expandable content
-                        const evidenceContent = getEvidenceContent(fact);
-                        if (evidenceContent !== 'None') {{
-                            const footerEl = document.createElement('div');
-                            footerEl.className = 'timeline-footer';
-                            footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
-                            
-                            footerEl.innerHTML = `
-                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence (${{evidenceContent.length}} items)</div>
-                                ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                    <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                                        <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
-                                             style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                             onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                             onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                            <div>
-                                                <span style="font-weight: 600; color: #dd6b20; font-size: 13px;">${{evidence.id}}</span>
-                                                <span style="margin-left: 8px; color: #4a5568; font-size: 13px;">${{evidence.title}}</span>
-                                            </div>
-                                            <span id="evidence-icon-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                                  style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
-                                        </div>
-                                        <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                             style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                            <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
-                                        </div>
-                                    </div>
-                                `).join('')}}
-                            `;
-                            
-                            contentEl.appendChild(footerEl);
-                        }}
-                        
-                        timelineItem.appendChild(contentEl);
-                        container.appendChild(timelineItem);
-                    }});
-                    
-                    // If no events found
-                    if (filteredData.length === 0) {{
-                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
-                    }}
-                }}
-                
-                // Render document sets view with table-like evidence formatting
-                function renderDocumentSets(tabType = 'all') {{
-                    const container = document.getElementById('document-sets-container');
-                    container.innerHTML = '';
-                    
-                    // Filter facts based on tab type and standardize
-                    let filteredFacts = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredFacts = filteredFacts.filter(fact => fact.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
-                    }}
-                    
-                    // Initialize docsWithFacts for all groups
-                    const docsWithFacts = {{}};
-                    
-                    // Initialize all groups
-                    documentSets.forEach(ds => {{
-                        if (ds.isGroup) {{
-                            docsWithFacts[ds.id] = {{
-                                docset: ds,
-                                facts: []
-                            }};
-                        }}
-                    }});
-                    
-                    // Distribute facts to categories based on document
-                    filteredFacts.forEach((fact, index) => {{
-                        // Find which document this fact belongs to based on source
-                        let factAssigned = false;
-                        
-                        documentSets.forEach(ds => {{
-                            if (ds.isGroup) {{
-                                ds.documents.forEach(doc => {{
-                                    // Check if the fact's source contains the document number
-                                    if (fact.source && fact.source.includes(doc.id + '.')) {{
-                                        docsWithFacts[ds.id].facts.push({{ 
-                                            ...fact, 
-                                            documentName: doc.name
-                                        }});
-                                        factAssigned = true;
-                                    }}
-                                }});
-                            }}
-                        }});
-                        
-                        // If not assigned by source, assign by party matching
-                        if (!factAssigned) {{
-                            documentSets.forEach(ds => {{
-                                if (ds.isGroup) {{
-                                    ds.documents.forEach(doc => {{
-                                        if (doc.party === 'Mixed' || 
-                                            (fact.parties_involved && fact.parties_involved.includes('Appellant') && doc.party === 'Appellant') ||
-                                            (fact.parties_involved && fact.parties_involved.includes('Respondent') && doc.party === 'Respondent')) {{
-                                            docsWithFacts[ds.id].facts.push({{ 
-                                                ...fact, 
-                                                documentName: doc.name
-                                            }});
-                                            factAssigned = true;
-                                            return;
-                                        }}
-                                    }});
-                                    if (factAssigned) return;
-                                }}
-                            }});
-                        }}
-                    }});
-                    
-                    // Create document sets UI with direct table display and improved evidence formatting
-                    Object.values(docsWithFacts).forEach(docWithFacts => {{
-                        const docset = docWithFacts.docset;
-                        const facts = docWithFacts.facts;
-                        
-                        // Create document set container
-                        const docsetEl = document.createElement('div');
-                        docsetEl.className = 'docset-container';
-                        
-                        // Create folder header
-                        const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span><strong>${{docset.name}}</strong></span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge ${{docset.party === 'Appellant' ? 'appellant-badge' : (docset.party === 'Respondent' ? 'respondent-badge' : 'shared-badge')}}">
-                                        ${{docset.party}}
-                                    </span>
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
-                        `;
-                        
-                        let contentHtml = '';
-                        
-                        if (facts.length > 0) {{
-                            // Create a single table for all facts in this category - with improved evidence formatting
-                            contentHtml += `
-                                <div class="table-view-container">
-                                    <table class="table-view">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Event</th>
-                                                <th>Source Text</th>
-                                                <th>Page</th>
-                                                <th>Document</th>
-                                                <th>Doc Summary</th>
-                                                <th>Claimant Submission</th>
-                                                <th>Respondent Submission</th>
-                                                <th>Status</th>
-                                                <th>Evidence</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${{facts.map((fact, factIndex) => `
-                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                    <td style="white-space: nowrap;">${fact.date}</td>
-                                                    <td style="max-width: 300px; word-wrap: break-word;">${fact.event}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${(fact.source_text || '').replace(/"/g, '&quot;')}">${fact.source_text || ''}</td>
-                                                    <td style="white-space: nowrap;">${fact.page || ''}</td>
-                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;">
-                                                        ${fact.doc_name && fact.doc_name !== 'N/A' ? 
-                                                            `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document"><strong>${fact.doc_name}</strong><span class="preview-icon">🔍</span></span>` : 
-                                                            '<strong>N/A</strong>'}
-                                                    </td>
-                                                    <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
-                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
-                                                    <td style="white-space: nowrap;">${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                    <td style="min-width: 200px; max-width: 300px;">
-                                                        ${{(() => {{
-                                                            const evidenceContent = getEvidenceContent(fact);
-                                                            if (evidenceContent === 'None') {{
-                                                                return 'None';
-                                                            }}
-                                                            return `
-                                                                <div>
-                                                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                                                        <div style="margin-bottom: 6px;">
-                                                                            <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
-                                                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; margin: 2px 0;"
-                                                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                                                📁 ${{evidence.id}}: ${{evidence.title.length > 25 ? evidence.title.substring(0, 25) + '...' : evidence.title}}
-                                                                                <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
-                                                                            </span>
-                                                                            <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
-                                                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
-                                                                                <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
-                                                                            </div>
-                                                                        </div>
-                                                                    `).join('')}}
-                                                                </div>
-                                                            `;
-                                                        }})()}}
-                                                    </td>
-                                                </tr>
-                                            `).join('')}}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
-                        }} else {{
-                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
-                        }}
-                        
-                        contentHtml += '</div>';
-                        docsetEl.innerHTML = headerHtml + contentHtml;
-                        
-                        container.appendChild(docsetEl);
-                    }});
-                }}
-                
-                // Render facts table
                 function renderFacts(type = 'all') {{
                     const tableBody = document.getElementById('facts-table-body');
+                    if (!tableBody) return;
+                    
                     tableBody.innerHTML = '';
                     
-                    // Filter by type and standardize
                     let filteredFacts = factsData.map(standardizeFactData);
                     
                     if (type === 'disputed') {{
@@ -3014,58 +1788,45 @@ def main():
                         filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
                     
-                    // Sort by date
-                    filteredFacts.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
+                    filteredFacts.sort((a, b) => new Date(a.date) - new Date(b.date));
                     
-                    // Render rows with consistent structure
                     filteredFacts.forEach(fact => {{
                         const row = document.createElement('tr');
                         if (fact.isDisputed) {{
                             row.classList.add('disputed');
                         }}
                         
-                        // Date column
                         const dateCell = document.createElement('td');
                         dateCell.textContent = fact.date;
                         row.appendChild(dateCell);
                         
-                        // Event column
                         const eventCell = document.createElement('td');
                         eventCell.textContent = fact.event;
                         row.appendChild(eventCell);
                         
-                        // Source Text column
                         const sourceTextCell = document.createElement('td');
                         sourceTextCell.textContent = fact.source_text || '';
                         sourceTextCell.title = fact.source_text || '';
                         row.appendChild(sourceTextCell);
                         
-                        // Page column
                         const pageCell = document.createElement('td');
                         pageCell.textContent = fact.page || '';
                         row.appendChild(pageCell);
                         
-                        // Document column
                         const docCell = document.createElement('td');
-                        if (fact.doc_name && fact.doc_name !== 'N/A') {
-                            docCell.innerHTML = `<span class="document-link" onclick="previewDocument('${fact.doc_name}')" title="Click to preview document">${fact.doc_name}<span class="preview-icon">🔍</span></span>`;
-                        } else {
+                        if (fact.doc_name && fact.doc_name !== 'N/A') {{
+                            docCell.innerHTML = `<span class="document-link" onclick="previewDocument('${{fact.doc_name}}')" title="Click to preview document">${{fact.doc_name}}<span class="preview-icon">🔍</span></span>`;
+                        }} else {{
                             docCell.textContent = 'N/A';
-                        }
+                        }}
                         docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
                         
-                        // Document Summary column
                         const docSummaryCell = document.createElement('td');
                         docSummaryCell.textContent = fact.doc_summary || '';
                         docSummaryCell.title = fact.doc_summary || '';
                         row.appendChild(docSummaryCell);
                         
-                        // Claimant Submission column
                         const claimantSubmissionCell = document.createElement('td');
                         const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
                             ? fact.claimant_submission : 'No submission';
@@ -3073,7 +1834,6 @@ def main():
                         claimantSubmissionCell.title = claimantText;
                         row.appendChild(claimantSubmissionCell);
                         
-                        // Respondent Submission column
                         const respondentSubmissionCell = document.createElement('td');
                         const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
                             ? fact.respondent_submission : 'No submission';
@@ -3081,7 +1841,6 @@ def main():
                         respondentSubmissionCell.title = respondentText;
                         row.appendChild(respondentSubmissionCell);
                         
-                        // Status column
                         const statusCell = document.createElement('td');
                         if (fact.isDisputed) {{
                             const disputedBadge = document.createElement('span');
@@ -3093,33 +1852,27 @@ def main():
                         }}
                         row.appendChild(statusCell);
                         
-                        // Evidence column - show expandable content with normal sizing
                         const evidenceCell = document.createElement('td');
                         const evidenceContent = getEvidenceContent(fact);
                         
                         if (evidenceContent === 'None') {{
                             evidenceCell.textContent = 'None';
                         }} else {{
-                            // For table view, show compact badges that expand on click
-                            evidenceCell.innerHTML = `
-                                <div>
-                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 6px;">
-                                            <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
-                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
-                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
-                                                <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
-                                            </span>
-                                            <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
-                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
-                                                ${{evidence.summary}}
-                                            </div>
-                                        </div>
-                                    `).join('')}}
+                            evidenceCell.innerHTML = evidenceContent.map((evidence, evidenceIndex) => `
+                                <div style="margin-bottom: 6px;">
+                                    <span onclick="toggleEvidence('${{evidence.id}}', 'table-${{evidenceIndex}}')" 
+                                          style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600;"
+                                          onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                          onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                        📁 ${{evidence.id}}: ${{evidence.title.substring(0, 25)}}${{evidence.title.length > 25 ? '...' : ''}}
+                                        <span id="evidence-icon-${{evidence.id}}-table-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
+                                    </span>
+                                    <div id="evidence-content-${{evidence.id}}-table-${{evidenceIndex}}" 
+                                         style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
+                                        ${{evidence.summary}}
+                                    </div>
                                 </div>
-                            `;
+                            `).join('');
                         }}
                         row.appendChild(evidenceCell);
                         
@@ -3127,12 +1880,25 @@ def main():
                     }});
                 }}
                 
-                // Initialize facts on page load
+                function renderTimeline() {{
+                    const container = document.getElementById('timeline-events');
+                    if (!container) return;
+                    
+                    container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">Timeline view implementation coming soon...</p>';
+                }}
+                
+                function renderDocumentSets() {{
+                    const container = document.getElementById('document-sets-container');
+                    if (!container) return;
+                    
+                    container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">Document Categories view implementation coming soon...</p>';
+                }}
+                
+                // Initialize card view immediately
                 document.addEventListener('DOMContentLoaded', function() {{
                     renderCardView('all');
                 }});
                 
-                // Initialize card view immediately
                 renderCardView('all');
             </script>
         </body>

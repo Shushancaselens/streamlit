@@ -441,7 +441,7 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
+            "source": "provisional measures - Answer to Request for PM",
             "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
             "page": 158,
             "doc_name": "Answer to Request for Provisional Measures",
@@ -457,7 +457,7 @@ def get_timeline_data():
             "exhibits": ["R-2"],
             "argId": "1.1.1",
             "argTitle": "Registration Gap Evidence",
-            "source": "provisional messier - Answer to Request for PM",
+            "source": "provisional measures - Answer to Request for PM",
             "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
             "page": 162,
             "doc_name": "Answer to Request for Provisional Measures",
@@ -505,14 +505,14 @@ def get_document_sets():
             ]
         },
         {
-            "id": "provisional_messier",
-            "name": "provisional messier",
+            "id": "provisional_measures",
+            "name": "provisional measures",
             "party": "Respondent",
-            "category": "provisional messier",
+            "category": "provisional measures",
             "isGroup": True,
             "documents": [
-                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
-                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional measures"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional measures"}
             ]
         },
         {
@@ -1010,7 +1010,7 @@ def main():
                 }}
                 
                 .docset-content {{
-                    display: block; /* Changed from 'none' to 'block' to be open by default */
+                    display: none; /* Changed to 'none' to be closed by default */
                     padding: 0 0 20px 0;
                 }}
                 
@@ -1026,7 +1026,7 @@ def main():
                 .chevron {{
                     transition: transform 0.2s;
                     margin-right: 8px;
-                    transform: rotate(90deg); /* Start expanded by default */
+                    transform: rotate(0deg); /* Start collapsed by default */
                 }}
                 
                 .chevron.expanded {{
@@ -2514,7 +2514,7 @@ def main():
                         // Create folder header
                         const headerHtml = `
                             <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron expanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                                 <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

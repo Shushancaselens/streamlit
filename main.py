@@ -541,6 +541,159 @@ def get_document_sets():
         }
     ]
 
+# Sample document content for preview
+def get_document_content():
+    return {
+        "Statement of Appeal": {
+            "title": "Statement of Appeal",
+            "party": "Appellant",
+            "date": "2024-01-15",
+            "pages": 45,
+            "content": """
+            <h2>COURT OF ARBITRATION FOR SPORT (CAS)</h2>
+            <h3>STATEMENT OF APPEAL</h3>
+            
+            <div class="doc-section">
+                <h4>I. PARTIES</h4>
+                <p><strong>Appellant:</strong> Athletic Club United<br>
+                <strong>Address:</strong> 123 Sports Avenue, City, Country<br>
+                <strong>Legal Representative:</strong> John Smith, Attorney at Law</p>
+                
+                <p><strong>Respondent:</strong> National Football Federation<br>
+                <strong>Address:</strong> 456 Federation Street, Capital City, Country<br>
+                <strong>Legal Representative:</strong> Jane Doe, Legal Counsel</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>II. FACTUAL BACKGROUND</h4>
+                <p>1. Athletic Club United (the "Club") was officially founded and registered with the National Football Federation on January 12, 1950, under registration number NFF-1950-0047, establishing its legal existence as a competitive sporting entity.</p>
+                
+                <p>2. The Club has maintained continuous operation under the same name "Athletic Club United" since its official registration in 1950, as evidenced by uninterrupted participation in national competitions and consistent use of the same corporate identity throughout this period.</p>
+                
+                <p>3. During the period 1975-1976, the Club experienced financial difficulties which resulted in temporary administrative restructuring. However, the Club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.</p>
+                
+                <p>4. The Club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>III. LEGAL ARGUMENTS</h4>
+                <h5>A. Sporting Succession</h5>
+                <p>5. The concept of sporting succession is well-established in sports law and requires analysis of multiple criteria including:</p>
+                <ul>
+                    <li>Continuous use of identifying elements (name, colors, logo)</li>
+                    <li>Public recognition of the entity's identity</li>
+                    <li>Preservation of sporting records and achievements</li>
+                    <li>Consistent participation in competitions under the same identity</li>
+                </ul>
+                
+                <p>6. As established in CAS 2016/A/4576, the key factors for sporting succession include: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>IV. EVIDENCE</h4>
+                <p>7. The Appellant submits the following evidence in support of this appeal:</p>
+                <ul>
+                    <li><strong>Exhibit C-1:</strong> Historical Registration Documents</li>
+                    <li><strong>Exhibit C-2:</strong> Competition Participation Records</li>
+                    <li><strong>Exhibit C-4:</strong> Media Coverage Archive</li>
+                    <li><strong>Exhibit C-5:</strong> Photographic Evidence</li>
+                </ul>
+            </div>
+            
+            <div class="doc-section">
+                <h4>V. PRAYER FOR RELIEF</h4>
+                <p>8. WHEREFORE, the Appellant respectfully requests that this Honorable Panel:</p>
+                <ul>
+                    <li>Find that Athletic Club United has maintained continuous sporting succession since 1950;</li>
+                    <li>Recognize the Club's uninterrupted legal and sporting identity;</li>
+                    <li>Grant such other relief as this Panel deems just and proper.</li>
+                </ul>
+            </div>
+            """
+        },
+        "Answer to Request for Provisional Measures": {
+            "title": "Answer to Request for Provisional Measures",
+            "party": "Respondent",
+            "date": "2024-02-01",
+            "pages": 32,
+            "content": """
+            <h2>COURT OF ARBITRATION FOR SPORT (CAS)</h2>
+            <h3>ANSWER TO REQUEST FOR PROVISIONAL MEASURES</h3>
+            
+            <div class="doc-section">
+                <h4>I. INTRODUCTION</h4>
+                <p>1. The National Football Federation ("Federation" or "Respondent") hereby submits its Answer to the Request for Provisional Measures filed by Athletic Club United ("Appellant" or "Club").</p>
+                
+                <p>2. The Federation respectfully submits that the Appellant's request should be denied in its entirety as it lacks both factual and legal foundation.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>II. FACTUAL DISPUTES</h4>
+                <h5>A. Operational Discontinuity (1975-1976)</h5>
+                <p>3. Contrary to the Appellant's claims, the Club's operations completely ceased during the 1975-1976 season, with no participation in any competitive events and complete absence from all official federation records during this period.</p>
+                
+                <p>4. The Club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.</p>
+                
+                <p>5. Independent auditor reports from 1975-1976 document the complete cessation of club operations, closure of all bank accounts, and termination of all contractual obligations, establishing a clear operational break.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>III. LEGAL ARGUMENTS</h4>
+                <h5>A. Lack of Sporting Succession</h5>
+                <p>6. As established in CAS 2017/A/5465, actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict.</p>
+                
+                <p>7. The Panel in CAS 2017/A/5465 specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.</p>
+                
+                <p>8. The Appellant has failed to provide any credible evidence of continuous operation during the critical 1975-1976 period.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>IV. EVIDENCE</h4>
+                <p>9. The Respondent submits the following evidence:</p>
+                <ul>
+                    <li><strong>Exhibit R-1:</strong> Federation Records (1975-1976)</li>
+                    <li><strong>Exhibit R-2:</strong> Financial Audit Reports</li>
+                    <li><strong>Exhibit R-3:</strong> Official Termination Notices</li>
+                </ul>
+            </div>
+            
+            <div class="doc-section">
+                <h4>V. CONCLUSION</h4>
+                <p>10. For the foregoing reasons, the Federation respectfully requests that this Panel deny the Appellant's request for provisional measures in its entirety.</p>
+            </div>
+            """
+        },
+        "Appeal Brief": {
+            "title": "Appeal Brief",
+            "party": "Appellant",
+            "date": "2024-02-15",
+            "pages": 67,
+            "content": """
+            <h2>COMPREHENSIVE APPEAL BRIEF</h2>
+            <h3>Athletic Club United v. National Football Federation</h3>
+            
+            <div class="doc-section">
+                <h4>EXECUTIVE SUMMARY</h4>
+                <p>This comprehensive brief supports the appeal regarding sporting succession and club identity continuity. The evidence demonstrates uninterrupted legal and sporting identity since 1950.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>DETAILED CHRONOLOGY</h4>
+                <p><strong>1950-1955: Foundation Period</strong></p>
+                <p>Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.</p>
+                
+                <p><strong>1975-1976: Administrative Restructuring</strong></p>
+                <p>While administrative challenges occurred, sporting activities continued without interruption. The club maintained its competitive roster and participated in regional competitions.</p>
+            </div>
+            
+            <div class="doc-section">
+                <h4>LEGAL PRECEDENTS</h4>
+                <p>Multiple CAS decisions support the principle of sporting succession based on continuity of identity rather than mere administrative formalities.</p>
+            </div>
+            """
+        }
+    }
+
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     csv = df.to_csv(index=False)
@@ -555,12 +708,14 @@ def main():
     facts_data = get_all_facts()
     document_sets = get_document_sets()
     timeline_data = get_timeline_data()
+    document_content = get_document_content()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
     timeline_json = json.dumps(timeline_data)
+    document_content_json = json.dumps(document_content)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -623,7 +778,7 @@ def main():
     # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
-        html_content = f"""
+        html_content = """
         <!DOCTYPE html>
         <html>
         <head>
@@ -1415,11 +1570,175 @@ def main():
                     }}
                 }}
                 
-                .timeline-year-line {{
-                    flex-grow: 1;
-                    height: 2px;
-                    background-color: #e2e8f0;
-                    margin-left: 12px;
+                /* Document preview styles */
+                .document-preview {{
+                    max-width: 900px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                
+                .document-header {{
+                    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+                    color: white;
+                    padding: 24px;
+                    position: relative;
+                }}
+                
+                .document-header h1 {{
+                    margin: 0 0 8px 0;
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                }}
+                
+                .document-meta {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    gap: 16px;
+                    opacity: 0.9;
+                    font-size: 14px;
+                }}
+                
+                .document-meta-item {{
+                    display: flex;
+                    flex-direction: column;
+                }}
+                
+                .document-meta-label {{
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    opacity: 0.8;
+                    margin-bottom: 2px;
+                }}
+                
+                .document-meta-value {{
+                    font-weight: 500;
+                }}
+                
+                .document-content {{
+                    padding: 32px;
+                    line-height: 1.6;
+                    color: #2d3748;
+                }}
+                
+                .document-content h2 {{
+                    color: #1a202c;
+                    font-size: 1.25rem;
+                    margin: 24px 0 16px 0;
+                    padding-bottom: 8px;
+                    border-bottom: 2px solid #e2e8f0;
+                }}
+                
+                .document-content h3 {{
+                    color: #2d3748;
+                    font-size: 1.1rem;
+                    margin: 20px 0 12px 0;
+                    font-weight: 600;
+                }}
+                
+                .document-content h4 {{
+                    color: #4a5568;
+                    font-size: 1rem;
+                    margin: 16px 0 8px 0;
+                    font-weight: 600;
+                }}
+                
+                .document-content h5 {{
+                    color: #4a5568;
+                    font-size: 0.95rem;
+                    margin: 12px 0 6px 0;
+                    font-weight: 600;
+                }}
+                
+                .document-content p {{
+                    margin: 12px 0;
+                    text-align: justify;
+                }}
+                
+                .document-content ul {{
+                    margin: 12px 0;
+                    padding-left: 24px;
+                }}
+                
+                .document-content li {{
+                    margin: 6px 0;
+                }}
+                
+                .doc-section {{
+                    margin: 24px 0;
+                    padding: 20px;
+                    background-color: #f8fafc;
+                    border-left: 4px solid #4299e1;
+                    border-radius: 0 6px 6px 0;
+                }}
+                
+                .back-button {{
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background: rgba(255,255,255,0.2);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: all 0.2s;
+                }}
+                
+                .back-button:hover {{
+                    background: rgba(255,255,255,0.3);
+                    transform: translateY(-1px);
+                }}
+                
+                .document-link {{
+                    color: #3182ce;
+                    cursor: pointer;
+                    text-decoration: underline;
+                    font-weight: 500;
+                }}
+                
+                .document-link:hover {{
+                    color: #2c5aa0;
+                    text-decoration: none;
+                }}
+                
+                .document-navigation {{
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    display: none;
+                    align-items: center;
+                    gap: 10px;
+                }}
+                
+                .nav-button {{
+                    background: #4299e1;
+                    color: white;
+                    border: none;
+                    padding: 10px 16px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: all 0.2s;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }}
+                
+                .nav-button:hover {{
+                    background: #3182ce;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
                 }}
             </style>
         </head>
@@ -2122,7 +2441,7 @@ def main():
                         docSection.innerHTML = `
                             <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                <strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong>
                                 ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
                             </div>
                         `;
@@ -2352,7 +2671,7 @@ def main():
                         docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
                         docInfoEl.innerHTML = `
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div><strong>Document:</strong> ${{makeDocumentClickable(fact.doc_name || 'N/A')}}</div>
                                 <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
                                 <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
                                 <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
@@ -2559,7 +2878,7 @@ def main():
                                                     <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
                                                     <td style="white-space: nowrap;">${{fact.page || ''}}</td>
-                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{makeDocumentClickable(fact.doc_name || 'N/A')}}</strong></td>
                                                     <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
                                                     <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
@@ -2659,7 +2978,7 @@ def main():
                         
                         // Document column
                         const docCell = document.createElement('td');
-                        docCell.textContent = fact.doc_name || '';
+                        docCell.innerHTML = makeDocumentClickable(fact.doc_name || '');
                         docCell.title = fact.doc_summary || '';
                         row.appendChild(docCell);
                         
@@ -2745,7 +3064,13 @@ def main():
         
         # Render the HTML component
         st.title("Case Facts")
-        components.html(html_content, height=800, scrolling=True)
+        components.html(html_content.format(
+            facts_json=facts_json,
+            document_sets_json=document_sets_json,
+            timeline_json=timeline_json,
+            args_json=args_json,
+            document_content_json=document_content_json
+        ), height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()

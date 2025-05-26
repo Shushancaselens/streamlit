@@ -1033,10 +1033,9 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for compact view selector buttons and tabs  
+        # Custom CSS for button styling and compact tab appearance
         st.markdown("""
         <style>
-        /* Sidebar button styling - keep original */
         .stButton > button {
             width: 100%;
             border-radius: 6px;
@@ -1049,74 +1048,43 @@ def main():
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* TARGET SPECIFIC VIEW SELECTOR AREA - make buttons compact */
-        .view-selector-area .stButton button {
-            height: 35px !important;
-            font-size: 14px !important;
-            padding: 6px 12px !important;
-            margin: 0 !important;
+        /* Compact tab styling for view selector */
+        div[data-testid="column"] > div > div > div > button {
             border-radius: 6px !important;
-            font-weight: 500 !important;
-            min-height: 35px !important;
-            max-height: 35px !important;
-            line-height: 1.2 !important;
-        }
-        
-        /* Remove transforms and large styling from view selector buttons */
-        .view-selector-area .stButton button:hover {
-            transform: none !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-        }
-        
-        /* Style the view selector container */
-        .view-selector-area {
-            margin-bottom: 20px;
-        }
-        
-        /* Override any Streamlit defaults for view selector area */
-        .view-selector-area button[data-testid*="baseButton"] {
-            height: 35px !important;
+            font-weight: 400 !important;
             font-size: 14px !important;
+            height: 36px !important;
             padding: 6px 12px !important;
+            transition: all 0.2s ease !important;
+            margin: 0 !important;
         }
         
-        /* Facts filter tabs styling - keep compact */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 8px;
-            background-color: transparent;
-        }
-        
-        .stTabs [data-baseweb="tab"] {
-            height: 35px;
-            white-space: nowrap;
-            background-color: transparent;
-            border-radius: 6px;
-            color: #666;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 0 16px;
-            border: 1px solid #e1e5e9;
-            transition: all 0.2s ease;
-        }
-        
-        .stTabs [data-baseweb="tab"]:hover {
-            background-color: #f8f9fa;
-            color: #333;
-            border-color: #adb5bd;
-        }
-        
-        .stTabs [aria-selected="true"] {
+        /* Active tab styling - smaller and more subtle */
+        div[data-testid="column"] > div > div > div > button[kind="primary"] {
             background-color: #1f77b4 !important;
             color: white !important;
-            border-color: #1f77b4 !important;
+            border: 1px solid #1f77b4 !important;
+            box-shadow: none !important;
         }
         
-        .stTabs [data-baseweb="tab-border"] {
-            display: none;
+        /* Inactive tab styling - smaller and more subtle */
+        div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            border: 1px solid #dee2e6 !important;
+            box-shadow: none !important;
         }
         
-        .stTabs [data-baseweb="tab-highlight"] {
-            display: none;
+        div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
+            background-color: #e9ecef !important;
+            color: #495057 !important;
+            border-color: #adb5bd !important;
+            transform: none !important;
+        }
+        
+        div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
+            background-color: #0056b3 !important;
+            transform: none !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -1154,10 +1122,7 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Add a specific container for view selector
-        st.markdown('<div class="view-selector-area">', unsafe_allow_html=True)
-        
-        # Create view selector buttons
+        # Create view selector buttons with better styling
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -1180,8 +1145,6 @@ def main():
                         key="docset_view_btn"):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
@@ -1218,4 +1181,3 @@ def render_view_content(view_type, filtered_facts):
 
 if __name__ == "__main__":
     main()
-

@@ -2112,31 +2112,6 @@ def main():
                         timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
                         timelineItem.appendChild(timelinePoint);
                         
-                    // Create timeline items
-                    filteredData.forEach(fact => {{
-                        // Get the year and check if we need a year marker
-                        currentYear = getYear(fact.date);
-                        if (currentYear && currentYear !== prevYear) {{
-                            // Add year marker
-                            const yearMarker = document.createElement('div');
-                            yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = `
-                                <div class="timeline-year">${{currentYear}}</div>
-                                <div class="timeline-year-line"></div>
-                            `;
-                            container.appendChild(yearMarker);
-                            prevYear = currentYear;
-                        }}
-                    
-                        // Create timeline item
-                        const timelineItem = document.createElement('div');
-                        timelineItem.className = 'timeline-item';
-                        
-                        // Create timeline point
-                        const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                        timelineItem.appendChild(timelinePoint);
-                        
                         // Create timeline content with card-like styling but proper timeline structure
                         const contentEl = document.createElement('div');
                         contentEl.className = 'timeline-content';
@@ -2291,89 +2266,6 @@ def main():
                         timelineItem.appendChild(contentEl);
                         container.appendChild(timelineItem);
                     }});
-                        
-
-                        
-                        // Add claimant submission (always show)
-                        const claimantTextEl = document.createElement('div');
-                        claimantTextEl.className = 'timeline-source-text';
-                        claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
-                        const claimantSubmissionText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
-                            ? fact.claimant_submission 
-                            : 'No submission provided';
-                        claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br><span style="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{claimantSubmissionText}}</span>`;
-                        bodyEl.appendChild(claimantTextEl);
-                        
-                        // Add respondent submission (always show)
-                        const respondentTextEl = document.createElement('div');
-                        respondentTextEl.className = 'timeline-source-text';
-                        respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
-                        const respondentSubmissionText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
-                            ? fact.respondent_submission 
-                            : 'No submission provided';
-                        respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br><span style="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{respondentSubmissionText}}</span>`;
-                        bodyEl.appendChild(respondentTextEl);
-                        
-                        contentEl.appendChild(bodyEl);
-                        
-                        // Add footer if there are exhibits - show expandable content with integrated document info - MODIFIED HERE
-                        const evidenceContent = getEvidenceContent(fact);
-                        if (evidenceContent !== 'None') {{
-                            const footerEl = document.createElement('div');
-                            footerEl.className = 'timeline-footer';
-                            footerEl.style.cssText = 'padding: 12px 16px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; display: block;';
-                            
-                            footerEl.innerHTML = `
-                                <div style="font-weight: 600; color: #4a5568; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence & Source References (${{evidenceContent.length}} items)</div>
-                                ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                    <div style="margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                        <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
-                                             style="padding: 10px 14px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                             onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                             onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                            <div>
-                                                <span style="font-weight: 600; color: #dd6b20; font-size: 14px;">${{evidence.id}}</span>
-                                                <span style="margin-left: 10px; color: #4a5568; font-size: 14px;">${{evidence.title}}</span>
-                                            </div>
-                                            <span id="evidence-icon-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                                  style="width: 20px; height: 20px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">+</span>
-                                        </div>
-                                        <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                             style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                            <div style="margin-bottom: 14px;">
-                                                <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
-                                                <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
-                                                    <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Document Summary</div>
-                                                    <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.doc_summary || 'No document summary available'}}</div>
-                                                </div>
-                                                <div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #0ea5e9; margin-bottom: 10px;">
-                                                    <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 6px;">Source Text</div>
-                                                    <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.source_text || 'No source text available'}}</div>
-                                                </div>
-                                                <div class="reference-container">
-                                                    <div class="reference-text">
-                                                        <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
-                                                    </div>
-                                                    <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                        </svg>
-                                                        Copy
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}}
-                            `;
-                            
-                            contentEl.appendChild(footerEl);
-                        }}
-                        
-                        timelineItem.appendChild(contentEl);
-                        container.appendChild(timelineItem);
-                    }});
                     
                     // If no events found
                     if (filteredData.length === 0) {{
@@ -2381,7 +2273,7 @@ def main():
                     }}
                 }}
                 
-                // Render document sets view with improved evidence formatting
+                // Render document sets view with EXACT same UI structure as Card View
                 function renderDocumentSets(tabType = 'all') {{
                     const container = document.getElementById('document-sets-container');
                     container.innerHTML = '';
@@ -2393,6 +2285,13 @@ def main():
                     }} else if (tabType === 'undisputed') {{
                         filteredFacts = filteredFacts.filter(fact => !fact.isDisputed);
                     }}
+                    
+                    // Sort by date
+                    filteredFacts.sort((a, b) => {{
+                        const dateA = a.date.split('-')[0];
+                        const dateB = b.date.split('-')[0];
+                        return new Date(dateA) - new Date(dateB);
+                    }});
                     
                     // Initialize docsWithFacts for all groups
                     const docsWithFacts = {{}};
@@ -2449,7 +2348,7 @@ def main():
                         }}
                     }});
                     
-                    // Create document sets UI with card-style display instead of table
+                    // Create document sets UI with EXACT same card structure as Card View
                     Object.values(docsWithFacts).forEach(docWithFacts => {{
                         const docset = docWithFacts.docset;
                         const facts = docWithFacts.facts;
@@ -2481,109 +2380,133 @@ def main():
                         let contentHtml = '';
                         
                         if (facts.length > 0) {{
-                            // Create card-style display for facts in this category
+                            // Create EXACT same card structure as Card View
                             contentHtml += '<div style="padding: 16px;">';
                             
                             facts.forEach((fact, factIndex) => {{
+                                const cardContainer = `
+                                    <div class="card-fact-container${{fact.isDisputed ? ' disputed' : ''}}" style="margin-bottom: 16px;">
+                                        <div class="card-fact-header${{fact.isDisputed ? ' disputed' : ''}}" onclick="toggleCardFact('docset-${{docset.id}}-${{factIndex}}')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background-color: ${{fact.isDisputed ? 'rgba(229, 62, 62, 0.05)' : '#f8fafc'}}; cursor: pointer; transition: background-color 0.2s;">
+                                            <div class="card-fact-title" style="display: flex; align-items: center; flex-grow: 1; gap: 12px;">
+                                                <div class="card-fact-date" style="font-weight: 600; color: #2d3748; min-width: 120px;">${{fact.date}}</div>
+                                                <div class="card-fact-event" style="font-weight: 500; color: #1a202c; flex-grow: 1;">${{fact.event}}</div>
+                                            </div>
+                                            <div class="card-fact-badges" style="display: flex; gap: 6px; align-items: center;">
+                                                <div class="card-chevron" id="card-chevron-docset-${{docset.id}}-${{factIndex}}" style="transition: transform 0.2s; color: #718096; margin-left: 8px;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-fact-content" id="card-fact-content-docset-${{docset.id}}-${{factIndex}}" style="display: none; padding: 20px; border-top: 1px solid #e2e8f0; background-color: white;">
+                                `;
+                                
+                                // Evidence section - EXACT same as Card View
                                 const evidenceContent = getEvidenceContent(fact);
-                                let evidenceHtml = 'None';
+                                let evidenceHtml = '';
                                 
                                 if (evidenceContent !== 'None') {{
-                                    evidenceHtml = evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                            <div onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
-                                                 style="padding: 10px 14px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                                <div>
-                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 14px;">${{evidence.id}}</span>
-                                                    <span style="margin-left: 10px; color: #4a5568; font-size: 14px;">${{evidence.title}}</span>
-                                                </div>
-                                                <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
-                                                      style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
-                                            </div>
-                                            <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
-                                                 style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                                <div style="margin-bottom: 14px;">
-                                                    <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
-                                                    <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
-                                                        <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Document Summary</div>
-                                                        <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.doc_summary || 'No document summary available'}}</div>
-                                                    </div>
-                                                    <div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #0ea5e9; margin-bottom: 10px;">
-                                                        <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 6px;">Source Text</div>
-                                                        <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.source_text || 'No source text available'}}</div>
-                                                    </div>
-                                                    <div class="reference-container">
-                                                        <div class="reference-text">
-                                                            <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
+                                    evidenceHtml = `
+                                        <div class="card-detail-section" style="background-color: #f7fafc; padding: 12px 16px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 16px;">
+                                            <div class="card-detail-label" style="font-weight: 600; color: #4a5568; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Evidence & Source References (${{evidenceContent.length}} items)</div>
+                                            <div class="card-detail-value" style="color: #2d3748; font-size: 15px; line-height: 1.5;">
+                                                ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                                    <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                                                        <div onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
+                                                             style="padding: 10px 14px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                                             onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                                             onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                                            <div>
+                                                                <span style="font-weight: 600; color: #dd6b20; font-size: 14px;">${{evidence.id}}</span>
+                                                                <span style="margin-left: 10px; color: #4a5568; font-size: 14px;">${{evidence.title}}</span>
+                                                            </div>
+                                                            <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
+                                                                  style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
                                                         </div>
-                                                        <div style="display: flex; gap: 8px;">
-                                                            <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                                </svg>
-                                                                Preview
-                                                            </button>
-                                                            <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                                </svg>
-                                                                Copy
-                                                            </button>
+                                                        <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
+                                                             style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                                            <div style="margin-bottom: 14px;">
+                                                                <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
+                                                                <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
+                                                                    <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Document Summary</div>
+                                                                    <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.doc_summary || 'No document summary available'}}</div>
+                                                                </div>
+                                                                <div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #0ea5e9; margin-bottom: 10px;">
+                                                                    <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 6px;">Source Text</div>
+                                                                    <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.source_text || 'No source text available'}}</div>
+                                                                </div>
+                                                                <div class="reference-container">
+                                                                    <div class="reference-text">
+                                                                        <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
+                                                                    </div>
+                                                                    <div style="display: flex; gap: 8px;">
+                                                                        <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                                                <circle cx="12" cy="12" r="3"></circle>
+                                                                            </svg>
+                                                                            Preview
+                                                                        </button>
+                                                                        <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                                            </svg>
+                                                                            Copy
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                `).join('')}}
                                             </div>
                                         </div>
-                                    `).join('');
+                                    `;
+                                }} else {{
+                                    evidenceHtml = `
+                                        <div class="card-detail-section" style="background-color: #f7fafc; padding: 12px 16px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 16px;">
+                                            <div class="card-detail-label" style="font-weight: 600; color: #4a5568; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Evidence & Source References</div>
+                                            <div class="card-detail-value" style="color: #2d3748; font-size: 15px; line-height: 1.5;">
+                                                <div style="font-style: italic; color: #9ca3af;">No evidence references available for this fact</div>
+                                            </div>
+                                        </div>
+                                    `;
                                 }}
                                 
-                                contentHtml += `
-                                    <div style="margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; ${{fact.isDisputed ? 'border-left: 4px solid #e53e3e; background-color: rgba(229, 62, 62, 0.02);' : ''}}">
-                                        <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; ${{fact.isDisputed ? 'background-color: rgba(229, 62, 62, 0.05);' : ''}}">
-                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                                                <div style="font-weight: 600; color: #2d3748;">${{fact.date}}</div>
-                                                <div style="display: flex; gap: 6px;">
-                                                    <!-- No badges - removed disputed badge -->
-                                                </div>
-                                            </div>
-                                            <div style="font-weight: 500; color: #1a202c; font-size: 15px;">${{fact.event}}</div>
+                                // Party Submissions Section - EXACT same as Card View
+                                const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                                    ? fact.claimant_submission 
+                                    : 'No submission provided';
+                                const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                                    ? fact.respondent_submission 
+                                    : 'No submission provided';
+                                
+                                const submissionsHtml = `
+                                    <div style="margin-top: 16px;">
+                                        <div class="card-source-text claimant-submission" style="background-color: rgba(49, 130, 206, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #3182ce; margin: 16px 0; font-style: italic; color: #4a5568; line-height: 1.5;">
+                                            <div class="submission-header" style="font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 10px; color: #3182ce;">Claimant Submission</div>
+                                            <div style="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{claimantText}}</div>
                                         </div>
-                                        <div style="padding: 16px;">
-                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                                                <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Document Source</div>
-                                                    <div><strong>${{fact.argId}}. ${{fact.argTitle}}</strong> ${{fact.page ? '(Page ' + fact.page + ')' : ''}}</div>
-                                                </div>
-                                                <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Document</div>
-                                                    <div><strong>${{fact.doc_name || 'N/A'}}</strong></div>
-                                                </div>
-                                            </div>
-
-                                            ${{evidenceHtml !== 'None' ? `
-                                                <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #dd6b20; margin-bottom: 6px;">Evidence (${{evidenceContent.length}} items)</div>
-                                                    <div>${{evidenceHtml}}</div>
-                                                </div>
-                                            ` : ''}}
-                                            <div style="background-color: rgba(49, 130, 206, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #3182ce; margin-bottom: 12px;">
-                                                <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">Claimant Submission</div>
-                                                <div style="font-style: italic; color: #4a5568; font-size: 13px; ${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'color: #9ca3af;'}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission provided'}}</div>
-                                            </div>
-                                            <div style="background-color: rgba(229, 62, 62, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #e53e3e; margin-bottom: 12px;">
-                                                <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 6px;">Respondent Submission</div>
-                                                <div style="font-style: italic; color: #4a5568; font-size: 13px; ${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'color: #9ca3af;'}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission provided'}}</div>
-                                            </div>
-                                            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-                                                <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Status</div>
-                                                    <div>${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
-                                                </div>
-                                            </div>
+                                        <div class="card-source-text respondent-submission" style="background-color: rgba(229, 62, 62, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #e53e3e; margin: 16px 0; font-style: italic; color: #4a5568; line-height: 1.5;">
+                                            <div class="submission-header" style="font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 10px; color: #e53e3e;">Respondent Submission</div>
+                                            <div style="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{respondentText}}</div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Status section - EXACT same as Card View
+                                const statusHtml = `
+                                    <div class="card-fact-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0;">
+                                        <div class="card-detail-section" style="background-color: #f7fafc; padding: 12px 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                            <div class="card-detail-label" style="font-weight: 600; color: #4a5568; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Status</div>
+                                            <div class="card-detail-value" style="color: #2d3748; font-size: 15px; line-height: 1.5;">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                contentHtml += cardContainer + evidenceHtml + submissionsHtml + statusHtml + `
                                         </div>
                                     </div>
                                 `;

@@ -1081,7 +1081,7 @@ def main():
         st.markdown('<div class="view-selector-container">', unsafe_allow_html=True)
         
         # Create view selector buttons with better styling
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             if st.button("📋 Card View", use_container_width=True, 
@@ -1102,13 +1102,6 @@ def main():
                         type="primary" if st.session_state.current_view_type == "docset" else "secondary",
                         key="docset_view_btn"):
                 st.session_state.current_view_type = "docset"
-                st.rerun()
-        
-        with col4:
-            if st.button("📅 Timeline View", use_container_width=True,
-                        type="primary" if st.session_state.current_view_type == "timeline" else "secondary",
-                        key="timeline_view_btn"):
-                st.session_state.current_view_type = "timeline"
                 st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)

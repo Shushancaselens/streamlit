@@ -623,6 +623,9 @@ def main():
     # Create the facts HTML component
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
+    # Create the facts HTML component
+    if st.session_state.view == "Facts":
+        # Create a single HTML component containing the Facts UI
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -772,6 +775,501 @@ def main():
                     margin-bottom: 20px;
                     border-bottom: 1px solid #dee2e6;
                 }}
+                
+                .tab-button {{
+                    padding: 10px 20px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                }}
+                
+                .tab-button.active {{
+                    border-bottom: 2px solid #4299e1;
+                    color: #4299e1;
+                    font-weight: 500;
+                }}
+                
+                .facts-content {{
+                    margin-top: 20px;
+                }}
+                
+                /* Section title */
+                .section-title {{
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid #eaeaea;
+                }}
+                
+                /* View toggle */
+                .view-toggle {{
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 16px;
+                }}
+                
+                .view-toggle button {{
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                }}
+                
+                .view-toggle button.active {{
+                    background-color: #4299e1;
+                    color: white;
+                    border-color: #4299e1;
+                }}
+                
+                .view-toggle button:first-child {{
+                    border-radius: 4px 0 0 4px;
+                }}
+                
+                .view-toggle button:nth-child(2) {{
+                    border-left: none;
+                    border-right: none;
+                }}
+                
+                .view-toggle button:last-child {{
+                    border-radius: 0 4px 4px 0;
+                }}
+                
+                /* Document sets */
+                .docset-header {{
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+                }}
+                
+                .docset-header:hover {{
+                    background-color: #e9ecef;
+                }}
+                
+                .docset-icon {{
+                    margin-right: 10px;
+                    color: #4299e1;
+                }}
+                
+                .docset-content {{
+                    display: none;
+                    padding: 0 0 20px 0;
+                }}
+                
+                .docset-content.show {{
+                    display: block;
+                }}
+                
+                .folder-icon {{
+                    color: #4299e1;
+                    margin-right: 8px;
+                }}
+                
+                .chevron {{
+                    transition: transform 0.2s;
+                    margin-right: 8px;
+                    transform: rotate(0deg);
+                }}
+                
+                .chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                /* Enhanced Timeline styling */
+                .timeline-container {{
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 20px;
+                    position: relative;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }}
+                
+                /* Card View styling */
+                .card-fact-container {{
+                    margin-bottom: 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    background-color: white;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }}
+                
+                .card-fact-container.disputed {{
+                    border-left: 4px solid #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.02);
+                }}
+                
+                .card-fact-header {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 16px;
+                    background-color: #f8fafc;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }}
+                
+                .card-fact-header:hover {{
+                    background-color: #e2e8f0;
+                }}
+                
+                .card-fact-header.disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .card-fact-header.disputed:hover {{
+                    background-color: rgba(229, 62, 62, 0.1);
+                }}
+                
+                .card-fact-title {{
+                    display: flex;
+                    align-items: center;
+                    flex-grow: 1;
+                    gap: 12px;
+                }}
+                
+                .card-fact-date {{
+                    font-weight: 600;
+                    color: #2d3748;
+                    min-width: 120px;
+                }}
+                
+                .card-fact-event {{
+                    font-weight: 500;
+                    color: #1a202c;
+                    flex-grow: 1;
+                }}
+                
+                .card-fact-badges {{
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }}
+                
+                .card-chevron {{
+                    transition: transform 0.2s;
+                    color: #718096;
+                    margin-left: 8px;
+                }}
+                
+                .card-chevron.expanded {{
+                    transform: rotate(90deg);
+                }}
+                
+                .card-fact-content {{
+                    display: none;
+                    padding: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    background-color: white;
+                }}
+                
+                .card-fact-content.show {{
+                    display: block;
+                }}
+                
+                .card-fact-details {{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin-bottom: 16px;
+                }}
+                
+                .card-detail-section {{
+                    background-color: #f7fafc;
+                    padding: 12px 16px;
+                    border-radius: 6px;
+                    border: 1px solid #e2e8f0;
+                }}
+                
+                .card-detail-label {{
+                    font-weight: 600;
+                    color: #4a5568;
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 4px;
+                }}
+                
+                .card-detail-value {{
+                    color: #2d3748;
+                    font-size: 14px;
+                    line-height: 1.4;
+                }}
+                
+                .card-source-text {{
+                    background-color: #f7fafc;
+                    padding: 16px;
+                    border-radius: 6px;
+                    border-left: 4px solid #4299e1;
+                    margin: 16px 0;
+                    font-style: italic;
+                    color: #4a5568;
+                    line-height: 1.5;
+                }}
+                
+                .card-source-text.claimant-submission {{
+                    border-left-color: #3182ce;
+                    background-color: rgba(49, 130, 206, 0.03);
+                }}
+                
+                .card-source-text.respondent-submission {{
+                    border-left-color: #e53e3e;
+                    background-color: rgba(229, 62, 62, 0.03);
+                }}
+                
+                .submission-header {{
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 8px;
+                    color: inherit;
+                }}
+                
+                .claimant-submission .submission-header {{
+                    color: #3182ce;
+                }}
+                
+                .respondent-submission .submission-header {{
+                    color: #e53e3e;
+                }}
+                
+                .card-exhibits {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    margin-top: 12px;
+                }}
+                
+                @media (max-width: 768px) {{
+                    .card-fact-details {{
+                        grid-template-columns: 1fr;
+                    }}
+                    
+                    .card-fact-title {{
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 8px;
+                    }}
+                    
+                    .card-fact-date {{
+                        min-width: auto;
+                    }}
+                }}
+                
+                .timeline-wrapper {{
+                    position: relative;
+                    margin-left: 20px;
+                }}
+                
+                .timeline-line {{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 4px;
+                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
+                    border-radius: 4px;
+                }}
+                
+                .timeline-item {{
+                    display: flex;
+                    margin-bottom: 32px;
+                    position: relative;
+                }}
+                
+                .timeline-point {{
+                    position: absolute;
+                    left: -12px;
+                    top: 18px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 50%;
+                    background-color: #4299e1;
+                    border: 4px solid white;
+                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+                    z-index: 10;
+                }}
+                
+                .timeline-point.disputed {{
+                    background-color: #e53e3e;
+                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
+                }}
+                
+                .timeline-content {{
+                    margin-left: 32px;
+                    flex-grow: 1;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+                    overflow: hidden;
+                    transition: all 0.2s;
+                }}
+                
+                .timeline-content:hover {{
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+                    transform: translateY(-2px);
+                }}
+                
+                .timeline-header {{
+                    padding: 12px 16px;
+                    border-bottom: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background-color: #f8fafc;
+                }}
+                
+                .timeline-header-disputed {{
+                    background-color: rgba(229, 62, 62, 0.05);
+                }}
+                
+                .timeline-date {{
+                    font-weight: 600;
+                    color: #1a202c;
+                }}
+                
+                .timeline-badges {{
+                    display: flex;
+                    gap: 6px;
+                }}
+                
+                .timeline-body {{
+                    padding: 16px;
+                }}
+                
+                .timeline-fact {{
+                    margin-bottom: 12px;
+                    font-size: 15px;
+                    color: #2d3748;
+                }}
+                
+                .timeline-footer {{
+                    padding: 12px 16px;
+                    background-color: #f8fafc;
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                    border-top: 1px solid #e2e8f0;
+                }}
+                
+                .timeline-meta {{
+                    font-size: 13px;
+                    color: #718096;
+                    margin-top: 8px;
+                }}
+                
+                .timeline-meta span {{
+                    display: inline-block;
+                    margin-right: 12px;
+                }}
+                
+                .timeline-year-marker {{
+                    display: flex;
+                    align-items: center;
+                    margin: 24px 0;
+                    position: relative;
+                }}
+                
+                .timeline-year {{
+                    background-color: #4299e1;
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 16px;
+                    font-weight: 600;
+                    position: relative;
+                    z-index: 10;
+                    margin-left: 32px;
+                }}
+                
+                /* Enhanced Evidence styling */
+                .evidence-item {{
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    margin-bottom: 6px;
+                    transition: all 0.2s ease;
+                }}
+                
+                .evidence-header {{
+                    padding: 8px 12px;
+                    background-color: rgba(221, 107, 32, 0.05);
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    transition: background-color 0.2s ease;
+                }}
+                
+                .evidence-header:hover {{
+                    background-color: rgba(221, 107, 32, 0.1);
+                }}
+                
+                .evidence-content {{
+                    display: none;
+                    padding: 12px;
+                    background-color: white;
+                    border-top: 1px solid #e2e8f0;
+                    animation: slideDown 0.2s ease;
+                }}
+                
+                .evidence-icon {{
+                    width: 16px;
+                    height: 16px;
+                    background-color: #dd6b20;
+                    color: white;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    transition: transform 0.2s ease;
+                }}
+                
+                .evidence-badge {{
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 3px 6px;
+                    background-color: rgba(221, 107, 32, 0.1);
+                    color: #dd6b20;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    font-size: 10px;
+                    font-weight: 600;
+                    transition: background-color 0.2s ease;
+                    margin: 2px;
+                }}
+                
+                .evidence-badge:hover {{
+                    background-color: rgba(221, 107, 32, 0.2);
+                }}
+                
+                @keyframes slideDown {{
+                    from {{
+                        opacity: 0;
+                        max-height: 0;
+                    }}
+                    to {{
+                        opacity: 1;
+                        max-height: 200px;
+                    }}
+                }}
+                
+                .timeline-year-line {{
+                    flex-grow: 1;
+                    height: 2px;
+                    background-color: #e2e8f0;
+                    margin-left: 12px;
+                }}
+            </style>
+        </head>
                 
                 .tab-button {{
                     padding: 10px 20px;

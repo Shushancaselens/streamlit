@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+import streamlit.components.v1 as components
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -9,7 +10,7 @@ if 'view' not in st.session_state:
     st.session_state.view = "Facts"
 
 if 'facts_filter' not in st.session_state:
-    st.session_state.facts_filter = "All Facts"
+    st.session_state.facts_filter = "all"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -311,110 +312,102 @@ def get_evidence_details(exhibits, args_data):
     
     return evidence_details
 
-def render_fact_card(fact, args_data):
-    """Render a single fact card using Streamlit components"""
+def render_streamlit_cards(filtered_facts, args_data):
+    """Render facts as native Streamlit cards"""
     
-    # Determine card styling based on disputed status
-    if fact['isDisputed']:
-        card_style = """
-        <div style="
-            border-left: 4px solid #e53e3e; 
-            background-color: rgba(229, 62, 62, 0.02); 
-            margin-bottom: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
-        ">
-        """
-    else:
-        card_style = """
-        <div style="
-            margin-bottom: 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background-color: white;
-        ">
-        """
+    if not filtered_facts:
+        st.info("No facts found matching the selected criteria.")
+        return
     
-    # Create the card header with badges
-    party_badges = ""
-    if fact['parties_involved']:
-        for party in fact['parties_involved']:
-            if party == 'Appellant':
-                party_badges += '<span style="background-color: rgba(49, 130, 206, 0.1); color: #3182ce; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Appellant</span>'
-            else:
-                party_badges += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Respondent</span>'
-    
-    if fact['isDisputed']:
-        party_badges += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>'
-    
-    # Card title with date and event
-    card_title = f"**{fact['date']}** - {fact['event']}"
-    
-    st.markdown(card_style, unsafe_allow_html=True)
-    
-    # Use expander for the card functionality
-    with st.expander(card_title, expanded=False):
-        # Add badges at the top
-        if party_badges:
-            st.markdown(party_badges, unsafe_allow_html=True)
-            st.markdown("---")
+    for i, fact in enumerate(filtered_facts):
+        # Create card styling based on disputed status
+        if fact['isDisputed']:
+            card_container = st.container()
+            with card_container:
+                st.markdown("""
+                <style>
+                div[data-testid="stExpander"] > div:first-child {
+                    border-left: 4px solid #e53e3e !important;
+                    background-color: rgba(229, 62, 62, 0.02) !important;
+                }
+                </style>
+                """, unsafe_allow_html=True)
         
-        # Create two columns for document and argument info
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**📄 Document**")
-            st.markdown(f"**{fact['doc_name'] or 'N/A'}**")
-            if fact['page']:
-                st.markdown(f"*Page {fact['page']}*")
-        
-        with col2:
-            st.markdown("**📋 Argument**")
-            st.markdown(f"**{fact['argId']}. {fact['argTitle']}**")
-            if fact['paragraphs']:
-                st.markdown(f"*Paragraphs: {fact['paragraphs']}*")
-        
-        # Source text
-        if fact['source_text'] and fact['source_text'] != 'No specific submission recorded':
-            st.markdown("**📝 Source Text:**")
-            st.info(fact['source_text'])
-        
-        # Submissions
-        if fact['claimant_submission'] and fact['claimant_submission'] != 'No specific submission recorded':
-            st.markdown("**👤 Claimant Submission:**")
-            st.markdown(f'<div style="background-color: rgba(49, 130, 206, 0.03); border-left: 4px solid #3182ce; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["claimant_submission"]}</div>', unsafe_allow_html=True)
-        
-        if fact['respondent_submission'] and fact['respondent_submission'] != 'No specific submission recorded':
-            st.markdown("**👤 Respondent Submission:**")
-            st.markdown(f'<div style="background-color: rgba(229, 62, 62, 0.03); border-left: 4px solid #e53e3e; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["respondent_submission"]}</div>', unsafe_allow_html=True)
-        
-        # Document summary
-        if fact['doc_summary']:
-            st.markdown("**📖 Document Summary:**")
-            st.markdown(f"*{fact['doc_summary']}*")
-        
-        # Status and Evidence in two columns
-        col3, col4 = st.columns(2)
-        
-        with col3:
-            st.markdown("**⚖️ Status**")
+        # Create the main expander for the fact
+        with st.expander(f"**{fact['date']}** - {fact['event']}", expanded=False):
+            
+            # Add party badges
+            badge_html = ""
+            if fact['parties_involved']:
+                for party in fact['parties_involved']:
+                    if party == 'Appellant':
+                        badge_html += '<span style="background-color: rgba(49, 130, 206, 0.1); color: #3182ce; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Appellant</span>'
+                    else:
+                        badge_html += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-right: 6px;">Respondent</span>'
+            
             if fact['isDisputed']:
-                st.markdown('<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>', unsafe_allow_html=True)
-            else:
-                st.markdown("Undisputed")
-        
-        with col4:
-            st.markdown("**📎 Evidence**")
-            if fact['exhibits']:
-                evidence_details = get_evidence_details(fact['exhibits'], args_data)
-                for evidence in evidence_details:
-                    with st.expander(f"📁 {evidence['id']}: {evidence['title']}", expanded=False):
-                        st.markdown(evidence['summary'])
-            else:
-                st.markdown("None")
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+                badge_html += '<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>'
+            
+            if badge_html:
+                st.markdown(badge_html, unsafe_allow_html=True)
+                st.markdown("---")
+            
+            # Create two columns for document and argument info
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**📄 Document**")
+                st.markdown(f"**{fact['doc_name'] or 'N/A'}**")
+                if fact['page']:
+                    st.markdown(f"*Page {fact['page']}*")
+            
+            with col2:
+                st.markdown("**📋 Argument**")
+                st.markdown(f"**{fact['argId']}. {fact['argTitle']}**")
+                if fact['paragraphs']:
+                    st.markdown(f"*Paragraphs: {fact['paragraphs']}*")
+            
+            # Source text
+            if fact['source_text'] and fact['source_text'] != 'No specific submission recorded':
+                st.markdown("**📝 Source Text:**")
+                st.info(fact['source_text'])
+            
+            # Submissions
+            if fact['claimant_submission'] and fact['claimant_submission'] != 'No specific submission recorded':
+                st.markdown("**👤 Claimant Submission:**")
+                st.markdown(f'<div style="background-color: rgba(49, 130, 206, 0.03); border-left: 4px solid #3182ce; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["claimant_submission"]}</div>', unsafe_allow_html=True)
+            
+            if fact['respondent_submission'] and fact['respondent_submission'] != 'No specific submission recorded':
+                st.markdown("**👤 Respondent Submission:**")
+                st.markdown(f'<div style="background-color: rgba(229, 62, 62, 0.03); border-left: 4px solid #e53e3e; padding: 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic;">{fact["respondent_submission"]}</div>', unsafe_allow_html=True)
+            
+            # Document summary
+            if fact['doc_summary']:
+                st.markdown("**📖 Document Summary:**")
+                st.markdown(f"*{fact['doc_summary']}*")
+            
+            # Status and Evidence in two columns
+            col3, col4 = st.columns([1, 2])
+            
+            with col3:
+                st.markdown("**⚖️ Status**")
+                if fact['isDisputed']:
+                    st.markdown('<span style="background-color: rgba(229, 62, 62, 0.1); color: #e53e3e; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">Disputed</span>', unsafe_allow_html=True)
+                else:
+                    st.markdown("Undisputed")
+            
+            with col4:
+                st.markdown("**📎 Evidence**")
+                if fact['exhibits']:
+                    evidence_details = get_evidence_details(fact['exhibits'], args_data)
+                    
+                    # Use checkboxes instead of nested expanders to avoid the error
+                    for j, evidence in enumerate(evidence_details):
+                        evidence_key = f"evidence_{i}_{j}"
+                        if st.checkbox(f"📁 {evidence['id']}: {evidence['title']}", key=evidence_key):
+                            st.markdown(f"*{evidence['summary']}*")
+                else:
+                    st.markdown("None")
 
 # Main app
 def main():
@@ -478,37 +471,43 @@ def main():
     if st.session_state.view == "Facts":
         st.title("Case Facts")
         
-        # Create tabs for filtering
+        # Tab buttons with HTML/JS for interactivity
+        tab_html = f"""
+        <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #dee2e6;">
+            <button onclick="setFactsFilter('all')" id="all-btn" style="padding: 10px 20px; background: none; border: none; cursor: pointer; border-bottom: 2px solid {'#4299e1' if st.session_state.facts_filter == 'all' else 'transparent'}; color: {'#4299e1' if st.session_state.facts_filter == 'all' else 'inherit'}; font-weight: {'500' if st.session_state.facts_filter == 'all' else 'normal'};">All Facts</button>
+            <button onclick="setFactsFilter('disputed')" id="disputed-btn" style="padding: 10px 20px; background: none; border: none; cursor: pointer; border-bottom: 2px solid {'#4299e1' if st.session_state.facts_filter == 'disputed' else 'transparent'}; color: {'#4299e1' if st.session_state.facts_filter == 'disputed' else 'inherit'}; font-weight: {'500' if st.session_state.facts_filter == 'disputed' else 'normal'};">Disputed Facts</button>
+            <button onclick="setFactsFilter('undisputed')" id="undisputed-btn" style="padding: 10px 20px; background: none; border: none; cursor: pointer; border-bottom: 2px solid {'#4299e1' if st.session_state.facts_filter == 'undisputed' else 'transparent'}; color: {'#4299e1' if st.session_state.facts_filter == 'undisputed' else 'inherit'}; font-weight: {'500' if st.session_state.facts_filter == 'undisputed' else 'normal'};">Undisputed Facts</button>
+        </div>
+        
+        <script>
+        function setFactsFilter(filter) {{
+            // This would need to communicate back to Streamlit
+            // For now, we'll use Streamlit's native approach
+        }}
+        </script>
+        """
+        
+        # Use columns for tab buttons instead
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
             if st.button("All Facts", key="all_facts", use_container_width=True):
-                st.session_state.facts_filter = "All Facts"
+                st.session_state.facts_filter = "all"
         
         with col2:
             if st.button("Disputed Facts", key="disputed_facts", use_container_width=True):
-                st.session_state.facts_filter = "Disputed Facts"
+                st.session_state.facts_filter = "disputed"
         
         with col3:
             if st.button("Undisputed Facts", key="undisputed_facts", use_container_width=True):
-                st.session_state.facts_filter = "Undisputed Facts"
-        
-        # Add some styling for active tab
-        st.markdown(f"""
-        <style>
-        .stButton > button {{
-            background-color: {'#4299e1' if st.session_state.facts_filter == 'All Facts' else 'transparent'};
-            color: {'white' if st.session_state.facts_filter == 'All Facts' else 'black'};
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+                st.session_state.facts_filter = "undisputed"
         
         st.markdown("---")
         
         # Filter facts based on selection
-        if st.session_state.facts_filter == "Disputed Facts":
+        if st.session_state.facts_filter == "disputed":
             filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
-        elif st.session_state.facts_filter == "Undisputed Facts":
+        elif st.session_state.facts_filter == "undisputed":
             filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
         else:
             filtered_facts = facts_data
@@ -516,12 +515,8 @@ def main():
         # Sort facts by date
         filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
         
-        # Display facts as cards
-        if filtered_facts:
-            for fact in filtered_facts:
-                render_fact_card(fact, args_data)
-        else:
-            st.info("No facts found matching the selected criteria.")
+        # Render facts using native Streamlit components
+        render_streamlit_cards(filtered_facts, args_data)
     
     elif st.session_state.view == "Arguments":
         st.title("Arguments")

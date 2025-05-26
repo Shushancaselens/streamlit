@@ -1838,16 +1838,7 @@ def main():
                         contentEl.className = 'card-fact-content';
                         contentEl.id = `card-fact-content-${{index}}`;
                         
-                        // Source Text (always show if available)
-                        if (fact.source_text && fact.source_text !== 'No specific submission recorded') {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'card-source-text';
-                            sourceTextEl.innerHTML = `
-                                <div class="submission-header">Source Text</div>
-                                <div>${{fact.source_text}}</div>
-                            `;
-                            contentEl.appendChild(sourceTextEl);
-                        }}
+
                         
                         // Evidence section with document information integrated - MODIFIED HERE
                         const evidenceContent = getEvidenceContent(fact);
@@ -2059,15 +2050,7 @@ def main():
                         factContent.textContent = fact.event;
                         bodyEl.appendChild(factContent);
                         
-                        // Source Text (if different from submissions and available)
-                        if (fact.source_text && fact.source_text !== 'No specific submission recorded' && 
-                            fact.source_text !== fact.claimant_submission && fact.source_text !== fact.respondent_submission) {{
-                            const sourceTextEl = document.createElement('div');
-                            sourceTextEl.className = 'timeline-source-text';
-                            sourceTextEl.style.cssText = 'font-style: italic; color: #4a5568; margin-top: 8px; padding: 12px; background-color: rgba(74, 85, 104, 0.05); border-left: 4px solid #4a5568; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            sourceTextEl.innerHTML = `<strong>Source Text:</strong><br>${{fact.source_text}}`;
-                            bodyEl.appendChild(sourceTextEl);
-                        }}
+
                         
                         // Add claimant submission (always show)
                         const claimantTextEl = document.createElement('div');
@@ -2312,12 +2295,7 @@ def main():
                                                     <div><strong>${{fact.doc_name || 'N/A'}}</strong></div>
                                                 </div>
                                             </div>
-                                            ${{fact.source_text && fact.source_text !== 'No specific submission recorded' ? `
-                                                <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #4299e1; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Source Text</div>
-                                                    <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.source_text}}</div>
-                                                </div>
-                                            ` : ''}}
+
                                             ${{evidenceHtml !== 'None' ? `
                                                 <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20; margin-bottom: 12px;">
                                                     <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #dd6b20; margin-bottom: 6px;">Evidence (${{evidenceContent.length}} items)</div>

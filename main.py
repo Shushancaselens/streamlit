@@ -583,27 +583,6 @@ def main():
         # Sort facts by date
         filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
         
-        # Add buttons for manual tab switching (since HTML->Streamlit communication is limited)
-        st.markdown("**Filter Facts:**")
-        col1, col2, col3 = st.columns([1, 1, 1])
-        
-        with col1:
-            if st.button("All Facts", key="all_facts_sync", use_container_width=True):
-                st.session_state.facts_filter = "all"
-                st.rerun()
-        
-        with col2:
-            if st.button("Disputed Facts", key="disputed_facts_sync", use_container_width=True):
-                st.session_state.facts_filter = "disputed"
-                st.rerun()
-        
-        with col3:
-            if st.button("Undisputed Facts", key="undisputed_facts_sync", use_container_width=True):
-                st.session_state.facts_filter = "undisputed"
-                st.rerun()
-        
-        st.markdown("---")
-        
         # Render facts using native Streamlit components
         render_streamlit_cards(filtered_facts, args_data)
     
@@ -617,4 +596,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

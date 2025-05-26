@@ -12,6 +12,8 @@ if 'view' not in st.session_state:
     st.session_state.view = "Facts"
 if 'current_view_type' not in st.session_state:
     st.session_state.current_view_type = "card"
+if 'current_tab_type' not in st.session_state:
+    st.session_state.current_tab_type = "all"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -643,7 +645,9 @@ def render_streamlit_card_view(filtered_facts=None):
                             st.markdown(ref_text)
                         
                         with col2:
-                            if st.button(f"📋 Copy Ref", key=f"copy_{evidence['id']}_{i}"):
+                            # Get current tab type for unique button keys
+                            current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                            if st.button(f"📋 Copy Ref", key=f"copy_{evidence['id']}_{i}_{current_tab}"):
                                 ref_copy = f"Exhibit: {evidence['id']}"
                                 if fact.get('page'):
                                     ref_copy += f", Page: {fact['page']}"

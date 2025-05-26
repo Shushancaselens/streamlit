@@ -1888,17 +1888,7 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'card-fact-badges';
                         
-                        // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        // Disputed badge
+                        // Disputed badge only
                         if (fact.isDisputed) {{
                             const disputedBadge = document.createElement('span');
                             disputedBadge.className = 'badge disputed-badge';
@@ -1955,8 +1945,7 @@ def main():
                                             <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
                                                  style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
                                                 <div style="margin-bottom: 14px;">
-                                                    <div style="font-weight: 600; color: #dd6b20; font-size: 14px; margin-bottom: 8px;">Source Reference: ${{evidence.id}}</div>
-                                                    <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.title}}</div>
+                                                    <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
                                                     <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
                                                         <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Document Summary</div>
                                                         <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.doc_summary || 'No document summary available'}}</div>
@@ -2117,17 +2106,7 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'timeline-badges';
                         
-                        // Parties involved badges
-                        if (fact.parties_involved && fact.parties_involved.length > 0) {{
-                            fact.parties_involved.forEach(party => {{
-                                const partyBadge = document.createElement('span');
-                                partyBadge.className = `badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                                partyBadge.textContent = party;
-                                badgesEl.appendChild(partyBadge);
-                            }});
-                        }}
-                        
-                        // Status badge
+                        // Status badge only
                         const statusBadge = document.createElement('span');
                         statusBadge.className = `badge ${{fact.isDisputed ? 'disputed-badge' : 'shared-badge'}}`;
                         statusBadge.textContent = fact.isDisputed ? 'Disputed' : 'Undisputed';
@@ -2195,8 +2174,7 @@ def main():
                                         <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
                                              style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
                                             <div style="margin-bottom: 14px;">
-                                                <div style="font-weight: 600; color: #dd6b20; font-size: 14px; margin-bottom: 8px;">Source Reference: ${{evidence.id}}</div>
-                                                <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.title}}</div>
+                                                <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
                                                 <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
                                                     <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 6px;">Document Summary</div>
                                                     <div style="font-size: 14px; color: #4a5568; line-height: 1.5;">${{fact.doc_summary || 'No document summary available'}}</div>
@@ -2356,8 +2334,7 @@ def main():
                                             <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
                                                  style="display: none; margin-top: 10px; padding: 12px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 6px 6px 0; font-size: 14px; color: #666; line-height: 1.5;">
                                                 <div style="margin-bottom: 10px;">
-                                                    <div style="font-weight: 600; color: #dd6b20; font-size: 14px; margin-bottom: 6px;">Source Reference: ${{evidence.id}}</div>
-                                                    <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 6px;">Document: ${{evidence.title}}</div>
+                                                    <div style="font-weight: 600; color: #2d3748; font-size: 14px; margin-bottom: 6px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
                                                     <div style="background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 2px solid #4299e1; margin-bottom: 8px;">
                                                         <div style="font-weight: 600; font-size: 12px; text-transform: uppercase; color: #4299e1; margin-bottom: 4px;">Document Summary</div>
                                                         <div style="font-size: 13px; color: #4a5568; line-height: 1.4;">${{fact.doc_summary || 'No document summary available'}}</div>
@@ -2390,9 +2367,6 @@ def main():
                                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                                                 <div style="font-weight: 600; color: #2d3748;">${{fact.date}}</div>
                                                 <div style="display: flex; gap: 6px;">
-                                                    ${{fact.parties_involved && fact.parties_involved.length > 0 ? fact.parties_involved.map(party => `
-                                                        <span class="badge ${{party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">${{party}}</span>
-                                                    `).join('') : ''}}
                                                     ${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : ''}}
                                                 </div>
                                             </div>

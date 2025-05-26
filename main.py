@@ -731,6 +731,8 @@ def main():
                     font-size: 12px;
                     color: #4a5568;
                     font-weight: 500;
+                    flex-grow: 1;
+                    margin-right: 12px;
                 }}
                 
                 /* Action buttons */
@@ -1514,6 +1516,25 @@ def main():
                     }});
                 }}
                 
+                // Preview document function
+                function previewDocument(exhibitId, documentTitle) {{
+                    // Show notification for demo - in real app this would open document viewer
+                    const notification = document.getElementById('copy-notification');
+                    notification.textContent = `Opening preview for ${{exhibitId}}: ${{documentTitle}}`;
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {{
+                        notification.classList.remove('show');
+                        notification.textContent = 'Content copied to clipboard!';
+                    }}, 3000);
+                    
+                    // In a real application, this would:
+                    // - Open a modal with document viewer
+                    // - Load PDF or document content
+                    // - Navigate to specific page if provided
+                    console.log(`Preview requested for exhibit ${{exhibitId}}: ${{documentTitle}}`);
+                }}
+                
                 // Standardize timeline data to match facts structure
                 function standardizeTimelineData(item) {{
                     return {{
@@ -1888,13 +1909,7 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.className = 'card-fact-badges';
                         
-                        // Disputed badge only
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
+                        // No badges - removed disputed badge
                         
                         // Chevron
                         const chevronEl = document.createElement('div');
@@ -1958,13 +1973,22 @@ def main():
                                                         <div class="reference-text">
                                                             <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
                                                         </div>
-                                                        <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                            </svg>
-                                                            Copy
-                                                        </button>
+                                                        <div style="display: flex; gap: 8px;">
+                                                            <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                                </svg>
+                                                                Preview
+                                                            </button>
+                                                            <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                                </svg>
+                                                                Copy
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2142,12 +2166,7 @@ def main():
                         const badgesEl = document.createElement('div');
                         badgesEl.style.cssText = 'display: flex; gap: 6px; align-items: center;';
                         
-                        if (fact.isDisputed) {{
-                            const disputedBadge = document.createElement('span');
-                            disputedBadge.className = 'badge disputed-badge';
-                            disputedBadge.textContent = 'Disputed';
-                            badgesEl.appendChild(disputedBadge);
-                        }}
+                        // No badges - removed disputed badge
                         
                         headerEl.appendChild(badgesEl);
                         contentEl.appendChild(headerEl);
@@ -2196,13 +2215,22 @@ def main():
                                                         <div class="reference-text">
                                                             <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
                                                         </div>
-                                                        <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                            </svg>
-                                                            Copy
-                                                        </button>
+                                                        <div style="display: flex; gap: 8px;">
+                                                            <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                                </svg>
+                                                                Preview
+                                                            </button>
+                                                            <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                                </svg>
+                                                                Copy
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2490,13 +2518,22 @@ def main():
                                                         <div class="reference-text">
                                                             <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
                                                         </div>
-                                                        <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                            </svg>
-                                                            Copy
-                                                        </button>
+                                                        <div style="display: flex; gap: 8px;">
+                                                            <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                                </svg>
+                                                                Preview
+                                                            </button>
+                                                            <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                                </svg>
+                                                                Copy
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2510,7 +2547,7 @@ def main():
                                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                                                 <div style="font-weight: 600; color: #2d3748;">${{fact.date}}</div>
                                                 <div style="display: flex; gap: 6px;">
-                                                    ${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : ''}}
+                                                    <!-- No badges - removed disputed badge -->
                                                 </div>
                                             </div>
                                             <div style="font-weight: 500; color: #1a202c; font-size: 15px;">${{fact.event}}</div>

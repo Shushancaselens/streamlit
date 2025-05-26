@@ -622,27 +622,34 @@ def render_streamlit_card_view(filtered_facts=None):
             evidence_content = get_evidence_content(fact)
             
             if evidence_content:
-                for evidence in evidence_content:
+                for j, evidence in enumerate(evidence_content):
+                    # Add spacing between evidence items
+                    if j > 0:
+                        st.markdown("<br>", unsafe_allow_html=True)
+                    
                     with st.container():
-                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                        # Evidence header with better styling
+                        st.markdown(f"#### **{evidence['id']}** - {evidence['title']}")
                         
-                        # Document Summary
+                        # Document Summary in a more prominent box
                         if fact.get('doc_summary'):
                             st.info(f"**Document Summary:** {fact['doc_summary']}")
                         
-                        # Source Text
+                        # Source Text with better formatting
                         if fact.get('source_text'):
-                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                            st.markdown("**Source Text:**")
+                            st.markdown(f"> *{fact['source_text']}*")
                         
-                        # Reference information
+                        # Reference information with better spacing
+                        st.markdown("**Reference Details:**")
                         col1, col2 = st.columns([3, 1])
                         with col1:
-                            ref_text = f"**Exhibit:** {evidence['id']}"
+                            ref_parts = [f"**Exhibit:** {evidence['id']}"]
                             if fact.get('page'):
-                                ref_text += f" | **Page:** {fact['page']}"
+                                ref_parts.append(f"**Page:** {fact['page']}")
                             if fact.get('paragraphs'):
-                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
-                            st.markdown(ref_text)
+                                ref_parts.append(f"**Paragraphs:** {fact['paragraphs']}")
+                            st.markdown(" | ".join(ref_parts))
                         
                         with col2:
                             # Get current tab type for unique button keys
@@ -655,7 +662,9 @@ def render_streamlit_card_view(filtered_facts=None):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
                         
-                        st.divider()
+                        # Add separator only if not the last evidence item
+                        if j < len(evidence_content) - 1:
+                            st.markdown("---")
             else:
                 st.markdown("*No evidence references available for this fact*")
             
@@ -746,12 +755,26 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     evidence_content = get_evidence_content(fact)
                     
                     if evidence_content:
-                        for evidence in evidence_content:
-                            st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
+                        for j, evidence in enumerate(evidence_content):
+                            # Add spacing between evidence items
+                            if j > 0:
+                                st.markdown("<br>", unsafe_allow_html=True)
+                            
+                            # Evidence header with better styling
+                            st.markdown(f"#### **{evidence['id']}** - {evidence['title']}")
+                            
+                            # Document Summary in a more prominent box
                             if fact.get('doc_summary'):
                                 st.info(f"**Document Summary:** {fact['doc_summary']}")
+                            
+                            # Source Text with better formatting
                             if fact.get('source_text'):
-                                st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                                st.markdown("**Source Text:**")
+                                st.markdown(f"> *{fact['source_text']}*")
+                            
+                            # Add separator only if not the last evidence item
+                            if j < len(evidence_content) - 1:
+                                st.markdown("---")
                     else:
                         st.markdown("*No evidence references available*")
                     

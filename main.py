@@ -623,48 +623,44 @@ def render_streamlit_card_view(filtered_facts=None):
             
             if evidence_content:
                 for j, evidence in enumerate(evidence_content):
-                    # Add spacing between evidence items
+                    # Add visual separation between evidence items
                     if j > 0:
-                        st.markdown("<br>", unsafe_allow_html=True)
+                        st.markdown("<br><br>", unsafe_allow_html=True)
                     
-                    with st.container():
-                        # Evidence header with better styling
-                        st.markdown(f"#### **{evidence['id']}** - {evidence['title']}")
-                        
-                        # Document Summary in a more prominent box
-                        if fact.get('doc_summary'):
-                            st.info(f"**Document Summary:** {fact['doc_summary']}")
-                        
-                        # Source Text with better formatting
-                        if fact.get('source_text'):
-                            st.markdown("**Source Text:**")
-                            st.markdown(f"> *{fact['source_text']}*")
-                        
-                        # Reference information with better spacing
-                        st.markdown("**Reference Details:**")
-                        col1, col2 = st.columns([3, 1])
-                        with col1:
-                            ref_parts = [f"**Exhibit:** {evidence['id']}"]
+                    # Evidence header with improved styling
+                    st.markdown(f"**📋 {evidence['id']}** - {evidence['title']}")
+                    st.markdown("---")
+                    
+                    # Document Summary with better presentation
+                    if fact.get('doc_summary'):
+                        st.info(f"**📄 Document Summary:** {fact['doc_summary']}")
+                    
+                    # Source Text with blockquote styling
+                    if fact.get('source_text'):
+                        st.markdown("**📝 Source Text:**")
+                        st.markdown(f"> *{fact['source_text']}*")
+                    
+                    # Reference information section
+                    st.markdown("**🔗 Reference Details:**")
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        ref_parts = [f"**Exhibit:** {evidence['id']}"]
+                        if fact.get('page'):
+                            ref_parts.append(f"**Page:** {fact['page']}")
+                        if fact.get('paragraphs'):
+                            ref_parts.append(f"**Paragraphs:** {fact['paragraphs']}")
+                        st.markdown(" • ".join(ref_parts))
+                    
+                    with col2:
+                        # Get current tab type for unique button keys
+                        current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                        if st.button(f"📋 Copy", key=f"copy_{evidence['id']}_{i}_{j}_{current_tab}"):
+                            ref_copy = f"Exhibit: {evidence['id']}"
                             if fact.get('page'):
-                                ref_parts.append(f"**Page:** {fact['page']}")
+                                ref_copy += f", Page: {fact['page']}"
                             if fact.get('paragraphs'):
-                                ref_parts.append(f"**Paragraphs:** {fact['paragraphs']}")
-                            st.markdown(" | ".join(ref_parts))
-                        
-                        with col2:
-                            # Get current tab type for unique button keys
-                            current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                            if st.button(f"📋 Copy Ref", key=f"copy_{evidence['id']}_{i}_{current_tab}"):
-                                ref_copy = f"Exhibit: {evidence['id']}"
-                                if fact.get('page'):
-                                    ref_copy += f", Page: {fact['page']}"
-                                if fact.get('paragraphs'):
-                                    ref_copy += f", Paragraphs: {fact['paragraphs']}"
-                                st.success("Reference copied!")
-                        
-                        # Add separator only if not the last evidence item
-                        if j < len(evidence_content) - 1:
-                            st.markdown("---")
+                                ref_copy += f", Paragraphs: {fact['paragraphs']}"
+                            st.success("Reference copied!")
             else:
                 st.markdown("*No evidence references available for this fact*")
             

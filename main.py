@@ -626,17 +626,6 @@ def main():
                     margin-bottom: 8px;
                 }}
                 
-                .evidence-summary {{
-                    font-size: 13px;
-                    color: #4a5568;
-                    margin-bottom: 12px;
-                    font-style: italic;
-                    background-color: #f8fafc;
-                    padding: 8px;
-                    border-radius: 4px;
-                    border-left: 3px solid #dd6b20;
-                }}
-                
                 .evidence-item {{
                     margin-bottom: 12px;
                     border: 1px solid #e2e8f0;
@@ -810,18 +799,8 @@ def main():
                                 </div>
                             </div>
                             <div class="card-fact-content" id="content-${{index}}">
-                                ${{fact.source_text ? `
-                                    <div class="card-source-text">
-                                        <div class="submission-header">Source Text</div>
-                                        <div>${{fact.source_text}}</div>
-                                    </div>
-                                ` : ''}}
-                                
                                 <div class="evidence-section">
-                                    <div class="evidence-label">Evidence & Source References (${{fact.exhibits.length}} items)</div>
-                                    <div class="evidence-summary">
-                                        This fact is supported by ${{fact.exhibits.length}} piece${{fact.exhibits.length > 1 ? 's' : ''}} of documentary evidence. Click on each evidence item below to view detailed descriptions.
-                                    </div>
+                                    <div class="evidence-label">Source References (${{fact.exhibits.length}} items)</div>
                                     ${{fact.exhibits.map((exhibitId, evidenceIndex) => {{
                                         const evidence = evidenceData[exhibitId];
                                         return evidence ? `
@@ -834,31 +813,43 @@ def main():
                                                     <span class="evidence-icon" id="evidence-icon-${{exhibitId}}-${{index}}-${{evidenceIndex}}">+</span>
                                                 </div>
                                                 <div class="evidence-content" id="evidence-content-${{exhibitId}}-${{index}}-${{evidenceIndex}}">
-                                                    <div style="margin-bottom: 8px;">
+                                                    <div style="margin-bottom: 12px;">
                                                         <div style="font-weight: 600; color: #dd6b20; font-size: 13px; margin-bottom: 6px;">Source Reference: ${{exhibitId}}</div>
-                                                        <div style="font-weight: 600; color: #2d3748; font-size: 13px; margin-bottom: 6px;">Document: ${{evidence.title}}</div>
-                                                        <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 3px solid #0ea5e9;">
-                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Source Text</div>
-                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{evidence.summary}}</div>
+                                                        
+                                                        <div style="background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #4299e1; margin-bottom: 8px;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #4299e1; margin-bottom: 4px;">Source Text</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.source_text || 'No source text available'}}</div>
                                                         </div>
-                                                        <div style="margin-top: 8px; font-size: 11px; color: #718096;">
-                                                            Page: ${{fact.page || 'N/A'}} | Paragraphs: ${{fact.paragraphs || 'N/A'}}
+                                                        
+                                                        <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 3px solid #0ea5e9; margin-bottom: 8px;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #0ea5e9; margin-bottom: 4px;">Page</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.page || 'N/A'}}</div>
+                                                        </div>
+                                                        
+                                                        <div style="background-color: #f0fdf4; padding: 8px; border-radius: 4px; border-left: 3px solid #22c55e; margin-bottom: 8px;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #22c55e; margin-bottom: 4px;">Document Name</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.doc_name || 'N/A'}}</div>
+                                                        </div>
+                                                        
+                                                        <div style="background-color: #fefce8; padding: 8px; border-radius: 4px; border-left: 3px solid #eab308; margin-bottom: 8px;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #eab308; margin-bottom: 4px;">Document Summary</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.doc_summary || 'No document summary available'}}</div>
+                                                        </div>
+                                                        
+                                                        <div style="background-color: rgba(49, 130, 206, 0.03); padding: 8px; border-radius: 4px; border-left: 3px solid #3182ce; margin-bottom: 8px;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 4px;">Claimant Arguments</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.claimant_submission || 'No claimant arguments available'}}</div>
+                                                        </div>
+                                                        
+                                                        <div style="background-color: rgba(229, 62, 62, 0.03); padding: 8px; border-radius: 4px; border-left: 3px solid #e53e3e;">
+                                                            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 4px;">Respondent Arguments</div>
+                                                            <div style="font-size: 12px; color: #4a5568; line-height: 1.4;">${{fact.respondent_submission || 'No respondent arguments available'}}</div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         ` : '';
                                     }}).join('')}}
-                                </div>
-                                
-                                <div class="card-source-text claimant-submission">
-                                    <div class="submission-header">Claimant Submission</div>
-                                    <div>${{fact.claimant_submission}}</div>
-                                </div>
-                                
-                                <div class="card-source-text respondent-submission">
-                                    <div class="submission-header">Respondent Submission</div>
-                                    <div>${{fact.respondent_submission}}</div>
                                 </div>
                             </div>
                         `;
@@ -920,11 +911,20 @@ def main():
                                 </div>
                                 <div class="timeline-body">
                                     <div class="timeline-fact">${{fact.event}}</div>
-                                    <div class="timeline-submission claimant">
-                                        <strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}
-                                    </div>
-                                    <div class="timeline-submission respondent">
-                                        <strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}
+                                    
+                                    <div style="margin-top: 16px; padding: 12px; background-color: #f8fafc; border-radius: 6px; border-left: 4px solid #dd6b20;">
+                                        <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">Source References (${{fact.exhibits.length}} items)</div>
+                                        ${{fact.exhibits.map(exhibitId => `
+                                            <div style="margin-bottom: 12px; padding: 8px; background-color: white; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                                <div style="font-weight: 600; color: #dd6b20; font-size: 12px; margin-bottom: 6px;">${{exhibitId}}</div>
+                                                <div style="font-size: 11px; color: #4a5568; margin-bottom: 4px;"><strong>Source Text:</strong> ${{fact.source_text || 'N/A'}}</div>
+                                                <div style="font-size: 11px; color: #4a5568; margin-bottom: 4px;"><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
+                                                <div style="font-size: 11px; color: #4a5568; margin-bottom: 4px;"><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                                <div style="font-size: 11px; color: #4a5568; margin-bottom: 4px;"><strong>Doc Summary:</strong> ${{fact.doc_summary || 'N/A'}}</div>
+                                                <div style="font-size: 11px; color: #3182ce; margin-bottom: 2px;"><strong>Claimant Arguments:</strong> ${{fact.claimant_submission || 'N/A'}}</div>
+                                                <div style="font-size: 11px; color: #e53e3e;"><strong>Respondent Arguments:</strong> ${{fact.respondent_submission || 'N/A'}}</div>
+                                            </div>
+                                        `).join('')}}
                                     </div>
                                 </div>
                             </div>
@@ -1011,7 +1011,21 @@ def main():
                                                 </div>
                                             </div>
                                             <div style="font-weight: 500; color: #1a202c; margin-bottom: 12px;">${{fact.event}}</div>
-                                            <div style="font-size: 14px; color: #4a5568; font-style: italic;">${{fact.source_text}}</div>
+                                            
+                                            <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20;">
+                                                <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 8px;">Source References (${{fact.exhibits.length}} items)</div>
+                                                ${{fact.exhibits.map(exhibitId => `
+                                                    <div style="margin-bottom: 8px; padding: 8px; background-color: white; border-radius: 4px; border: 1px solid #e2e8f0; font-size: 12px;">
+                                                        <div style="font-weight: 600; color: #dd6b20; margin-bottom: 4px;">${{exhibitId}}</div>
+                                                        <div style="color: #4a5568; margin-bottom: 2px;"><strong>Source Text:</strong> ${{fact.source_text || 'N/A'}}</div>
+                                                        <div style="color: #4a5568; margin-bottom: 2px;"><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
+                                                        <div style="color: #4a5568; margin-bottom: 2px;"><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                                        <div style="color: #4a5568; margin-bottom: 2px;"><strong>Doc Summary:</strong> ${{fact.doc_summary || 'N/A'}}</div>
+                                                        <div style="color: #3182ce; margin-bottom: 1px;"><strong>Claimant Arguments:</strong> ${{fact.claimant_submission || 'N/A'}}</div>
+                                                        <div style="color: #e53e3e;"><strong>Respondent Arguments:</strong> ${{fact.respondent_submission || 'N/A'}}</div>
+                                                    </div>
+                                                `).join('')}}
+                                            </div>
                                         </div>
                                     `).join('') : '<p>No facts found</p>'}}
                                 </div>

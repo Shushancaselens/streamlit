@@ -1136,10 +1136,11 @@ def render_view_content(view_type, filtered_facts):
         render_streamlit_card_view(filtered_facts)
     elif view_type == "table":
         render_streamlit_table_view(filtered_facts)
-    elif view_type == "timeline":
-        render_streamlit_timeline_view(filtered_facts)
     elif view_type == "docset":
         render_streamlit_docset_view(filtered_facts)
+    else:
+        # Default to card view if unknown view type
+        render_streamlit_card_view(filtered_facts)
 
 if __name__ == "__main__":
     main()

@@ -1918,7 +1918,7 @@ def main():
                             const claimantSubmissionEl = document.createElement('div');
                             claimantSubmissionEl.className = 'card-source-text claimant-submission';
                             claimantSubmissionEl.innerHTML = `
-                                <div class="submission-header">Claimant Submission</div>
+                                <div class="submission-header">*** CLAIMANT SUBMISSION ***</div>
                                 <div>${{fact.claimant_submission}}</div>
                             `;
                             contentEl.appendChild(claimantSubmissionEl);
@@ -1929,7 +1929,7 @@ def main():
                             const respondentSubmissionEl = document.createElement('div');
                             respondentSubmissionEl.className = 'card-source-text respondent-submission';
                             respondentSubmissionEl.innerHTML = `
-                                <div class="submission-header">Respondent Submission</div>
+                                <div class="submission-header">*** RESPONDENT SUBMISSION ***</div>
                                 <div>${{fact.respondent_submission}}</div>
                             `;
                             contentEl.appendChild(respondentSubmissionEl);
@@ -2098,7 +2098,7 @@ def main():
                             const claimantTextEl = document.createElement('div');
                             claimantTextEl.className = 'timeline-source-text';
                             claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br>${{fact.claimant_submission}}`;
+                            claimantTextEl.innerHTML = `<strong>*** CLAIMANT SUBMISSION ***</strong><br>${{fact.claimant_submission}}`;
                             bodyEl.appendChild(claimantTextEl);
                         }}
                         
@@ -2107,7 +2107,7 @@ def main():
                             const respondentTextEl = document.createElement('div');
                             respondentTextEl.className = 'timeline-source-text';
                             respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br>${{fact.respondent_submission}}`;
+                            respondentTextEl.innerHTML = `<strong>*** RESPONDENT SUBMISSION ***</strong><br>${{fact.respondent_submission}}`;
                             bodyEl.appendChild(respondentTextEl);
                         }}
                         
@@ -2322,13 +2322,13 @@ def main():
                                             ` : ''}}
                                             ${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? `
                                                 <div style="background-color: rgba(49, 130, 206, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #3182ce; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">Claimant Submission</div>
+                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">*** CLAIMANT SUBMISSION ***</div>
                                                     <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.claimant_submission}}</div>
                                                 </div>
                                             ` : ''}}
                                             ${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? `
                                                 <div style="background-color: rgba(229, 62, 62, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #e53e3e; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 6px;">Respondent Submission</div>
+                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 6px;">*** RESPONDENT SUBMISSION ***</div>
                                                     <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.respondent_submission}}</div>
                                                 </div>
                                             ` : ''}}

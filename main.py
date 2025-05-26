@@ -735,25 +735,24 @@ def render_streamlit_timeline_view(filtered_facts=None):
                     else:
                         st.success("Undisputed")
                 
-                # Expandable details
-                with st.expander("📋 View Details", expanded=False):
+                # Show details directly instead of using expander
+                with st.container():
                     # Evidence section
-                    st.subheader("📁 Evidence & Source References")
+                    st.markdown("**📁 Evidence & Source References**")
                     evidence_content = get_evidence_content(fact)
                     
                     if evidence_content:
                         for evidence in evidence_content:
-                            st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                            st.markdown(f"• **{evidence['id']}** - {evidence['title']}")
                             if fact.get('doc_summary'):
                                 st.info(f"**Document Summary:** {fact['doc_summary']}")
                             if fact.get('source_text'):
                                 st.markdown(f"**Source Text:** *{fact['source_text']}*")
-                            st.divider()
                     else:
                         st.markdown("*No evidence references available*")
                     
                     # Party submissions
-                    st.subheader("⚖️ Party Submissions")
+                    st.markdown("**⚖️ Party Submissions**")
                     
                     # Claimant submission
                     st.markdown("**🔵 Claimant Submission**")
@@ -773,7 +772,7 @@ def render_streamlit_timeline_view(filtered_facts=None):
                 
                 # Add separator between events
                 if i < len(events) - 1:
-                    st.markdown("---")
+                    st.divider()
 
 # Streamlit Native Document Categories View Implementation  
 def render_streamlit_docset_view(filtered_facts=None):
@@ -978,7 +977,7 @@ def main():
     if st.session_state.view == "Facts":
         st.title("Case Facts")
         
-        # Create a simple header with view toggle and tabs using Streamlit components
+        # Create a simple header with view toggle using Streamlit components
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -1001,23 +1000,28 @@ def main():
         
         st.divider()
         
-        # Facts filter tabs using Streamlit
-        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+        # Facts filter using selectbox instead of tabs to avoid nesting issues
+        filter_option = st.selectbox(
+            "Filter Facts:",
+            ["All Facts", "Disputed Facts", "Undisputed Facts"],
+            index=0
+        )
         
-        with tab1:
+        # Set current tab type based on selection
+        if filter_option == "All Facts":
             st.session_state.current_tab_type = "all"
             filtered_facts = get_all_facts()
-            render_view_content(st.session_state.current_view_type, filtered_facts)
-        
-        with tab2:
+        elif filter_option == "Disputed Facts":
             st.session_state.current_tab_type = "disputed"
             filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
-            render_view_content(st.session_state.current_view_type, filtered_facts)
-        
-        with tab3:
+        else:
             st.session_state.current_tab_type = "undisputed"
             filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
-            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        st.divider()
+        
+        # Render the appropriate native view based on current view type
+        render_view_content(st.session_state.current_view_type, filtered_facts)
 
 # Helper function to render the appropriate view content
 def render_view_content(view_type, filtered_facts):

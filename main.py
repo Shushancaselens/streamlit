@@ -766,26 +766,43 @@ def main():
         </style>
         """, unsafe_allow_html=True)
         
-        # Define button click handlers
-        def set_arguments_view():
-            st.session_state.view = "Arguments"
-            
-        def set_facts_view():
-            st.session_state.view = "Facts"
-            
-        def set_exhibits_view():
-            st.session_state.view = "Exhibits"
-            
-        def set_documents_view():
-            st.session_state.view = "Documents"
+        # Navigation is now handled by selectbox above
         
-        # Create buttons with names
-        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-        st.button("📄 Documents", key="documents_button", on_click=set_documents_view, use_container_width=True)
+        # Create navigation using radio buttons
+        view_options = ["📊 Facts", "📑 Arguments", "📁 Exhibits", "📄 Documents"]
+        view_mapping = {
+            "📊 Facts": "Facts",
+            "📑 Arguments": "Arguments", 
+            "📁 Exhibits": "Exhibits",
+            "📄 Documents": "Documents"
+        }
+        
+        # Get current selection based on session state
+        current_display = None
+        for display, value in view_mapping.items():
+            if value == st.session_state.view:
+                current_display = display
+                break
+        
+        if current_display is None:
+            current_display = "📊 Facts"
+            st.session_state.view = "Facts"
+        
+        selected_view = st.radio(
+            "Navigation:",
+            view_options,
+            index=view_options.index(current_display),
+            key="view_selector"
+        )
+        
+        # Update session state when selection changes
+        st.session_state.view = view_mapping[selected_view]
+            
+        # Show current view for debugging
+        st.write(f"**Active:** {st.session_state.view}")
     
-    # Create the facts HTML component
+    # Display content based on selected view
+    st.write("---")  # Separator line
     if st.session_state.view == "Facts":
         # Create a single HTML component containing the Facts UI
         html_content = f"""
@@ -3537,6 +3554,20 @@ def main():
         
         st.title("Document Preview")
         components.html(html_content, height=800, scrolling=True)
+    
+    elif st.session_state.view == "Arguments":
+        st.title("Legal Arguments")
+        st.info("Arguments view - Coming soon!")
+        
+    elif st.session_state.view == "Exhibits":
+        st.title("Case Exhibits")
+        st.info("Exhibits view - Coming soon!")
+    
+    else:  # Default to Facts if unknown view
+        st.session_state.view = "Facts"
+        st.title("Case Facts")
+        # Show the facts view by default - same as the Facts section above
+        # (We could extract this to a function to avoid duplication)
 
 if __name__ == "__main__":
     main()

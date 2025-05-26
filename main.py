@@ -1846,10 +1846,11 @@ def main():
                         const docSection = document.createElement('div');
                         docSection.className = 'card-detail-section';
                         docSection.innerHTML = `
-                            <div class="card-detail-label">Document</div>
+                            <div class="card-detail-label">Document Source</div>
                             <div class="card-detail-value">
-                                <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
                                 ${{fact.page ? '<br><small>Page ' + fact.page + '</small>' : ''}}
+                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
                             </div>
                         `;
                         detailsEl.appendChild(docSection);
@@ -1858,10 +1859,10 @@ def main():
                         const argSection = document.createElement('div');
                         argSection.className = 'card-detail-section';
                         argSection.innerHTML = `
-                            <div class="card-detail-label">Argument</div>
+                            <div class="card-detail-label">Document</div>
                             <div class="card-detail-value">
-                                <strong>${{fact.argId}}. ${{fact.argTitle}}</strong>
-                                ${{fact.paragraphs ? '<br><small>Paragraphs: ' + fact.paragraphs + '</small>' : ''}}
+                                <strong>${{fact.doc_name || 'N/A'}}</strong>
+                                ${{fact.doc_summary ? '<br><small style="font-style: italic; color: #666;">' + fact.doc_summary + '</small>' : ''}}
                             </div>
                         `;
                         detailsEl.appendChild(argSection);
@@ -1888,6 +1889,9 @@ def main():
                             evidenceSection.innerHTML = `
                                 <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
                                 <div class="card-detail-value">
+                                    <div style="font-size: 13px; color: #4a5568; margin-bottom: 12px; font-style: italic; background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #dd6b20;">
+                                        <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                    </div>
                                     ${{evidenceContent.map((evidence, evidenceIndex) => `
                                         <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
                                             <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
@@ -2082,9 +2086,9 @@ def main():
                         docInfoEl.style.cssText = 'background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; border: 1px solid #e2e8f0;';
                         docInfoEl.innerHTML = `
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
+                                <div><strong>Document Source:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
                                 <div><strong>Page:</strong> ${{fact.page || 'N/A'}}</div>
-                                <div><strong>Argument:</strong> ${{fact.argId}}. ${{fact.argTitle}}</div>
+                                <div><strong>Document:</strong> ${{fact.doc_name || 'N/A'}}</div>
                                 <div><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</div>
                             </div>
                             ${{fact.doc_summary ? '<div style="margin-top: 8px; font-style: italic; color: #666; font-size: 12px;"><strong>Document Summary:</strong> ' + fact.doc_summary + '</div>' : ''}}
@@ -2132,6 +2136,9 @@ def main():
                             
                             footerEl.innerHTML = `
                                 <div style="font-weight: 600; color: #4a5568; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Evidence (${{evidenceContent.length}} items)</div>
+                                <div style="font-size: 12px; color: #4a5568; margin-bottom: 12px; font-style: italic; background-color: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #dd6b20;">
+                                    <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                </div>
                                 ${{evidenceContent.map((evidence, evidenceIndex) => `
                                     <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
                                         <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
@@ -2310,12 +2317,12 @@ def main():
                                         <div style="padding: 16px;">
                                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                                 <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Document</div>
-                                                    <div><strong>${{fact.doc_name || 'N/A'}}</strong> ${{fact.page ? '(Page ' + fact.page + ')' : ''}}</div>
+                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Document Source</div>
+                                                    <div><strong>${{fact.argId}}. ${{fact.argTitle}}</strong> ${{fact.page ? '(Page ' + fact.page + ')' : ''}}</div>
                                                 </div>
                                                 <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Argument</div>
-                                                    <div><strong>${{fact.argId}}. ${{fact.argTitle}}</strong></div>
+                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Document</div>
+                                                    <div><strong>${{fact.doc_name || 'N/A'}}</strong></div>
                                                 </div>
                                             </div>
                                             ${{fact.source_text && fact.source_text !== 'No specific submission recorded' ? `
@@ -2327,6 +2334,9 @@ def main():
                                             ${{evidenceHtml !== 'None' ? `
                                                 <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20; margin-bottom: 12px;">
                                                     <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #dd6b20; margin-bottom: 6px;">Evidence (${{evidenceContent.length}} items)</div>
+                                                    <div style="font-size: 12px; color: #4a5568; margin-bottom: 8px; font-style: italic; background-color: #fff; padding: 6px; border-radius: 3px; border-left: 2px solid #dd6b20;">
+                                                        <strong>Evidence Summary:</strong> This fact is supported by ${{evidenceContent.length}} piece${{evidenceContent.length > 1 ? 's' : ''}} of documentary evidence, including ${{evidenceContent.map(e => e.title.toLowerCase()).join(', ')}}. Click on each evidence item below to view detailed descriptions.
+                                                    </div>
                                                     <div>${{evidenceHtml}}</div>
                                                 </div>
                                             ` : ''}}

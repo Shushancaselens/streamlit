@@ -1879,6 +1879,40 @@ def main():
                             contentEl.appendChild(sourceTextEl);
                         }}
                         
+                        // Evidence section (moved here, under Source Text)
+                        const evidenceContent = getEvidenceContent(fact);
+                        if (evidenceContent !== 'None') {{
+                            const evidenceSection = document.createElement('div');
+                            evidenceSection.className = 'card-detail-section';
+                            evidenceSection.style.marginTop = '16px';
+                            evidenceSection.innerHTML = `
+                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
+                                <div class="card-detail-value">
+                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
+                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
+                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
+                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
+                                                <div>
+                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
+                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
+                                                </div>
+                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
+                                            </div>
+                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
+                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                                <div style="font-weight: 600; color: #dd6b20; font-size: 13px; margin-bottom: 6px;">${{evidence.title}}</div>
+                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}}
+                                </div>
+                            `;
+                            contentEl.appendChild(evidenceSection);
+                        }}
+                        
                         // Claimant Submission
                         if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
                             const claimantSubmissionEl = document.createElement('div');
@@ -1913,59 +1947,21 @@ def main():
                             contentEl.appendChild(summaryEl);
                         }}
                         
-                        // Status and Exhibits section
-                        const statusExhibitsEl = document.createElement('div');
-                        statusExhibitsEl.className = 'card-fact-details';
-                        statusExhibitsEl.style.marginTop = '16px';
+                        // Status section (Evidence removed since it's now under Source Text)
+                        const statusSection = document.createElement('div');
+                        statusSection.className = 'card-fact-details';
+                        statusSection.style.marginTop = '16px';
                         
                         // Status
-                        const statusSection = document.createElement('div');
-                        statusSection.className = 'card-detail-section';
-                        statusSection.innerHTML = `
+                        const statusInfo = document.createElement('div');
+                        statusInfo.className = 'card-detail-section';
+                        statusInfo.innerHTML = `
                             <div class="card-detail-label">Status</div>
                             <div class="card-detail-value">${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
                         `;
-                        statusExhibitsEl.appendChild(statusSection);
+                        statusSection.appendChild(statusInfo);
                         
-                        // Evidence
-                        const evidenceSection = document.createElement('div');
-                        evidenceSection.className = 'card-detail-section';
-                        const evidenceContent = getEvidenceContent(fact);
-                        
-                        if (evidenceContent === 'None') {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence</div>
-                                <div class="card-detail-value">None</div>
-                            `;
-                        }} else {{
-                            evidenceSection.innerHTML = `
-                                <div class="card-detail-label">Evidence (${{evidenceContent.length}} items)</div>
-                                <div class="card-detail-value">
-                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                        <div style="margin-bottom: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                                            <div onclick="toggleEvidence('${{evidence.id}}', '${{index}}-${{evidenceIndex}}')" 
-                                                 style="padding: 8px 12px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background-color 0.2s;"
-                                                 onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'" 
-                                                 onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.05)'">
-                                                <div>
-                                                    <span style="font-weight: 600; color: #dd6b20; font-size: 12px;">${{evidence.id}}</span>
-                                                    <span style="margin-left: 8px; color: #4a5568; font-size: 12px;">${{evidence.title}}</span>
-                                                </div>
-                                                <span id="evidence-icon-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                      style="width: 16px; height: 16px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">+</span>
-                                            </div>
-                                            <div id="evidence-content-${{evidence.id}}-${{index}}-${{evidenceIndex}}" 
-                                                 style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                                <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
-                                            </div>
-                                        </div>
-                                    `).join('')}}
-                                </div>
-                            `;
-                        }}
-                        statusExhibitsEl.appendChild(evidenceSection);
-                        
-                        contentEl.appendChild(statusExhibitsEl);
+                        contentEl.appendChild(statusSection);
                         cardContainer.appendChild(contentEl);
                         container.appendChild(cardContainer);
                     }});
@@ -2141,6 +2137,7 @@ def main():
                                         </div>
                                         <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
                                              style="display: none; padding: 12px; background-color: white; border-top: 1px solid #e2e8f0;">
+                                            <div style="font-weight: 600; color: #dd6b20; font-size: 13px; margin-bottom: 6px;">${{evidence.title}}</div>
                                             <div style="font-size: 12px; color: #666; line-height: 1.4;">${{evidence.summary}}</div>
                                         </div>
                                     </div>
@@ -2279,7 +2276,8 @@ def main():
                                             </span>
                                             <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
                                                  style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
-                                                <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
+                                                <div style="font-weight: 600; color: #dd6b20; font-size: 13px; margin-bottom: 4px;">${{evidence.title}}</div>
+                                                <div>${{evidence.summary}}</div>
                                             </div>
                                         </div>
                                     `).join('');
@@ -2316,6 +2314,12 @@ def main():
                                                     <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.source_text}}</div>
                                                 </div>
                                             ` : ''}}
+                                            ${{evidenceHtml !== 'None' ? `
+                                                <div style="background-color: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #dd6b20; margin-bottom: 12px;">
+                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #dd6b20; margin-bottom: 6px;">Evidence (${{evidenceContent.length}} items)</div>
+                                                    <div>${{evidenceHtml}}</div>
+                                                </div>
+                                            ` : ''}}
                                             ${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? `
                                                 <div style="background-color: rgba(49, 130, 206, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #3182ce; margin-bottom: 12px;">
                                                     <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">Claimant Submission</div>
@@ -2328,14 +2332,10 @@ def main():
                                                     <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.respondent_submission}}</div>
                                                 </div>
                                             ` : ''}}
-                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
                                                 <div>
                                                     <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Status</div>
                                                     <div>${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>
-                                                </div>
-                                                <div>
-                                                    <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Evidence</div>
-                                                    <div>${{evidenceHtml}}</div>
                                                 </div>
                                             </div>
                                         </div>

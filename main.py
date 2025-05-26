@@ -2434,7 +2434,7 @@ def main():
                     }}
                 }}
                 
-                // Render document sets view
+                // Render document sets view with table-like evidence formatting
                 function renderDocumentSets(tabType = 'all') {{
                     const container = document.getElementById('document-sets-container');
                     container.innerHTML = '';
@@ -2502,7 +2502,7 @@ def main():
                         }}
                     }});
                     
-                    // Create document sets UI with direct table display
+                    // Create document sets UI with direct table display and improved evidence formatting
                     Object.values(docsWithFacts).forEach(docWithFacts => {{
                         const docset = docWithFacts.docset;
                         const facts = docWithFacts.facts;
@@ -2534,58 +2534,68 @@ def main():
                         let contentHtml = '';
                         
                         if (facts.length > 0) {{
-                            // Create a single table for all facts in this category - with consistent structure
+                            // Create a single table for all facts in this category - with improved evidence formatting
                             contentHtml += `
-                                <table class="table-view">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Event</th>
-                                            <th>Source Text</th>
-                                            <th>Page</th>
-                                            <th>Document</th>
-                                            <th>Doc Summary</th>
-                                            <th>Claimant Submission</th>
-                                            <th>Respondent Submission</th>
-                                            <th>Status</th>
-                                            <th>Evidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${{facts.map(fact => `
-                                            <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
-                                                <td>${{fact.date}}</td>
-                                                <td>${{fact.event}}</td>
-                                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.source_text || ''}}">${{fact.source_text || ''}}</td>
-                                                <td>${{fact.page || ''}}</td>
-                                                <td><strong>${{fact.doc_name || 'N/A'}}</strong></td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.doc_summary || ''}}">${{fact.doc_summary || ''}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.claimant_submission || ''}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
-                                                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" title="${{fact.respondent_submission || ''}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
-                                                <td>${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
-                                                <td>${{(() => {{
-                                                    const evidenceContent = getEvidenceContent(fact);
-                                                    if (evidenceContent === 'None') {{
-                                                        return 'None';
-                                                    }}
-                                                    return evidenceContent.map((evidence, evidenceIndex) => `
-                                                        <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{evidenceIndex}}')" 
-                                                              style="display: inline-block; margin: 2px; padding: 2px 5px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 10px; cursor: pointer; font-size: 9px; font-weight: 600;"
-                                                              onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
-                                                              onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
-                                                            📁 ${{evidence.id}}
-                                                            <span id="evidence-icon-${{evidence.id}}-docset-${{evidenceIndex}}" style="margin-left: 2px; font-size: 7px;">+</span>
-                                                        </span>
-                                                        <div id="evidence-content-${{evidence.id}}-docset-${{evidenceIndex}}" 
-                                                             style="display: none; margin-top: 2px; padding: 4px; background-color: rgba(221, 107, 32, 0.05); border-left: 1px solid #dd6b20; border-radius: 0 2px 2px 0; font-size: 8px; color: #666; line-height: 1.2;">
-                                                            <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
-                                                        </div>
-                                                    `).join('');
-                                                }})()}}</td>
+                                <div class="table-view-container">
+                                    <table class="table-view">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Event</th>
+                                                <th>Source Text</th>
+                                                <th>Page</th>
+                                                <th>Document</th>
+                                                <th>Doc Summary</th>
+                                                <th>Claimant Submission</th>
+                                                <th>Respondent Submission</th>
+                                                <th>Status</th>
+                                                <th>Evidence</th>
                                             </tr>
-                                        `).join('')}}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            ${{facts.map((fact, factIndex) => `
+                                                <tr ${{fact.isDisputed ? 'class="disputed"' : ''}}>
+                                                    <td style="white-space: nowrap;">${{fact.date}}</td>
+                                                    <td style="max-width: 300px; word-wrap: break-word;">${{fact.event}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.source_text || '').replace(/"/g, '&quot;')}}">${{fact.source_text || ''}}</td>
+                                                    <td style="white-space: nowrap;">${{fact.page || ''}}</td>
+                                                    <td style="max-width: 250px; font-weight: 500; word-wrap: break-word;"><strong>${{fact.doc_name || 'N/A'}}</strong></td>
+                                                    <td style="max-width: 300px; font-style: italic; color: #666; word-wrap: break-word;" title="${{(fact.doc_summary || '').replace(/"/g, '&quot;')}}">${{fact.doc_summary || ''}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission'}}</td>
+                                                    <td style="max-width: 350px; word-wrap: break-word;" title="${{(fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission').replace(/"/g, '&quot;')}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission'}}</td>
+                                                    <td style="white-space: nowrap;">${{fact.isDisputed ? '<span class="badge disputed-badge">Disputed</span>' : 'Undisputed'}}</td>
+                                                    <td style="min-width: 200px; max-width: 300px;">
+                                                        ${{(() => {{
+                                                            const evidenceContent = getEvidenceContent(fact);
+                                                            if (evidenceContent === 'None') {{
+                                                                return 'None';
+                                                            }}
+                                                            return `
+                                                                <div>
+                                                                    ${{evidenceContent.map((evidence, evidenceIndex) => `
+                                                                        <div style="margin-bottom: 6px;">
+                                                                            <span onclick="toggleEvidence('${{evidence.id}}', 'docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}')" 
+                                                                                  style="display: inline-flex; align-items: center; padding: 4px 8px; background-color: rgba(221, 107, 32, 0.1); color: #dd6b20; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; margin: 2px 0;"
+                                                                                  onmouseover="this.style.backgroundColor='rgba(221, 107, 32, 0.2)'" 
+                                                                                  onmouseout="this.style.backgroundColor='rgba(221, 107, 32, 0.1)'">
+                                                                                📁 ${{evidence.id}}: ${{evidence.title.length > 25 ? evidence.title.substring(0, 25) + '...' : evidence.title}}
+                                                                                <span id="evidence-icon-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" style="margin-left: 6px; font-size: 10px;">+</span>
+                                                                            </span>
+                                                                            <div id="evidence-content-${{evidence.id}}-docset-${{docset.id}}-${{factIndex}}-${{evidenceIndex}}" 
+                                                                                 style="display: none; margin-top: 6px; padding: 8px; background-color: rgba(221, 107, 32, 0.05); border-left: 3px solid #dd6b20; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.4;">
+                                                                                <strong>${{evidence.title}}:</strong> ${{evidence.summary}}
+                                                                            </div>
+                                                                        </div>
+                                                                    `).join('')}}
+                                                                </div>
+                                                            `;
+                                                        }})()}}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}}
+                                        </tbody>
+                                    </table>
+                                </div>
                             `;
                         }} else {{
                             contentHtml += '<p style="padding: 12px;">No facts found</p>';

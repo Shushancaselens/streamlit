@@ -977,176 +977,53 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts view matching the exact screenshot UI
+    # Create the facts view with native components
     if st.session_state.view == "Facts":
-        # Custom CSS to exactly match the screenshot
-        st.markdown("""
-        <style>
-        /* Hide default streamlit styling */
-        .main > div {
-            padding-top: 2rem;
-        }
+        st.title("Case Facts")
         
-        /* Header styling */
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .facts-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
+        # Create a simple header with view toggle using Streamlit components
+        col1, col2, col3 = st.columns(3)
         
-        /* View mode styling to match screenshot */
-        .view-modes-row {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        
-        /* Tab styling to match screenshot exactly */
-        .custom-tabs {
-            display: flex;
-            gap: 30px;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 30px;
-            padding-bottom: 0;
-        }
-        .custom-tab {
-            padding: 10px 0;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-size: 16px;
-            font-weight: 400;
-        }
-        .custom-tab.active {
-            color: #4A90E2;
-            border-bottom-color: #4A90E2;
-            font-weight: 500;
-        }
-        
-        /* Style the streamlit buttons to look like the screenshot */
-        .stButton > button {
-            background: none !important;
-            border: none !important;
-            color: #666 !important;
-            font-size: 16px !important;
-            padding: 8px 20px !important;
-            border-radius: 8px !important;
-            font-weight: 400 !important;
-        }
-        .stButton > button[data-baseweb="button"][aria-pressed="true"],
-        .stButton > button:focus:not(:active) {
-            background: #4A90E2 !important;
-            color: white !important;
-            border: none !important;
-            font-weight: 500 !important;
-        }
-        
-        /* Header buttons styling */
-        .header-button {
-            padding: 6px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            color: #666;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        # Header with title and action buttons
-        header_col1, header_col2 = st.columns([4, 1])
-        
-        with header_col1:
-            st.markdown('<h1 class="facts-title">Case Facts</h1>', unsafe_allow_html=True)
-        
-        with header_col2:
-            copy_col, export_col = st.columns(2)
-            with copy_col:
-                if st.button("📋 Copy", key="copy_btn"):
-                    st.success("Copied!")
-            with export_col:
-                if st.button("📤 Export", key="export_btn"):
-                    st.success("Exported!")
-        
-        # View mode buttons row
-        st.markdown('<div style="height: 20px;"></div>', unsafe_allow_html=True)
-        
-        view_col1, view_col2, view_col3, view_col4, view_col5 = st.columns([1, 1, 2, 1.5, 3])
-        
-        with view_col1:
-            if st.button("Card View", key="card_view", 
+        with col1:
+            if st.button("📋 Card View", use_container_width=True, 
                         type="primary" if st.session_state.current_view_type == "card" else "secondary"):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
-        with view_col2:
-            if st.button("Table View", key="table_view",
-                        type="primary" if st.session_state.current_view_type == "table" else "secondary"):
-                st.session_state.current_view_type = "table"
-                st.rerun()
-        
-        with view_col3:
-            if st.button("Document Categories", key="doc_view",
-                        type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
-                st.session_state.current_view_type = "docset"
-                st.rerun()
-        
-        with view_col4:
-            if st.button("Timeline View", key="timeline_view",
+        with col2:
+            if st.button("📅 Timeline View", use_container_width=True,
                         type="primary" if st.session_state.current_view_type == "timeline" else "secondary"):
                 st.session_state.current_view_type = "timeline"
                 st.rerun()
         
-        # Filter tabs
-        st.markdown('<div style="height: 30px;"></div>', unsafe_allow_html=True)
-        
-        tab_col1, tab_col2, tab_col3, tab_col4 = st.columns([1, 1.5, 1.5, 6])
-        
-        with tab_col1:
-            if st.button("All Facts", key="all_facts",
-                        type="primary" if st.session_state.current_tab_type == "all" else "secondary"):
-                st.session_state.current_tab_type = "all"
+        with col3:
+            if st.button("📁 Document Categories", use_container_width=True,
+                        type="primary" if st.session_state.current_view_type == "docset" else "secondary"):
+                st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        with tab_col2:
-            if st.button("Disputed Facts", key="disputed_facts",
-                        type="primary" if st.session_state.current_tab_type == "disputed" else "secondary"):
-                st.session_state.current_tab_type = "disputed"
-                st.rerun()
+        st.divider()
         
-        with tab_col3:
-            if st.button("Undisputed Facts", key="undisputed_facts",
-                        type="primary" if st.session_state.current_tab_type == "undisputed" else "secondary"):
-                st.session_state.current_tab_type = "undisputed"
-                st.rerun()
+        # Facts filter using tabs
+        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
         
-        # Add bottom border for tabs
-        st.markdown('<div style="border-bottom: 1px solid #e0e0e0; margin-bottom: 30px;"></div>', unsafe_allow_html=True)
-        
-        # Render content based on current selections
-        if st.session_state.current_tab_type == "all":
+        with tab1:
+            st.session_state.current_tab_type = "all"
             filtered_facts = get_all_facts()
-        elif st.session_state.current_tab_type == "disputed":
-            filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
-        else:  # undisputed
-            filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+            # Render the appropriate native view based on current view type
+            render_view_content(st.session_state.current_view_type, filtered_facts)
         
-        render_view_content(st.session_state.current_view_type, filtered_facts)
+        with tab2:
+            st.session_state.current_tab_type = "disputed"
+            filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
+            # Render the appropriate native view based on current view type
+            render_view_content(st.session_state.current_view_type, filtered_facts)
+        
+        with tab3:
+            st.session_state.current_tab_type = "undisputed"
+            filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+            # Render the appropriate native view based on current view type
+            render_view_content(st.session_state.current_view_type, filtered_facts)
 
 # Helper function to render the appropriate view content
 def render_view_content(view_type, filtered_facts):
@@ -1156,10 +1033,6 @@ def render_view_content(view_type, filtered_facts):
         render_streamlit_timeline_view(filtered_facts)
     elif view_type == "docset":
         render_streamlit_docset_view(filtered_facts)
-    elif view_type == "table":
-        # For now, show card view as table view placeholder
-        st.info("Table view coming soon! Currently showing card view.")
-        render_streamlit_card_view(filtered_facts)
 
 if __name__ == "__main__":
     main()

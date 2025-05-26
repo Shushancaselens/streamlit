@@ -1075,6 +1075,45 @@ def main():
             border-color: #adb5bd !important;
             transform: translateY(-1px) !important;
         }
+        
+        /* Custom compact tab styling */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 8px;
+            background-color: transparent;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            height: 35px;
+            white-space: nowrap;
+            background-color: transparent;
+            border-radius: 6px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 0 16px;
+            border: 1px solid #e1e5e9;
+            transition: all 0.2s ease;
+        }
+        
+        .stTabs [data-baseweb="tab"]:hover {
+            background-color: #f8f9fa;
+            color: #333;
+            border-color: #adb5bd;
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background-color: #1f77b4 !important;
+            color: white !important;
+            border-color: #1f77b4 !important;
+        }
+        
+        .stTabs [data-baseweb="tab-border"] {
+            display: none;
+        }
+        
+        .stTabs [data-baseweb="tab-highlight"] {
+            display: none;
+        }
         </style>
         """, unsafe_allow_html=True)
         

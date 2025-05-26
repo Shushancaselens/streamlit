@@ -1913,27 +1913,35 @@ def main():
                             contentEl.appendChild(evidenceSection);
                         }}
                         
-                        // Claimant Submission
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            const claimantSubmissionEl = document.createElement('div');
-                            claimantSubmissionEl.className = 'card-source-text claimant-submission';
-                            claimantSubmissionEl.innerHTML = `
-                                <div class="submission-header">*** CLAIMANT SUBMISSION ***</div>
-                                <div>${{fact.claimant_submission}}</div>
-                            `;
-                            contentEl.appendChild(claimantSubmissionEl);
-                        }}
+                        // Party Submissions Section (always show both)
+                        const submissionsSection = document.createElement('div');
+                        submissionsSection.style.marginTop = '16px';
                         
-                        // Respondent Submission
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            const respondentSubmissionEl = document.createElement('div');
-                            respondentSubmissionEl.className = 'card-source-text respondent-submission';
-                            respondentSubmissionEl.innerHTML = `
-                                <div class="submission-header">*** RESPONDENT SUBMISSION ***</div>
-                                <div>${{fact.respondent_submission}}</div>
-                            `;
-                            contentEl.appendChild(respondentSubmissionEl);
-                        }}
+                        // Claimant Submission (always show)
+                        const claimantSubmissionEl = document.createElement('div');
+                        claimantSubmissionEl.className = 'card-source-text claimant-submission';
+                        const claimantText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission 
+                            : 'No submission provided';
+                        claimantSubmissionEl.innerHTML = `
+                            <div class="submission-header">Claimant Submission</div>
+                            <div style="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{claimantText}}</div>
+                        `;
+                        submissionsSection.appendChild(claimantSubmissionEl);
+                        
+                        // Respondent Submission (always show)
+                        const respondentSubmissionEl = document.createElement('div');
+                        respondentSubmissionEl.className = 'card-source-text respondent-submission';
+                        const respondentText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission 
+                            : 'No submission provided';
+                        respondentSubmissionEl.innerHTML = `
+                            <div class="submission-header">Respondent Submission</div>
+                            <div style="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{respondentText}}</div>
+                        `;
+                        submissionsSection.appendChild(respondentSubmissionEl);
+                        
+                        contentEl.appendChild(submissionsSection);
                         
                         // Document summary
                         if (fact.doc_summary) {{
@@ -2093,23 +2101,25 @@ def main():
                             bodyEl.appendChild(sourceTextEl);
                         }}
                         
-                        // Add claimant submission
-                        if (fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded') {{
-                            const claimantTextEl = document.createElement('div');
-                            claimantTextEl.className = 'timeline-source-text';
-                            claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            claimantTextEl.innerHTML = `<strong>*** CLAIMANT SUBMISSION ***</strong><br>${{fact.claimant_submission}}`;
-                            bodyEl.appendChild(claimantTextEl);
-                        }}
+                        // Add claimant submission (always show)
+                        const claimantTextEl = document.createElement('div');
+                        claimantTextEl.className = 'timeline-source-text';
+                        claimantTextEl.style.cssText = 'font-style: italic; color: #3182ce; margin-top: 8px; padding: 12px; background-color: rgba(49, 130, 206, 0.05); border-left: 4px solid #3182ce; font-size: 13px; border-radius: 0 6px 6px 0;';
+                        const claimantSubmissionText = fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' 
+                            ? fact.claimant_submission 
+                            : 'No submission provided';
+                        claimantTextEl.innerHTML = `<strong>Claimant Submission:</strong><br><span style="${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{claimantSubmissionText}}</span>`;
+                        bodyEl.appendChild(claimantTextEl);
                         
-                        // Add respondent submission
-                        if (fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded') {{
-                            const respondentTextEl = document.createElement('div');
-                            respondentTextEl.className = 'timeline-source-text';
-                            respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
-                            respondentTextEl.innerHTML = `<strong>*** RESPONDENT SUBMISSION ***</strong><br>${{fact.respondent_submission}}`;
-                            bodyEl.appendChild(respondentTextEl);
-                        }}
+                        // Add respondent submission (always show)
+                        const respondentTextEl = document.createElement('div');
+                        respondentTextEl.className = 'timeline-source-text';
+                        respondentTextEl.style.cssText = 'font-style: italic; color: #e53e3e; margin-top: 8px; padding: 12px; background-color: rgba(229, 62, 62, 0.05); border-left: 4px solid #e53e3e; font-size: 13px; border-radius: 0 6px 6px 0;';
+                        const respondentSubmissionText = fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' 
+                            ? fact.respondent_submission 
+                            : 'No submission provided';
+                        respondentTextEl.innerHTML = `<strong>Respondent Submission:</strong><br><span style="${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'font-style: italic; color: #9ca3af;'}}">${{respondentSubmissionText}}</span>`;
+                        bodyEl.appendChild(respondentTextEl);
                         
                         contentEl.appendChild(bodyEl);
                         
@@ -2320,19 +2330,14 @@ def main():
                                                     <div>${{evidenceHtml}}</div>
                                                 </div>
                                             ` : ''}}
-                                            ${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? `
-                                                <div style="background-color: rgba(49, 130, 206, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #3182ce; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">*** CLAIMANT SUBMISSION ***</div>
-                                                    <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.claimant_submission}}</div>
-                                                </div>
-                                            ` : ''}}
-                                            ${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? `
-                                                <div style="background-color: rgba(229, 62, 62, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #e53e3e; margin-bottom: 12px;">
-                                                    <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 6px;">*** RESPONDENT SUBMISSION ***</div>
-                                                    <div style="font-style: italic; color: #4a5568; font-size: 13px;">${{fact.respondent_submission}}</div>
-                                                </div>
-                                            ` : ''}}
-                                            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                                            <div style="background-color: rgba(49, 130, 206, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #3182ce; margin-bottom: 12px;">
+                                                <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #3182ce; margin-bottom: 6px;">Claimant Submission</div>
+                                                <div style="font-style: italic; color: #4a5568; font-size: 13px; ${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? '' : 'color: #9ca3af;'}}">${{fact.claimant_submission && fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission provided'}}</div>
+                                            </div>
+                                            <div style="background-color: rgba(229, 62, 62, 0.03); padding: 12px; border-radius: 6px; border-left: 4px solid #e53e3e; margin-bottom: 12px;">
+                                                <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #e53e3e; margin-bottom: 6px;">Respondent Submission</div>
+                                                <div style="font-style: italic; color: #4a5568; font-size: 13px; ${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? '' : 'color: #9ca3af;'}}">${{fact.respondent_submission && fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission provided'}}</div>
+                                            </div>                                            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
                                                 <div>
                                                     <div style="font-weight: 600; color: #4a5568; font-size: 12px; text-transform: uppercase; margin-bottom: 4px;">Status</div>
                                                     <div>${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}</div>

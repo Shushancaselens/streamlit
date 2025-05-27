@@ -787,25 +787,25 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Separate pill-style buttons to match the reference image
+        # Separate pill-style buttons with stronger CSS specificity
         st.markdown("""
         <style>
-        /* Pill buttons container */
-        .pill-buttons-wrapper {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0 30px 0;
-            gap: 12px;
+        /* Force CSS with higher specificity and !important */
+        .main .block-container .pill-buttons-wrapper {
+            display: flex !important;
+            justify-content: center !important;
+            margin: 20px 0 30px 0 !important;
+            gap: 12px !important;
         }
         
-        /* Target pill buttons specifically */
-        .pill-buttons-wrapper div[data-testid="column"] {
+        /* Target buttons with maximum specificity */
+        .main .block-container .pill-buttons-wrapper div[data-testid="column"] {
             padding: 0 !important;
             margin: 0 !important;
             flex: 0 0 auto !important;
         }
         
-        .pill-buttons-wrapper div[data-testid="column"] button {
+        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button {
             height: 44px !important;
             padding: 12px 24px !important;
             font-size: 14px !important;
@@ -817,29 +817,39 @@ def main():
             border-radius: 12px !important;
             cursor: pointer !important;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            text-transform: none !important;
         }
         
-        /* Active button (primary) - Red/coral color */
-        .pill-buttons-wrapper div[data-testid="column"] button[kind="primary"] {
+        /* Active button with maximum specificity */
+        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="primary"] {
             background: #ef4444 !important;
+            background-color: #ef4444 !important;
             color: white !important;
             border-color: #ef4444 !important;
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
         }
         
-        /* Inactive button (secondary) */
-        .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"] {
+        /* Inactive button with maximum specificity */
+        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"] {
             background: white !important;
+            background-color: white !important;
             color: #64748b !important;
             border-color: #e2e8f0 !important;
         }
         
-        .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
+        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
             background: #f8fafc !important;
+            background-color: #f8fafc !important;
             color: #475569 !important;
             border-color: #cbd5e1 !important;
             transform: translateY(-1px) !important;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* Override any conflicting Streamlit styles */
+        .main .block-container .pill-buttons-wrapper button:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
         }
         </style>
         """, unsafe_allow_html=True)

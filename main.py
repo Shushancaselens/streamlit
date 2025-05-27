@@ -4,8 +4,13 @@ import streamlit.components.v1 as components
 import pandas as pd
 import base64
 
-# Set page config
-st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
+# Set page config with improved title and favicon
+st.set_page_config(
+    page_title="CaseLens | Legal Arguments Analysis",
+    page_icon="⚖️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Initialize session state
 if 'view' not in st.session_state:
@@ -14,6 +19,149 @@ if 'current_view_type' not in st.session_state:
     st.session_state.current_view_type = "card"
 if 'current_tab_type' not in st.session_state:
     st.session_state.current_tab_type = "all"
+
+# Apply consistent styling with Streamlit native look
+st.markdown("""
+<style>
+    /* Improve general text styling */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    /* Enhance heading styles */
+    h1, h2, h3, h4 {
+        font-weight: 600 !important;
+        letter-spacing: -0.01em !important;
+    }
+    
+    h1 {
+        font-size: 2.2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Improve expander styling */
+    .streamlit-expanderHeader {
+        font-size: 1.05rem !important;
+        font-weight: 500 !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0.5rem !important;
+        background-color: #f8fafc !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        background-color: #f1f5f9 !important;
+    }
+    
+    .streamlit-expanderContent {
+        border-left: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        border-radius: 0 0 0.5rem 0.5rem !important;
+        padding: 1rem !important;
+        margin-top: -0.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Improve button styling */
+    .stButton > button {
+        font-weight: 500 !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    /* Improve tabs styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+    }
+    
+    /* Style info boxes */
+    .element-container .stAlert {
+        border-radius: 0.5rem !important;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #f8fafc;
+    }
+    
+    /* Reduce cell padding in dataframes */
+    .dataframe-container [data-testid="stDataFrame"] td, 
+    .dataframe-container [data-testid="stDataFrame"] th {
+        padding: 0.5rem 0.75rem !important;
+    }
+    
+    /* Divider styling */
+    hr {
+        margin: 1.5rem 0 !important;
+        border-color: rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    /* Container styling */
+    .evidence-container, .submission-container, .status-container {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: #f8fafc;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Consistent badge styling */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+    
+    .badge-disputed {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .badge-undisputed {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+    
+    .badge-appellant {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .badge-respondent {
+        background-color: #ffedd5;
+        color: #9a3412;
+    }
+    
+    /* Logo styling */
+    .logo-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .logo-text {
+        margin-left: 0.75rem;
+        font-weight: 600;
+        color: #4338ca;
+        font-size: 1.5rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Create data structures
 def get_argument_data():
@@ -375,7 +523,7 @@ def get_document_sets():
         },
         {
             "id": "provisional_measures",
-            "name": "provisional measures",
+            "name": "Provisional Measures",
             "party": "Respondent",
             "category": "provisional measures",
             "isGroup": True,
@@ -386,7 +534,7 @@ def get_document_sets():
         },
         {
             "id": "admissibility",
-            "name": "admissibility",
+            "name": "Admissibility",
             "party": "Mixed",
             "category": "admissibility",
             "isGroup": True,
@@ -398,7 +546,7 @@ def get_document_sets():
         },
         {
             "id": "challenge",
-            "name": "challenge",
+            "name": "Challenge",
             "party": "Mixed",
             "category": "challenge",
             "isGroup": True,
@@ -417,207 +565,6 @@ def get_evidence_content(fact):
     args_data = get_argument_data()
     evidence_content = []
     
-    # Sample document content for preview
-    document_previews = {
-        "C-1": {
-            "content": """CERTIFICATE OF REGISTRATION
-National Football Federation
-Registration No: NFF-1950-0047
-
-TO WHOM IT MAY CONCERN:
-
-This is to certify that ATHLETIC CLUB UNITED has been duly registered with the National Football Federation on January 12, 1950, and is authorized to participate in all sanctioned football competitions under the jurisdiction of this federation.
-
-The club has maintained continuous registration since its initial filing date and has complied with all regulatory requirements for operational continuity.
-
-REGISTRATION DETAILS:
-- Club Name: Athletic Club United
-- Registration Date: January 12, 1950
-- Federation ID: NFF-1950-0047
-- Status: Active - Continuous
-- Last Renewal: January 15, 2024
-
-This certificate serves as official documentation of the club's legal standing and operational authority within the national football framework.
-
-Signed,
-Director of Registration
-National Football Federation""",
-            "doc_type": "Registration Certificate",
-            "pages": 2
-        },
-        "C-2": {
-            "content": """COMPETITION PARTICIPATION RECORDS
-Athletic Club United - Historical Analysis
-Period: 1950-2024
-
-SUMMARY OF PARTICIPATION:
-The following records demonstrate uninterrupted competitive activity by Athletic Club United across multiple divisions and tournaments since 1950.
-
-DIVISION PARTICIPATION:
-1950-1960: Second Division (10 seasons)
-1961-1975: First Division (15 seasons) 
-1976-1985: Second Division (10 seasons)
-1986-2000: First Division (15 seasons)
-2001-2024: Premier Division (24 seasons)
-
-TOURNAMENT RECORDS:
-- National Cup: 74 participations (1950-2024)
-- Regional Championships: 68 participations
-- International Friendlies: 156 matches recorded
-
-NOTABLE ACHIEVEMENTS:
-- 1967: First Division Champions
-- 1982: National Cup Runners-up
-- 1995: First Division Champions
-- 2010: Premier Division 3rd Place
-
-The records show consistent participation without any gaps in competitive activity, maintaining the same club identity and registration throughout all periods.""",
-            "doc_type": "Competition Records",
-            "pages": 12
-        },
-        "C-4": {
-            "content": """MEDIA COVERAGE ARCHIVE
-Athletic Club United - Historical Documentation
-Compiled by Sports Heritage Foundation
-
-ARCHIVE OVERVIEW:
-This comprehensive collection spans 74 years of media coverage, consistently documenting Athletic Club United under the same name and identity from 1950 to present day.
-
-SAMPLE HEADLINES:
-
-1952 - "Athletic Club United Secures Promotion"
-Local Sports Weekly, March 15, 1952
-
-1967 - "United Claims First Division Title in Historic Victory"
-National Football Gazette, May 22, 1967
-
-1975 - "Athletic Club United Faces Financial Restructuring"
-Sports Business Daily, September 3, 1975
-
-1976 - "United Returns Stronger After Administrative Changes"
-Football Today, February 18, 1976
-
-1995 - "Athletic Club United: 45 Years of Continuous Excellence"
-Sports Century Magazine, January 12, 1995
-
-2000 - "The Millennium Club: United's 50-Year Journey"
-Football Heritage Quarterly, Volume 12
-
-2024 - "Athletic Club United: Still Going Strong After 74 Years"
-Modern Football Review, January 2024
-
-ANALYSIS NOTES:
-Throughout all coverage periods, media consistently refers to the organization as "Athletic Club United" with no name variations or identity discontinuities recorded.""",
-            "doc_type": "Media Archive",
-            "pages": 89
-        },
-        "C-5": {
-            "content": """VISUAL IDENTITY DOCUMENTATION
-Athletic Club United - Color Analysis Study
-Sports Branding Institute, 2024
-
-EXECUTIVE SUMMARY:
-This study examines the visual continuity of Athletic Club United's color scheme from 1950 to present, analyzing uniform designs, promotional materials, and stadium branding.
-
-PRIMARY COLOR ANALYSIS:
-Base Colors: Blue (#1E3A8A) and White (#FFFFFF)
-Usage Period: 1950-Present (Continuous)
-
-DOCUMENTED VARIATIONS:
-1950-1969: Deep Navy Blue with Pure White
-1970-1979: Royal Blue with Off-White (Cream undertones)
-1980-1989: Royal Blue with Pure White + Gold accents (1982-1988)
-1990-1999: Navy Blue with Pure White
-2000-2009: Royal Blue with Pure White
-2010-Present: Deep Blue with Pure White
-
-ANALYSIS CONCLUSIONS:
-1. Core identity maintained throughout all periods
-2. Minor shade variations within blue spectrum
-3. White consistently used as secondary color
-4. Temporary gold accent (1982-1988) did not replace base colors
-5. No periods of complete color scheme abandonment
-
-The evidence demonstrates unbroken visual identity continuity despite minor aesthetic updates reflecting contemporary design trends.""",
-            "doc_type": "Color Analysis Report",
-            "pages": 8
-        },
-        "R-1": {
-            "content": """FEDERATION WITHDRAWAL NOTIFICATION
-National Football Federation
-Official Records Department
-
-DATE: May 15, 1975
-TO: Athletic Club United
-FROM: Competition Registration Office
-
-SUBJECT: Competition Withdrawal - 1975-1976 Season
-
-This official notification confirms the withdrawal of Athletic Club United from all Federation competitions for the 1975-1976 season, effective immediately.
-
-WITHDRAWAL DETAILS:
-- Reason: Financial restructuring and administrative reorganization
-- Effective Date: May 15, 1975
-- Competition Status: Suspended
-- Registration Status: Under review
-
-FEDERATION RECORDS SHOW:
-- No team entries for 1975-1976 season
-- No player registrations processed
-- No match participations recorded
-- No fee payments received
-
-The club's competitive status remains suspended pending resolution of administrative matters and financial obligations.
-
-This withdrawal creates a gap in the club's competitive history and affects continuity claims under Federation succession policies.
-
-Administrative Officer
-Competition Management Division
-National Football Federation""",
-            "doc_type": "Official Withdrawal Notice",
-            "pages": 1
-        },
-        "R-2": {
-            "content": """INDEPENDENT AUDIT REPORT
-Financial Assessment - Athletic Club United
-Prepared by: Certified Sports Auditors Ltd.
-Period: 1975-1976
-
-AUDIT SUMMARY:
-This independent audit examines the financial and operational status of Athletic Club United during the 1975-1976 period.
-
-KEY FINDINGS:
-
-OPERATIONAL CESSATION:
-- All bank accounts closed: September 1975
-- Staff contracts terminated: August 1975
-- Facility leases terminated: October 1975
-- Equipment liquidated: November 1975
-
-FINANCIAL OBLIGATIONS:
-- All creditor payments suspended
-- Player wages discontinued
-- Federation fees unpaid
-- Insurance policies lapsed
-
-LEGAL STATUS:
-- Corporate entity remained registered
-- Directors resigned positions
-- Shareholders meetings suspended
-- Legal representation terminated
-
-CONCLUSION:
-The audit confirms complete cessation of operational activities during 1975-1976, with no evidence of continued sporting, financial, or administrative functions.
-
-This represents a clear operational discontinuity that challenges claims of uninterrupted club operations.
-
-Certified Public Accountant
-Sports Industry Division""",
-            "doc_type": "Financial Audit Report",
-            "pages": 15
-        }
-    }
-    
     for exhibit_id in fact['exhibits']:
         def find_evidence(args):
             for arg_key in args:
@@ -635,17 +582,11 @@ Sports Industry Division""",
         evidence = find_evidence(args_data['claimantArgs']) or find_evidence(args_data['respondentArgs'])
         
         if evidence:
-            evidence_item = {
+            evidence_content.append({
                 'id': exhibit_id,
                 'title': evidence['title'],
                 'summary': evidence['summary']
-            }
-            
-            # Add preview content if available
-            if exhibit_id in document_previews:
-                evidence_item['preview'] = document_previews[exhibit_id]
-            
-            evidence_content.append(evidence_item)
+            })
         else:
             evidence_content.append({
                 'id': exhibit_id,
@@ -668,39 +609,50 @@ def render_streamlit_card_view(filtered_facts=None):
         return
     
     for i, fact in enumerate(facts_data):
-        expander_title = f"**{fact['date']}** - {fact['event']}"
-        if fact['isDisputed']:
-            expander_title += " 🔴"
+        # Create a more visually appealing header for the expander
+        date_display = f"**{fact['date']}**"
+        status_icon = "🔴" if fact['isDisputed'] else "🟢"
+        
+        expander_title = f"{date_display} - {fact['event']} {status_icon}"
         
         with st.expander(expander_title, expanded=False):
-            st.markdown("#### Evidence & Source References")
+            # Evidence and source references section
+            st.markdown("### Evidence & Source References")
             evidence_content = get_evidence_content(fact)
             
             if evidence_content:
                 for evidence in evidence_content:
                     with st.container():
-                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
+                        # Evidence title with improved styling
+                        st.markdown(f"#### {evidence['id']} - {evidence['title']}")
                         
+                        # Document information in a styled container
                         if fact.get('doc_summary'):
-                            st.info(f"**Document Summary:** {fact['doc_summary']}")
+                            with st.container():
+                                st.markdown(f"**Document:** {fact['doc_name']}")
+                                st.info(fact['doc_summary'])
                         
+                        # Source text with better formatting
                         if fact.get('source_text'):
-                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
+                            st.markdown("**Source Text:**")
+                            st.markdown(f"<div style='padding: 0.75rem; background-color: #f1f5f9; border-radius: 0.5rem; font-style: italic;'>{fact['source_text']}</div>", unsafe_allow_html=True)
                         
-                        # Action buttons row
-                        col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+                        # Reference information with better layout
+                        col1, col2 = st.columns([3, 1])
                         with col1:
-                            ref_text = f"**Exhibit:** {evidence['id']}"
+                            ref_text = []
+                            ref_text.append(f"**Exhibit:** {evidence['id']}")
                             if fact.get('page'):
-                                ref_text += f" | **Page:** {fact['page']}"
+                                ref_text.append(f"**Page:** {fact['page']}")
                             if fact.get('paragraphs'):
-                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
-                            st.markdown(ref_text)
+                                ref_text.append(f"**Paragraphs:** {fact['paragraphs']}")
+                            
+                            st.markdown(" | ".join(ref_text))
                         
                         with col2:
                             current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                            if st.button("📋", key=f"copy_card_{evidence['id']}_{i}_{current_tab}", 
-                                       help="Copy Reference", use_container_width=True):
+                            if st.button(f"📋 Copy Ref", key=f"copy_card_{evidence['id']}_{i}_{current_tab}", 
+                                        help="Copy reference details to clipboard"):
                                 ref_copy = f"Exhibit: {evidence['id']}"
                                 if fact.get('page'):
                                     ref_copy += f", Page: {fact['page']}"
@@ -708,63 +660,78 @@ def render_streamlit_card_view(filtered_facts=None):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
                         
-                        with col3:
-                            if evidence.get('preview'):
-                                preview_key = f"preview_card_{evidence['id']}_{i}_{current_tab}"
-                                if st.button("👁️", key=preview_key, help="Preview Document", use_container_width=True):
-                                    if f"show_preview_{preview_key}" not in st.session_state:
-                                        st.session_state[f"show_preview_{preview_key}"] = True
-                                    else:
-                                        st.session_state[f"show_preview_{preview_key}"] = not st.session_state[f"show_preview_{preview_key}"]
-                        
-                        # Document preview section
-                        if evidence.get('preview') and st.session_state.get(f"show_preview_preview_card_{evidence['id']}_{i}_{current_tab}", False):
-                            preview_data = evidence['preview']
-                            
-                            st.markdown(f"""
-                            <div class="doc-meta">
-                                📄 {preview_data['doc_type']} • {preview_data['pages']} page(s) • Exhibit {evidence['id']}
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            st.markdown(f"""
-                            <div class="preview-container">
-                            {preview_data['content']}
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
                         st.markdown("---")
             else:
                 st.markdown("*No evidence references available for this fact*")
             
-            st.subheader("⚖️ Party Submissions")
+            # Party submissions section with improved styling
+            st.markdown("### ⚖️ Party Submissions")
             
-            st.markdown("**🔵 Claimant Submission**")
-            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
-            if claimant_text == 'No specific submission recorded':
-                st.markdown("*No submission provided*")
-            else:
-                st.info(claimant_text)
+            col1, col2 = st.columns(2)
             
-            st.markdown("**🔴 Respondent Submission**")
-            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
-            if respondent_text == 'No specific submission recorded':
-                st.markdown("*No submission provided*")
-            else:
-                st.warning(respondent_text)
+            with col1:
+                st.markdown("#### 🔵 Appellant")
+                claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                if claimant_text == 'No specific submission recorded':
+                    st.markdown("*No submission provided*")
+                else:
+                    st.markdown(f"""
+                    <div style="padding: 0.75rem; background-color: #dbeafe; border-radius: 0.5rem; border-left: 4px solid #2563eb;">
+                        {claimant_text}
+                    </div>
+                    """, unsafe_allow_html=True)
             
-            st.subheader("📊 Status")
+            with col2:
+                st.markdown("#### 🔴 Respondent")
+                respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                if respondent_text == 'No specific submission recorded':
+                    st.markdown("*No submission provided*")
+                else:
+                    st.markdown(f"""
+                    <div style="padding: 0.75rem; background-color: #ffedd5; border-radius: 0.5rem; border-left: 4px solid #ea580c;">
+                        {respondent_text}
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+            # Status section with improved visual indicators
+            st.markdown("### 📊 Status")
+            
             status_col1, status_col2 = st.columns(2)
             
             with status_col1:
                 if fact['isDisputed']:
-                    st.error("**Status:** Disputed")
+                    st.markdown("""
+                    <div style="display: inline-block; padding: 0.5rem 0.75rem; background-color: #fee2e2; border-radius: 0.5rem; color: #b91c1c; font-weight: 500;">
+                        <span>⚠️ Disputed</span>
+                    </div>
+                    """, unsafe_allow_html=True)
                 else:
-                    st.success("**Status:** Undisputed")
+                    st.markdown("""
+                    <div style="display: inline-block; padding: 0.5rem 0.75rem; background-color: #dcfce7; border-radius: 0.5rem; color: #15803d; font-weight: 500;">
+                        <span>✓ Undisputed</span>
+                    </div>
+                    """, unsafe_allow_html=True)
             
             with status_col2:
                 if fact.get('parties_involved'):
-                    st.markdown(f"**Parties:** {', '.join(fact['parties_involved'])}")
+                    parties = fact.get('parties_involved', [])
+                    party_badges = []
+                    
+                    for party in parties:
+                        if party == "Appellant":
+                            party_badges.append("""
+                            <div style="display: inline-block; margin-right: 0.5rem; padding: 0.5rem 0.75rem; background-color: #dbeafe; border-radius: 0.5rem; color: #1e40af; font-weight: 500;">
+                                <span>🔵 Appellant</span>
+                            </div>
+                            """)
+                        else:
+                            party_badges.append("""
+                            <div style="display: inline-block; margin-right: 0.5rem; padding: 0.5rem 0.75rem; background-color: #ffedd5; border-radius: 0.5rem; color: #9a3412; font-weight: 500;">
+                                <span>🔴 Respondent</span>
+                            </div>
+                            """)
+                    
+                    st.markdown("".join(party_badges), unsafe_allow_html=True)
 
 def render_streamlit_table_view(filtered_facts=None):
     if filtered_facts is None:
@@ -778,12 +745,39 @@ def render_streamlit_table_view(filtered_facts=None):
         st.info("No facts found matching the selected criteria.")
         return
     
+    # Improved table styling
+    st.markdown("""
+    <style>
+    .dataframe-container {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .dataframe-container [data-testid="stDataFrame"] {
+        border-radius: 0.5rem;
+    }
+    
+    .dataframe-container th {
+        background-color: #f8fafc !important;
+        font-weight: 600 !important;
+    }
+    
+    .dataframe-container tr:nth-child(even) {
+        background-color: #f8fafc !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     table_data = []
     for fact in facts_data:
+        # Improved status indicator
+        status_display = '🔴 Disputed' if fact['isDisputed'] else '🟢 Undisputed'
+        
         table_data.append({
             'Date': fact['date'],
             'Event': fact['event'],
-            'Status': '🔴 Disputed' if fact['isDisputed'] else '🟢 Undisputed',
+            'Status': status_display,
             'Parties': ', '.join(fact.get('parties_involved', [])),
             'Exhibits': ', '.join(fact.get('exhibits', [])),
             'Page': fact.get('page', ''),
@@ -792,6 +786,7 @@ def render_streamlit_table_view(filtered_facts=None):
     
     df = pd.DataFrame(table_data)
     
+    st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
     st.dataframe(
         df,
         use_container_width=True,
@@ -806,6 +801,13 @@ def render_streamlit_table_view(filtered_facts=None):
             'Document': st.column_config.TextColumn('Document', width=200)
         }
     )
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Add download button for table data
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<div style="text-align: right; margin-top: 10px;"><a href="data:file/csv;base64,{b64}" download="case_facts.csv" style="text-decoration: none; color: #4338ca; font-size: 0.9rem; font-weight: 500;"><span style="vertical-align: middle;">📥 Download as CSV</span></a></div>'
+    st.markdown(href, unsafe_allow_html=True)
 
 def render_streamlit_docset_view(filtered_facts=None):
     if filtered_facts is None:
@@ -858,116 +860,118 @@ def render_streamlit_docset_view(filtered_facts=None):
                     if fact_assigned:
                         break
     
+    # Create a grid layout for document categories
+    cols = st.columns(2)
+    col_idx = 0
+    
     for docset_id, doc_with_facts in docs_with_facts.items():
         docset = doc_with_facts['docset']
         facts = doc_with_facts['facts']
         
-        party_color = ("🔵" if docset['party'] == 'Appellant' else 
-                      "🔴" if docset['party'] == 'Respondent' else "⚪")
+        # Create party indicator with appropriate styling
+        if docset['party'] == 'Appellant':
+            party_indicator = """<span style="display: inline-block; margin-right: 0.5rem; width: 1rem; height: 1rem; border-radius: 50%; background-color: #3b82f6;"></span>"""
+        elif docset['party'] == 'Respondent':
+            party_indicator = """<span style="display: inline-block; margin-right: 0.5rem; width: 1rem; height: 1rem; border-radius: 50%; background-color: #ef4444;"></span>"""
+        else:
+            party_indicator = """<span style="display: inline-block; margin-right: 0.5rem; width: 1rem; height: 1rem; border-radius: 50%; background: linear-gradient(135deg, #3b82f6 50%, #ef4444 50%);"></span>"""
         
-        with st.expander(f"📁 {party_color} **{docset['name']}** ({len(facts)} facts)", expanded=False):
-            if facts:
-                for i, fact in enumerate(facts):
-                    with st.container():
-                        col1, col2, col3 = st.columns([2, 4, 1])
-                        
-                        with col1:
-                            st.markdown(f"**{fact['date']}**")
-                        
-                        with col2:
-                            st.markdown(f"**{fact['event']}**")
-                        
-                        with col3:
-                            if fact['isDisputed']:
-                                st.error("🔴")
-                            else:
-                                st.success("🟢")
-                        
+        with cols[col_idx]:
+            with st.expander(f"📁 {party_indicator} **{docset['name'].title()}** ({len(facts)} facts)", expanded=False):
+                if facts:
+                    for i, fact in enumerate(facts):
                         with st.container():
-                            st.markdown("#### Evidence & Source References")
-                            evidence_content = get_evidence_content(fact)
+                            # Improved fact header
+                            st.markdown(f"""
+                            <div style="display: flex; align-items: center; margin-bottom: 0.5rem; background-color: #f8fafc; padding: 0.75rem; border-radius: 0.5rem;">
+                                <div style="min-width: 100px; font-weight: 600;">{fact['date']}</div>
+                                <div style="flex-grow: 1; font-weight: 500; margin-left: 1rem;">{fact['event']}</div>
+                                <div style="min-width: 30px; text-align: center;">{('🔴' if fact['isDisputed'] else '🟢')}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
                             
-                            if evidence_content:
-                                for evidence_idx, evidence in enumerate(evidence_content):
-                                    with st.container():
-                                        st.markdown(f"**{evidence['id']}** - {evidence['title']}")
-                                        
-                                        if fact.get('doc_summary'):
-                                            st.info(f"**Document Summary:** {fact['doc_summary']}")
-                                        
-                                        if fact.get('source_text'):
-                                            st.markdown(f"**Source Text:** *{fact['source_text']}*")
-                                        
-                                        # Action buttons row
-                                        col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
-                                        with col1:
-                                            ref_text = f"**Exhibit:** {evidence['id']}"
-                                            if fact.get('page'):
-                                                ref_text += f" | **Page:** {fact['page']}"
-                                            if fact.get('paragraphs'):
-                                                ref_text += f" | **Paragraphs:** {fact['paragraphs']}"
-                                            st.markdown(ref_text)
-                                        
-                                        with col2:
-                                            current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                                            unique_key = f"copy_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
-                                            if st.button("📋", key=unique_key, help="Copy Reference", use_container_width=True):
-                                                ref_copy = f"Exhibit: {evidence['id']}"
+                            # Evidence section with improved styling
+                            with st.container():
+                                st.markdown("#### Evidence & References")
+                                evidence_content = get_evidence_content(fact)
+                                
+                                if evidence_content:
+                                    for evidence_idx, evidence in enumerate(evidence_content):
+                                        with st.container():
+                                            # Improved evidence card styling
+                                            st.markdown(f"""
+                                            <div style="padding: 0.75rem; background-color: #f8fafc; border-radius: 0.5rem; margin-bottom: 0.75rem; border-left: 3px solid #6366f1;">
+                                                <div style="font-weight: 600; color: #4338ca; margin-bottom: 0.5rem;">{evidence['id']} - {evidence['title']}</div>
+                                                <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">{evidence['summary']}</div>
+                                            </div>
+                                            """, unsafe_allow_html=True)
+                                            
+                                            if fact.get('source_text'):
+                                                with st.expander("Show Source Text", expanded=False):
+                                                    st.markdown(f"*{fact['source_text']}*")
+                                            
+                                            # Reference details with copy button
+                                            col1, col2 = st.columns([3, 1])
+                                            with col1:
+                                                ref_details = []
+                                                ref_details.append(f"**Exhibit:** {evidence['id']}")
                                                 if fact.get('page'):
-                                                    ref_copy += f", Page: {fact['page']}"
+                                                    ref_details.append(f"**Page:** {fact['page']}")
                                                 if fact.get('paragraphs'):
-                                                    ref_copy += f", Paragraphs: {fact['paragraphs']}"
-                                                st.success("Reference copied!")
-                                        
-                                        with col3:
-                                            if evidence.get('preview'):
-                                                preview_key = f"preview_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
-                                                if st.button("👁️", key=preview_key, help="Preview Document", use_container_width=True):
-                                                    if f"show_preview_{preview_key}" not in st.session_state:
-                                                        st.session_state[f"show_preview_{preview_key}"] = True
-                                                    else:
-                                                        st.session_state[f"show_preview_{preview_key}"] = not st.session_state[f"show_preview_{preview_key}"]
-                                        
-                                        # Document preview section
-                                        if evidence.get('preview') and st.session_state.get(f"show_preview_preview_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}", False):
-                                            preview_data = evidence['preview']
+                                                    ref_details.append(f"**Paragraphs:** {fact['paragraphs']}")
+                                                
+                                                st.markdown(" | ".join(ref_details))
                                             
-                                            st.markdown(f"""
-                                            <div class="doc-meta">
-                                                📄 {preview_data['doc_type']} • {preview_data['pages']} page(s) • Exhibit {evidence['id']}
-                                            </div>
-                                            """, unsafe_allow_html=True)
-                                            
-                                            st.markdown(f"""
-                                            <div class="preview-container">
-                                            {preview_data['content']}
-                                            </div>
-                                            """, unsafe_allow_html=True)
-                                        
-                                        st.markdown("---")
-                            else:
-                                st.markdown("*No evidence references available*")
+                                            with col2:
+                                                current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                                                unique_key = f"copy_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
+                                                if st.button(f"📋 Copy", key=unique_key):
+                                                    ref_copy = f"Exhibit: {evidence['id']}"
+                                                    if fact.get('page'):
+                                                        ref_copy += f", Page: {fact['page']}"
+                                                    if fact.get('paragraphs'):
+                                                        ref_copy += f", Paragraphs: {fact['paragraphs']}"
+                                                    st.success("Reference copied!")
+                                else:
+                                    st.markdown("""
+                                    <div style="padding: 0.75rem; background-color: #f8fafc; border-radius: 0.5rem; color: #64748b; font-style: italic;">
+                                        No evidence references available
+                                    </div>
+                                    """, unsafe_allow_html=True)
                             
-                            st.markdown("**⚖️ Party Submissions**")
+                            # Party submissions with improved tabs
+                            st.markdown("#### Party Submissions")
+                            tabs = st.tabs(["🔵 Appellant", "🔴 Respondent"])
                             
-                            st.markdown("**🔵 Claimant Submission**")
-                            claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
-                            if claimant_text == 'No specific submission recorded':
-                                st.markdown("*No submission provided*")
-                            else:
-                                st.info(claimant_text)
+                            with tabs[0]:
+                                claimant_text = fact.get('claimant_submission', 'No specific submission recorded')
+                                if claimant_text == 'No specific submission recorded':
+                                    st.markdown("*No submission provided*")
+                                else:
+                                    st.markdown(f"""
+                                    <div style="padding: 0.75rem; background-color: #dbeafe; border-radius: 0.5rem; border-left: 4px solid #2563eb;">
+                                        {claimant_text}
+                                    </div>
+                                    """, unsafe_allow_html=True)
                             
-                            st.markdown("**🔴 Respondent Submission**")
-                            respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
-                            if respondent_text == 'No specific submission recorded':
-                                st.markdown("*No submission provided*")
-                            else:
-                                st.warning(respondent_text)
-                        
-                        if i < len(facts) - 1:
-                            st.divider()
-            else:
-                st.info("No facts found in this document category.")
+                            with tabs[1]:
+                                respondent_text = fact.get('respondent_submission', 'No specific submission recorded')
+                                if respondent_text == 'No specific submission recorded':
+                                    st.markdown("*No submission provided*")
+                                else:
+                                    st.markdown(f"""
+                                    <div style="padding: 0.75rem; background-color: #ffedd5; border-radius: 0.5rem; border-left: 4px solid #ea580c;">
+                                        {respondent_text}
+                                    </div>
+                                    """, unsafe_allow_html=True)
+                            
+                            if i < len(facts) - 1:
+                                st.divider()
+                else:
+                    st.info("No facts found in this document category.")
+        
+        # Alternate columns for balanced layout
+        col_idx = 1 - col_idx
 
 def render_view_content(view_type, filtered_facts):
     if view_type == "card":
@@ -980,38 +984,64 @@ def render_view_content(view_type, filtered_facts):
         render_streamlit_card_view(filtered_facts)
 
 def main():
-    # Add Streamlit sidebar with navigation buttons
+    # Add Streamlit sidebar with improved styling
     with st.sidebar:
+        # Improved logo and branding
         st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
-              <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
+        <div class="logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="38" height="38">
+              <mask id="mask" maskUnits="userSpaceOnUse">
                 <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
               </mask>
-              <g mask="url(#whatsapp-mask)">
-                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
+              <g mask="url(#mask)">
+                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4338ca"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
               </g>
             </svg>
-            <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
+            <span class="logo-text">CaseLens</span>
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='margin-top: 0;'>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Custom CSS for sidebar button styling
+        # Improved sidebar navigation
         st.markdown("""
         <style>
-        .stButton > button {
+        .sidebar-nav-button {
             width: 100%;
-            border-radius: 6px;
-            height: 50px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
+            border-radius: 0.5rem;
+            height: 3rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            background-color: white;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            color: #1e293b;
         }
-        .stButton > button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        
+        .sidebar-nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background-color: #f8fafc;
+        }
+        
+        .sidebar-nav-button-icon {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar-nav-button-text {
+            font-weight: 500;
+        }
+        
+        .sidebar-nav-button-active {
+            background-color: #f1f5f9;
+            border-left: 3px solid #4338ca;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -1025,143 +1055,139 @@ def main():
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
-        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-    
-    # Create the facts view
-    if st.session_state.view == "Facts":
-        # Add global CSS for document preview and small buttons
+        # Arguments button
+        args_active = "sidebar-nav-button-active" if st.session_state.view == "Arguments" else ""
+        args_button = st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
+        if args_button:
+            st.session_state.view = "Arguments"
+            st.rerun()
+            
+        # Facts button    
+        facts_active = "sidebar-nav-button-active" if st.session_state.view == "Facts" else ""
+        facts_button = st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
+        if facts_button:
+            st.session_state.view = "Facts"
+            st.rerun()
+            
+        # Exhibits button
+        exhibits_active = "sidebar-nav-button-active" if st.session_state.view == "Exhibits" else ""
+        exhibits_button = st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+        if exhibits_button:
+            st.session_state.view = "Exhibits"
+            st.rerun()
+        
+        # Add case information
+        st.markdown("---")
+        st.markdown("### Case Information")
         st.markdown("""
-        <style>
-        .small-btn {
-            padding: 4px 8px !important;
-            font-size: 11px !important;
-            height: 24px !important;
-            min-height: 24px !important;
-            border-radius: 4px !important;
-            margin: 2px !important;
-        }
-        
-        .preview-container {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 12px;
-            margin: 8px 0;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            color: #333;
-        }
-        
-        .doc-meta {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            margin-bottom: 8px;
-            color: #1565c0;
-            border-left: 3px solid #2196f3;
-            font-weight: 500;
-        }
-        
-        /* Override button styles for preview and copy buttons */
-        div[data-testid="column"] button[title*="Copy Reference"],
-        div[data-testid="column"] button[title*="Preview Document"] {
-            height: 28px !important;
-            padding: 4px 8px !important;
-            font-size: 16px !important;
-            min-width: auto !important;
-            border-radius: 4px !important;
-        }
-        </style>
+        <div style="background-color: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(0, 0, 0, 0.05);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Athletic Club United v. Federation</div>
+            <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">Case No. CAS 2024/A/8765</div>
+            <div style="font-size: 0.9rem; color: #64748b;">Sporting Succession Dispute</div>
+        </div>
         """, unsafe_allow_html=True)
         
-        # Header with title and action buttons
-        col_title, col_copy, col_export = st.columns([3, 1, 1])
+        # Add helpful resources section
+        st.markdown("### Resources")
+        st.markdown("""
+        <div style="font-size: 0.9rem; color: #64748b;">
+            <div style="margin-bottom: 0.5rem;"><a href="#" style="text-decoration: none; color: #4338ca;">📄 Case Summary</a></div>
+            <div style="margin-bottom: 0.5rem;"><a href="#" style="text-decoration: none; color: #4338ca;">🔍 Search Documents</a></div>
+            <div><a href="#" style="text-decoration: none; color: #4338ca;">🧠 AI Analysis</a></div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Create the facts view with improved styling
+    if st.session_state.view == "Facts":
+        # Header with improved layout
+        st.markdown("""
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h1 style="margin: 0;">Case Facts</h1>
+            <div style="display: flex; gap: 0.75rem;">
+                <button id="copy-btn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: white; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; font-weight: 500;">
+                    <span>📋 Copy</span>
+                </button>
+                <button id="export-btn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: white; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; font-weight: 500;">
+                    <span>📥 Export</span>
+                </button>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        with col_title:
-            st.title("Case Facts")
+        # Action buttons for copy and export
+        col_actions = st.columns([6, 1, 1])
         
-        with col_copy:
-            if st.button("📋 Copy", use_container_width=True, type="secondary"):
+        with col_actions[1]:
+            if st.button("📋 Copy", use_container_width=True, type="secondary", help="Copy facts to clipboard"):
                 st.success("Facts copied to clipboard!")
         
-        with col_export:
-            if st.button("📥 Export", use_container_width=True, type="secondary"):
+        with col_actions[2]:
+            if st.button("📥 Export", use_container_width=True, type="secondary", help="Export facts as PDF"):
                 st.success("Facts exported!")
         
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Individual button view selector matching the image style
+        # Improved view switcher with tabs-like appearance
         st.markdown("""
         <style>
-        /* Individual button container */
-        .view-buttons-container {
+        /* Custom view switcher styling */
+        .view-switcher {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin: 20px 0 30px 0;
-            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
         }
         
-        /* Target view selector buttons specifically */
-        .view-buttons-container div[data-testid="column"] {
-            flex: 0 0 auto !important;
-            min-width: 180px !important;
-            padding: 0 !important;
+        .view-option {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         
-        .view-buttons-container div[data-testid="column"] button {
-            width: 100% !important;
-            height: 44px !important;
-            padding: 10px 20px !important;
-            border-radius: 8px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            transition: all 0.2s ease !important;
-            border: 1px solid #d1d5db !important;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        .view-option-active {
+            background-color: #4338ca;
+            color: white;
+            box-shadow: 0 2px 4px rgba(67, 56, 202, 0.2);
         }
         
-        /* Active button (primary) - Red/Coral color like in image */
-        .view-buttons-container div[data-testid="column"] button[kind="primary"] {
-            background: #ef4444 !important;
-            color: white !important;
-            border: 1px solid #ef4444 !important;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+        .view-option-inactive {
+            background-color: white;
+            color: #64748b;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
-        /* Inactive button (secondary) */
-        .view-buttons-container div[data-testid="column"] button[kind="secondary"] {
-            background: #f9fafb !important;
-            color: #374151 !important;
-            border: 1px solid #d1d5db !important;
-        }
-        
-        .view-buttons-container div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f3f4f6 !important;
-            border: 1px solid #9ca3af !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-        }
-        
-        .view-buttons-container div[data-testid="column"] button[kind="primary"]:hover {
-            background: #dc2626 !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3) !important;
+        .view-option-inactive:hover {
+            background-color: #f8fafc;
+            color: #334155;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         </style>
+        
+        <div class="view-switcher">
+            <div class="view-option {('view-option-active' if st.session_state.current_view_type == 'card' else 'view-option-inactive')}" id="card-view-option">
+                <span>📇</span>
+                <span>Card View</span>
+            </div>
+            <div class="view-option {('view-option-active' if st.session_state.current_view_type == 'table' else 'view-option-inactive')}" id="table-view-option">
+                <span>📊</span>
+                <span>Table View</span>
+            </div>
+            <div class="view-option {('view-option-active' if st.session_state.current_view_type == 'docset' else 'view-option-inactive')}" id="docset-view-option">
+                <span>📁</span>
+                <span>Document Categories</span>
+            </div>
+        </div>
         """, unsafe_allow_html=True)
         
-        # Create individual buttons with gaps
-        st.markdown('<div class="view-buttons-container">', unsafe_allow_html=True)
-        
-        col1, col2, col3, col_spacer = st.columns([1, 1, 1, 2])
+        # View switcher buttons
+        col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
             if st.button("Card View", 
@@ -1187,24 +1213,68 @@ def main():
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Improved filter tabs with badges
+        tab_styles = """
+        <style>
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 0.5rem;
+        }
         
-        # Facts filter using tabs
-        tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+        }
+        
+        .stTabs [data-baseweb="tab-highlight"] {
+            background-color: #4338ca;
+            border-radius: 0.5rem;
+        }
+        
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.5rem;
+            height: 1.5rem;
+            padding: 0 0.5rem;
+            border-radius: 9999px;
+            background-color: #e2e8f0;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        </style>
+        """
+        
+        st.markdown(tab_styles, unsafe_allow_html=True)
+        
+        # Count facts for badges
+        all_facts = get_all_facts()
+        disputed_facts = [fact for fact in all_facts if fact['isDisputed']]
+        undisputed_facts = [fact for fact in all_facts if not fact['isDisputed']]
+        
+        # Custom tab labels with badges
+        tab1_label = f"All Facts ({len(all_facts)})"
+        tab2_label = f"Disputed Facts ({len(disputed_facts)})"
+        tab3_label = f"Undisputed Facts ({len(undisputed_facts)})"
+        
+        # Facts filter tabs
+        tab1, tab2, tab3 = st.tabs([tab1_label, tab2_label, tab3_label])
         
         with tab1:
             st.session_state.current_tab_type = "all"
-            filtered_facts = get_all_facts()
+            filtered_facts = all_facts
             render_view_content(st.session_state.current_view_type, filtered_facts)
         
         with tab2:
             st.session_state.current_tab_type = "disputed"
-            filtered_facts = [fact for fact in get_all_facts() if fact['isDisputed']]
+            filtered_facts = disputed_facts
             render_view_content(st.session_state.current_view_type, filtered_facts)
         
         with tab3:
             st.session_state.current_tab_type = "undisputed"
-            filtered_facts = [fact for fact in get_all_facts() if not fact['isDisputed']]
+            filtered_facts = undisputed_facts
             render_view_content(st.session_state.current_view_type, filtered_facts)
 
 if __name__ == "__main__":

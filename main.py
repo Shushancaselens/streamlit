@@ -1405,47 +1405,15 @@ def main():
                 
                 # Create simple card using container
                 with st.container():
-                    # Simple title
-                    st.subheader(fact['event'])
-                    
-                    # Key information on the card
-                    st.write(f"**Date:** {fact['date']} | **Exhibits:** {len(fact.get('exhibits', []))}")
-                    
-                    # Status indicator
-                    if fact['isDisputed']:
-                        st.warning("🔴 **Status:** Disputed")
-                    else:
-                        st.info("🟢 **Status:** Undisputed")
-                    
-                    # Source text preview if available
-                    if fact.get('source_text'):
-                        st.write("**Summary:**")
-                        st.write(fact['source_text'])
-                    
-                    # Party positions preview
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write("**🔵 Claimant Position:**")
-                        claimant_text = fact.get('claimant_submission', 'No submission recorded')
-                        if claimant_text == 'No specific submission recorded':
-                            st.write("*No submission provided*")
-                        else:
-                            # Show first 100 characters
-                            preview_text = claimant_text[:100] + "..." if len(claimant_text) > 100 else claimant_text
-                            st.write(preview_text)
-                    
-                    with col2:
-                        st.write("**🔴 Respondent Position:**")
-                        respondent_text = fact.get('respondent_submission', 'No submission recorded')
-                        if respondent_text == 'No specific submission recorded':
-                            st.write("*No submission provided*")
-                        else:
-                            # Show first 100 characters
-                            preview_text = respondent_text[:100] + "..." if len(respondent_text) > 100 else respondent_text
-                            st.write(preview_text)
+                    # Only show date and document name
+                    st.write(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}")
                     
                     # Expandable details
                     with st.expander("View Details"):
+                        
+                        # Event title inside the card
+                        st.subheader(fact['event'])
+                        st.write(f"**Exhibits:** {len(fact.get('exhibits', []))}")
                         
                         # Evidence section
                         evidence_content = get_evidence_content(fact)

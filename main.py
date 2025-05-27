@@ -787,100 +787,91 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Modern compact view selector with improved styling
+        # Clean tab-style view selector
         st.markdown("""
         <style>
-        /* View selector container */
-        .view-selector-wrapper {
-            display: flex;
-            justify-content: center;
+        /* Tab-style view selector */
+        .tab-selector-wrapper {
             margin: 20px 0 30px 0;
         }
         
-        .view-selector-container {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 6px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        
-        /* Target view selector buttons specifically */
-        .view-selector-container div[data-testid="column"] button {
-            height: 34px !important;
-            padding: 6px 14px !important;
-            border-radius: 8px !important;
-            font-size: 12px !important;
-            font-weight: 600 !important;
+        .tab-selector-wrapper div[data-testid="column"] button {
+            height: 40px !important;
+            padding: 8px 20px !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
             transition: all 0.2s ease !important;
-            margin: 2px !important;
-            min-width: 80px !important;
-            position: relative !important;
+            margin-right: 8px !important;
+            border: 1px solid #e1e5e9 !important;
         }
         
-        /* Active button (primary) */
-        .view-selector-container div[data-testid="column"] button[kind="primary"] {
-            background: linear-gradient(135deg, #4D68F9 0%, #6366f1 100%) !important;
+        /* Active tab (primary) */
+        .tab-selector-wrapper div[data-testid="column"] button[kind="primary"] {
+            background-color: #4A90E2 !important;
             color: white !important;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba(77, 104, 249, 0.3) !important;
-            transform: translateY(-1px) !important;
+            border: 1px solid #4A90E2 !important;
+            box-shadow: none !important;
         }
         
-        /* Inactive button (secondary) */
-        .view-selector-container div[data-testid="column"] button[kind="secondary"] {
-            background: white !important;
-            color: #6b7280 !important;
-            border: 1px solid #e5e7eb !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        /* Inactive tab (secondary) */
+        .tab-selector-wrapper div[data-testid="column"] button[kind="secondary"] {
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            border: 1px solid #e1e5e9 !important;
+            box-shadow: none !important;
         }
         
-        .view-selector-container div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f9fafb !important;
-            color: #374151 !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+        .tab-selector-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
+            background-color: #e9ecef !important;
+            color: #212529 !important;
         }
         
-        /* Remove default margins from columns in view selector */
-        .view-selector-container div[data-testid="column"] {
+        /* Remove default button styling */
+        .tab-selector-wrapper div[data-testid="column"] {
             padding: 0 !important;
+        }
+        
+        .tab-selector-wrapper div[data-testid="column"] button:focus {
+            box-shadow: none !important;
+            outline: none !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create centered view selector
-        st.markdown('<div class="view-selector-wrapper"><div class="view-selector-container">', unsafe_allow_html=True)
+        # Create tab selector
+        st.markdown('<div class="tab-selector-wrapper">', unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns([2, 2, 3, 5])
         
         with col1:
-            if st.button("📋 Cards", 
+            if st.button("Card View", 
                         type="primary" if st.session_state.current_view_type == "card" else "secondary",
                         key="card_view_btn",
-                        help="View facts as expandable cards with detailed information",
-                        use_container_width=True):
+                        help="View facts as expandable cards"):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
         with col2:
-            if st.button("📊 Table", 
+            if st.button("Table View", 
                         type="primary" if st.session_state.current_view_type == "table" else "secondary",
                         key="table_view_btn",
-                        help="View facts in a sortable table format",
-                        use_container_width=True):
+                        help="View facts in a table format"):
                 st.session_state.current_view_type = "table"
                 st.rerun()
         
         with col3:
-            if st.button("📁 Docs", 
+            if st.button("Document Categories", 
                         type="primary" if st.session_state.current_view_type == "docset" else "secondary",
                         key="docset_view_btn",
-                        help="View facts organized by document categories",
-                        use_container_width=True):
+                        help="View facts by document categories"):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        with col4:
+            pass  # Empty column for spacing
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

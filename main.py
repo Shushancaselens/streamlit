@@ -787,95 +787,107 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Modern compact view selector with improved styling
+        # Segmented control style view selector
         st.markdown("""
         <style>
-        /* View selector container */
-        .view-selector-wrapper {
+        /* Segmented control container */
+        .segmented-control-wrapper {
             display: flex;
             justify-content: center;
             margin: 20px 0 30px 0;
         }
         
-        .view-selector-container {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            padding: 6px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        .segmented-control {
+            display: inline-flex;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        /* Target view selector buttons specifically */
-        .view-selector-container div[data-testid="column"] button {
-            height: 34px !important;
-            padding: 6px 14px !important;
-            border-radius: 8px !important;
-            font-size: 12px !important;
-            font-weight: 600 !important;
+        /* Target segmented control buttons specifically */
+        .segmented-control div[data-testid="column"] {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .segmented-control div[data-testid="column"] button {
+            height: 36px !important;
+            padding: 8px 20px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
             transition: all 0.2s ease !important;
-            margin: 2px !important;
-            min-width: 80px !important;
-            position: relative !important;
+            margin: 0 !important;
+            min-width: 120px !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        
+        /* First button (left) */
+        .segmented-control div[data-testid="column"]:first-child button {
+            border-radius: 6px 0 0 6px !important;
+        }
+        
+        /* Last button (right) */
+        .segmented-control div[data-testid="column"]:last-child button {
+            border-radius: 0 6px 6px 0 !important;
+        }
+        
+        /* Middle button */
+        .segmented-control div[data-testid="column"]:not(:first-child):not(:last-child) button {
+            border-radius: 0 !important;
         }
         
         /* Active button (primary) */
-        .view-selector-container div[data-testid="column"] button[kind="primary"] {
-            background: linear-gradient(135deg, #4D68F9 0%, #6366f1 100%) !important;
+        .segmented-control div[data-testid="column"] button[kind="primary"] {
+            background: #3b82f6 !important;
             color: white !important;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba(77, 104, 249, 0.3) !important;
-            transform: translateY(-1px) !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
         }
         
         /* Inactive button (secondary) */
-        .view-selector-container div[data-testid="column"] button[kind="secondary"] {
-            background: white !important;
+        .segmented-control div[data-testid="column"] button[kind="secondary"] {
+            background: transparent !important;
             color: #6b7280 !important;
-            border: 1px solid #e5e7eb !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         }
         
-        .view-selector-container div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f9fafb !important;
+        .segmented-control div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #e5e7eb !important;
             color: #374151 !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
         }
         
-        /* Remove default margins from columns in view selector */
-        .view-selector-container div[data-testid="column"] {
-            padding: 0 !important;
+        /* Remove gaps between buttons */
+        .segmented-control div[data-testid="column"] + div[data-testid="column"] {
+            margin-left: 0 !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create centered view selector
-        st.markdown('<div class="view-selector-wrapper"><div class="view-selector-container">', unsafe_allow_html=True)
+        # Create segmented control
+        st.markdown('<div class="segmented-control-wrapper"><div class="segmented-control">', unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("📋 Cards", 
+            if st.button("Card View", 
                         type="primary" if st.session_state.current_view_type == "card" else "secondary",
                         key="card_view_btn",
-                        help="View facts as expandable cards with detailed information",
                         use_container_width=True):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
         with col2:
-            if st.button("📊 Table", 
+            if st.button("Table View", 
                         type="primary" if st.session_state.current_view_type == "table" else "secondary",
                         key="table_view_btn",
-                        help="View facts in a sortable table format",
                         use_container_width=True):
                 st.session_state.current_view_type = "table"
                 st.rerun()
         
         with col3:
-            if st.button("📁 Docs", 
+            if st.button("Document Categories", 
                         type="primary" if st.session_state.current_view_type == "docset" else "secondary",
                         key="docset_view_btn",
-                        help="View facts organized by document categories",
                         use_container_width=True):
                 st.session_state.current_view_type = "docset"
                 st.rerun()

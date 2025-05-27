@@ -787,113 +787,100 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Custom tab-style view selector
+        # Modern compact view selector with improved styling
         st.markdown("""
         <style>
-        .tab-selector-wrapper {
+        /* View selector container */
+        .view-selector-wrapper {
+            display: flex;
+            justify-content: center;
             margin: 20px 0 30px 0;
         }
         
-        .tab-selector-wrapper div[data-testid="column"] {
-            padding: 0 !important;
-            gap: 0 !important;
+        .view-selector-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
         
-        .tab-selector-wrapper div[data-testid="column"]:first-child button {
-            border-top-left-radius: 8px !important;
-            border-bottom-left-radius: 0 !important;
-            border-top-right-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-        }
-        
-        .tab-selector-wrapper div[data-testid="column"]:last-child button {
-            border-top-right-radius: 8px !important;
-            border-bottom-right-radius: 0 !important;
-            border-top-left-radius: 0 !important;
-            border-bottom-left-radius: 0 !important;
-        }
-        
-        .tab-selector-wrapper div[data-testid="column"]:not(:first-child):not(:last-child) button {
-            border-radius: 0 !important;
-        }
-        
-        .tab-selector-wrapper button {
-            height: 44px !important;
-            padding: 12px 24px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            border-bottom: none !important;
-            margin: 0 !important;
+        /* Target view selector buttons specifically */
+        .view-selector-container div[data-testid="column"] button {
+            height: 34px !important;
+            padding: 6px 14px !important;
+            border-radius: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease !important;
+            margin: 2px !important;
+            min-width: 80px !important;
             position: relative !important;
-            z-index: 1 !important;
         }
         
-        .tab-selector-wrapper button[kind="primary"] {
-            background: #4f8cf6 !important;
+        /* Active button (primary) */
+        .view-selector-container div[data-testid="column"] button[kind="primary"] {
+            background: linear-gradient(135deg, #4D68F9 0%, #6366f1 100%) !important;
             color: white !important;
-            border: 1px solid #4f8cf6 !important;
-            z-index: 2 !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(77, 104, 249, 0.3) !important;
+            transform: translateY(-1px) !important;
         }
         
-        .tab-selector-wrapper button[kind="secondary"] {
-            background: #f8f9fa !important;
+        /* Inactive button (secondary) */
+        .view-selector-container div[data-testid="column"] button[kind="secondary"] {
+            background: white !important;
             color: #6b7280 !important;
             border: 1px solid #e5e7eb !important;
-            border-right: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         }
         
-        .tab-selector-wrapper div[data-testid="column"]:last-child button[kind="secondary"] {
-            border-right: 1px solid #e5e7eb !important;
-        }
-        
-        .tab-selector-wrapper button[kind="secondary"]:hover {
-            background: #f1f5f9 !important;
+        .view-selector-container div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #f9fafb !important;
             color: #374151 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
         }
         
-        /* Add bottom border line */
-        .tab-selector-wrapper::after {
-            content: '';
-            display: block;
-            height: 1px;
-            background: #e5e7eb;
-            margin-top: -1px;
-            position: relative;
-            z-index: 0;
+        /* Remove default margins from columns in view selector */
+        .view-selector-container div[data-testid="column"] {
+            padding: 0 !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create tab-style buttons
-        st.markdown('<div class="tab-selector-wrapper">', unsafe_allow_html=True)
+        # Create centered view selector
+        st.markdown('<div class="view-selector-wrapper"><div class="view-selector-container">', unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("Card View", 
+            if st.button("📋 Cards", 
                         type="primary" if st.session_state.current_view_type == "card" else "secondary",
                         key="card_view_btn",
+                        help="View facts as expandable cards with detailed information",
                         use_container_width=True):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
         with col2:
-            if st.button("Table View", 
+            if st.button("📊 Table", 
                         type="primary" if st.session_state.current_view_type == "table" else "secondary",
                         key="table_view_btn",
+                        help="View facts in a sortable table format",
                         use_container_width=True):
                 st.session_state.current_view_type = "table"
                 st.rerun()
         
         with col3:
-            if st.button("Document Categories", 
+            if st.button("📁 Docs", 
                         type="primary" if st.session_state.current_view_type == "docset" else "secondary",
                         key="docset_view_btn",
+                        help="View facts organized by document categories",
                         use_container_width=True):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div></div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

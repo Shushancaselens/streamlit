@@ -1403,78 +1403,73 @@ def main():
             # Render each fact as a simple Streamlit card
             for i, fact in enumerate(filtered_facts):
                 
-                # Create simple card using container
-                with st.container():
-                    # Show date and document name prominently on the card
-                    st.markdown(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}")
+                # Create card using expander as the main container
+                with st.expander(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}", expanded=False):
                     
-                    # Expandable details
-                    with st.expander("View Details"):
+                    # Event title inside the card
+                    st.subheader(fact['event'])
+                    st.write(f"**Exhibits:** {len(fact.get('exhibits', []))}")
+                    
+                    # Evidence section
+                    evidence_content = get_evidence_content(fact)
+                    
+                    if evidence_content:
+                        st.subheader("📄 Evidence & References")
                         
-                        # Event title inside the card
-                        st.subheader(fact['event'])
-                        st.write(f"**Exhibits:** {len(fact.get('exhibits', []))}")
-                        
-                        # Evidence section
-                        evidence_content = get_evidence_content(fact)
-                        
-                        if evidence_content:
-                            st.subheader("📄 Evidence & References")
+                        for evidence in evidence_content:
+                            st.write(f"**{evidence['id']} - {evidence['title']}**")
                             
-                            for evidence in evidence_content:
-                                st.write(f"**{evidence['id']} - {evidence['title']}**")
-                                
-                                if fact.get('doc_summary'):
-                                    st.info(f"**Document:** {fact['doc_summary']}")
-                                
-                                if fact.get('source_text'):
-                                    st.write(f"**Source:** {fact['source_text']}")
-                                
-                                st.write(f"**Summary:** {evidence['summary']}")
-                                
-                                # Reference info
-                                st.write(f"**Reference:** Exhibit {evidence['id']}, Page {fact.get('page', 'N/A')}, Paragraphs {fact.get('paragraphs', 'N/A')}")
-                                
-                                # Action buttons
-                                col1, col2 = st.columns(2)
-                                with col1:
-                                    if st.button(f"Preview {evidence['id']}", key=f"preview_{evidence['id']}_{i}"):
-                                        st.success(f"Opening {evidence['id']}")
-                                with col2:
-                                    if st.button(f"Copy Reference", key=f"copy_{evidence['id']}_{i}"):
-                                        st.success("Reference copied!")
-                                
-                                st.write("---")
-                        else:
-                            st.info("No evidence available")
-                        
-                        # Party submissions
-                        st.subheader("📝 Party Submissions")
-                        
-                        st.write("**🔵 Claimant:**")
-                        claimant_text = fact.get('claimant_submission', 'No submission recorded')
-                        if claimant_text == 'No specific submission recorded':
-                            st.write("*No submission provided*")
-                        else:
-                            st.write(claimant_text)
-                        
-                        st.write("**🔴 Respondent:**")
-                        respondent_text = fact.get('respondent_submission', 'No submission recorded')
-                        if respondent_text == 'No specific submission recorded':
-                            st.write("*No submission provided*")
-                        else:
-                            st.write(respondent_text)
-                        
-                        # Status info
-                        st.subheader("ℹ️ Case Information")
-                        st.write(f"**Argument ID:** {fact.get('argId', 'N/A')}")
-                        st.write(f"**Paragraphs:** {fact.get('paragraphs', 'N/A')}")
-                        
-                        status = "Disputed" if fact['isDisputed'] else "Undisputed"
-                        if fact['isDisputed']:
-                            st.error(f"Status: {status}")
-                        else:
-                            st.success(f"Status: {status}")
+                            if fact.get('doc_summary'):
+                                st.info(f"**Document:** {fact['doc_summary']}")
+                            
+                            if fact.get('source_text'):
+                                st.write(f"**Source:** {fact['source_text']}")
+                            
+                            st.write(f"**Summary:** {evidence['summary']}")
+                            
+                            # Reference info
+                            st.write(f"**Reference:** Exhibit {evidence['id']}, Page {fact.get('page', 'N/A')}, Paragraphs {fact.get('paragraphs', 'N/A')}")
+                            
+                            # Action buttons
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                if st.button(f"Preview {evidence['id']}", key=f"preview_{evidence['id']}_{i}"):
+                                    st.success(f"Opening {evidence['id']}")
+                            with col2:
+                                if st.button(f"Copy Reference", key=f"copy_{evidence['id']}_{i}"):
+                                    st.success("Reference copied!")
+                            
+                            st.write("---")
+                    else:
+                        st.info("No evidence available")
+                    
+                    # Party submissions
+                    st.subheader("📝 Party Submissions")
+                    
+                    st.write("**🔵 Claimant:**")
+                    claimant_text = fact.get('claimant_submission', 'No submission recorded')
+                    if claimant_text == 'No specific submission recorded':
+                        st.write("*No submission provided*")
+                    else:
+                        st.write(claimant_text)
+                    
+                    st.write("**🔴 Respondent:**")
+                    respondent_text = fact.get('respondent_submission', 'No submission recorded')
+                    if respondent_text == 'No specific submission recorded':
+                        st.write("*No submission provided*")
+                    else:
+                        st.write(respondent_text)
+                    
+                    # Status info
+                    st.subheader("ℹ️ Case Information")
+                    st.write(f"**Argument ID:** {fact.get('argId', 'N/A')}")
+                    st.write(f"**Paragraphs:** {fact.get('paragraphs', 'N/A')}")
+                    
+                    status = "Disputed" if fact['isDisputed'] else "Undisputed"
+                    if fact['isDisputed']:
+                        st.error(f"Status: {status}")
+                    else:
+                        st.success(f"Status: {status}")
                 
                 st.write("")  # Simple spacing between cards
 

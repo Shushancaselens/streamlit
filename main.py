@@ -460,6 +460,143 @@ def get_evidence_content(fact):
     
     return evidence_content
 
+# Function to display document categories
+def display_document_categories(facts_data):
+    document_sets = get_document_sets()
+    
+    # Create document categories with facts
+    for docset in document_sets:
+        if docset.get('isGroup'):
+            # Count facts for this category (simplified assignment)
+            category_facts = []
+            
+            # Assign facts to categories (simplified logic)
+            for fact in facts_data:
+                doc_name = fact.get('doc_name', '').lower()
+                category_name = docset['name'].lower()
+                
+                # Match facts to categories based on document names
+                if (category_name in doc_name or 
+                    any(doc['name'].lower() in doc_name for doc in docset.get('documents', []))):
+                    category_facts.append(fact)
+            
+            # If no specific matches, distribute remaining facts
+            if not category_facts and docset['id'] == 'appeal':
+                category_facts = [f for f in facts_data if 'appeal' in f.get('doc_name', '').lower()]
+            elif not category_facts and docset['id'] == 'provisional_measures':
+                category_facts = [f for f in facts_data if 'provisional' in f.get('doc_name', '').lower()]
+            
+            # Default assignment for remaining facts
+            if not category_facts and docset['id'] == 'appeal':
+                category_facts = facts_data[:3]  # Assign some facts as example
+            
+            # Display category
+            with st.expander(f"📁 {docset['name']} ({len(category_facts)} facts)", expanded=False):
+                if category_facts:
+                    for i, fact in enumerate(category_facts):
+                        st.write(f"**{fact['date']}** - {fact['event']}")
+                        
+                        # Status indicator
+                        if fact['isDisputed']:
+                            st.error("🔴 Disputed")
+                        else:
+                            st.success("🟢 Undisputed")
+                        
+                        # Party submissions
+                        st.write("**Party Positions:**")
+                        
+                        claimant_text = fact.get('claimant_submission', 'No submission recorded')
+                        if claimant_text != 'No specific submission recorded':
+                            st.info(f"**Claimant:** {claimant_text[:200]}...")
+                        
+                        respondent_text = fact.get('respondent_submission', 'No submission recorded')
+                        if respondent_text != 'No specific submission recorded':
+                            st.warning(f"**Respondent:** {respondent_text[:200]}...")
+                        
+                        st.write("---")
+                else:
+                    st.info("No facts found in this category")
+
+# Function to display cards
+def display_cards(filtered_facts, i_offset=0):
+    if not filtered_facts:
+        st.info("No facts found matching the selected criteria.")
+    else:
+        # Sort by date
+        filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
+        
+        # Render each fact as a card
+        for i, fact in enumerate(filtered_facts):
+            # Create card using expander as the main container
+            with st.expander(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}", expanded=False):
+                
+                # Event title inside the card
+                st.subheader(fact['event'])
+                st.write(f"**Exhibits:** {len(fact.get('exhibits', []))}")
+                
+                # Evidence section
+                evidence_content = get_evidence_content(fact)
+                
+                if evidence_content:
+                    st.subheader("📄 Evidence & References")
+                    
+                    for evidence in evidence_content:
+                        st.write(f"**{evidence['id']} - {evidence['title']}**")
+                        
+                        if fact.get('doc_summary'):
+                            st.info(f"**Document:** {fact['doc_summary']}")
+                        
+                        if fact.get('source_text'):
+                            st.write(f"**Source:** {fact['source_text']}")
+                        
+                        st.write(f"**Summary:** {evidence['summary']}")
+                        
+                        # Reference info
+                        st.write(f"**Reference:** Exhibit {evidence['id']}, Page {fact.get('page', 'N/A')}, Paragraphs {fact.get('paragraphs', 'N/A')}")
+                        
+                        # Action buttons
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            if st.button(f"Preview {evidence['id']}", key=f"preview_{evidence['id']}_{i}_{i_offset}"):
+                                st.success(f"Opening {evidence['id']}")
+                        with col2:
+                            if st.button(f"Copy Reference", key=f"copy_{evidence['id']}_{i}_{i_offset}"):
+                                st.success("Reference copied!")
+                        
+                        st.write("---")
+                else:
+                    st.info("No evidence available")
+                
+                # Party submissions
+                st.subheader("📝 Party Submissions")
+                
+                st.write("**🔵 Claimant:**")
+                claimant_text = fact.get('claimant_submission', 'No submission recorded')
+                if claimant_text == 'No specific submission recorded':
+                    st.write("*No submission provided*")
+                else:
+                    st.write(claimant_text)
+                
+                st.write("**🔴 Respondent:**")
+                respondent_text = fact.get('respondent_submission', 'No submission recorded')
+                if respondent_text == 'No specific submission recorded':
+                    st.write("*No submission provided*")
+                else:
+                    st.write(respondent_text)
+                
+                # Status info
+                st.subheader("ℹ️ Case Information")
+                st.write(f"**Argument ID:** {fact.get('argId', 'N/A')}")
+                st.write(f"**Paragraphs:** {fact.get('paragraphs', 'N/A')}")
+                
+                status = "Disputed" if fact['isDisputed'] else "Undisputed"
+                if fact['isDisputed']:
+                    st.error(f"Status: {status}")
+                else:
+                    st.success(f"Status: {status}")
+            
+            st.write("")  # Simple spacing between cards
+
 # Function to create CSV download link
 def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
     csv = df.to_csv(index=False)
@@ -1364,34 +1501,15 @@ def main():
         """, unsafe_allow_html=True)
         
         # Render the main HTML component with navigation
-        components.html(html_content, height=200, scrolling=False)
+        components.html(html_content, height=150, scrolling=False)
         
-        # Initialize session state for current view and tab if not exists
+        # Initialize session state for current view if not exists
         if 'current_view' not in st.session_state:
             st.session_state.current_view = 'card'
-        if 'current_tab' not in st.session_state:
-            st.session_state.current_tab = 'all'
-        
-        # Card view content using Streamlit components (shown by default)
-        # Note: In a full implementation, you'd need JavaScript to communicate the current state
-        # For now, this shows the card view with Streamlit components
         
         facts_data = get_all_facts()
         
-        # Filter facts based on current tab (defaulting to 'all' for demo)
-        current_tab = st.session_state.get('current_tab', 'all')
-        if current_tab == 'disputed':
-            filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
-        elif current_tab == 'undisputed':
-            filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
-        else:
-            filtered_facts = facts_data
-        
-        # Sort by date
-        filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
-        
         # Card view content using Streamlit native components
-        st.markdown("### 📊 Legal Facts - Card View")
         
         if not filtered_facts:
             st.info("No facts found matching the selected criteria.")

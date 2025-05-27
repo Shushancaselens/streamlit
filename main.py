@@ -787,77 +787,71 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Separate pill-style buttons with stronger CSS specificity
+        # Individual button view selector matching the image style
         st.markdown("""
         <style>
-        /* Force CSS with higher specificity and !important */
-        .main .block-container .pill-buttons-wrapper {
-            display: flex !important;
-            justify-content: center !important;
-            margin: 20px 0 30px 0 !important;
-            gap: 12px !important;
+        /* Individual button container */
+        .view-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 30px 0;
+            flex-wrap: wrap;
         }
         
-        /* Target buttons with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] {
-            padding: 0 !important;
-            margin: 0 !important;
+        /* Target view selector buttons specifically */
+        .view-buttons-container div[data-testid="column"] {
             flex: 0 0 auto !important;
+            min-width: 180px !important;
+            padding: 0 !important;
         }
         
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button {
+        .view-buttons-container div[data-testid="column"] button {
+            width: 100% !important;
             height: 44px !important;
-            padding: 12px 24px !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
             font-size: 14px !important;
             font-weight: 500 !important;
             transition: all 0.2s ease !important;
-            margin: 0 !important;
-            min-width: 160px !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 12px !important;
-            cursor: pointer !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-            text-transform: none !important;
+            border: 1px solid #d1d5db !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
         
-        /* Active button with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="primary"] {
+        /* Active button (primary) - Red/Coral color like in image */
+        .view-buttons-container div[data-testid="column"] button[kind="primary"] {
             background: #ef4444 !important;
-            background-color: #ef4444 !important;
             color: white !important;
-            border-color: #ef4444 !important;
+            border: 1px solid #ef4444 !important;
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
         }
         
-        /* Inactive button with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"] {
-            background: white !important;
-            background-color: white !important;
-            color: #64748b !important;
-            border-color: #e2e8f0 !important;
+        /* Inactive button (secondary) */
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"] {
+            background: #f9fafb !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
         }
         
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f8fafc !important;
-            background-color: #f8fafc !important;
-            color: #475569 !important;
-            border-color: #cbd5e1 !important;
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #f3f4f6 !important;
+            border: 1px solid #9ca3af !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
         
-        /* Override any conflicting Streamlit styles */
-        .main .block-container .pill-buttons-wrapper button:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        .view-buttons-container div[data-testid="column"] button[kind="primary"]:hover {
+            background: #dc2626 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create pill-style buttons with gaps
-        st.markdown('<div class="pill-buttons-wrapper">', unsafe_allow_html=True)
+        # Create individual buttons with gaps
+        st.markdown('<div class="view-buttons-container">', unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
+        col1, col2, col3, col_spacer = st.columns([1, 1, 1, 2])
         
         with col1:
             if st.button("Card View", 
@@ -905,4 +899,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

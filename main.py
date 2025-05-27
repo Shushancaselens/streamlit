@@ -1364,7 +1364,7 @@ def main():
         """, unsafe_allow_html=True)
         
         # Render the main HTML component with navigation
-        components.html(html_content, height=200, scrolling=False)
+        components.html(html_content, height=600, scrolling=True)
         
         # Initialize session state for current view and tab if not exists
         if 'current_view' not in st.session_state:
@@ -1471,4 +1471,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

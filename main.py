@@ -1300,145 +1300,141 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Clean view selector matching the reference image
+        # Simple clean view selector matching the reference image exactly
         current_view = st.session_state.current_view_type
         
         view_selector_html = f"""
-        <div class="clean-view-selector">
-            <button class="clean-btn {'active' if current_view == 'card' else 'inactive'}" data-view="card">
-                Card View
-            </button>
-            <button class="clean-btn {'active' if current_view == 'table' else 'inactive'}" data-view="table">
-                Table View
-            </button>
-            <button class="clean-btn {'active' if current_view == 'docset' else 'inactive'}" data-view="docset">
-                Document Categories
-            </button>
+        <div class="view-selector-wrapper">
+            <div class="view-buttons-container">
+                <button class="view-button {'active' if current_view == 'card' else 'inactive'}" data-view="card">
+                    Card View
+                </button>
+                <button class="view-button {'active' if current_view == 'table' else 'inactive'}" data-view="table">
+                    Table View
+                </button>
+                <button class="view-button {'active' if current_view == 'docset' else 'inactive'}" data-view="docset">
+                    Document Categories
+                </button>
+            </div>
         </div>
 
         <style>
-        .clean-view-selector {{
+        .view-selector-wrapper {{
             display: flex;
             justify-content: center;
-            gap: 12px;
             margin: 20px 0 30px 0;
+        }}
+
+        .view-buttons-container {{
+            display: flex;
+            gap: 8px;
             align-items: center;
         }}
 
-        .clean-btn {{
+        .view-button {{
             padding: 12px 24px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
+            border: 1px solid #d1d5db;
             cursor: pointer;
             transition: all 0.2s ease;
             outline: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         }}
 
-        .clean-btn.active {{
-            background: #3b82f6;
+        .view-button.active {{
+            background: #4A90E2;
             color: white;
-            border: 1px solid #3b82f6;
-            box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
+            border: 1px solid #4A90E2;
+            box-shadow: 0 1px 3px rgba(74, 144, 226, 0.2);
         }}
 
-        .clean-btn.inactive {{
-            background: #f8fafc;
+        .view-button.inactive {{
+            background: #ffffff;
             color: #374151;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d1d5db;
         }}
 
-        .clean-btn.inactive:hover {{
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        .view-button.inactive:hover {{
+            background: #f9fafb;
+            border: 1px solid #9ca3af;
         }}
 
-        .clean-btn.active:hover {{
-            background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+        .view-button.active:hover {{
+            background: #357abd;
+            border: 1px solid #357abd;
         }}
 
-        .clean-btn:active {{
-            transform: translateY(0);
+        .view-button:active {{
+            transform: translateY(1px);
         }}
         </style>
 
         <script>
-        document.querySelectorAll('.clean-btn').forEach(button => {{
-            button.addEventListener('click', function(e) {{
-                e.preventDefault();
+        document.querySelectorAll('.view-button').forEach(button => {{
+            button.addEventListener('click', function() {{
                 const viewType = this.dataset.view;
                 
-                // Create custom event
-                const event = new CustomEvent('streamlit:view-change', {{
-                    detail: {{ viewType: viewType }}
-                }});
-                window.dispatchEvent(event);
+                // Dispatch custom event
+                window.dispatchEvent(new CustomEvent('streamlit:view-change', {{
+                    detail: {{ viewType }}
+                }}));
                 
-                // Fallback for iframe
-                if (window.parent !== window) {{
-                    window.parent.postMessage({{
-                        type: 'streamlit:view-change',
-                        viewType: viewType
-                    }}, '*');
-                }}
+                // Also send via postMessage for iframe support
+                window.parent.postMessage({{
+                    type: 'streamlit:view-change',
+                    viewType: viewType
+                }}, '*');
             }});
         }});
         </script>
         """
         
-        # Render the clean component
-        components.html(view_selector_html, height=80)
+        # Render the component
+        components.html(view_selector_html, height=70)
         
-        # Hidden state management buttons - properly hidden
+        # Hidden buttons for state management
         st.markdown("""
         <style>
-        .hidden-controls {
+        .hidden-buttons {
             display: none !important;
             visibility: hidden !important;
             position: absolute !important;
             left: -9999px !important;
-            top: -9999px !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
         with st.container():
-            st.markdown('<div class="hidden-controls">', unsafe_allow_html=True)
+            st.markdown('<div class="hidden-buttons">', unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
             
-            # Truly hidden buttons for state management only
-            if st.button("", key="clean_card_btn", help="Hidden card button"):
-                st.session_state.current_view_type = "card"
-                st.rerun()
+            with col1:
+                if st.button("Card", key="simple_card_btn"):
+                    st.session_state.current_view_type = "card"
+                    st.rerun()
             
-            if st.button("", key="clean_table_btn", help="Hidden table button"):
-                st.session_state.current_view_type = "table"
-                st.rerun()
+            with col2:
+                if st.button("Table", key="simple_table_btn"):
+                    st.session_state.current_view_type = "table"
+                    st.rerun()
             
-            if st.button("", key="clean_docset_btn", help="Hidden docset button"):
-                st.session_state.current_view_type = "docset"
-                st.rerun()
+            with col3:
+                if st.button("Docs", key="simple_docset_btn"):
+                    st.session_state.current_view_type = "docset"
+                    st.rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
         
         # JavaScript bridge for state management
         st.markdown("""
         <script>
-        function handleCleanViewChange(viewType) {
+        function handleViewChange(viewType) {
             const buttonMap = {
-                'card': 'button[data-testid*="clean_card_btn"]',
-                'table': 'button[data-testid*="clean_table_btn"]',
-                'docset': 'button[data-testid*="clean_docset_btn"]'
+                'card': 'button[data-testid*="simple_card_btn"]',
+                'table': 'button[data-testid*="simple_table_btn"]',
+                'docset': 'button[data-testid*="simple_docset_btn"]'
             };
             
             const button = document.querySelector(buttonMap[viewType]);
@@ -1446,16 +1442,16 @@ def main():
                 button.click();
             }
         }
-        
+
         window.addEventListener('streamlit:view-change', function(e) {
             if (e.detail && e.detail.viewType) {
-                handleCleanViewChange(e.detail.viewType);
+                handleViewChange(e.detail.viewType);
             }
         });
-        
+
         window.addEventListener('message', function(e) {
             if (e.data && e.data.type === 'streamlit:view-change' && e.data.viewType) {
-                handleCleanViewChange(e.data.viewType);
+                handleViewChange(e.data.viewType);
             }
         });
         </script>

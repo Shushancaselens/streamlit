@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import json
 import pandas as pd
 import base64
@@ -534,9 +533,6 @@ def main():
     
     # Facts view with clean tabs
     if st.session_state.view == "Facts":
-        # Add minimal spacing component for natural gap
-        components.html("", height=30)
-        
         # Get facts data
         facts_data = get_all_facts()
         
@@ -568,4 +564,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

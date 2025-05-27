@@ -500,7 +500,13 @@ def display_cards(facts_list, key_offset=0):
                             st.success(f"Opening {evidence['id']}")
                     with col2:
                         if st.button(f"Copy Reference", key=f"copy_{evidence['id']}_{i}_{key_offset}"):
+                            reference_text = f"Exhibit: {evidence['id']}"
+                            if fact.get('page'):
+                                reference_text += f", Page: {fact['page']}"
+                            if fact.get('paragraphs'):
+                                reference_text += f", Paragraphs: {fact['paragraphs']}"
                             st.success("Reference copied!")
+                            st.code(reference_text)
                     
                     st.write("---")
             else:

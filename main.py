@@ -1250,100 +1250,101 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Create custom view toggle component
-        view_toggle_html = f"""
-        <style>
-            /* View toggle tabs styling */
-            .view-toggle {{
-                display: flex;
-                justify-content: center;
-                margin-bottom: 20px;
-                margin-top: 10px;
-            }}
-            
-            .view-toggle button {{
-                padding: 8px 16px;
-                border: 1px solid #e2e8f0;
-                background-color: #f7fafc;
-                cursor: pointer;
-                font-size: 14px;
-                transition: all 0.2s ease;
-            }}
-            
-            .view-toggle button.active {{
-                background-color: #ef4444;
-                color: white;
-                border-color: #ef4444;
-            }}
-            
-            .view-toggle button:hover:not(.active) {{
-                background-color: #edf2f7;
-            }}
-            
-            .view-toggle button:first-child {{
-                border-radius: 4px 0 0 4px;
-            }}
-            
-            .view-toggle button:nth-child(2) {{
-                border-left: none;
-                border-right: none;
-            }}
-            
-            .view-toggle button:nth-child(3) {{
-                border-left: none;
-                border-right: none;
-            }}
-            
-            .view-toggle button:last-child {{
-                border-radius: 0 4px 4px 0;
-            }}
-        </style>
-        
-        <div class="view-toggle">
-            <button id="card-view-btn" class="{'active' if st.session_state.current_view_type == 'card' else ''}" onclick="switchView('card')">Card View</button>
-            <button id="table-view-btn" class="{'active' if st.session_state.current_view_type == 'table' else ''}" onclick="switchView('table')">Table View</button>
-            <button id="docset-view-btn" class="{'active' if st.session_state.current_view_type == 'docset' else ''}" onclick="switchView('docset')">Document Categories</button>
-            <button id="timeline-view-btn" class="{'active' if st.session_state.current_view_type == 'timeline' else ''}" onclick="switchView('timeline')">Timeline View</button>
-        </div>
-        
-        <script>
-            // Switch view between tabs
-            function switchView(viewType) {{
-                const cardBtn = document.getElementById('card-view-btn');
-                const tableBtn = document.getElementById('table-view-btn');
-                const docsetBtn = document.getElementById('docset-view-btn');
-                const timelineBtn = document.getElementById('timeline-view-btn');
+        # Use the HTML-based view toggle
+        html_view_toggle = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: transparent;
+                }
+
+                /* View toggle tabs styling */
+                .view-toggle {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 16px;
+                }
                 
-                // Remove active class from all buttons
-                cardBtn.classList.remove('active');
-                tableBtn.classList.remove('active');
-                docsetBtn.classList.remove('active');
-                timelineBtn.classList.remove('active');
+                .view-toggle button {
+                    padding: 8px 16px;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f7fafc;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: all 0.2s ease;
+                }
                 
-                // Activate the selected view
-                if (viewType === 'card') {{
-                    cardBtn.classList.add('active');
-                    window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'card'}}, '*');
-                }} else if (viewType === 'table') {{
-                    tableBtn.classList.add('active');
-                    window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'table'}}, '*');
-                }} else if (viewType === 'docset') {{
-                    docsetBtn.classList.add('active');
-                    window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'docset'}}, '*');
-                }} else if (viewType === 'timeline') {{
-                    timelineBtn.classList.add('active');
-                    window.parent.postMessage({{type: 'streamlit:setComponentValue', value: 'timeline'}}, '*');
+                .view-toggle button.active {
+                    background-color: #ef4444;
+                    color: white;
+                    border-color: #ef4444;
+                }
+                
+                .view-toggle button:hover:not(.active) {
+                    background-color: #edf2f7;
+                }
+                
+                .view-toggle button:first-child {
+                    border-radius: 4px 0 0 4px;
+                }
+                
+                .view-toggle button:nth-child(2) {
+                    border-left: none;
+                }
+                
+                .view-toggle button:nth-child(3) {
+                    border-left: none;
+                }
+                
+                .view-toggle button:last-child {
+                    border-radius: 0 4px 4px 0;
+                    border-left: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="view-toggle">
+                <button id="card-view-btn" class="{}" onclick="switchView('card')">Card View</button>
+                <button id="table-view-btn" class="{}" onclick="switchView('table')">Table View</button>
+                <button id="docset-view-btn" class="{}" onclick="switchView('docset')">Document Categories</button>
+                <button id="timeline-view-btn" class="{}" onclick="switchView('timeline')">Timeline View</button>
+            </div>
+
+            <script>
+                // Switch view between tabs
+                function switchView(viewType) {{
+                    // Send the selected view to Streamlit
+                    window.parent.postMessage({{
+                        type: 'streamlit:setComponentValue',
+                        value: viewType
+                    }}, '*');
                 }}
-            }}
-        </script>
-        """
+                
+                // Initialize the active state based on current view
+                document.addEventListener('DOMContentLoaded', function() {{
+                    // This will be replaced by the formatted string
+                }});
+            </script>
+        </body>
+        </html>
+        """.format(
+            "active" if st.session_state.current_view_type == "card" else "",
+            "active" if st.session_state.current_view_type == "table" else "",
+            "active" if st.session_state.current_view_type == "docset" else "",
+            "active" if st.session_state.current_view_type == "timeline" else ""
+        )
         
-        # Create a component and handle the returned value
-        component_value = components.html(view_toggle_html, height=60)
+        # Render the HTML component
+        view_type = components.html(html_view_toggle, height=50)
         
-        # Handle view changes
-        if component_value and component_value != st.session_state.current_view_type:
-            st.session_state.current_view_type = component_value
+        # Update the view type if the component returned a value
+        if view_type and view_type != st.session_state.current_view_type:
+            st.session_state.current_view_type = view_type
             st.rerun()
         
         # Facts filter using tabs - improved styling

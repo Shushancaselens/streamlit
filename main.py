@@ -1395,14 +1395,20 @@ def main():
         # Render the clean component
         components.html(view_selector_html, height=80)
         
-        # Hidden state management buttons
+        # Hidden state management buttons - properly hidden
         st.markdown("""
         <style>
         .hidden-controls {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
-            pointer-events: none;
+            display: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -1410,22 +1416,18 @@ def main():
         with st.container():
             st.markdown('<div class="hidden-controls">', unsafe_allow_html=True)
             
-            col1, col2, col3 = st.columns(3)
+            # Truly hidden buttons for state management only
+            if st.button("", key="clean_card_btn", help="Hidden card button"):
+                st.session_state.current_view_type = "card"
+                st.rerun()
             
-            with col1:
-                if st.button("Switch to Card", key="clean_card_btn"):
-                    st.session_state.current_view_type = "card"
-                    st.rerun()
+            if st.button("", key="clean_table_btn", help="Hidden table button"):
+                st.session_state.current_view_type = "table"
+                st.rerun()
             
-            with col2:
-                if st.button("Switch to Table", key="clean_table_btn"):
-                    st.session_state.current_view_type = "table"
-                    st.rerun()
-            
-            with col3:
-                if st.button("Switch to Docs", key="clean_docset_btn"):
-                    st.session_state.current_view_type = "docset"
-                    st.rerun()
+            if st.button("", key="clean_docset_btn", help="Hidden docset button"):
+                st.session_state.current_view_type = "docset"
+                st.rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
         

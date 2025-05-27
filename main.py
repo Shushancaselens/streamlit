@@ -1300,97 +1300,173 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Individual button view selector matching the image style
+        # Custom compact view selector component
+        view_selector_html = f"""
+        <div style="display: flex; justify-content: center; margin: 15px 0 25px 0;">
+            <div style="
+                display: inline-flex; 
+                background: #f8fafc; 
+                border-radius: 10px; 
+                padding: 4px; 
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                border: 1px solid #e2e8f0;
+            ">
+                <button onclick="selectView('card')" id="card-btn" style="
+                    background: {'#ef4444' if st.session_state.current_view_type == 'card' else 'transparent'};
+                    color: {'white' if st.session_state.current_view_type == 'card' else '#64748b'};
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 7px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    min-width: 90px;
+                    height: 32px;
+                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'card' else 'none'};
+                ">Card View</button>
+                
+                <button onclick="selectView('table')" id="table-btn" style="
+                    background: {'#ef4444' if st.session_state.current_view_type == 'table' else 'transparent'};
+                    color: {'white' if st.session_state.current_view_type == 'table' else '#64748b'};
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 7px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    min-width: 90px;
+                    height: 32px;
+                    margin: 0 2px;
+                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'table' else 'none'};
+                ">Table View</button>
+                
+                <button onclick="selectView('docset')" id="docset-btn" style="
+                    background: {'#ef4444' if st.session_state.current_view_type == 'docset' else 'transparent'};
+                    color: {'white' if st.session_state.current_view_type == 'docset' else '#64748b'};
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 7px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    min-width: 120px;
+                    height: 32px;
+                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'docset' else 'none'};
+                ">Document Categories</button>
+            </div>
+        </div>
+        
+        <style>
+        button:hover {{
+            transform: translateY(-1px);
+            background: #e2e8f0 !important;
+        }}
+        
+        #card-btn:hover {{
+            background: {'#dc2626' if st.session_state.current_view_type == 'card' else '#e2e8f0'} !important;
+        }}
+        
+        #table-btn:hover {{
+            background: {'#dc2626' if st.session_state.current_view_type == 'table' else '#e2e8f0'} !important;
+        }}
+        
+        #docset-btn:hover {{
+            background: {'#dc2626' if st.session_state.current_view_type == 'docset' else '#e2e8f0'} !important;
+        }}
+        </style>
+        
+        <script>
+        function selectView(viewType) {{
+            // Create a custom event to communicate with Streamlit
+            const event = new CustomEvent('streamlit:view-change', {{
+                detail: {{ viewType: viewType }}
+            }});
+            window.dispatchEvent(event);
+            
+            // Also try to trigger through the parent window if in iframe
+            if (window.parent !== window) {{
+                window.parent.postMessage({{
+                    type: 'streamlit:view-change',
+                    viewType: viewType
+                }}, '*');
+            }}
+        }}
+        </script>
+        """
+        
+        # Render the custom component
+        components.html(view_selector_html, height=70)
+        
+        # Fallback buttons (hidden but functional) for actual state management
         st.markdown("""
         <style>
-        /* Individual button container */
-        .view-buttons-container {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin: 20px 0 30px 0;
-            flex-wrap: wrap;
-        }
-        
-        /* Target view selector buttons specifically */
-        .view-buttons-container div[data-testid="column"] {
-            flex: 0 0 auto !important;
-            min-width: 180px !important;
-            padding: 0 !important;
-        }
-        
-        .view-buttons-container div[data-testid="column"] button {
-            width: 100% !important;
-            height: 44px !important;
-            padding: 10px 20px !important;
-            border-radius: 8px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            transition: all 0.2s ease !important;
-            border: 1px solid #d1d5db !important;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-        }
-        
-        /* Active button (primary) - Red/Coral color like in image */
-        .view-buttons-container div[data-testid="column"] button[kind="primary"] {
-            background: #ef4444 !important;
-            color: white !important;
-            border: 1px solid #ef4444 !important;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
-        }
-        
-        /* Inactive button (secondary) */
-        .view-buttons-container div[data-testid="column"] button[kind="secondary"] {
-            background: #f9fafb !important;
-            color: #374151 !important;
-            border: 1px solid #d1d5db !important;
-        }
-        
-        .view-buttons-container div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f3f4f6 !important;
-            border: 1px solid #9ca3af !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-        }
-        
-        .view-buttons-container div[data-testid="column"] button[kind="primary"]:hover {
-            background: #dc2626 !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3) !important;
+        .hidden-buttons {
+            display: none;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create individual buttons with gaps
-        st.markdown('<div class="view-buttons-container">', unsafe_allow_html=True)
+        with st.container():
+            st.markdown('<div class="hidden-buttons">', unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                if st.button("Card View Hidden", key="card_view_btn_hidden"):
+                    st.session_state.current_view_type = "card"
+                    st.rerun()
+            
+            with col2:
+                if st.button("Table View Hidden", key="table_view_btn_hidden"):
+                    st.session_state.current_view_type = "table"
+                    st.rerun()
+            
+            with col3:
+                if st.button("Document Categories Hidden", key="docset_view_btn_hidden"):
+                    st.session_state.current_view_type = "docset"
+                    st.rerun()
+            
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        col1, col2, col3, col_spacer = st.columns([1, 1, 1, 2])
+        # Add JavaScript to handle view changes
+        st.markdown("""
+        <script>
+        // Listen for view change events
+        window.addEventListener('streamlit:view-change', function(e) {
+            const viewType = e.detail.viewType;
+            
+            // Find and click the corresponding hidden button
+            const buttons = {
+                'card': document.querySelector('button[data-testid*="card_view_btn_hidden"]'),
+                'table': document.querySelector('button[data-testid*="table_view_btn_hidden"]'), 
+                'docset': document.querySelector('button[data-testid*="docset_view_btn_hidden"]')
+            };
+            
+            if (buttons[viewType]) {
+                buttons[viewType].click();
+            }
+        });
         
-        with col1:
-            if st.button("Card View", 
-                        type="primary" if st.session_state.current_view_type == "card" else "secondary",
-                        key="card_view_btn",
-                        use_container_width=True):
-                st.session_state.current_view_type = "card"
-                st.rerun()
-        
-        with col2:
-            if st.button("Table View", 
-                        type="primary" if st.session_state.current_view_type == "table" else "secondary",
-                        key="table_view_btn",
-                        use_container_width=True):
-                st.session_state.current_view_type = "table"
-                st.rerun()
-        
-        with col3:
-            if st.button("Document Categories", 
-                        type="primary" if st.session_state.current_view_type == "docset" else "secondary",
-                        key="docset_view_btn",
-                        use_container_width=True):
-                st.session_state.current_view_type = "docset"
-                st.rerun()
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+        // Also listen for postMessage from iframe
+        window.addEventListener('message', function(e) {
+            if (e.data.type === 'streamlit:view-change') {
+                const viewType = e.data.viewType;
+                
+                const buttons = {
+                    'card': document.querySelector('button[data-testid*="card_view_btn_hidden"]'),
+                    'table': document.querySelector('button[data-testid*="table_view_btn_hidden"]'), 
+                    'docset': document.querySelector('button[data-testid*="docset_view_btn_hidden"]')
+                };
+                
+                if (buttons[viewType]) {
+                    buttons[viewType].click();
+                }
+            }
+        });
+        </script>
+        """, unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

@@ -417,6 +417,207 @@ def get_evidence_content(fact):
     args_data = get_argument_data()
     evidence_content = []
     
+    # Sample document content for preview
+    document_previews = {
+        "C-1": {
+            "content": """CERTIFICATE OF REGISTRATION
+National Football Federation
+Registration No: NFF-1950-0047
+
+TO WHOM IT MAY CONCERN:
+
+This is to certify that ATHLETIC CLUB UNITED has been duly registered with the National Football Federation on January 12, 1950, and is authorized to participate in all sanctioned football competitions under the jurisdiction of this federation.
+
+The club has maintained continuous registration since its initial filing date and has complied with all regulatory requirements for operational continuity.
+
+REGISTRATION DETAILS:
+- Club Name: Athletic Club United
+- Registration Date: January 12, 1950
+- Federation ID: NFF-1950-0047
+- Status: Active - Continuous
+- Last Renewal: January 15, 2024
+
+This certificate serves as official documentation of the club's legal standing and operational authority within the national football framework.
+
+Signed,
+Director of Registration
+National Football Federation""",
+            "doc_type": "Registration Certificate",
+            "pages": 2
+        },
+        "C-2": {
+            "content": """COMPETITION PARTICIPATION RECORDS
+Athletic Club United - Historical Analysis
+Period: 1950-2024
+
+SUMMARY OF PARTICIPATION:
+The following records demonstrate uninterrupted competitive activity by Athletic Club United across multiple divisions and tournaments since 1950.
+
+DIVISION PARTICIPATION:
+1950-1960: Second Division (10 seasons)
+1961-1975: First Division (15 seasons) 
+1976-1985: Second Division (10 seasons)
+1986-2000: First Division (15 seasons)
+2001-2024: Premier Division (24 seasons)
+
+TOURNAMENT RECORDS:
+- National Cup: 74 participations (1950-2024)
+- Regional Championships: 68 participations
+- International Friendlies: 156 matches recorded
+
+NOTABLE ACHIEVEMENTS:
+- 1967: First Division Champions
+- 1982: National Cup Runners-up
+- 1995: First Division Champions
+- 2010: Premier Division 3rd Place
+
+The records show consistent participation without any gaps in competitive activity, maintaining the same club identity and registration throughout all periods.""",
+            "doc_type": "Competition Records",
+            "pages": 12
+        },
+        "C-4": {
+            "content": """MEDIA COVERAGE ARCHIVE
+Athletic Club United - Historical Documentation
+Compiled by Sports Heritage Foundation
+
+ARCHIVE OVERVIEW:
+This comprehensive collection spans 74 years of media coverage, consistently documenting Athletic Club United under the same name and identity from 1950 to present day.
+
+SAMPLE HEADLINES:
+
+1952 - "Athletic Club United Secures Promotion"
+Local Sports Weekly, March 15, 1952
+
+1967 - "United Claims First Division Title in Historic Victory"
+National Football Gazette, May 22, 1967
+
+1975 - "Athletic Club United Faces Financial Restructuring"
+Sports Business Daily, September 3, 1975
+
+1976 - "United Returns Stronger After Administrative Changes"
+Football Today, February 18, 1976
+
+1995 - "Athletic Club United: 45 Years of Continuous Excellence"
+Sports Century Magazine, January 12, 1995
+
+2000 - "The Millennium Club: United's 50-Year Journey"
+Football Heritage Quarterly, Volume 12
+
+2024 - "Athletic Club United: Still Going Strong After 74 Years"
+Modern Football Review, January 2024
+
+ANALYSIS NOTES:
+Throughout all coverage periods, media consistently refers to the organization as "Athletic Club United" with no name variations or identity discontinuities recorded.""",
+            "doc_type": "Media Archive",
+            "pages": 89
+        },
+        "C-5": {
+            "content": """VISUAL IDENTITY DOCUMENTATION
+Athletic Club United - Color Analysis Study
+Sports Branding Institute, 2024
+
+EXECUTIVE SUMMARY:
+This study examines the visual continuity of Athletic Club United's color scheme from 1950 to present, analyzing uniform designs, promotional materials, and stadium branding.
+
+PRIMARY COLOR ANALYSIS:
+Base Colors: Blue (#1E3A8A) and White (#FFFFFF)
+Usage Period: 1950-Present (Continuous)
+
+DOCUMENTED VARIATIONS:
+1950-1969: Deep Navy Blue with Pure White
+1970-1979: Royal Blue with Off-White (Cream undertones)
+1980-1989: Royal Blue with Pure White + Gold accents (1982-1988)
+1990-1999: Navy Blue with Pure White
+2000-2009: Royal Blue with Pure White
+2010-Present: Deep Blue with Pure White
+
+ANALYSIS CONCLUSIONS:
+1. Core identity maintained throughout all periods
+2. Minor shade variations within blue spectrum
+3. White consistently used as secondary color
+4. Temporary gold accent (1982-1988) did not replace base colors
+5. No periods of complete color scheme abandonment
+
+The evidence demonstrates unbroken visual identity continuity despite minor aesthetic updates reflecting contemporary design trends.""",
+            "doc_type": "Color Analysis Report",
+            "pages": 8
+        },
+        "R-1": {
+            "content": """FEDERATION WITHDRAWAL NOTIFICATION
+National Football Federation
+Official Records Department
+
+DATE: May 15, 1975
+TO: Athletic Club United
+FROM: Competition Registration Office
+
+SUBJECT: Competition Withdrawal - 1975-1976 Season
+
+This official notification confirms the withdrawal of Athletic Club United from all Federation competitions for the 1975-1976 season, effective immediately.
+
+WITHDRAWAL DETAILS:
+- Reason: Financial restructuring and administrative reorganization
+- Effective Date: May 15, 1975
+- Competition Status: Suspended
+- Registration Status: Under review
+
+FEDERATION RECORDS SHOW:
+- No team entries for 1975-1976 season
+- No player registrations processed
+- No match participations recorded
+- No fee payments received
+
+The club's competitive status remains suspended pending resolution of administrative matters and financial obligations.
+
+This withdrawal creates a gap in the club's competitive history and affects continuity claims under Federation succession policies.
+
+Administrative Officer
+Competition Management Division
+National Football Federation""",
+            "doc_type": "Official Withdrawal Notice",
+            "pages": 1
+        },
+        "R-2": {
+            "content": """INDEPENDENT AUDIT REPORT
+Financial Assessment - Athletic Club United
+Prepared by: Certified Sports Auditors Ltd.
+Period: 1975-1976
+
+AUDIT SUMMARY:
+This independent audit examines the financial and operational status of Athletic Club United during the 1975-1976 period.
+
+KEY FINDINGS:
+
+OPERATIONAL CESSATION:
+- All bank accounts closed: September 1975
+- Staff contracts terminated: August 1975
+- Facility leases terminated: October 1975
+- Equipment liquidated: November 1975
+
+FINANCIAL OBLIGATIONS:
+- All creditor payments suspended
+- Player wages discontinued
+- Federation fees unpaid
+- Insurance policies lapsed
+
+LEGAL STATUS:
+- Corporate entity remained registered
+- Directors resigned positions
+- Shareholders meetings suspended
+- Legal representation terminated
+
+CONCLUSION:
+The audit confirms complete cessation of operational activities during 1975-1976, with no evidence of continued sporting, financial, or administrative functions.
+
+This represents a clear operational discontinuity that challenges claims of uninterrupted club operations.
+
+Certified Public Accountant
+Sports Industry Division""",
+            "doc_type": "Financial Audit Report",
+            "pages": 15
+        }
+    }
+    
     for exhibit_id in fact['exhibits']:
         def find_evidence(args):
             for arg_key in args:
@@ -434,11 +635,17 @@ def get_evidence_content(fact):
         evidence = find_evidence(args_data['claimantArgs']) or find_evidence(args_data['respondentArgs'])
         
         if evidence:
-            evidence_content.append({
+            evidence_item = {
                 'id': exhibit_id,
                 'title': evidence['title'],
                 'summary': evidence['summary']
-            })
+            }
+            
+            # Add preview content if available
+            if exhibit_id in document_previews:
+                evidence_item['preview'] = document_previews[exhibit_id]
+            
+            evidence_content.append(evidence_item)
         else:
             evidence_content.append({
                 'id': exhibit_id,
@@ -480,7 +687,8 @@ def render_streamlit_card_view(filtered_facts=None):
                         if fact.get('source_text'):
                             st.markdown(f"**Source Text:** *{fact['source_text']}*")
                         
-                        col1, col2 = st.columns([3, 1])
+                        # Action buttons row - Preview first, Copy last
+                        col1, col2, col3 = st.columns([3, 1, 1])
                         with col1:
                             ref_text = f"**Exhibit:** {evidence['id']}"
                             if fact.get('page'):
@@ -490,14 +698,66 @@ def render_streamlit_card_view(filtered_facts=None):
                             st.markdown(ref_text)
                         
                         with col2:
+                            if evidence.get('preview'):
+                                current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                                preview_key = f"preview_card_{evidence['id']}_{i}_{current_tab}"
+                                preview_state_key = f"show_{preview_key}"
+                                
+                                if st.button("👁️", key=preview_key, help="Preview Document", use_container_width=True):
+                                    # Toggle preview state
+                                    if preview_state_key not in st.session_state:
+                                        st.session_state[preview_state_key] = True
+                                    else:
+                                        st.session_state[preview_state_key] = not st.session_state[preview_state_key]
+                        
+                        with col3:
                             current_tab = getattr(st.session_state, 'current_tab_type', 'all')
-                            if st.button(f"📋 Copy Ref", key=f"copy_card_{evidence['id']}_{i}_{current_tab}"):
+                            if st.button("📋", key=f"copy_card_{evidence['id']}_{i}_{current_tab}", 
+                                       help="Copy Reference", use_container_width=True):
                                 ref_copy = f"Exhibit: {evidence['id']}"
                                 if fact.get('page'):
                                     ref_copy += f", Page: {fact['page']}"
                                 if fact.get('paragraphs'):
                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                 st.success("Reference copied!")
+                        
+                        # Remove inline preview section since we're opening in new tab
+                        
+                        # Show preview if toggled on - appears as separate section
+                        current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                        preview_state_key = f"show_preview_card_{evidence['id']}_{i}_{current_tab}"
+                        if evidence.get('preview') and st.session_state.get(preview_state_key, False):
+                            preview_data = evidence['preview']
+                            
+                            # Create a modal-like preview
+                            with st.container():
+                                st.markdown("---")
+                                st.markdown(f"### 📄 Document Preview: {evidence['id']}")
+                                st.markdown(f"**{preview_data['doc_type']}** • {preview_data['pages']} page(s)")
+                                
+                                # Preview content in a styled container
+                                st.markdown(f"""
+                                <div style="
+                                    background: white;
+                                    padding: 20px; 
+                                    border-radius: 8px;
+                                    font-family: 'Courier New', monospace; 
+                                    font-size: 12px; 
+                                    line-height: 1.6; 
+                                    white-space: pre-wrap;
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                    max-height: 400px;
+                                    overflow-y: auto;
+                                    border: 1px solid #ddd;
+                                ">
+                                {preview_data['content']}
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                if st.button("❌ Close Preview", key=f"close_preview_card_{evidence['id']}_{i}_{current_tab}"):
+                                    st.session_state[preview_state_key] = False
+                                    st.rerun()
+                                st.markdown("---")
                         
                         st.markdown("---")
             else:
@@ -664,7 +924,8 @@ def render_streamlit_docset_view(filtered_facts=None):
                                         if fact.get('source_text'):
                                             st.markdown(f"**Source Text:** *{fact['source_text']}*")
                                         
-                                        col1, col2 = st.columns([3, 1])
+                                        # Action buttons row - Preview first, Copy last
+                                        col1, col2, col3 = st.columns([3, 1, 1])
                                         with col1:
                                             ref_text = f"**Exhibit:** {evidence['id']}"
                                             if fact.get('page'):
@@ -674,15 +935,67 @@ def render_streamlit_docset_view(filtered_facts=None):
                                             st.markdown(ref_text)
                                         
                                         with col2:
+                                            if evidence.get('preview'):
+                                                current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                                                preview_key = f"preview_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
+                                                preview_state_key = f"show_{preview_key}"
+                                                
+                                                if st.button("👁️", key=preview_key, help="Preview Document", use_container_width=True):
+                                                    # Toggle preview state
+                                                    if preview_state_key not in st.session_state:
+                                                        st.session_state[preview_state_key] = True
+                                                    else:
+                                                        st.session_state[preview_state_key] = not st.session_state[preview_state_key]
+                                        
+                                        with col3:
                                             current_tab = getattr(st.session_state, 'current_tab_type', 'all')
                                             unique_key = f"copy_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
-                                            if st.button(f"📋 Copy Ref", key=unique_key):
+                                            if st.button("📋", key=unique_key, help="Copy Reference", use_container_width=True):
                                                 ref_copy = f"Exhibit: {evidence['id']}"
                                                 if fact.get('page'):
                                                     ref_copy += f", Page: {fact['page']}"
                                                 if fact.get('paragraphs'):
                                                     ref_copy += f", Paragraphs: {fact['paragraphs']}"
                                                 st.success("Reference copied!")
+                                        
+                                        # Remove inline preview section since we're opening in new tab
+                                        
+                                        # Show preview if toggled on - appears as separate section
+                                        current_tab = getattr(st.session_state, 'current_tab_type', 'all')
+                                        preview_state_key = f"show_preview_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
+                                        if evidence.get('preview') and st.session_state.get(preview_state_key, False):
+                                            preview_data = evidence['preview']
+                                            
+                                            # Create a modal-like preview
+                                            with st.container():
+                                                st.markdown("---")
+                                                st.markdown(f"### 📄 Document Preview: {evidence['id']}")
+                                                st.markdown(f"**{preview_data['doc_type']}** • {preview_data['pages']} page(s)")
+                                                
+                                                # Preview content in a styled container
+                                                st.markdown(f"""
+                                                <div style="
+                                                    background: white;
+                                                    padding: 20px; 
+                                                    border-radius: 8px;
+                                                    font-family: 'Courier New', monospace; 
+                                                    font-size: 12px; 
+                                                    line-height: 1.6; 
+                                                    white-space: pre-wrap;
+                                                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                                    max-height: 400px;
+                                                    overflow-y: auto;
+                                                    border: 1px solid #ddd;
+                                                ">
+                                                {preview_data['content']}
+                                                </div>
+                                                """, unsafe_allow_html=True)
+                                                
+                                                close_key = f"close_preview_docset_{docset_id}_{i}_{evidence_idx}_{evidence['id']}_{current_tab}"
+                                                if st.button("❌ Close Preview", key=close_key):
+                                                    st.session_state[preview_state_key] = False
+                                                    st.rerun()
+                                                st.markdown("---")
                                         
                                         st.markdown("---")
                             else:
@@ -771,6 +1084,46 @@ def main():
     
     # Create the facts view
     if st.session_state.view == "Facts":
+        # Add global CSS for small buttons
+        st.markdown("""
+        <style>
+        /* Very small compact buttons */
+        div[data-testid="column"] button[title*="Copy Reference"],
+        div[data-testid="column"] button[title*="Preview Document"] {
+            height: 22px !important;
+            padding: 2px 6px !important;
+            font-size: 14px !important;
+            min-width: auto !important;
+            border-radius: 3px !important;
+            margin: 1px !important;
+        }
+        
+        /* Custom styling for preview button */
+        .preview-btn {
+            background: #f0f8ff !important;
+            border: 1px solid #4a90e2 !important;
+            color: #4a90e2 !important;
+        }
+        
+        .preview-btn:hover {
+            background: #e6f3ff !important;
+            border: 1px solid #357abd !important;
+        }
+        
+        /* Custom styling for copy button */
+        .copy-btn {
+            background: #f9f9f9 !important;
+            border: 1px solid #999 !important;
+            color: #333 !important;
+        }
+        
+        .copy-btn:hover {
+            background: #f0f0f0 !important;
+            border: 1px solid #666 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         # Header with title and action buttons
         col_title, col_copy, col_export = st.columns([3, 1, 1])
         
@@ -787,77 +1140,71 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Separate pill-style buttons with stronger CSS specificity
+        # Individual button view selector matching the image style
         st.markdown("""
         <style>
-        /* Force CSS with higher specificity and !important */
-        .main .block-container .pill-buttons-wrapper {
-            display: flex !important;
-            justify-content: center !important;
-            margin: 20px 0 30px 0 !important;
-            gap: 12px !important;
+        /* Individual button container */
+        .view-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 30px 0;
+            flex-wrap: wrap;
         }
         
-        /* Target buttons with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] {
-            padding: 0 !important;
-            margin: 0 !important;
+        /* Target view selector buttons specifically */
+        .view-buttons-container div[data-testid="column"] {
             flex: 0 0 auto !important;
+            min-width: 180px !important;
+            padding: 0 !important;
         }
         
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button {
+        .view-buttons-container div[data-testid="column"] button {
+            width: 100% !important;
             height: 44px !important;
-            padding: 12px 24px !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
             font-size: 14px !important;
             font-weight: 500 !important;
             transition: all 0.2s ease !important;
-            margin: 0 !important;
-            min-width: 160px !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 12px !important;
-            cursor: pointer !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-            text-transform: none !important;
+            border: 1px solid #d1d5db !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
         }
         
-        /* Active button with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="primary"] {
+        /* Active button (primary) - Red/Coral color like in image */
+        .view-buttons-container div[data-testid="column"] button[kind="primary"] {
             background: #ef4444 !important;
-            background-color: #ef4444 !important;
             color: white !important;
-            border-color: #ef4444 !important;
+            border: 1px solid #ef4444 !important;
             box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
         }
         
-        /* Inactive button with maximum specificity */
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"] {
-            background: white !important;
-            background-color: white !important;
-            color: #64748b !important;
-            border-color: #e2e8f0 !important;
+        /* Inactive button (secondary) */
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"] {
+            background: #f9fafb !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
         }
         
-        .main .block-container .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #f8fafc !important;
-            background-color: #f8fafc !important;
-            color: #475569 !important;
-            border-color: #cbd5e1 !important;
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #f3f4f6 !important;
+            border: 1px solid #9ca3af !important;
             transform: translateY(-1px) !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
         
-        /* Override any conflicting Streamlit styles */
-        .main .block-container .pill-buttons-wrapper button:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        .view-buttons-container div[data-testid="column"] button[kind="primary"]:hover {
+            background: #dc2626 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create pill-style buttons with gaps
-        st.markdown('<div class="pill-buttons-wrapper">', unsafe_allow_html=True)
+        # Create individual buttons with gaps
+        st.markdown('<div class="view-buttons-container">', unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
+        col1, col2, col3, col_spacer = st.columns([1, 1, 1, 2])
         
         with col1:
             if st.button("Card View", 

@@ -1300,363 +1300,97 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Ultra-modern compact view selector component
-        current_view = st.session_state.current_view_type
-        
-        view_selector_html = f"""
-        <div class="view-selector-wrapper">
-            <div class="view-selector-container">
-                <div class="selector-background"></div>
-                <div class="selector-track">
-                    <div class="selector-thumb {'thumb-card' if current_view == 'card' else 'thumb-table' if current_view == 'table' else 'thumb-docset'}"></div>
-                </div>
-                <button class="view-btn {'active' if current_view == 'card' else ''}" data-view="card">
-                    <span class="btn-icon">📋</span>
-                    <span class="btn-text">Cards</span>
-                </button>
-                <button class="view-btn {'active' if current_view == 'table' else ''}" data-view="table">
-                    <span class="btn-icon">📊</span>
-                    <span class="btn-text">Table</span>
-                </button>
-                <button class="view-btn {'active' if current_view == 'docset' else ''}" data-view="docset">
-                    <span class="btn-icon">📁</span>
-                    <span class="btn-text">Docs</span>
-                </button>
-            </div>
-        </div>
-
-        <style>
-        .view-selector-wrapper {{
-            display: flex;
-            justify-content: center;
-            margin: 20px 0 30px 0;
-            user-select: none;
-        }}
-
-        .view-selector-container {{
-            position: relative;
-            display: inline-flex;
-            background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 16px;
-            padding: 4px;
-            box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.08),
-                0 2px 4px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }}
-
-        .view-selector-container:hover {{
-            box-shadow: 
-                0 6px 16px rgba(0, 0, 0, 0.12),
-                0 3px 6px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            transform: translateY(-1px);
-        }}
-
-        .selector-track {{
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
-            pointer-events: none;
-        }}
-
-        .selector-thumb {{
-            position: absolute;
-            height: 100%;
-            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
-            border-radius: 12px;
-            box-shadow: 
-                0 3px 8px rgba(239, 68, 68, 0.3),
-                0 1px 3px rgba(239, 68, 68, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }}
-
-        .thumb-card {{
-            left: 0;
-            width: 80px;
-        }}
-
-        .thumb-table {{
-            left: 84px;
-            width: 80px;
-        }}
-
-        .thumb-docset {{
-            left: 168px;
-            width: 80px;
-        }}
-
-        .view-btn {{
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #64748b;
-            width: 80px;
-            height: 36px;
-            z-index: 2;
-            outline: none;
-        }}
-
-        .view-btn:hover {{
-            color: #475569;
-            transform: translateY(-1px);
-        }}
-
-        .view-btn.active {{
-            color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }}
-
-        .view-btn.active:hover {{
-            color: rgba(255, 255, 255, 0.95);
-        }}
-
-        .btn-icon {{
-            font-size: 14px;
-            opacity: 0.9;
-            transition: all 0.3s ease;
-        }}
-
-        .btn-text {{
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }}
-
-        .view-btn:hover .btn-icon {{
-            opacity: 1;
-            transform: scale(1.1);
-        }}
-
-        .view-btn.active .btn-icon {{
-            opacity: 1;
-            transform: scale(1.05);
-        }}
-
-        /* Ripple effect */
-        .view-btn::before {{
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }}
-
-        .view-btn:active::before {{
-            width: 80px;
-            height: 80px;
-        }}
-
-        /* Glassmorphism effect */
-        @supports (backdrop-filter: blur(10px)) {{
-            .view-selector-container {{
-                background: rgba(248, 250, 252, 0.8);
-                backdrop-filter: blur(10px);
-            }}
-        }}
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {{
-            .view-selector-container {{
-                background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-                border: 1px solid rgba(71, 85, 105, 0.3);
-            }}
-            
-            .view-btn {{
-                color: #94a3b8;
-            }}
-            
-            .view-btn:hover {{
-                color: #cbd5e1;
-            }}
-        }}
-
-        /* Accessibility improvements */
-        .view-btn:focus {{
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-        }}
-
-        /* Mobile optimizations */
-        @media (max-width: 640px) {{
-            .view-selector-container {{
-                transform: scale(0.9);
-            }}
-        }}
-        </style>
-
-        <script>
-        (function() {{
-            let isAnimating = false;
-            const buttons = document.querySelectorAll('.view-btn');
-            
-            buttons.forEach(button => {{
-                button.addEventListener('click', function(e) {{
-                    if (isAnimating) return;
-                    
-                    e.preventDefault();
-                    const viewType = this.dataset.view;
-                    
-                    // Visual feedback
-                    this.style.transform = 'translateY(-1px) scale(0.98)';
-                    setTimeout(() => {{
-                        if (this.style) {{
-                            this.style.transform = '';
-                        }}
-                    }}, 150);
-                    
-                    // Prevent rapid clicking
-                    isAnimating = true;
-                    setTimeout(() => {{ isAnimating = false; }}, 500);
-                    
-                    // Trigger state change
-                    const customEvent = new CustomEvent('streamlit:view-change', {{
-                        detail: {{ viewType }},
-                        bubbles: true
-                    }});
-                    
-                    window.dispatchEvent(customEvent);
-                    
-                    // Fallback for iframe
-                    if (window.parent && window.parent !== window) {{
-                        window.parent.postMessage({{
-                            type: 'streamlit:view-change',
-                            viewType: viewType,
-                            timestamp: Date.now()
-                        }}, '*');
-                    }}
-                }});
-                
-                // Accessibility: keyboard support
-                button.addEventListener('keydown', function(e) {{
-                    if (e.key === 'Enter' || e.key === ' ') {{
-                        e.preventDefault();
-                        this.click();
-                    }}
-                }});
-            }});
-            
-            // Add hover sound effect (optional)
-            buttons.forEach(button => {{
-                button.addEventListener('mouseenter', function() {{
-                    // Could add a subtle sound effect here
-                }});
-            }});
-        }})();
-        </script>
-        """
-        
-        # Render the enhanced custom component
-        components.html(view_selector_html, height=80)
-        
-        # Enhanced hidden buttons for state management
+        # Individual button view selector matching the image style
         st.markdown("""
         <style>
-        .hidden-state-manager {
-            position: absolute;
-            left: -9999px;
-            opacity: 0;
-            pointer-events: none;
+        /* Individual button container */
+        .view-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        /* Target view selector buttons specifically */
+        .view-buttons-container div[data-testid="column"] {
+            flex: 0 0 auto !important;
+            min-width: 180px !important;
+            padding: 0 !important;
+        }
+        
+        .view-buttons-container div[data-testid="column"] button {
+            width: 100% !important;
+            height: 44px !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            border: 1px solid #d1d5db !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* Active button (primary) - Red/Coral color like in image */
+        .view-buttons-container div[data-testid="column"] button[kind="primary"] {
+            background: #ef4444 !important;
+            color: white !important;
+            border: 1px solid #ef4444 !important;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+        }
+        
+        /* Inactive button (secondary) */
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"] {
+            background: #f9fafb !important;
+            color: #374151 !important;
+            border: 1px solid #d1d5db !important;
+        }
+        
+        .view-buttons-container div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #f3f4f6 !important;
+            border: 1px solid #9ca3af !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .view-buttons-container div[data-testid="column"] button[kind="primary"]:hover {
+            background: #dc2626 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 3px 6px rgba(239, 68, 68, 0.3) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        with st.container():
-            st.markdown('<div class="hidden-state-manager">', unsafe_allow_html=True)
-            
-            # Use columns but make them truly hidden
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                if st.button("🔄 Card", key="enhanced_card_btn", help="Switch to card view"):
-                    st.session_state.current_view_type = "card"
-                    st.rerun()
-            
-            with col2:
-                if st.button("🔄 Table", key="enhanced_table_btn", help="Switch to table view"):
-                    st.session_state.current_view_type = "table" 
-                    st.rerun()
-            
-            with col3:
-                if st.button("🔄 Docs", key="enhanced_docset_btn", help="Switch to document view"):
-                    st.session_state.current_view_type = "docset"
-                    st.rerun()
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+        # Create individual buttons with gaps
+        st.markdown('<div class="view-buttons-container">', unsafe_allow_html=True)
         
-        # Enhanced JavaScript bridge with better error handling
-        st.markdown("""
-        <script>
-        (function() {
-            const BUTTON_SELECTORS = {
-                'card': 'button[data-testid*="enhanced_card_btn"]',
-                'table': 'button[data-testid*="enhanced_table_btn"]', 
-                'docset': 'button[data-testid*="enhanced_docset_btn"]'
-            };
-            
-            let lastEventTime = 0;
-            
-            function handleViewChange(viewType) {
-                const now = Date.now();
-                if (now - lastEventTime < 300) return; // Debounce
-                lastEventTime = now;
-                
-                const button = document.querySelector(BUTTON_SELECTORS[viewType]);
-                if (button && typeof button.click === 'function') {
-                    try {
-                        button.click();
-                    } catch (error) {
-                        console.warn('Button click failed:', error);
-                    }
-                }
-            }
-            
-            // Enhanced event listener for custom events
-            window.addEventListener('streamlit:view-change', function(e) {
-                if (e.detail && e.detail.viewType) {
-                    handleViewChange(e.detail.viewType);
-                }
-            }, { passive: true });
-            
-            // Enhanced postMessage listener with validation
-            window.addEventListener('message', function(e) {
-                if (e.data && 
-                    e.data.type === 'streamlit:view-change' && 
-                    e.data.viewType &&
-                    BUTTON_SELECTORS[e.data.viewType]) {
-                    handleViewChange(e.data.viewType);
-                }
-            }, { passive: true });
-            
-            // Cleanup on page unload
-            window.addEventListener('beforeunload', function() {
-                // Clean up any pending operations
-            });
-        })();
-        </script>
-        """, unsafe_allow_html=True)
+        col1, col2, col3, col_spacer = st.columns([1, 1, 1, 2])
+        
+        with col1:
+            if st.button("Card View", 
+                        type="primary" if st.session_state.current_view_type == "card" else "secondary",
+                        key="card_view_btn",
+                        use_container_width=True):
+                st.session_state.current_view_type = "card"
+                st.rerun()
+        
+        with col2:
+            if st.button("Table View", 
+                        type="primary" if st.session_state.current_view_type == "table" else "secondary",
+                        key="table_view_btn",
+                        use_container_width=True):
+                st.session_state.current_view_type = "table"
+                st.rerun()
+        
+        with col3:
+            if st.button("Document Categories", 
+                        type="primary" if st.session_state.current_view_type == "docset" else "secondary",
+                        key="docset_view_btn",
+                        use_container_width=True):
+                st.session_state.current_view_type = "docset"
+                st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])

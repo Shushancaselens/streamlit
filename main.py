@@ -1405,8 +1405,8 @@ def main():
                 
                 # Create simple card using container
                 with st.container():
-                    # Only show date and document name
-                    st.write(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}")
+                    # Show date and document name prominently on the card
+                    st.markdown(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}")
                     
                     # Expandable details
                     with st.expander("View Details"):

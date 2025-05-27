@@ -787,86 +787,67 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Segmented control style view selector
+        # Separate pill-style buttons to match the reference image
         st.markdown("""
         <style>
-        /* Segmented control container */
-        .segmented-control-wrapper {
+        /* Pill buttons container */
+        .pill-buttons-wrapper {
             display: flex;
             justify-content: center;
             margin: 20px 0 30px 0;
+            gap: 12px;
         }
         
-        .segmented-control {
-            display: inline-flex;
-            background: #f3f4f6;
-            border-radius: 8px;
-            padding: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Target segmented control buttons specifically */
-        .segmented-control div[data-testid="column"] {
+        /* Target pill buttons specifically */
+        .pill-buttons-wrapper div[data-testid="column"] {
             padding: 0 !important;
             margin: 0 !important;
+            flex: 0 0 auto !important;
         }
         
-        .segmented-control div[data-testid="column"] button {
-            height: 36px !important;
-            padding: 8px 20px !important;
+        .pill-buttons-wrapper div[data-testid="column"] button {
+            height: 44px !important;
+            padding: 12px 24px !important;
             font-size: 14px !important;
             font-weight: 500 !important;
             transition: all 0.2s ease !important;
             margin: 0 !important;
-            min-width: 120px !important;
-            border: none !important;
+            min-width: 160px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important;
             cursor: pointer !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
         }
         
-        /* First button (left) */
-        .segmented-control div[data-testid="column"]:first-child button {
-            border-radius: 6px 0 0 6px !important;
-        }
-        
-        /* Last button (right) */
-        .segmented-control div[data-testid="column"]:last-child button {
-            border-radius: 0 6px 6px 0 !important;
-        }
-        
-        /* Middle button */
-        .segmented-control div[data-testid="column"]:not(:first-child):not(:last-child) button {
-            border-radius: 0 !important;
-        }
-        
-        /* Active button (primary) */
-        .segmented-control div[data-testid="column"] button[kind="primary"] {
-            background: #3b82f6 !important;
+        /* Active button (primary) - Red/coral color */
+        .pill-buttons-wrapper div[data-testid="column"] button[kind="primary"] {
+            background: #ef4444 !important;
             color: white !important;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
         }
         
         /* Inactive button (secondary) */
-        .segmented-control div[data-testid="column"] button[kind="secondary"] {
-            background: transparent !important;
-            color: #6b7280 !important;
+        .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"] {
+            background: white !important;
+            color: #64748b !important;
+            border-color: #e2e8f0 !important;
         }
         
-        .segmented-control div[data-testid="column"] button[kind="secondary"]:hover {
-            background: #e5e7eb !important;
-            color: #374151 !important;
-        }
-        
-        /* Remove gaps between buttons */
-        .segmented-control div[data-testid="column"] + div[data-testid="column"] {
-            margin-left: 0 !important;
+        .pill-buttons-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
+            background: #f8fafc !important;
+            color: #475569 !important;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create segmented control
-        st.markdown('<div class="segmented-control-wrapper"><div class="segmented-control">', unsafe_allow_html=True)
+        # Create pill-style buttons with gaps
+        st.markdown('<div class="pill-buttons-wrapper">', unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([1, 1, 1], gap="medium")
         
         with col1:
             if st.button("Card View", 
@@ -892,7 +873,7 @@ def main():
                 st.session_state.current_view_type = "docset"
                 st.rerun()
         
-        st.markdown('</div></div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Facts filter using tabs
         tab1, tab2, tab3 = st.tabs(["All Facts", "Disputed Facts", "Undisputed Facts"])
@@ -914,4 +895,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -725,7 +725,7 @@ def render_streamlit_card_view(filtered_facts=None):
                                 # Use JavaScript to copy to clipboard
                                 components.html(f"""
                                 <script>
-                                const textToCopy = `{ref_copy}`;
+                                const textToCopy = "{ref_copy}";
                                 
                                 if (navigator.clipboard && window.isSecureContext) {{
                                     navigator.clipboard.writeText(textToCopy).then(function() {{
@@ -996,7 +996,7 @@ def render_streamlit_docset_view(filtered_facts=None):
                                                 # Use JavaScript to copy to clipboard
                                                 components.html(f"""
                                                 <script>
-                                                const textToCopy = `{ref_copy}`;
+                                                const textToCopy = "{ref_copy}";
                                                 
                                                 if (navigator.clipboard && window.isSecureContext) {{
                                                     navigator.clipboard.writeText(textToCopy).then(function() {{

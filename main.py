@@ -529,110 +529,16 @@ def main():
         def set_facts_view():
             st.session_state.view = "Facts"
             
-        def set_document_categories_view():
-            st.session_state.view = "Document_Categories"
+        def set_exhibits_view():
+            st.session_state.view = "Exhibits"
         
         # Create buttons with names
         st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📁 Document Categories", key="doc_categories_button", on_click=set_document_categories_view, use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Create the facts section (cards only)
+    # Create the facts HTML component with embedded Streamlit for card view
     if st.session_state.view == "Facts":
-        st.markdown("### 📊 Legal Facts")
-        
-        facts_data = get_all_facts()
-        
-        # Filter facts based on current tab (defaulting to 'all' for demo)
-        current_tab = st.session_state.get('current_tab', 'all')
-        if current_tab == 'disputed':
-            filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
-        elif current_tab == 'undisputed':
-            filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
-        else:
-            filtered_facts = facts_data
-        
-        # Sort by date
-        filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
-        
-        if not filtered_facts:
-            st.info("No facts found matching the selected criteria.")
-        else:
-            # Render each fact as a simple Streamlit card
-            for i, fact in enumerate(filtered_facts):
-                
-                # Create card using expander as the main container
-                with st.expander(f"**{fact['date']}** - {fact.get('doc_name', 'Unknown Document')}", expanded=False):
-                    
-                    # Event title inside the card
-                    st.subheader(fact['event'])
-                    st.write(f"**Exhibits:** {len(fact.get('exhibits', []))}")
-                    
-                    # Evidence section
-                    evidence_content = get_evidence_content(fact)
-                    
-                    if evidence_content:
-                        st.subheader("📄 Evidence & References")
-                        
-                        for evidence in evidence_content:
-                            st.write(f"**{evidence['id']} - {evidence['title']}**")
-                            
-                            if fact.get('doc_summary'):
-                                st.info(f"**Document:** {fact['doc_summary']}")
-                            
-                            if fact.get('source_text'):
-                                st.write(f"**Source:** {fact['source_text']}")
-                            
-                            st.write(f"**Summary:** {evidence['summary']}")
-                            
-                            # Reference info
-                            st.write(f"**Reference:** Exhibit {evidence['id']}, Page {fact.get('page', 'N/A')}, Paragraphs {fact.get('paragraphs', 'N/A')}")
-                            
-                            # Action buttons
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                if st.button(f"Preview {evidence['id']}", key=f"preview_{evidence['id']}_{i}"):
-                                    st.success(f"Opening {evidence['id']}")
-                            with col2:
-                                if st.button(f"Copy Reference", key=f"copy_{evidence['id']}_{i}"):
-                                    st.success("Reference copied!")
-                            
-                            st.write("---")
-                    else:
-                        st.info("No evidence available")
-                    
-                    # Party submissions
-                    st.subheader("📝 Party Submissions")
-                    
-                    st.write("**🔵 Claimant:**")
-                    claimant_text = fact.get('claimant_submission', 'No submission recorded')
-                    if claimant_text == 'No specific submission recorded':
-                        st.write("*No submission provided*")
-                    else:
-                        st.write(claimant_text)
-                    
-                    st.write("**🔴 Respondent:**")
-                    respondent_text = fact.get('respondent_submission', 'No submission recorded')
-                    if respondent_text == 'No specific submission recorded':
-                        st.write("*No submission provided*")
-                    else:
-                        st.write(respondent_text)
-                    
-                    # Status info
-                    st.subheader("ℹ️ Case Information")
-                    st.write(f"**Argument ID:** {fact.get('argId', 'N/A')}")
-                    st.write(f"**Paragraphs:** {fact.get('paragraphs', 'N/A')}")
-                    
-                    status = "Disputed" if fact['isDisputed'] else "Undisputed"
-                    if fact['isDisputed']:
-                        st.error(f"Status: {status}")
-                    else:
-                        st.success(f"Status: {status}")
-                
-                st.write("")  # Simple spacing between cards
-
-    # Create the document categories section
-    elif st.session_state.view == "Document_Categories":
         # Create HTML component that handles navigation and renders streamlit content for card view
         html_content = f"""
         <!DOCTYPE html>
@@ -1458,7 +1364,7 @@ def main():
         """, unsafe_allow_html=True)
         
         # Render the main HTML component with navigation
-        components.html(html_content, height=600, scrolling=True)
+        components.html(html_content, height=200, scrolling=False)
         
         # Initialize session state for current view and tab if not exists
         if 'current_view' not in st.session_state:

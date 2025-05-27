@@ -1470,8 +1470,6 @@ def main():
                         st.error(f"Status: {status}")
                     else:
                         st.success(f"Status: {status}")
-                
-                st.write("")  # Simple spacing between cards
 
 if __name__ == "__main__":
     main()

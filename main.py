@@ -534,8 +534,9 @@ def main():
     
     # Facts view with clean tabs
     if st.session_state.view == "Facts":
-        # Add minimal spacing component for natural gap
-        components.html("", height=30)
+        # Add natural spacing
+        st.markdown("")
+        st.markdown("")
         
         # Get facts data
         facts_data = get_all_facts()

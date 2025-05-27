@@ -787,33 +787,42 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # View selector buttons with sidebar-style CSS
+        # View selector buttons with compact tab-like styling
         st.markdown("""
         <style>
-        /* View selector buttons - matching sidebar style */
+        /* Compact view selector buttons */
         div[data-testid="column"] > div > div > div > button {
-            border-radius: 6px !important;
-            height: 50px !important;
+            border-radius: 8px !important;
+            height: 36px !important;
             font-weight: 500 !important;
-            transition: all 0.3s !important;
-            margin-bottom: 10px !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease !important;
+            margin-bottom: 5px !important;
+            padding: 8px 16px !important;
         }
         
         div[data-testid="column"] > div > div > div > button:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
         }
         
         div[data-testid="column"] > div > div > div > button[kind="primary"] {
-            background-color: #ff4b4b !important;
+            background-color: #1f77b4 !important;
             border: none !important;
             color: white !important;
+            box-shadow: 0 2px 4px rgba(31, 119, 180, 0.3) !important;
         }
         
         div[data-testid="column"] > div > div > div > button[kind="secondary"] {
-            background-color: white !important;
-            color: #262730 !important;
-            border: 1px solid #d0d0d0 !important;
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            border: 1px solid #dee2e6 !important;
+        }
+        
+        div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
+            background-color: #e9ecef !important;
+            color: #495057 !important;
+            border-color: #adb5bd !important;
         }
         </style>
         """, unsafe_allow_html=True)

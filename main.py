@@ -1300,171 +1300,361 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Custom compact view selector component
+        # Ultra-modern compact view selector component
+        current_view = st.session_state.current_view_type
+        
         view_selector_html = f"""
-        <div style="display: flex; justify-content: center; margin: 15px 0 25px 0;">
-            <div style="
-                display: inline-flex; 
-                background: #f8fafc; 
-                border-radius: 10px; 
-                padding: 4px; 
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-                border: 1px solid #e2e8f0;
-            ">
-                <button onclick="selectView('card')" id="card-btn" style="
-                    background: {'#ef4444' if st.session_state.current_view_type == 'card' else 'transparent'};
-                    color: {'white' if st.session_state.current_view_type == 'card' else '#64748b'};
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 7px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    min-width: 90px;
-                    height: 32px;
-                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'card' else 'none'};
-                ">Card View</button>
-                
-                <button onclick="selectView('table')" id="table-btn" style="
-                    background: {'#ef4444' if st.session_state.current_view_type == 'table' else 'transparent'};
-                    color: {'white' if st.session_state.current_view_type == 'table' else '#64748b'};
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 7px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    min-width: 90px;
-                    height: 32px;
-                    margin: 0 2px;
-                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'table' else 'none'};
-                ">Table View</button>
-                
-                <button onclick="selectView('docset')" id="docset-btn" style="
-                    background: {'#ef4444' if st.session_state.current_view_type == 'docset' else 'transparent'};
-                    color: {'white' if st.session_state.current_view_type == 'docset' else '#64748b'};
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 7px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    min-width: 120px;
-                    height: 32px;
-                    box-shadow: {'0 2px 4px rgba(239, 68, 68, 0.2)' if st.session_state.current_view_type == 'docset' else 'none'};
-                ">Document Categories</button>
+        <div class="view-selector-wrapper">
+            <div class="view-selector-container">
+                <div class="selector-background"></div>
+                <div class="selector-track">
+                    <div class="selector-thumb {'thumb-card' if current_view == 'card' else 'thumb-table' if current_view == 'table' else 'thumb-docset'}"></div>
+                </div>
+                <button class="view-btn {'active' if current_view == 'card' else ''}" data-view="card">
+                    <span class="btn-icon">📋</span>
+                    <span class="btn-text">Cards</span>
+                </button>
+                <button class="view-btn {'active' if current_view == 'table' else ''}" data-view="table">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-text">Table</span>
+                </button>
+                <button class="view-btn {'active' if current_view == 'docset' else ''}" data-view="docset">
+                    <span class="btn-icon">📁</span>
+                    <span class="btn-text">Docs</span>
+                </button>
             </div>
         </div>
-        
+
         <style>
-        button:hover {{
+        .view-selector-wrapper {{
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 30px 0;
+            user-select: none;
+        }}
+
+        .view-selector-container {{
+            position: relative;
+            display: inline-flex;
+            background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 4px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                0 2px 4px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+
+        .view-selector-container:hover {{
+            box-shadow: 
+                0 6px 16px rgba(0, 0, 0, 0.12),
+                0 3px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
             transform: translateY(-1px);
-            background: #e2e8f0 !important;
         }}
-        
-        #card-btn:hover {{
-            background: {'#dc2626' if st.session_state.current_view_type == 'card' else '#e2e8f0'} !important;
+
+        .selector-track {{
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            pointer-events: none;
         }}
-        
-        #table-btn:hover {{
-            background: {'#dc2626' if st.session_state.current_view_type == 'table' else '#e2e8f0'} !important;
+
+        .selector-thumb {{
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 12px;
+            box-shadow: 
+                0 3px 8px rgba(239, 68, 68, 0.3),
+                0 1px 3px rgba(239, 68, 68, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }}
-        
-        #docset-btn:hover {{
-            background: {'#dc2626' if st.session_state.current_view_type == 'docset' else '#e2e8f0'} !important;
+
+        .thumb-card {{
+            left: 0;
+            width: 80px;
         }}
-        </style>
-        
-        <script>
-        function selectView(viewType) {{
-            // Create a custom event to communicate with Streamlit
-            const event = new CustomEvent('streamlit:view-change', {{
-                detail: {{ viewType: viewType }}
-            }});
-            window.dispatchEvent(event);
-            
-            // Also try to trigger through the parent window if in iframe
-            if (window.parent !== window) {{
-                window.parent.postMessage({{
-                    type: 'streamlit:view-change',
-                    viewType: viewType
-                }}, '*');
+
+        .thumb-table {{
+            left: 84px;
+            width: 80px;
+        }}
+
+        .thumb-docset {{
+            left: 168px;
+            width: 80px;
+        }}
+
+        .view-btn {{
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #64748b;
+            width: 80px;
+            height: 36px;
+            z-index: 2;
+            outline: none;
+        }}
+
+        .view-btn:hover {{
+            color: #475569;
+            transform: translateY(-1px);
+        }}
+
+        .view-btn.active {{
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }}
+
+        .view-btn.active:hover {{
+            color: rgba(255, 255, 255, 0.95);
+        }}
+
+        .btn-icon {{
+            font-size: 14px;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }}
+
+        .btn-text {{
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }}
+
+        .view-btn:hover .btn-icon {{
+            opacity: 1;
+            transform: scale(1.1);
+        }}
+
+        .view-btn.active .btn-icon {{
+            opacity: 1;
+            transform: scale(1.05);
+        }}
+
+        /* Ripple effect */
+        .view-btn::before {{
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }}
+
+        .view-btn:active::before {{
+            width: 80px;
+            height: 80px;
+        }}
+
+        /* Glassmorphism effect */
+        @supports (backdrop-filter: blur(10px)) {{
+            .view-selector-container {{
+                background: rgba(248, 250, 252, 0.8);
+                backdrop-filter: blur(10px);
             }}
         }}
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {{
+            .view-selector-container {{
+                background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+                border: 1px solid rgba(71, 85, 105, 0.3);
+            }}
+            
+            .view-btn {{
+                color: #94a3b8;
+            }}
+            
+            .view-btn:hover {{
+                color: #cbd5e1;
+            }}
+        }}
+
+        /* Accessibility improvements */
+        .view-btn:focus {{
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }}
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {{
+            .view-selector-container {{
+                transform: scale(0.9);
+            }}
+        }}
+        </style>
+
+        <script>
+        (function() {{
+            let isAnimating = false;
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(button => {{
+                button.addEventListener('click', function(e) {{
+                    if (isAnimating) return;
+                    
+                    e.preventDefault();
+                    const viewType = this.dataset.view;
+                    
+                    // Visual feedback
+                    this.style.transform = 'translateY(-1px) scale(0.98)';
+                    setTimeout(() => {{
+                        if (this.style) {{
+                            this.style.transform = '';
+                        }}
+                    }}, 150);
+                    
+                    // Prevent rapid clicking
+                    isAnimating = true;
+                    setTimeout(() => {{ isAnimating = false; }}, 500);
+                    
+                    // Trigger state change
+                    const customEvent = new CustomEvent('streamlit:view-change', {{
+                        detail: {{ viewType }},
+                        bubbles: true
+                    }});
+                    
+                    window.dispatchEvent(customEvent);
+                    
+                    // Fallback for iframe
+                    if (window.parent && window.parent !== window) {{
+                        window.parent.postMessage({{
+                            type: 'streamlit:view-change',
+                            viewType: viewType,
+                            timestamp: Date.now()
+                        }}, '*');
+                    }}
+                }});
+                
+                // Accessibility: keyboard support
+                button.addEventListener('keydown', function(e) {{
+                    if (e.key === 'Enter' || e.key === ' ') {{
+                        e.preventDefault();
+                        this.click();
+                    }}
+                }});
+            }});
+            
+            // Add hover sound effect (optional)
+            buttons.forEach(button => {{
+                button.addEventListener('mouseenter', function() {{
+                    // Could add a subtle sound effect here
+                }});
+            }});
+        }})();
         </script>
         """
         
-        # Render the custom component
-        components.html(view_selector_html, height=70)
+        # Render the enhanced custom component
+        components.html(view_selector_html, height=80)
         
-        # Fallback buttons (hidden but functional) for actual state management
+        # Enhanced hidden buttons for state management
         st.markdown("""
         <style>
-        .hidden-buttons {
-            display: none;
+        .hidden-state-manager {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
         }
         </style>
         """, unsafe_allow_html=True)
         
         with st.container():
-            st.markdown('<div class="hidden-buttons">', unsafe_allow_html=True)
+            st.markdown('<div class="hidden-state-manager">', unsafe_allow_html=True)
+            
+            # Use columns but make them truly hidden
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                if st.button("Card View Hidden", key="card_view_btn_hidden"):
+                if st.button("🔄 Card", key="enhanced_card_btn", help="Switch to card view"):
                     st.session_state.current_view_type = "card"
                     st.rerun()
             
             with col2:
-                if st.button("Table View Hidden", key="table_view_btn_hidden"):
-                    st.session_state.current_view_type = "table"
+                if st.button("🔄 Table", key="enhanced_table_btn", help="Switch to table view"):
+                    st.session_state.current_view_type = "table" 
                     st.rerun()
             
             with col3:
-                if st.button("Document Categories Hidden", key="docset_view_btn_hidden"):
+                if st.button("🔄 Docs", key="enhanced_docset_btn", help="Switch to document view"):
                     st.session_state.current_view_type = "docset"
                     st.rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # Add JavaScript to handle view changes
+        # Enhanced JavaScript bridge with better error handling
         st.markdown("""
         <script>
-        // Listen for view change events
-        window.addEventListener('streamlit:view-change', function(e) {
-            const viewType = e.detail.viewType;
-            
-            // Find and click the corresponding hidden button
-            const buttons = {
-                'card': document.querySelector('button[data-testid*="card_view_btn_hidden"]'),
-                'table': document.querySelector('button[data-testid*="table_view_btn_hidden"]'), 
-                'docset': document.querySelector('button[data-testid*="docset_view_btn_hidden"]')
+        (function() {
+            const BUTTON_SELECTORS = {
+                'card': 'button[data-testid*="enhanced_card_btn"]',
+                'table': 'button[data-testid*="enhanced_table_btn"]', 
+                'docset': 'button[data-testid*="enhanced_docset_btn"]'
             };
             
-            if (buttons[viewType]) {
-                buttons[viewType].click();
-            }
-        });
-        
-        // Also listen for postMessage from iframe
-        window.addEventListener('message', function(e) {
-            if (e.data.type === 'streamlit:view-change') {
-                const viewType = e.data.viewType;
+            let lastEventTime = 0;
+            
+            function handleViewChange(viewType) {
+                const now = Date.now();
+                if (now - lastEventTime < 300) return; // Debounce
+                lastEventTime = now;
                 
-                const buttons = {
-                    'card': document.querySelector('button[data-testid*="card_view_btn_hidden"]'),
-                    'table': document.querySelector('button[data-testid*="table_view_btn_hidden"]'), 
-                    'docset': document.querySelector('button[data-testid*="docset_view_btn_hidden"]')
-                };
-                
-                if (buttons[viewType]) {
-                    buttons[viewType].click();
+                const button = document.querySelector(BUTTON_SELECTORS[viewType]);
+                if (button && typeof button.click === 'function') {
+                    try {
+                        button.click();
+                    } catch (error) {
+                        console.warn('Button click failed:', error);
+                    }
                 }
             }
-        });
+            
+            // Enhanced event listener for custom events
+            window.addEventListener('streamlit:view-change', function(e) {
+                if (e.detail && e.detail.viewType) {
+                    handleViewChange(e.detail.viewType);
+                }
+            }, { passive: true });
+            
+            // Enhanced postMessage listener with validation
+            window.addEventListener('message', function(e) {
+                if (e.data && 
+                    e.data.type === 'streamlit:view-change' && 
+                    e.data.viewType &&
+                    BUTTON_SELECTORS[e.data.viewType]) {
+                    handleViewChange(e.data.viewType);
+                }
+            }, { passive: true });
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', function() {
+                // Clean up any pending operations
+            });
+        })();
         </script>
         """, unsafe_allow_html=True)
         

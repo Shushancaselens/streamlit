@@ -545,7 +545,6 @@ def main():
         facts_data = get_all_facts()
         
         with tab1:
-            st.markdown("### 📊 Legal Facts - Card View")
             filtered_facts = facts_data
             # Sort by date
             filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
@@ -624,7 +623,6 @@ def main():
                             st.success(f"Status: {status}")
         
         with tab2:
-            st.markdown("### 📊 Legal Facts - Card View")
             filtered_facts = [fact for fact in facts_data if fact['isDisputed']]
             # Sort by date
             filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
@@ -703,7 +701,6 @@ def main():
                             st.success(f"Status: {status}")
         
         with tab3:
-            st.markdown("### 📊 Legal Facts - Card View")
             filtered_facts = [fact for fact in facts_data if not fact['isDisputed']]
             # Sort by date
             filtered_facts.sort(key=lambda x: x['date'].split('-')[0])

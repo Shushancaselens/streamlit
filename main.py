@@ -364,129 +364,6 @@ def get_all_facts():
     
     return enhanced_facts
 
-# Get enhanced timeline data with claimant and respondent submissions
-def get_timeline_data():
-    # Create enhanced timeline events with both parties' positions
-    timeline_events = [
-        {
-            "event": "Club founded and officially registered in the Football Federation",
-            "date": "1950-01-12",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-1"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "Athletic Club United was officially founded and registered with the National Football Federation on January 12, 1950, marking the beginning of its formal existence as a competitive sporting entity.",
-            "page": 15,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Operations ceased between 1975-1976",
-            "date": "1975-1976",
-            "isDisputed": True,
-            "claimant_submission": "While there was a temporary administrative restructuring during 1975-1976 due to financial difficulties, the club's core operations and identity remained intact throughout this period, with no cessation of sporting activities.",
-            "respondent_submission": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "exhibits": ["C-2", "R-1", "R-2"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Both parties - Statement of Appeal & Answer to PM",
-            "source_text": "Complete cessation of all club operations occurred during the 1975-1976 season, with no team fielded in any competition and complete absence from federation records, constituting a clear break in continuity.",
-            "page": 127,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Club colors established as blue and white",
-            "date": "1956-03-10",
-            "isDisputed": True,
-            "claimant_submission": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "respondent_submission": "The newly registered entity adopted a significantly different color scheme incorporating red and yellow as primary colors, abandoning the traditional blue and white entirely for the 1976-1977 season.",
-            "exhibits": ["C-4", "R-4"],
-            "argId": "1.2",
-            "argTitle": "Club Colors Analysis",
-            "source": "Appeal - Statement of Appeal",
-            "source_text": "The club's official colors were formally established as royal blue and white on March 10, 1956, following a unanimous decision by the club's founding committee and ratified by the membership.",
-            "page": 67,
-            "doc_name": "Statement of Appeal",
-            "doc_summary": "Primary appeal document outlining the appellant's main arguments regarding sporting succession and club identity continuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "First National Championship won",
-            "date": "1955-05-20",
-            "isDisputed": False,
-            "claimant_submission": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "respondent_submission": "No specific counter-submission recorded",
-            "exhibits": ["C-3"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "Appeal - Appeal Brief",
-            "source_text": "Athletic Club United achieved its first National Championship victory on May 20, 1955, defeating rivals 3-1 in the final match held at National Stadium, establishing the club's competitive credentials.",
-            "page": 42,
-            "doc_name": "Appeal Brief",
-            "doc_summary": "Comprehensive brief supporting the appeal with detailed arguments and evidence regarding club continuity and identity.",
-            "parties_involved": ["Appellant"]
-        },
-        {
-            "event": "Club registration formally terminated",
-            "date": "1975-04-30",
-            "isDisputed": True,
-            "claimant_submission": "On April 30, 1975, the club's administrative operations were formally halted due to severe financial difficulties, with all staff terminated and offices closed indefinitely, but this was a temporary administrative measure that did not affect the club's legal identity.",
-            "respondent_submission": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements, creating a complete legal break.",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional measures - Answer to Request for PM",
-            "source_text": "The club's registration with the National Football Federation was formally terminated on April 30, 1975, following failure to meet financial obligations and regulatory requirements.",
-            "page": 158,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "New entity registered with similar name",
-            "date": "1976-09-15",
-            "isDisputed": True,
-            "claimant_submission": "The registration in 1976 was a continuation of the same legal entity under identical management and ownership, maintaining all historical rights and obligations of the original club.",
-            "respondent_submission": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations, establishing a completely separate legal entity.",
-            "exhibits": ["R-2"],
-            "argId": "1.1.1",
-            "argTitle": "Registration Gap Evidence",
-            "source": "provisional measures - Answer to Request for PM",
-            "source_text": "A new sporting entity was registered on September 15, 1976, under the name 'Athletic Club United FC' - notably different from the original 'Athletic Club United' that had ceased operations.",
-            "page": 162,
-            "doc_name": "Answer to Request for Provisional Measures",
-            "doc_summary": "Respondent's response challenging the appellant's claims and presenting evidence of operational discontinuity.",
-            "parties_involved": ["Appellant", "Respondent"]
-        },
-        {
-            "event": "Federation officially recognizes club history spanning pre and post 1976",
-            "date": "2010-05-18",
-            "isDisputed": True,
-            "claimant_submission": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976, providing definitive administrative confirmation of sporting succession.",
-            "respondent_submission": "The 2010 federation recognition was a purely administrative convenience that does not override the documented legal and operational discontinuity that occurred in 1975-1976.",
-            "exhibits": ["C-10"],
-            "argId": "1",
-            "argTitle": "Sporting Succession",
-            "source": "admissibility - Reply to Objection to Admissibility",
-            "source_text": "The National Football Federation issued official recognition on May 18, 2010, acknowledging the club's continuous history from 1950 to present, including the period spanning 1975-1976.",
-            "page": 234,
-            "doc_name": "Reply to Objection to Admissibility",
-            "doc_summary": "Appellant's response to respondent's objections regarding the admissibility of certain evidence and arguments.",
-            "parties_involved": ["Appellant", "Respondent"]
-        }
-    ]
-    
-    # Sort events chronologically
-    timeline_events.sort(key=lambda x: x['date'])
-    
-    return timeline_events
-
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
     # Return grouped document sets with individual document subfolders
@@ -596,13 +473,11 @@ def main():
     args_data = get_argument_data()
     facts_data = get_all_facts()
     document_sets = get_document_sets()
-    timeline_data = get_timeline_data()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
     document_sets_json = json.dumps(document_sets)
-    timeline_json = json.dumps(timeline_data)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -917,11 +792,6 @@ def main():
                     border-radius: 4px 0 0 4px;
                 }}
                 
-                .view-toggle button:nth-child(2) {{
-                    border-left: none;
-                    border-right: none;
-                }}
-                
                 .view-toggle button:last-child {{
                     border-radius: 0 4px 4px 0;
                 }}
@@ -969,149 +839,6 @@ def main():
                 
                 .chevron.expanded {{
                     transform: rotate(90deg);
-                }}
-                
-                /* Enhanced Timeline styling */
-                .timeline-container {{
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 20px;
-                    position: relative;
-                    max-width: 1000px;
-                    margin: 0 auto;
-                }}
-                
-                .timeline-wrapper {{
-                    position: relative;
-                    margin-left: 20px;
-                }}
-                
-                .timeline-line {{
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
-                    width: 4px;
-                    background: linear-gradient(to bottom, #4299e1, #7f9cf5);
-                    border-radius: 4px;
-                }}
-                
-                .timeline-item {{
-                    display: flex;
-                    margin-bottom: 32px;
-                    position: relative;
-                }}
-                
-                .timeline-point {{
-                    position: absolute;
-                    left: -12px;
-                    top: 18px;
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    background-color: #4299e1;
-                    border: 4px solid white;
-                    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-                    z-index: 10;
-                }}
-                
-                .timeline-point.disputed {{
-                    background-color: #e53e3e;
-                    box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.3);
-                }}
-                
-                .timeline-content {{
-                    margin-left: 32px;
-                    flex-grow: 1;
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-                    overflow: hidden;
-                    transition: all 0.2s;
-                }}
-                
-                .timeline-content:hover {{
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-                    transform: translateY(-2px);
-                }}
-                
-                .timeline-header {{
-                    padding: 12px 16px;
-                    border-bottom: 1px solid #e2e8f0;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    background-color: #f8fafc;
-                }}
-                
-                .timeline-header-disputed {{
-                    background-color: rgba(229, 62, 62, 0.05);
-                }}
-                
-                .timeline-date {{
-                    font-weight: 600;
-                    color: #1a202c;
-                }}
-                
-                .timeline-badges {{
-                    display: flex;
-                    gap: 6px;
-                }}
-                
-                .timeline-body {{
-                    padding: 16px;
-                }}
-                
-                .timeline-fact {{
-                    margin-bottom: 12px;
-                    font-size: 16px;
-                    color: #2d3748;
-                    font-weight: 500;
-                }}
-                
-                .timeline-footer {{
-                    padding: 14px 18px;
-                    background-color: #f8fafc;
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 8px;
-                    border-top: 1px solid #e2e8f0;
-                }}
-                
-                .timeline-meta {{
-                    font-size: 14px;
-                    color: #718096;
-                    margin-top: 10px;
-                }}
-                
-                .timeline-meta span {{
-                    display: inline-block;
-                    margin-right: 12px;
-                }}
-                
-                .timeline-year-marker {{
-                    display: flex;
-                    align-items: center;
-                    margin: 24px 0;
-                    position: relative;
-                }}
-                
-                .timeline-year {{
-                    background-color: #4299e1;
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 16px;
-                    font-weight: 600;
-                    position: relative;
-                    z-index: 10;
-                    margin-left: 32px;
-                }}
-                
-                .timeline-year-line {{
-                    flex-grow: 1;
-                    height: 2px;
-                    background-color: #e2e8f0;
-                    margin-left: 12px;
                 }}
                 
                 /* Enhanced Evidence styling */
@@ -1225,7 +952,6 @@ def main():
                     <div class="view-toggle">
                         <button id="card-view-btn" class="active" onclick="switchView('card')">Card View</button>
                         <button id="docset-view-btn" onclick="switchView('docset')">Document Categories</button>
-                        <button id="timeline-view-btn" onclick="switchView('timeline')">Timeline View</button>
                     </div>
                     
                     <div class="facts-header">
@@ -1239,16 +965,6 @@ def main():
                         <div id="streamlit-card-container"></div>
                     </div>
                     
-                    <!-- Timeline View -->
-                    <div id="timeline-view-content" class="facts-content" style="display: none;">
-                        <div class="timeline-container">
-                            <div class="timeline-wrapper">
-                                <div class="timeline-line"></div>
-                                <div id="timeline-events"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Document Sets View -->
                     <div id="docset-view-content" class="facts-content" style="display: none;">
                         <div id="document-sets-container"></div>
@@ -1260,7 +976,6 @@ def main():
                 // Initialize data
                 const factsData = {facts_json};
                 const documentSets = {document_sets_json};
-                const timelineData = {timeline_json};
                 let currentTab = 'all';
                 let currentView = 'card';
                 
@@ -1273,9 +988,7 @@ def main():
                     if (action === 'tab_change') {{
                         currentTab = data.tab;
                         if (currentView !== 'card') {{
-                            if (currentView === 'timeline') {{
-                                renderTimeline(currentTab);
-                            }} else if (currentView === 'docset') {{
+                            if (currentView === 'docset') {{
                                 renderDocumentSets(currentTab);
                             }}
                         }}
@@ -1312,21 +1025,17 @@ def main():
                 // View switching
                 function switchView(viewType) {{
                     const cardBtn = document.getElementById('card-view-btn');
-                    const timelineBtn = document.getElementById('timeline-view-btn');
                     const docsetBtn = document.getElementById('docset-view-btn');
                     
                     const cardContent = document.getElementById('card-view-content');
-                    const timelineContent = document.getElementById('timeline-view-content');
                     const docsetContent = document.getElementById('docset-view-content');
                     
                     // Remove active class from all buttons
                     cardBtn.classList.remove('active');
-                    timelineBtn.classList.remove('active');
                     docsetBtn.classList.remove('active');
                     
                     // Hide all content
                     cardContent.style.display = 'none';
-                    timelineContent.style.display = 'none';
                     docsetContent.style.display = 'none';
                     
                     // Activate the selected view
@@ -1334,10 +1043,6 @@ def main():
                         cardBtn.classList.add('active');
                         cardContent.style.display = 'block';
                         // Streamlit will handle card rendering
-                    }} else if (viewType === 'timeline') {{
-                        timelineBtn.classList.add('active');
-                        timelineContent.style.display = 'block';
-                        renderTimeline(currentTab);
                     }} else if (viewType === 'docset') {{
                         docsetBtn.classList.add('active');
                         docsetContent.style.display = 'block';
@@ -1431,20 +1136,6 @@ def main():
                     return date.toLocaleDateString(undefined, options);
                 }}
                 
-                // Helper to extract year from date
-                function getYear(dateString) {{
-                    if (dateString.includes('-')) {{
-                        return dateString.split('-')[0];
-                    }}
-                    
-                    const date = new Date(dateString);
-                    if (isNaN(date)) {{
-                        return '';
-                    }}
-                    
-                    return date.getFullYear().toString();
-                }}
-                
                 // Toggle evidence expansion
                 function toggleEvidence(evidenceId, factIndex) {{
                     const content = document.getElementById(`evidence-content-${{evidenceId}}-${{factIndex}}`);
@@ -1533,145 +1224,6 @@ def main():
                 function exportAsCsv() {{ alert("CSV export functionality would be implemented here"); }}
                 function exportAsPdf() {{ alert("PDF export functionality would be implemented here"); }}
                 function exportAsWord() {{ alert("Word export functionality would be implemented here"); }}
-                
-                // Render timeline view
-                function renderTimeline(tabType = 'all') {{
-                    const container = document.getElementById('timeline-events');
-                    container.innerHTML = '';
-                    
-                    let filteredData = factsData.map(standardizeFactData);
-                    if (tabType === 'disputed') {{
-                        filteredData = filteredData.filter(item => item.isDisputed);
-                    }} else if (tabType === 'undisputed') {{
-                        filteredData = filteredData.filter(item => !item.isDisputed);
-                    }}
-                    
-                    filteredData.sort((a, b) => {{
-                        const dateA = a.date.split('-')[0];
-                        const dateB = b.date.split('-')[0];
-                        return new Date(dateA) - new Date(dateB);
-                    }});
-                    
-                    let currentYear = '';
-                    let prevYear = '';
-                    
-                    filteredData.forEach(fact => {{
-                        currentYear = getYear(fact.date);
-                        if (currentYear && currentYear !== prevYear) {{
-                            const yearMarker = document.createElement('div');
-                            yearMarker.className = 'timeline-year-marker';
-                            yearMarker.innerHTML = `
-                                <div class="timeline-year">${{currentYear}}</div>
-                                <div class="timeline-year-line"></div>
-                            `;
-                            container.appendChild(yearMarker);
-                            prevYear = currentYear;
-                        }}
-                    
-                        const timelineItem = document.createElement('div');
-                        timelineItem.className = 'timeline-item';
-                        
-                        const timelinePoint = document.createElement('div');
-                        timelinePoint.className = `timeline-point${{fact.isDisputed ? ' disputed' : ''}}`;
-                        timelineItem.appendChild(timelinePoint);
-                        
-                        const contentEl = document.createElement('div');
-                        contentEl.className = 'timeline-content';
-                        
-                        const headerEl = document.createElement('div');
-                        headerEl.className = `timeline-header${{fact.isDisputed ? ' timeline-header-disputed' : ''}}`;
-                        
-                        const titleEl = document.createElement('div');
-                        titleEl.style.cssText = 'display: flex; align-items: center; gap: 12px; flex-grow: 1;';
-                        
-                        const dateEl = document.createElement('div');
-                        dateEl.className = 'timeline-date';
-                        dateEl.textContent = formatDate(fact.date);
-                        titleEl.appendChild(dateEl);
-                        
-                        const eventEl = document.createElement('div');
-                        eventEl.style.cssText = 'font-weight: 500; color: #1a202c; flex-grow: 1;';
-                        eventEl.textContent = fact.event;
-                        titleEl.appendChild(eventEl);
-                        
-                        headerEl.appendChild(titleEl);
-                        contentEl.appendChild(headerEl);
-                        
-                        const bodyEl = document.createElement('div');
-                        bodyEl.className = 'timeline-body';
-                        
-                        // Evidence section
-                        const evidenceContent = getEvidenceContent(fact);
-                        if (evidenceContent.length > 0) {{
-                            const evidenceSection = document.createElement('div');
-                            evidenceSection.innerHTML = `
-                                <h4>Evidence & Source References (${{evidenceContent.length}} items)</h4>
-                                ${{evidenceContent.map((evidence, evidenceIndex) => `
-                                    <div style="margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                        <div onclick="toggleEvidence('${{evidence.id}}', 'timeline-${{evidenceIndex}}')" 
-                                             style="padding: 10px 14px; background-color: rgba(221, 107, 32, 0.05); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
-                                            <div>
-                                                <span style="font-weight: 600; color: #dd6b20;">${{evidence.id}}</span>
-                                                <span style="margin-left: 10px; color: #4a5568;">${{evidence.title}}</span>
-                                            </div>
-                                            <span id="evidence-icon-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                                  style="width: 18px; height: 18px; background-color: #dd6b20; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">+</span>
-                                        </div>
-                                        <div id="evidence-content-${{evidence.id}}-timeline-${{evidenceIndex}}" 
-                                             style="display: none; padding: 14px; background-color: white; border-top: 1px solid #e2e8f0;">
-                                            <div style="font-weight: 600; color: #2d3748; margin-bottom: 8px;">Document: ${{evidence.id}} - ${{evidence.title}}</div>
-                                            <div style="background-color: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid #4299e1; margin-bottom: 10px;">
-                                                <div style="font-weight: 600; font-size: 12px; color: #4299e1; margin-bottom: 6px;">DOCUMENT SUMMARY</div>
-                                                <div style="color: #4a5568;">${{fact.doc_summary || 'No document summary available'}}</div>
-                                            </div>
-                                            <div style="background-color: #f0f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid #0ea5e9; margin-bottom: 10px;">
-                                                <div style="font-weight: 600; font-size: 12px; color: #0ea5e9; margin-bottom: 6px;">SOURCE TEXT</div>
-                                                <div style="color: #4a5568;">${{fact.source_text || 'No source text available'}}</div>
-                                            </div>
-                                            <div class="reference-container">
-                                                <div class="reference-text">
-                                                    <strong>Exhibit:</strong> ${{evidence.id}} | <strong>Page:</strong> ${{fact.page || 'N/A'}} | <strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}
-                                                </div>
-                                                <div style="display: flex; gap: 8px;">
-                                                    <button class="copy-reference-btn" onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')">
-                                                        👁️ Preview
-                                                    </button>
-                                                    <button class="copy-reference-btn" onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')">
-                                                        📋 Copy
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('')}}
-                            `;
-                            bodyEl.appendChild(evidenceSection);
-                        }}
-                        
-                        // Submissions
-                        const submissionsEl = document.createElement('div');
-                        submissionsEl.innerHTML = `
-                            <h4>Party Submissions</h4>
-                            <div style="background-color: rgba(49, 130, 206, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #3182ce; margin: 10px 0;">
-                                <div style="font-weight: 600; color: #3182ce; margin-bottom: 6px;">CLAIMANT SUBMISSION</div>
-                                <div>${{fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : '<em>No submission provided</em>'}}</div>
-                            </div>
-                            <div style="background-color: rgba(229, 62, 62, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #e53e3e; margin: 10px 0;">
-                                <div style="font-weight: 600; color: #e53e3e; margin-bottom: 6px;">RESPONDENT SUBMISSION</div>
-                                <div>${{fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : '<em>No submission provided</em>'}}</div>
-                            </div>
-                        `;
-                        bodyEl.appendChild(submissionsEl);
-                        
-                        contentEl.appendChild(bodyEl);
-                        timelineItem.appendChild(contentEl);
-                        container.appendChild(timelineItem);
-                    }});
-                    
-                    if (filteredData.length === 0) {{
-                        container.innerHTML = '<p>No timeline events found matching the selected criteria.</p>';
-                    }}
-                }}
                 
                 // Render document sets view
                 function renderDocumentSets(tabType = 'all') {{
@@ -1842,7 +1394,7 @@ def main():
         # Sort by date
         filtered_facts.sort(key=lambda x: x['date'].split('-')[0])
         
-        # Only show card content (Timeline and Document Sets are handled by HTML component above)
+        # Only show card content (Document Sets are handled by HTML component above)
         st.markdown("### Card View - Streamlit Components")
         st.caption("The navigation above controls the view. This section shows the Card view using native Streamlit components.")
         

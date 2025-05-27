@@ -787,68 +787,93 @@ def main():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Clean tab-style view selector
+        # Custom tab-style view selector
         st.markdown("""
         <style>
-        /* Tab-style view selector */
         .tab-selector-wrapper {
             margin: 20px 0 30px 0;
         }
         
-        .tab-selector-wrapper div[data-testid="column"] button {
-            height: 40px !important;
-            padding: 8px 20px !important;
-            border-radius: 6px !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            transition: all 0.2s ease !important;
-            margin-right: 8px !important;
-            border: 1px solid #e1e5e9 !important;
-        }
-        
-        /* Active tab (primary) */
-        .tab-selector-wrapper div[data-testid="column"] button[kind="primary"] {
-            background-color: #4A90E2 !important;
-            color: white !important;
-            border: 1px solid #4A90E2 !important;
-            box-shadow: none !important;
-        }
-        
-        /* Inactive tab (secondary) */
-        .tab-selector-wrapper div[data-testid="column"] button[kind="secondary"] {
-            background-color: #f8f9fa !important;
-            color: #495057 !important;
-            border: 1px solid #e1e5e9 !important;
-            box-shadow: none !important;
-        }
-        
-        .tab-selector-wrapper div[data-testid="column"] button[kind="secondary"]:hover {
-            background-color: #e9ecef !important;
-            color: #212529 !important;
-        }
-        
-        /* Remove default button styling */
         .tab-selector-wrapper div[data-testid="column"] {
             padding: 0 !important;
+            gap: 0 !important;
         }
         
-        .tab-selector-wrapper div[data-testid="column"] button:focus {
-            box-shadow: none !important;
-            outline: none !important;
+        .tab-selector-wrapper div[data-testid="column"]:first-child button {
+            border-top-left-radius: 8px !important;
+            border-bottom-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+        
+        .tab-selector-wrapper div[data-testid="column"]:last-child button {
+            border-top-right-radius: 8px !important;
+            border-bottom-right-radius: 0 !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+        
+        .tab-selector-wrapper div[data-testid="column"]:not(:first-child):not(:last-child) button {
+            border-radius: 0 !important;
+        }
+        
+        .tab-selector-wrapper button {
+            height: 44px !important;
+            padding: 12px 24px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            border-bottom: none !important;
+            margin: 0 !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        .tab-selector-wrapper button[kind="primary"] {
+            background: #4f8cf6 !important;
+            color: white !important;
+            border: 1px solid #4f8cf6 !important;
+            z-index: 2 !important;
+        }
+        
+        .tab-selector-wrapper button[kind="secondary"] {
+            background: #f8f9fa !important;
+            color: #6b7280 !important;
+            border: 1px solid #e5e7eb !important;
+            border-right: none !important;
+        }
+        
+        .tab-selector-wrapper div[data-testid="column"]:last-child button[kind="secondary"] {
+            border-right: 1px solid #e5e7eb !important;
+        }
+        
+        .tab-selector-wrapper button[kind="secondary"]:hover {
+            background: #f1f5f9 !important;
+            color: #374151 !important;
+        }
+        
+        /* Add bottom border line */
+        .tab-selector-wrapper::after {
+            content: '';
+            display: block;
+            height: 1px;
+            background: #e5e7eb;
+            margin-top: -1px;
+            position: relative;
+            z-index: 0;
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create tab selector
+        # Create tab-style buttons
         st.markdown('<div class="tab-selector-wrapper">', unsafe_allow_html=True)
         
-        col1, col2, col3, col4 = st.columns([2, 2, 3, 5])
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             if st.button("Card View", 
                         type="primary" if st.session_state.current_view_type == "card" else "secondary",
                         key="card_view_btn",
-                        help="View facts as expandable cards"):
+                        use_container_width=True):
                 st.session_state.current_view_type = "card"
                 st.rerun()
         
@@ -856,7 +881,7 @@ def main():
             if st.button("Table View", 
                         type="primary" if st.session_state.current_view_type == "table" else "secondary",
                         key="table_view_btn",
-                        help="View facts in a table format"):
+                        use_container_width=True):
                 st.session_state.current_view_type = "table"
                 st.rerun()
         
@@ -864,12 +889,9 @@ def main():
             if st.button("Document Categories", 
                         type="primary" if st.session_state.current_view_type == "docset" else "secondary",
                         key="docset_view_btn",
-                        help="View facts by document categories"):
+                        use_container_width=True):
                 st.session_state.current_view_type = "docset"
                 st.rerun()
-        
-        with col4:
-            pass  # Empty column for spacing
         
         st.markdown('</div>', unsafe_allow_html=True)
         

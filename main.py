@@ -1275,72 +1275,138 @@ def main():
                         }}
                     }});
                     
-                    // Create document sets UI
+                    // Create document sets UI with cards
                     Object.values(docsWithFacts).forEach(docWithFacts => {{
                         const docset = docWithFacts.docset;
                         const facts = docWithFacts.facts;
                         
-                        const docsetEl = document.createElement('div');
-                        docsetEl.className = 'docset-container';
-                        
-                        const headerHtml = `
-                            <div class="docset-header" onclick="toggleDocSet('${{docset.id}}')">
-                                <svg id="chevron-${{docset.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <svg class="folder-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span><strong>${{docset.name}}</strong></span>
-                                <span style="margin-left: auto;">
-                                    <span class="badge">${{facts.length}} facts</span>
-                                </span>
-                            </div>
-                            <div id="docset-content-${{docset.id}}" class="docset-content">
+                        // Create category header
+                        const categoryHeader = document.createElement('div');
+                        categoryHeader.innerHTML = `
+                            <h3 style="color: #4299e1; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0;">
+                                📁 ${{docset.name}} (${{facts.length}} facts)
+                            </h3>
                         `;
-                        
-                        let contentHtml = '';
+                        container.appendChild(categoryHeader);
                         
                         if (facts.length > 0) {{
-                            contentHtml += '<div style="padding: 16px;">';
-                            
+                            // Create individual cards for each fact (like Card View)
                             facts.forEach((fact, factIndex) => {{
-                                contentHtml += `
-                                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; overflow: hidden;">
-                                        <div style="padding: 16px; background-color: ${{fact.isDisputed ? 'rgba(229, 62, 62, 0.05)' : '#f8fafc'}};">
-                                            <div style="display: flex; align-items: center; gap: 12px;">
-                                                <div style="font-weight: 600; color: #2d3748; min-width: 120px;">${{fact.date}}</div>
-                                                <div style="font-weight: 500; color: #1a202c; flex-grow: 1;">${{fact.event}}</div>
+                                const cardContainer = document.createElement('div');
+                                cardContainer.style.cssText = `
+                                    margin-bottom: 16px;
+                                    padding: 16px;
+                                    border: 1px solid #e2e8f0;
+                                    border-radius: 8px;
+                                    background-color: white;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                `;
+                                
+                                // Card header (date and document name)
+                                const cardHeader = document.createElement('div');
+                                cardHeader.innerHTML = `
+                                    <strong style="font-size: 16px;">${{fact.date}}</strong> - ${{fact.doc_name || 'Unknown Document'}}
+                                `;
+                                cardContainer.appendChild(cardHeader);
+                                
+                                // Expandable details section
+                                const detailsToggle = document.createElement('div');
+                                detailsToggle.innerHTML = `
+                                    <button onclick="toggleFactDetails('docset-fact-${{docset.id}}-${{factIndex}}')" 
+                                            style="margin-top: 8px; padding: 4px 8px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+                                        View Details
+                                    </button>
+                                `;
+                                cardContainer.appendChild(detailsToggle);
+                                
+                                // Hidden details content
+                                const detailsContent = document.createElement('div');
+                                detailsContent.id = `docset-fact-${{docset.id}}-${{factIndex}}`;
+                                detailsContent.style.cssText = 'display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;';
+                                
+                                // Event title
+                                detailsContent.innerHTML = `
+                                    <h4 style="margin-bottom: 8px; color: #2d3748;">${{fact.event}}</h4>
+                                    <p><strong>Exhibits:</strong> ${{fact.exhibits ? fact.exhibits.length : 0}}</p>
+                                `;
+                                
+                                // Evidence section
+                                if (fact.exhibits && fact.exhibits.length > 0) {{
+                                    const evidenceContent = getEvidenceContent(fact);
+                                    let evidenceHtml = '<h4 style="margin: 16px 0 8px 0;">📄 Evidence & References</h4>';
+                                    
+                                    evidenceContent.forEach(evidence => {{
+                                        evidenceHtml += `
+                                            <div style="margin-bottom: 12px; padding: 12px; background-color: #f8fafc; border-radius: 6px;">
+                                                <p><strong>${{evidence.id}} - ${{evidence.title}}</strong></p>
+                                                ${{fact.doc_summary ? `<div style="margin: 8px 0; padding: 8px; background-color: #e6fffa; border-radius: 4px;"><strong>Document:</strong> ${{fact.doc_summary}}</div>` : ''}}
+                                                ${{fact.source_text ? `<p><strong>Source:</strong> ${{fact.source_text}}</p>` : ''}}
+                                                <p><strong>Summary:</strong> ${{evidence.summary}}</p>
+                                                <p><strong>Reference:</strong> Exhibit ${{evidence.id}}, Page ${{fact.page || 'N/A'}}, Paragraphs ${{fact.paragraphs || 'N/A'}}</p>
+                                                
+                                                <div style="margin-top: 8px;">
+                                                    <button onclick="previewDocument('${{evidence.id}}', '${{evidence.title}}')" 
+                                                            style="margin-right: 8px; padding: 4px 8px; background: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        Preview ${{evidence.id}}
+                                                    </button>
+                                                    <button onclick="copyReference('${{evidence.id}}', '${{fact.page || 'N/A'}}', '${{fact.paragraphs || 'N/A'}}')" 
+                                                            style="padding: 4px 8px; background: #48bb78; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                        Copy Reference
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div style="padding: 20px; background-color: white;">
-                                            <h4>Party Submissions</h4>
-                                            <div style="background-color: rgba(49, 130, 206, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #3182ce; margin: 10px 0;">
-                                                <div style="font-weight: 600; color: #3182ce; margin-bottom: 6px;">CLAIMANT SUBMISSION</div>
-                                                <div>${{fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : '<em>No submission provided</em>'}}</div>
-                                            </div>
-                                            <div style="background-color: rgba(229, 62, 62, 0.03); padding: 16px; border-radius: 6px; border-left: 4px solid #e53e3e; margin: 10px 0;">
-                                                <div style="font-weight: 600; color: #e53e3e; margin-bottom: 6px;">RESPONDENT SUBMISSION</div>
-                                                <div>${{fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : '<em>No submission provided</em>'}}</div>
-                                            </div>
-                                            <div style="margin-top: 16px;">
-                                                <strong>Status:</strong> ${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}
-                                            </div>
+                                        `;
+                                    }});
+                                    
+                                    detailsContent.innerHTML += evidenceHtml;
+                                }} else {{
+                                    detailsContent.innerHTML += '<div style="margin: 16px 0; padding: 8px; background-color: #e6fffa; border-radius: 4px; color: #0d9488;">No evidence available</div>';
+                                }}
+                                
+                                // Party submissions
+                                detailsContent.innerHTML += `
+                                    <h4 style="margin: 16px 0 8px 0;">📝 Party Submissions</h4>
+                                    <div style="margin-bottom: 12px;">
+                                        <p><strong>🔵 Claimant:</strong></p>
+                                        <div style="margin-left: 16px; font-style: italic;">
+                                            ${{fact.claimant_submission !== 'No specific submission recorded' ? fact.claimant_submission : 'No submission provided'}}
                                         </div>
                                     </div>
+                                    <div style="margin-bottom: 12px;">
+                                        <p><strong>🔴 Respondent:</strong></p>
+                                        <div style="margin-left: 16px; font-style: italic;">
+                                            ${{fact.respondent_submission !== 'No specific submission recorded' ? fact.respondent_submission : 'No submission provided'}}
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 style="margin: 16px 0 8px 0;">ℹ️ Case Information</h4>
+                                    <p><strong>Argument ID:</strong> ${{fact.argId || 'N/A'}}</p>
+                                    <p><strong>Paragraphs:</strong> ${{fact.paragraphs || 'N/A'}}</p>
+                                    <div style="margin-top: 8px; padding: 8px; border-radius: 4px; ${{fact.isDisputed ? 'background-color: #fee2e2; color: #dc2626;' : 'background-color: #dcfce7; color: #16a34a;'}}">
+                                        <strong>Status:</strong> ${{fact.isDisputed ? 'Disputed' : 'Undisputed'}}
+                                    </div>
                                 `;
+                                
+                                cardContainer.appendChild(detailsContent);
+                                container.appendChild(cardContainer);
                             }});
-                            
-                            contentHtml += '</div>';
                         }} else {{
-                            contentHtml += '<p style="padding: 12px;">No facts found</p>';
+                            const emptyMessage = document.createElement('p');
+                            emptyMessage.textContent = 'No facts found in this category';
+                            emptyMessage.style.cssText = 'color: #6b7280; font-style: italic; margin-bottom: 32px;';
+                            container.appendChild(emptyMessage);
                         }}
-                        
-                        contentHtml += '</div>';
-                        docsetEl.innerHTML = headerHtml + contentHtml;
-                        
-                        container.appendChild(docsetEl);
                     }});
+                }}
+                
+                // Toggle fact details function
+                function toggleFactDetails(factId) {{
+                    const content = document.getElementById(factId);
+                    if (content.style.display === 'none' || content.style.display === '') {{
+                        content.style.display = 'block';
+                    }} else {{
+                        content.style.display = 'none';
+                    }}
                 }}
                 
                 // Initialize

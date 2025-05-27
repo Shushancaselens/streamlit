@@ -1364,11 +1364,7 @@ def main():
         """, unsafe_allow_html=True)
         
         # Render the main HTML component with navigation
-        components.html(html_content, height=800, scrolling=True)
-        
-        # Add a placeholder for the card view that appears below the HTML component
-        # This will be controlled by the HTML navigation above
-        st.markdown("---")
+        components.html(html_content, height=200, scrolling=False)
         
         # Initialize session state for current view and tab if not exists
         if 'current_view' not in st.session_state:
@@ -1470,6 +1466,8 @@ def main():
                         st.error(f"Status: {status}")
                     else:
                         st.success(f"Status: {status}")
+                
+                st.write("")  # Simple spacing between cards
 
 if __name__ == "__main__":
     main()

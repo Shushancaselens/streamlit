@@ -1397,21 +1397,6 @@ def main():
         # Card view content using enhanced Streamlit components
         st.markdown("### 📊 Legal Facts - Card View")
         
-        # Add summary statistics
-        total_facts = len(filtered_facts)
-        disputed_count = len([f for f in filtered_facts if f['isDisputed']])
-        undisputed_count = total_facts - disputed_count
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Facts", total_facts)
-        with col2:
-            st.metric("Disputed", disputed_count, delta=f"{disputed_count/total_facts*100:.1f}%" if total_facts > 0 else "0%")
-        with col3:
-            st.metric("Undisputed", undisputed_count, delta=f"{undisputed_count/total_facts*100:.1f}%" if total_facts > 0 else "0%")
-        
-        st.divider()
-        
         if not filtered_facts:
             st.info("No facts found matching the selected criteria.")
         else:
@@ -1445,7 +1430,7 @@ def main():
                         evidence_content = get_evidence_content(fact)
                         
                         if evidence_content:
-                            st.markdown("### 📄 Evidence & Source References")
+                            st.markdown("#### 📄 Evidence & Source References")
                             
                             # Create tabs for multiple evidences if available
                             if len(evidence_content) > 1:
@@ -1460,20 +1445,17 @@ def main():
                                             
                                             # Document Summary
                                             if fact.get('doc_summary'):
-                                                with st.container():
-                                                    st.markdown("**📋 Document Summary:**")
-                                                    st.info(fact['doc_summary'])
+                                                st.markdown("**📋 Document Summary:**")
+                                                st.info(fact['doc_summary'])
                                             
                                             # Source Text
                                             if fact.get('source_text'):
-                                                with st.container():
-                                                    st.markdown("**📝 Source Text:**")
-                                                    st.markdown(f"> {fact['source_text']}")
+                                                st.markdown("**📝 Source Text:**")
+                                                st.markdown(f"> {fact['source_text']}")
                                                     
                                             # Evidence Summary
-                                            with st.container():
-                                                st.markdown("**🔍 Evidence Summary:**")
-                                                st.write(evidence['summary'])
+                                            st.markdown("**🔍 Evidence Summary:**")
+                                            st.write(evidence['summary'])
                                         
                                         with col2:
                                             st.markdown("**📚 Reference Information**")
@@ -1547,10 +1529,8 @@ def main():
                         else:
                             st.info("📭 No evidence references available for this fact")
                         
-                        st.divider()
-                        
                         # Party Submissions Section
-                        st.markdown("### 📝 Party Submissions")
+                        st.markdown("#### 📝 Party Submissions")
                         
                         # Create tabs for party submissions
                         sub_tab1, sub_tab2 = st.tabs(["🔵 Claimant Position", "🔴 Respondent Position"])
@@ -1571,10 +1551,8 @@ def main():
                                 st.markdown("**Respondent's Position:**")
                                 st.write(respondent_text)
                         
-                        st.divider()
-                        
                         # Additional Information
-                        st.markdown("### ℹ️ Additional Information")
+                        st.markdown("#### ℹ️ Additional Information")
                         
                         info_col1, info_col2 = st.columns(2)
                         
@@ -1592,7 +1570,7 @@ def main():
                                 st.success(f"✅ {status} - Parties agree on this fact")
                     
                     # Add visual separator between cards
-                    st.markdown("---")
+                    st.markdown("")
 
 if __name__ == "__main__":
     main()

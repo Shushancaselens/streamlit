@@ -1394,50 +1394,52 @@ def main():
         # Render the component
         components.html(view_selector_html, height=70)
         
-        # Hidden buttons for state management
+        # Simple approach: Use columns with invisible buttons for state management
+        # Create invisible buttons using CSS
         st.markdown("""
         <style>
-        .hidden-buttons {
-            display: none !important;
-            visibility: hidden !important;
-            position: absolute !important;
-            left: -9999px !important;
+        .invisible-buttons {
+            position: absolute;
+            left: -10000px;
+            top: -10000px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
         }
         </style>
         """, unsafe_allow_html=True)
         
+        # Put buttons in an invisible container
         with st.container():
-            st.markdown('<div class="hidden-buttons">', unsafe_allow_html=True)
-            col1, col2, col3 = st.columns(3)
+            st.markdown('<div class="invisible-buttons">', unsafe_allow_html=True)
             
-            with col1:
-                if st.button("Card", key="simple_card_btn"):
-                    st.session_state.current_view_type = "card"
-                    st.rerun()
-            
-            with col2:
-                if st.button("Table", key="simple_table_btn"):
-                    st.session_state.current_view_type = "table"
-                    st.rerun()
-            
-            with col3:
-                if st.button("Docs", key="simple_docset_btn"):
-                    st.session_state.current_view_type = "docset"
-                    st.rerun()
-            
+            if st.button("Hidden Card", key="hid_card"):
+                st.session_state.current_view_type = "card"
+                st.rerun()
+                
+            if st.button("Hidden Table", key="hid_table"):
+                st.session_state.current_view_type = "table"
+                st.rerun()
+                
+            if st.button("Hidden Docs", key="hid_docset"):
+                st.session_state.current_view_type = "docset"
+                st.rerun()
+                
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # JavaScript bridge for state management
+        # JavaScript to connect custom buttons to hidden Streamlit buttons
         st.markdown("""
         <script>
         function handleViewChange(viewType) {
-            const buttonMap = {
-                'card': 'button[data-testid*="simple_card_btn"]',
-                'table': 'button[data-testid*="simple_table_btn"]',
-                'docset': 'button[data-testid*="simple_docset_btn"]'
+            const buttonSelectors = {
+                'card': 'button[data-testid*="hid_card"]',
+                'table': 'button[data-testid*="hid_table"]',
+                'docset': 'button[data-testid*="hid_docset"]'
             };
             
-            const button = document.querySelector(buttonMap[viewType]);
+            const button = document.querySelector(buttonSelectors[viewType]);
             if (button) {
                 button.click();
             }

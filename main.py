@@ -1405,11 +1405,8 @@ def main():
                 
                 # Create simple card using container
                 with st.container():
-                    # Status and title
-                    if fact['isDisputed']:
-                        st.error(f"🔴 DISPUTED: {fact['event']}")
-                    else:
-                        st.success(f"🟢 UNDISPUTED: {fact['event']}")
+                    # Simple title
+                    st.subheader(fact['event'])
                     
                     st.write(f"**Date:** {fact['date']} | **Exhibits:** {len(fact.get('exhibits', []))}")
                     

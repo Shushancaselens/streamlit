@@ -536,37 +536,30 @@ def main():
             </div>
             """
             
-            # Calculate precise height based on actual content elements
-            # Metadata section: 2 rows + margins
-            metadata_height = 80
+            # Calculate height more generously to ensure ALL content is visible
+            # Base content (metadata + title)
+            base_height = 150
             
-            # Supporting docs title
-            title_height = 40
+            # Per document height - being more generous to prevent cutoff
+            # Each document needs: header + summary + source + actions + margins
+            per_document_height = 280  # Increased to ensure action buttons are always visible
             
-            # Calculate height per document more accurately:
-            # - Document header: ~35px
-            # - Document summary: ~80px (varies by text length)
-            # - Document source: ~60px  
-            # - Document actions: ~45px
-            # - Card margins: ~15px
-            # Total per document: ~235px
-            
-            per_doc_height = 235
             total_docs = len(fact['supportingDocs'])
             
-            # Calculate total needed height
-            total_content_height = metadata_height + title_height + (total_docs * per_doc_height)
+            # Calculate total height with generous buffer
+            calculated_height = base_height + (total_docs * per_document_height)
             
-            # Add small buffer to avoid cutting off content, but keep it minimal
-            buffer = 20
-            final_height = total_content_height + buffer
+            # Add extra buffer to guarantee no cutoff
+            safety_buffer = 50
+            final_height = calculated_height + safety_buffer
             
-            # Safety bounds - but allow enough height for multiple documents
-            min_height = 200
-            max_height = 1500  # Increased to handle cases with many documents
+            # Set reasonable bounds
+            min_height = 400  # Higher minimum to ensure basic content fits
+            max_height = 2000  # Higher max to handle many documents
+            
             final_height = max(min_height, min(final_height, max_height))
             
-            # Render HTML inside expander with precisely calculated height
+            # Render with generous height to show ALL content including action buttons
             components.html(html_content, height=final_height)
 
 if __name__ == "__main__":

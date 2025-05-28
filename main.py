@@ -216,10 +216,32 @@ def get_all_facts():
     
     return facts
 
+# Function to get party badge color
+def get_party_color(party):
+    if party == 'Appellant':
+        return 'blue'
+    elif party == 'Respondent':
+        return 'red'
+    else:
+        return 'violet'
+
+# Function to get proceedings color
+def get_proceedings_color(proceedings):
+    if proceedings == 'registration':
+        return 'green'
+    elif proceedings == 'challenge':
+        return 'red'
+    else:
+        return 'blue'
+
 # Main app
 def main():
     # Get the facts data
     facts_data = get_all_facts()
+    
+    # Initialize session state if not already done
+    if 'view' not in st.session_state:
+        st.session_state.view = "Facts"
     
     # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
@@ -234,7 +256,7 @@ def main():
                 <!-- Rounded square background -->
                 <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
                 <!-- WhatsApp phone icon -->
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137367 54.0014Z" fill="white"/>
               </g>
             </svg>
             <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
@@ -275,194 +297,125 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Custom CSS for badges and styling
-    st.markdown("""
-    <style>
-    .badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
-        margin-right: 8px;
-    }
-    
-    .appellant-badge {
-        background-color: rgba(49, 130, 206, 0.1);
-        color: #3182ce;
-    }
-    
-    .respondent-badge {
-        background-color: rgba(229, 62, 62, 0.1);
-        color: #e53e3e;
-    }
-    
-    .both-badge {
-        background-color: rgba(128, 90, 213, 0.1);
-        color: #805ad5;
-    }
-    
-    .disputed-badge {
-        background-color: rgba(229, 62, 62, 0.1);
-        color: #e53e3e;
-    }
-    
-    .undisputed-badge {
-        background-color: rgba(72, 187, 120, 0.1);
-        color: #38a169;
-    }
-    
-    .sources-count {
-        background: #3182ce;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 12px;
-    }
-    
-    .proceedings-tab {
-        padding: 6px 12px;
-        border-radius: 4px;
-        font-size: 12px;
-        text-transform: capitalize;
-        margin-left: 8px;
-    }
-    
-    .proceedings-registration {
-        background: #e6fffa;
-        color: #00695c;
-    }
-    
-    .proceedings-challenge {
-        background: #fff5f5;
-        color: #c53030;
-    }
-    
-    .proceedings-evidence {
-        background: #f0f4ff;
-        color: #3182ce;
-    }
-    
-    .document-source {
-        background-color: #f8f9fa;
-        padding: 12px;
-        border-radius: 6px;
-        margin-top: 12px;
-        border-left: 4px solid #28a745;
-    }
-    
-    .source-label {
-        font-weight: 600;
-        color: #2d5016;
-        margin-bottom: 4px;
-    }
-    
-    .page-ref {
-        font-style: italic;
-        color: #5a5a5a;
-        margin-top: 4px;
-        font-size: 12px;
-    }
-    
-    .metadata-row {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 16px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    
-    .addressed-status {
-        font-size: 12px;
-        color: #666;
-        margin-left: 8px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Main content
+    # Main content area
     st.title("Case Chronology")
     
     # Sort facts by date
-    facts_sorted = sorted(facts_data, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
+    facts_data.sort(key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
     
-    # Display each fact as a static card
-    for fact in facts_sorted:
-        # Format date
-        date_obj = datetime.strptime(fact['date'], '%Y-%m-%d')
-        formatted_date = date_obj.strftime('%Y-%m-%d')
+    # Display each fact as a Streamlit card
+    for i, fact in enumerate(facts_data):
+        # Format date for display
+        formatted_date = datetime.strptime(fact['date'], '%Y-%m-%d').strftime('%Y-%m-%d')
         
-        # Create card container
-        with st.container():
-            st.markdown("---")
+        # Create expandable card for each chronology entry
+        with st.expander(f"**{formatted_date}** | {fact['point']}", expanded=False):
             
-            # Card header with date and event
-            st.markdown(f"## {formatted_date}")
-            st.markdown(f"**{fact['point']}**")
-            
-            # Metadata row
-            col1, col2, col3 = st.columns([2, 3, 3])
+            # Metadata row with badges
+            col1, col2, col3, col4 = st.columns(4)
             
             with col1:
-                st.markdown(f'<span class="sources-count">{fact["sources"]}</span> Sources', unsafe_allow_html=True)
+                st.markdown(f"**{fact['sources']}** Sources")
             
             with col2:
-                proceedings_class = f"proceedings-{fact['proceedings']}"
-                st.markdown(f'**PROCEEDINGS:** <span class="proceedings-tab {proceedings_class}">{fact["proceedings"]}</span>', unsafe_allow_html=True)
+                st.markdown(f"**PROCEEDINGS:** :{get_proceedings_color(fact['proceedings'])}[{fact['proceedings'].title()}]")
             
             with col3:
-                st.markdown(f'**ADDRESSED BY:** <span class="addressed-status">{fact["addressedBy"]}</span>', unsafe_allow_html=True)
+                st.markdown(f"**ADDRESSED BY:** {fact['addressedBy']}")
             
-            # Party and status badges
-            st.markdown("")  # Add some space
+            with col4:
+                # Party and status badges
+                party_color = get_party_color(fact['party'])
+                status_text = "Disputed" if fact['isDisputed'] else "Undisputed"
+                status_color = "red" if fact['isDisputed'] else "green"
+                
+                st.markdown(f":{party_color}[{fact['party']}] :{status_color}[{status_text}]")
             
-            # Party badge
-            if fact['party'] == 'Both':
-                party_badge = '<span class="badge both-badge">Both Parties</span>'
-            elif fact['party'] == 'Appellant':
-                party_badge = '<span class="badge appellant-badge">Appellant</span>'
-            else:
-                party_badge = '<span class="badge respondent-badge">Respondent</span>'
-            
-            # Status badge
-            status_badge = '<span class="badge disputed-badge">Disputed</span>' if fact['isDisputed'] else '<span class="badge undisputed-badge">Undisputed</span>'
-            
-            st.markdown(f'{party_badge} {status_badge}', unsafe_allow_html=True)
+            st.divider()
             
             # Supporting Documents section
-            st.markdown("### Supporting Documents")
+            st.subheader("Supporting Documents")
             
             for doc in fact['supportingDocs']:
+                # Create a container for each document
                 with st.container():
-                    st.markdown(f"**{doc['id']} - {doc['title']}**")
+                    st.markdown(f"#### Exhibit {doc['id']} - {doc['title']}")
+                    
+                    # Document summary
                     st.markdown(f"**Summary:** {doc['summary']}")
                     
-                    # Source information
-                    st.markdown(f"""
-                    <div class="document-source">
-                        <div class="source-label">Source</div>
-                        <div>{doc['source']}</div>
-                        <div class="page-ref">{doc['pageRef']}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Source information in a colored container
+                    st.success(f"""
+                    **Source**  
+                    {doc['source']}  
+                    *{doc['pageRef']}*
+                    """)
                     
                     # Action buttons
-                    col1, col2, col3, col4 = st.columns([2, 2, 2, 6])
+                    col1, col2, col3 = st.columns(3)
                     
                     with col1:
-                        if st.button("📄 View Document", key=f"view_{doc['id']}"):
+                        if st.button(f"📄 View Document", key=f"view_{doc['id']}_{i}"):
                             st.info(f"Opening document: {doc['id']}")
                     
                     with col2:
-                        if st.button("📥 Download PDF", key=f"pdf_{doc['id']}"):
+                        if st.button(f"📥 Download PDF", key=f"download_{doc['id']}_{i}"):
                             st.info(f"Downloading PDF for: {doc['id']}")
                     
                     with col3:
-                        if st.button("📋 Copy Source", key=f"copy_{doc['id']}"):
-                            st.info("Source copied to clipboard!")
+                        if st.button(f"📋 Copy Source", key=f"copy_{doc['id']}_{i}"):
+                            st.success(f"Source copied: {doc['source']}")
                     
-                    st.markdown("")  # Space between documents
+                    st.divider()
+    
+    # Add export functionality at the bottom
+    st.subheader("Export Options")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("📋 Copy All Content", use_container_width=True):
+            # Create content string
+            content = "Case Chronology\n\n"
+            for fact in facts_data:
+                formatted_date = datetime.strptime(fact['date'], '%Y-%m-%d').strftime('%Y-%m-%d')
+                content += f"{formatted_date} | {fact['point']}\n"
+                for doc in fact['supportingDocs']:
+                    content += f"  - {doc['id']}: {doc['title']}\n"
+                    content += f"    {doc['summary']}\n"
+                content += "\n"
+            
+            st.success("Content formatted for copying!")
+            st.text_area("Copy this content:", content, height=200)
+    
+    with col2:
+        if st.button("📊 Export as CSV", use_container_width=True):
+            # Create DataFrame for CSV export
+            csv_data = []
+            for fact in facts_data:
+                csv_data.append({
+                    'Date': fact['date'],
+                    'Event': fact['point'],
+                    'Party': fact['party'],
+                    'Status': 'Disputed' if fact['isDisputed'] else 'Undisputed',
+                    'Sources': fact['sources'],
+                    'Proceedings': fact['proceedings'],
+                    'Addressed By': fact['addressedBy']
+                })
+            
+            df = pd.DataFrame(csv_data)
+            csv = df.to_csv(index=False)
+            
+            st.download_button(
+                label="Download CSV",
+                data=csv,
+                file_name="case_chronology.csv",
+                mime="text/csv"
+            )
+    
+    with col3:
+        if st.button("📄 Export as PDF", use_container_width=True):
+            st.info("PDF export functionality would be implemented here")
 
 if __name__ == "__main__":
     main()

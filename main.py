@@ -291,164 +291,166 @@ def main():
             html_content = f"""
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                 <style>
-                    .metadata-row {{
+                    .metadata-row {
                         display: flex;
-                        gap: 40px;
-                        margin-bottom: 20px;
+                        gap: 30px;
+                        margin-bottom: 12px;
                         font-size: 14px;
-                    }}
+                    }
                     
-                    .metadata-item {{
+                    .metadata-item {
                         display: flex;
                         align-items: center;
-                        gap: 8px;
-                    }}
+                        gap: 6px;
+                    }
                     
-                    .sources-count {{
+                    .sources-count {
                         background: #3182ce;
                         color: white;
-                        padding: 4px 8px;
+                        padding: 3px 6px;
                         border-radius: 4px;
                         font-weight: 500;
-                    }}
+                    }
                     
-                    .proceedings-tab {{
-                        padding: 6px 12px;
+                    .proceedings-tab {
+                        padding: 4px 8px;
                         border-radius: 4px;
-                        font-size: 12px;
+                        font-size: 11px;
                         text-transform: capitalize;
-                    }}
+                    }
                     
-                    .proceedings-registration {{
+                    .proceedings-registration {
                         background: #e6fffa;
                         color: #00695c;
-                    }}
+                    }
                     
-                    .proceedings-challenge {{
+                    .proceedings-challenge {
                         background: #fff5f5;
                         color: #c53030;
-                    }}
+                    }
                     
-                    .proceedings-evidence {{
+                    .proceedings-evidence {
                         background: #f0f4ff;
                         color: #3182ce;
-                    }}
+                    }
                     
-                    .addressed-status {{
-                        font-size: 12px;
+                    .addressed-status {
+                        font-size: 11px;
                         color: #666;
-                    }}
+                    }
                     
-                    .supporting-docs {{
-                        margin-top: 20px;
-                    }}
+                    .supporting-docs {
+                        margin-top: 15px;
+                    }
                     
-                    .supporting-docs h4 {{
-                        margin-bottom: 16px;
-                        font-size: 16px;
+                    .supporting-docs h4 {
+                        margin-bottom: 10px;
+                        font-size: 15px;
                         font-weight: 600;
-                    }}
+                    }
                     
-                    .document-card {{
+                    .document-card {
                         border: 1px solid #e1e5e9;
                         border-radius: 6px;
-                        margin-bottom: 16px;
+                        margin-bottom: 12px;
                         background: #fafbfc;
-                    }}
+                    }
                     
-                    .document-header {{
-                        padding: 12px 16px;
+                    .document-header {
+                        padding: 8px 12px;
                         border-bottom: 1px solid #e1e5e9;
                         background: white;
-                    }}
+                    }
                     
-                    .document-title {{
+                    .document-title {
                         font-weight: 600;
                         color: #2d3748;
-                        margin-bottom: 4px;
-                    }}
+                        margin-bottom: 2px;
+                        font-size: 14px;
+                    }
                     
-                    .document-summary {{
-                        padding: 16px;
-                        line-height: 1.6;
-                    }}
+                    .document-summary {
+                        padding: 10px 12px;
+                        line-height: 1.4;
+                        font-size: 13px;
+                    }
                     
-                    .document-source {{
-                        padding: 12px 16px;
+                    .document-source {
+                        padding: 8px 12px;
                         background: #e8f5e8;
                         border-radius: 0 0 6px 6px;
-                        font-size: 12px;
-                    }}
+                        font-size: 11px;
+                    }
                     
-                    .source-label {{
+                    .source-label {
                         font-weight: 600;
                         color: #2d5016;
-                    }}
+                    }
                     
-                    .page-ref {{
+                    .page-ref {
                         font-style: italic;
                         color: #5a5a5a;
-                        margin-top: 4px;
-                    }}
+                        margin-top: 2px;
+                    }
                     
-                    .document-actions {{
+                    .document-actions {
                         display: flex;
-                        gap: 12px;
-                        padding: 12px 16px;
+                        gap: 8px;
+                        padding: 8px 12px;
                         border-top: 1px solid #e1e5e9;
                         background: #f8f9fa;
-                    }}
+                    }
                     
-                    .action-btn {{
-                        padding: 6px 12px;
+                    .action-btn {
+                        padding: 4px 8px;
                         border: 1px solid #d1d5db;
                         border-radius: 4px;
                         background: white;
                         cursor: pointer;
-                        font-size: 12px;
+                        font-size: 11px;
                         display: flex;
                         align-items: center;
-                        gap: 4px;
+                        gap: 3px;
                         transition: all 0.2s;
-                    }}
+                    }
                     
-                    .action-btn:hover {{
+                    .action-btn:hover {
                         background: #f3f4f6;
                         transform: translateY(-1px);
-                    }}
+                    }
                     
-                    .badge {{
+                    .badge {
                         display: inline-block;
-                        padding: 3px 8px;
-                        border-radius: 12px;
-                        font-size: 12px;
+                        padding: 2px 6px;
+                        border-radius: 10px;
+                        font-size: 11px;
                         font-weight: 500;
-                    }}
+                    }
                     
-                    .appellant-badge {{
+                    .appellant-badge {
                         background-color: rgba(49, 130, 206, 0.1);
                         color: #3182ce;
-                    }}
+                    }
                     
-                    .respondent-badge {{
+                    .respondent-badge {
                         background-color: rgba(229, 62, 62, 0.1);
                         color: #e53e3e;
-                    }}
+                    }
                     
-                    .both-badge {{
+                    .both-badge {
                         background-color: rgba(128, 90, 213, 0.1);
                         color: #805ad5;
-                    }}
+                    }
                     
-                    .disputed-badge {{
+                    .disputed-badge {
                         background-color: rgba(229, 62, 62, 0.1);
                         color: #e53e3e;
-                    }}
+                    }
                     
-                    .undisputed-badge {{
+                    .undisputed-badge {
                         background-color: rgba(72, 187, 120, 0.1);
                         color: #38a169;
-                    }}
+                    }
                 </style>
                 
                 <div class="metadata-row">
@@ -536,20 +538,20 @@ def main():
             </div>
             """
             
-            # Calculate dynamic height based on content
+            # Calculate dynamic height based on content (adjusted for compact spacing)
             # Base height for metadata and title
-            base_height = 200
+            base_height = 150
             
-            # Add height for each supporting document
-            doc_height = 300  # Height per document (summary + source + actions)
+            # Add height for each supporting document (reduced due to compact styling)
+            doc_height = 220  # Height per document (summary + source + actions)
             total_docs = len(fact['supportingDocs'])
             
             # Calculate total height needed
             calculated_height = base_height + (total_docs * doc_height)
             
-            # Set minimum and maximum bounds
-            min_height = 300
-            max_height = 1200
+            # Set minimum and maximum bounds (adjusted for compact layout)
+            min_height = 250
+            max_height = 1000
             final_height = max(min_height, min(calculated_height, max_height))
             
             # Render HTML inside expander with dynamic height

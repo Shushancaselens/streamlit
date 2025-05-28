@@ -536,23 +536,37 @@ def main():
             </div>
             """
             
-            # Calculate more precise dynamic height based on content
-            # Reduced base height for metadata and title
-            base_height = 120
+            # Calculate precise height based on actual content elements
+            # Metadata section: 2 rows + margins
+            metadata_height = 80
             
-            # Reduced height per document to be more accurate
-            doc_height = 200  # More precise height per document
+            # Supporting docs title
+            title_height = 40
+            
+            # Calculate height per document more accurately:
+            # - Document header: ~35px
+            # - Document summary: ~80px (varies by text length)
+            # - Document source: ~60px  
+            # - Document actions: ~45px
+            # - Card margins: ~15px
+            # Total per document: ~235px
+            
+            per_doc_height = 235
             total_docs = len(fact['supportingDocs'])
             
-            # Calculate total height needed with tighter margins
-            calculated_height = base_height + (total_docs * doc_height)
+            # Calculate total needed height
+            total_content_height = metadata_height + title_height + (total_docs * per_doc_height)
             
-            # Set tighter minimum and maximum bounds
-            min_height = 250
-            max_height = 900
-            final_height = max(min_height, min(calculated_height, max_height))
+            # Add small buffer to avoid cutting off content, but keep it minimal
+            buffer = 20
+            final_height = total_content_height + buffer
             
-            # Render HTML inside expander with optimized height
+            # Safety bounds - but allow enough height for multiple documents
+            min_height = 200
+            max_height = 1500  # Increased to handle cases with many documents
+            final_height = max(min_height, min(final_height, max_height))
+            
+            # Render HTML inside expander with precisely calculated height
             components.html(html_content, height=final_height)
 
 if __name__ == "__main__":

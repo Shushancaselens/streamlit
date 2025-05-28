@@ -387,14 +387,20 @@ def main():
     # Sort facts by date
     facts_sorted = sorted(facts_data, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
     
-    # Display each fact as an expandable card
+    # Display each fact as a static card
     for fact in facts_sorted:
         # Format date
         date_obj = datetime.strptime(fact['date'], '%Y-%m-%d')
         formatted_date = date_obj.strftime('%Y-%m-%d')
         
-        # Create expander with date and event
-        with st.expander(f"**{formatted_date}** | {fact['point']}", expanded=False):
+        # Create card container
+        with st.container():
+            st.markdown("---")
+            
+            # Card header with date and event
+            st.markdown(f"## {formatted_date}")
+            st.markdown(f"**{fact['point']}**")
+            
             # Metadata row
             col1, col2, col3 = st.columns([2, 3, 3])
             
@@ -409,7 +415,7 @@ def main():
                 st.markdown(f'**ADDRESSED BY:** <span class="addressed-status">{fact["addressedBy"]}</span>', unsafe_allow_html=True)
             
             # Party and status badges
-            st.markdown("", unsafe_allow_html=True)  # Add some space
+            st.markdown("")  # Add some space
             
             # Party badge
             if fact['party'] == 'Both':
@@ -456,7 +462,7 @@ def main():
                         if st.button("📋 Copy Source", key=f"copy_{doc['id']}"):
                             st.info("Source copied to clipboard!")
                     
-                    st.markdown("---")  # Separator between documents
+                    st.markdown("")  # Space between documents
 
 if __name__ == "__main__":
     main()

@@ -3,6 +3,7 @@ import json
 import streamlit.components.v1 as components
 import pandas as pd
 import base64
+from datetime import datetime
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -215,24 +216,10 @@ def get_all_facts():
     
     return facts
 
-# Function to create CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
-
 # Main app
 def main():
     # Get the facts data
     facts_data = get_all_facts()
-    
-    # Convert data to JSON for JavaScript use
-    facts_json = json.dumps(facts_data)
-    
-    # Initialize session state if not already done
-    if 'view' not in st.session_state:
-        st.session_state.view = "Facts"
     
     # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
@@ -288,701 +275,188 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Always show Facts regardless of button clicked
-    active_tab = 1  # Facts tab
+    # Custom CSS for badges and styling
+    st.markdown("""
+    <style>
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-right: 8px;
+    }
     
-    # Initialize the view options as a JavaScript variable
-    view_options_json = json.dumps({
-        "activeTab": active_tab
-    })
+    .appellant-badge {
+        background-color: rgba(49, 130, 206, 0.1);
+        color: #3182ce;
+    }
     
-    # Create HTML component containing comprehensive Facts UI
-    html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            /* Minimalistic base styling */
-            body {{
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.5;
-                color: #333;
-                margin: 0;
-                padding: 0;
-                background-color: #fff;
-            }}
-            
-            /* Simple container */
-            .container {{
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }}
-            
-            /* Content sections */
-            .content-section {{
-                display: none;
-            }}
-            
-            .content-section.active {{
-                display: block;
-            }}
-            
-            /* Chronology entry styling */
-            .chronology-entry {{
-                border: 1px solid #e1e5e9;
-                border-radius: 8px;
-                margin-bottom: 20px;
-                background: white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            }}
-            
-            .chronology-header {{
-                padding: 16px 20px;
-                border-bottom: 1px solid #e1e5e9;
-                background-color: #f8f9fa;
-                cursor: pointer;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }}
-            
-            .chronology-header:hover {{
-                background-color: #e9ecef;
-            }}
-            
-            .chronology-date {{
-                font-weight: 600;
-                color: #2d3748;
-            }}
-            
-            .chronology-event {{
-                margin-left: 20px;
-                flex-grow: 1;
-            }}
-            
-            .chronology-content {{
-                padding: 20px;
-                display: none;
-            }}
-            
-            .chronology-content.active {{
-                display: block;
-            }}
-            
-            /* Sources and metadata */
-            .metadata-row {{
-                display: flex;
-                gap: 40px;
-                margin-bottom: 20px;
-                font-size: 14px;
-            }}
-            
-            .metadata-item {{
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }}
-            
-            .sources-count {{
-                background: #3182ce;
-                color: white;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-weight: 500;
-            }}
-            
-            .proceedings-tab {{
-                padding: 6px 12px;
-                border-radius: 4px;
-                font-size: 12px;
-                text-transform: capitalize;
-            }}
-            
-            .proceedings-registration {{
-                background: #e6fffa;
-                color: #00695c;
-            }}
-            
-            .proceedings-challenge {{
-                background: #fff5f5;
-                color: #c53030;
-            }}
-            
-            .proceedings-evidence {{
-                background: #f0f4ff;
-                color: #3182ce;
-            }}
-            
-            .addressed-status {{
-                font-size: 12px;
-                color: #666;
-            }}
-            
-            /* Supporting documents */
-            .supporting-docs {{
-                margin-top: 20px;
-            }}
-            
-            .supporting-docs h4 {{
-                margin-bottom: 16px;
-                font-size: 16px;
-                font-weight: 600;
-            }}
-            
-            .document-card {{
-                border: 1px solid #e1e5e9;
-                border-radius: 6px;
-                margin-bottom: 16px;
-                background: #fafbfc;
-            }}
-            
-            .document-header {{
-                padding: 12px 16px;
-                border-bottom: 1px solid #e1e5e9;
-                background: white;
-            }}
-            
-            .document-title {{
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 4px;
-            }}
-            
-            .document-summary {{
-                padding: 16px;
-                line-height: 1.6;
-            }}
-            
-            .document-source {{
-                padding: 12px 16px;
-                background: #e8f5e8;
-                border-radius: 0 0 6px 6px;
-                font-size: 12px;
-            }}
-            
-            .source-label {{
-                font-weight: 600;
-                color: #2d5016;
-            }}
-            
-            .page-ref {{
-                font-style: italic;
-                color: #5a5a5a;
-                margin-top: 4px;
-            }}
-            
-            /* Document actions */
-            .document-actions {{
-                display: flex;
-                gap: 12px;
-                padding: 12px 16px;
-                border-top: 1px solid #e1e5e9;
-                background: #f8f9fa;
-            }}
-            
-            .action-btn {{
-                padding: 6px 12px;
-                border: 1px solid #d1d5db;
-                border-radius: 4px;
-                background: white;
-                cursor: pointer;
-                font-size: 12px;
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                transition: all 0.2s;
-            }}
-            
-            .action-btn:hover {{
-                background: #f3f4f6;
-                transform: translateY(-1px);
-            }}
-            
-            /* Badge styling */
-            .badge {{
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-            }}
-            
-            .appellant-badge {{
-                background-color: rgba(49, 130, 206, 0.1);
-                color: #3182ce;
-            }}
-            
-            .respondent-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .both-badge {{
-                background-color: rgba(128, 90, 213, 0.1);
-                color: #805ad5;
-            }}
-            
-            .exhibit-badge {{
-                background-color: rgba(221, 107, 32, 0.1);
-                color: #dd6b20;
-            }}
-            
-            .disputed-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .undisputed-badge {{
-                background-color: rgba(72, 187, 120, 0.1);
-                color: #38a169;
-            }}
-            
-            /* Action buttons */
-            .action-buttons {{
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-            }}
-            
-            .action-button {{
-                padding: 8px 16px;
-                background-color: #f9f9f9;
-                border: 1px solid #e1e4e8;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                cursor: pointer;
-            }}
-            
-            .action-button:hover {{
-                background-color: #f1f1f1;
-            }}
-            
-            .export-dropdown {{
-                position: relative;
-                display: inline-block;
-            }}
-            
-            .export-dropdown-content {{
-                display: none;
-                position: absolute;
-                right: 0;
-                background-color: #f9f9f9;
-                min-width: 160px;
-                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                z-index: 1;
-                border-radius: 4px;
-            }}
-            
-            .export-dropdown-content a {{
-                color: black;
-                padding: 12px 16px;
-                text-decoration: none;
-                display: block;
-                cursor: pointer;
-            }}
-            
-            .export-dropdown-content a:hover {{
-                background-color: #f1f1f1;
-            }}
-            
-            .export-dropdown:hover .export-dropdown-content {{
-                display: block;
-            }}
-            
-            /* Facts styling */
-            .facts-container {{
-                margin-top: 20px;
-            }}
-            
-            .facts-header {{
-                display: flex;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .tab-button {{
-                padding: 10px 20px;
-                background: none;
-                border: none;
-                cursor: pointer;
-            }}
-            
-            .tab-button.active {{
-                border-bottom: 2px solid #4299e1;
-                color: #4299e1;
-                font-weight: 500;
-            }}
-            
-            .facts-content {{
-                margin-top: 20px;
-            }}
-            
-            /* Section title */
-            .section-title {{
-                font-size: 1.5rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid #eaeaea;
-            }}
-            
-            /* Copy notification */
-            .copy-notification {{
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background-color: #2d3748;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }}
-            
-            .copy-notification.show {{
-                opacity: 1;
-            }}
-            
-            /* Chevron icon */
-            .chevron {{
-                transition: transform 0.2s;
-                margin-left: 8px;
-            }}
-            
-            .chevron.expanded {{
-                transform: rotate(90deg);
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-            
-            <div class="action-buttons">
-                <button class="action-button" onclick="copyAllContent()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy
-                </button>
-                <div class="export-dropdown">
-                    <button class="action-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Export
-                    </button>
-                    <div class="export-dropdown-content">
-                        <a onclick="exportAsCsv()">CSV</a>
-                        <a onclick="exportAsPdf()">PDF</a>
-                        <a onclick="exportAsWord()">Word</a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Facts Section -->
-            <div id="facts" class="content-section active">
-                <div class="section-title">Case Chronology</div>
-                
-                <div class="facts-header">
-                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                </div>
-                
-                <div class="facts-content" id="chronology-container">
-                    <!-- Chronology entries will be populated here -->
-                </div>
-            </div>
-        </div>
+    .respondent-badge {
+        background-color: rgba(229, 62, 62, 0.1);
+        color: #e53e3e;
+    }
+    
+    .both-badge {
+        background-color: rgba(128, 90, 213, 0.1);
+        color: #805ad5;
+    }
+    
+    .disputed-badge {
+        background-color: rgba(229, 62, 62, 0.1);
+        color: #e53e3e;
+    }
+    
+    .undisputed-badge {
+        background-color: rgba(72, 187, 120, 0.1);
+        color: #38a169;
+    }
+    
+    .sources-count {
+        background: #3182ce;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    
+    .proceedings-tab {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        text-transform: capitalize;
+        margin-left: 8px;
+    }
+    
+    .proceedings-registration {
+        background: #e6fffa;
+        color: #00695c;
+    }
+    
+    .proceedings-challenge {
+        background: #fff5f5;
+        color: #c53030;
+    }
+    
+    .proceedings-evidence {
+        background: #f0f4ff;
+        color: #3182ce;
+    }
+    
+    .document-source {
+        background-color: #f8f9fa;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 12px;
+        border-left: 4px solid #28a745;
+    }
+    
+    .source-label {
+        font-weight: 600;
+        color: #2d5016;
+        margin-bottom: 4px;
+    }
+    
+    .page-ref {
+        font-style: italic;
+        color: #5a5a5a;
+        margin-top: 4px;
+        font-size: 12px;
+    }
+    
+    .metadata-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .addressed-status {
+        font-size: 12px;
+        color: #666;
+        margin-left: 8px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Main content
+    st.title("Case Chronology")
+    
+    # Sort facts by date
+    facts_sorted = sorted(facts_data, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
+    
+    # Display each fact as an expandable card
+    for fact in facts_sorted:
+        # Format date
+        date_obj = datetime.strptime(fact['date'], '%Y-%m-%d')
+        formatted_date = date_obj.strftime('%Y-%m-%d')
         
-        <script>
-            // Initialize facts data
-            const factsData = {facts_json};
+        # Create expander with date and event
+        with st.expander(f"**{formatted_date}** | {fact['point']}", expanded=False):
+            # Metadata row
+            col1, col2, col3 = st.columns([2, 3, 3])
             
-            // Switch facts tab
-            function switchFactsTab(tabType) {{
-                const allBtn = document.getElementById('all-facts-btn');
-                const disputedBtn = document.getElementById('disputed-facts-btn');
-                const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                
-                // Remove active class from all
-                allBtn.classList.remove('active');
-                disputedBtn.classList.remove('active');
-                undisputedBtn.classList.remove('active');
-                
-                // Add active to selected
-                if (tabType === 'all') {{
-                    allBtn.classList.add('active');
-                    renderChronology('all');
-                }} else if (tabType === 'disputed') {{
-                    disputedBtn.classList.add('active');
-                    renderChronology('disputed');
-                }} else {{
-                    undisputedBtn.classList.add('active');
-                    renderChronology('undisputed');
-                }}
-            }}
+            with col1:
+                st.markdown(f'<span class="sources-count">{fact["sources"]}</span> Sources', unsafe_allow_html=True)
             
-            // Toggle chronology entry
-            function toggleChronologyEntry(entryId) {{
-                const content = document.getElementById(`content-${{entryId}}`);
-                const chevron = document.getElementById(`chevron-${{entryId}}`);
-                
-                if (content.classList.contains('active')) {{
-                    content.classList.remove('active');
-                    chevron.classList.remove('expanded');
-                }} else {{
-                    content.classList.add('active');
-                    chevron.classList.add('expanded');
-                }}
-            }}
+            with col2:
+                proceedings_class = f"proceedings-{fact['proceedings']}"
+                st.markdown(f'**PROCEEDINGS:** <span class="proceedings-tab {proceedings_class}">{fact["proceedings"]}</span>', unsafe_allow_html=True)
             
-            // Document actions
-            function viewDocument(docId) {{
-                alert(`Opening document: ${{docId}}`);
-            }}
+            with col3:
+                st.markdown(f'**ADDRESSED BY:** <span class="addressed-status">{fact["addressedBy"]}</span>', unsafe_allow_html=True)
             
-            function downloadPDF(docId) {{
-                alert(`Downloading PDF for: ${{docId}}`);
-            }}
+            # Party and status badges
+            st.markdown("", unsafe_allow_html=True)  # Add some space
             
-            function copySource(docId, source) {{
-                navigator.clipboard.writeText(source).then(() => {{
-                    showNotification('Source copied to clipboard!');
-                }});
-            }}
+            # Party badge
+            if fact['party'] == 'Both':
+                party_badge = '<span class="badge both-badge">Both Parties</span>'
+            elif fact['party'] == 'Appellant':
+                party_badge = '<span class="badge appellant-badge">Appellant</span>'
+            else:
+                party_badge = '<span class="badge respondent-badge">Respondent</span>'
             
-            function showNotification(message) {{
-                const notification = document.getElementById('copy-notification');
-                notification.textContent = message;
-                notification.classList.add('show');
-                
-                setTimeout(() => {{
-                    notification.classList.remove('show');
-                }}, 2000);
-            }}
+            # Status badge
+            status_badge = '<span class="badge disputed-badge">Disputed</span>' if fact['isDisputed'] else '<span class="badge undisputed-badge">Undisputed</span>'
             
-            // Render chronology entries
-            function renderChronology(type = 'all') {{
-                const container = document.getElementById('chronology-container');
-                container.innerHTML = '';
-                
-                // Filter by type
-                let filteredFacts = factsData;
-                
-                if (type === 'disputed') {{
-                    filteredFacts = factsData.filter(fact => fact.isDisputed);
-                }} else if (type === 'undisputed') {{
-                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                }}
-                
-                // Sort by date
-                filteredFacts.sort((a, b) => new Date(a.date) - new Date(b.date));
-                
-                // Render each entry
-                filteredFacts.forEach((fact, index) => {{
-                    const entryId = `entry-${{index}}`;
+            st.markdown(f'{party_badge} {status_badge}', unsafe_allow_html=True)
+            
+            # Supporting Documents section
+            st.markdown("### Supporting Documents")
+            
+            for doc in fact['supportingDocs']:
+                with st.container():
+                    st.markdown(f"**{doc['id']} - {doc['title']}**")
+                    st.markdown(f"**Summary:** {doc['summary']}")
                     
-                    // Format date
-                    const formatDate = (dateStr) => {{
-                        const date = new Date(dateStr);
-                        return date.toLocaleDateString('en-US', {{
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        }});
-                    }};
+                    # Source information
+                    st.markdown(f"""
+                    <div class="document-source">
+                        <div class="source-label">Source</div>
+                        <div>{doc['source']}</div>
+                        <div class="page-ref">{doc['pageRef']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    // Party badge
-                    const getPartyBadge = (party) => {{
-                        if (party === 'Both') {{
-                            return '<span class="badge both-badge">Both Parties</span>';
-                        }} else if (party === 'Appellant') {{
-                            return '<span class="badge appellant-badge">Appellant</span>';
-                        }} else {{
-                            return '<span class="badge respondent-badge">Respondent</span>';
-                        }}
-                    }};
+                    # Action buttons
+                    col1, col2, col3, col4 = st.columns([2, 2, 2, 6])
                     
-                    // Status badge
-                    const statusBadge = fact.isDisputed 
-                        ? '<span class="badge disputed-badge">Disputed</span>'
-                        : '<span class="badge undisputed-badge">Undisputed</span>';
+                    with col1:
+                        if st.button("📄 View Document", key=f"view_{doc['id']}"):
+                            st.info(f"Opening document: {doc['id']}")
                     
-                    // Proceedings class
-                    const proceedingsClass = `proceedings-${{fact.proceedings}}`;
+                    with col2:
+                        if st.button("📥 Download PDF", key=f"pdf_{doc['id']}"):
+                            st.info(f"Downloading PDF for: {doc['id']}")
                     
-                    // Supporting documents HTML
-                    const supportingDocsHtml = fact.supportingDocs.map(doc => `
-                        <div class="document-card">
-                            <div class="document-header">
-                                <div class="document-title">${{doc.id}} - ${{doc.title}}</div>
-                            </div>
-                            <div class="document-summary">
-                                ${{doc.summary}}
-                            </div>
-                            <div class="document-source">
-                                <div class="source-label">Source</div>
-                                <div>${{doc.source}}</div>
-                                <div class="page-ref">${{doc.pageRef}}</div>
-                            </div>
-                            <div class="document-actions">
-                                <button class="action-btn" onclick="viewDocument('${{doc.id}}')">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14,2 14,8 20,8"></polyline>
-                                    </svg>
-                                    View Document
-                                </button>
-                                <button class="action-btn" onclick="downloadPDF('${{doc.id}}')">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                    Download PDF
-                                </button>
-                                <button class="action-btn" onclick="copySource('${{doc.id}}', '${{doc.source}}')">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                    Copy Source
-                                </button>
-                            </div>
-                        </div>
-                    `).join('');
+                    with col3:
+                        if st.button("📋 Copy Source", key=f"copy_{doc['id']}"):
+                            st.info("Source copied to clipboard!")
                     
-                    const entryHtml = `
-                        <div class="chronology-entry">
-                            <div class="chronology-header" onclick="toggleChronologyEntry('${{entryId}}')">
-                                <div class="chronology-date">${{formatDate(fact.date)}}</div>
-                                <div class="chronology-event">${{fact.point}}</div>
-                                <svg id="chevron-${{entryId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </div>
-                            <div id="content-${{entryId}}" class="chronology-content">
-                                <div class="metadata-row">
-                                    <div class="metadata-item">
-                                        <span class="sources-count">${{fact.sources}}</span>
-                                        <span>Sources</span>
-                                    </div>
-                                    <div class="metadata-item">
-                                        <span>PROCEEDINGS:</span>
-                                        <span class="proceedings-tab ${{proceedingsClass}}">${{fact.proceedings}}</span>
-                                    </div>
-                                    <div class="metadata-item">
-                                        <span>ADDRESSED BY:</span>
-                                        <span class="addressed-status">${{fact.addressedBy}}</span>
-                                    </div>
-                                </div>
-                                <div class="metadata-row">
-                                    <div class="metadata-item">
-                                        ${{getPartyBadge(fact.party)}}
-                                        ${{statusBadge}}
-                                    </div>
-                                </div>
-                                <div class="supporting-docs">
-                                    <h4>Supporting Documents</h4>
-                                    ${{supportingDocsHtml}}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    container.innerHTML += entryHtml;
-                }});
-            }}
-            
-            // Copy all content function
-            function copyAllContent() {{
-                let contentToCopy = 'Case Chronology\\n\\n';
-                
-                const entries = document.querySelectorAll('.chronology-entry');
-                entries.forEach(entry => {{
-                    const date = entry.querySelector('.chronology-date').textContent;
-                    const event = entry.querySelector('.chronology-event').textContent;
-                    contentToCopy += `${{date}} | ${{event}}\\n`;
-                    
-                    const docs = entry.querySelectorAll('.document-card');
-                    docs.forEach(doc => {{
-                        const title = doc.querySelector('.document-title').textContent;
-                        const summary = doc.querySelector('.document-summary').textContent;
-                        contentToCopy += `  - ${{title}}: ${{summary}}\\n`;
-                    }});
-                    contentToCopy += '\\n';
-                }});
-                
-                // Create a temporary textarea to copy the content
-                const textarea = document.createElement('textarea');
-                textarea.value = contentToCopy;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                
-                showNotification('Content copied to clipboard!');
-            }}
-            
-            // Export functions
-            function exportAsCsv() {{
-                let csvContent = 'Date,Event,Party,Status,Sources,Proceedings,Addressed By\\n';
-                
-                factsData.forEach(fact => {{
-                    const date = fact.date;
-                    const event = fact.point.replace(/"/g, '""');
-                    const party = fact.party;
-                    const status = fact.isDisputed ? 'Disputed' : 'Undisputed';
-                    const sources = fact.sources;
-                    const proceedings = fact.proceedings;
-                    const addressedBy = fact.addressedBy;
-                    
-                    csvContent += `"${{date}}","${{event}}","${{party}}","${{status}}","${{sources}}","${{proceedings}}","${{addressedBy}}"\\n`;
-                }});
-                
-                const csvFile = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                const encodedUri = csvFile;
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "case_chronology.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }}
-            
-            function exportAsPdf() {{
-                alert("PDF export functionality would be implemented here");
-            }}
-            
-            function exportAsWord() {{
-                alert("Word export functionality would be implemented here");
-            }}
-            
-            // Initialize the app
-            document.addEventListener('DOMContentLoaded', function() {{
-                // Show facts section
-                document.getElementById('facts').classList.add('active');
-                renderChronology('all');
-            }});
-        </script>
-    </body>
-    </html>
-    """
-    
-    # Render the HTML in Streamlit
-    st.title("Case Facts Analysis")
-    components.html(html_content, height=950, scrolling=True)
+                    st.markdown("---")  # Separator between documents
 
 if __name__ == "__main__":
     main()

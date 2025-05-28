@@ -287,171 +287,176 @@ def main():
         
         # Create expander with date and event
         with st.expander(f"{formatted_date} | {fact['point']}", expanded=False):
-            # Create HTML content for inside the expander
+            # Create CSS styles as a separate string first
+            css_styles = """
+            <style>
+                .metadata-row {
+                    display: flex;
+                    gap: 30px;
+                    margin-bottom: 12px;
+                    font-size: 14px;
+                }
+                
+                .metadata-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                
+                .sources-count {
+                    background: #3182ce;
+                    color: white;
+                    padding: 3px 6px;
+                    border-radius: 4px;
+                    font-weight: 500;
+                }
+                
+                .proceedings-tab {
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    text-transform: capitalize;
+                }
+                
+                .proceedings-registration {
+                    background: #e6fffa;
+                    color: #00695c;
+                }
+                
+                .proceedings-challenge {
+                    background: #fff5f5;
+                    color: #c53030;
+                }
+                
+                .proceedings-evidence {
+                    background: #f0f4ff;
+                    color: #3182ce;
+                }
+                
+                .addressed-status {
+                    font-size: 11px;
+                    color: #666;
+                }
+                
+                .supporting-docs {
+                    margin-top: 15px;
+                }
+                
+                .supporting-docs h4 {
+                    margin-bottom: 10px;
+                    font-size: 15px;
+                    font-weight: 600;
+                }
+                
+                .document-card {
+                    border: 1px solid #e1e5e9;
+                    border-radius: 6px;
+                    margin-bottom: 12px;
+                    background: #fafbfc;
+                }
+                
+                .document-header {
+                    padding: 8px 12px;
+                    border-bottom: 1px solid #e1e5e9;
+                    background: white;
+                }
+                
+                .document-title {
+                    font-weight: 600;
+                    color: #2d3748;
+                    margin-bottom: 2px;
+                    font-size: 14px;
+                }
+                
+                .document-summary {
+                    padding: 10px 12px;
+                    line-height: 1.4;
+                    font-size: 13px;
+                }
+                
+                .document-source {
+                    padding: 8px 12px;
+                    background: #e8f5e8;
+                    border-radius: 0 0 6px 6px;
+                    font-size: 11px;
+                }
+                
+                .source-label {
+                    font-weight: 600;
+                    color: #2d5016;
+                }
+                
+                .page-ref {
+                    font-style: italic;
+                    color: #5a5a5a;
+                    margin-top: 2px;
+                }
+                
+                .document-actions {
+                    display: flex;
+                    gap: 8px;
+                    padding: 8px 12px;
+                    border-top: 1px solid #e1e5e9;
+                    background: #f8f9fa;
+                }
+                
+                .action-btn {
+                    padding: 4px 8px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 4px;
+                    background: white;
+                    cursor: pointer;
+                    font-size: 11px;
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+                    transition: all 0.2s;
+                }
+                
+                .action-btn:hover {
+                    background: #f3f4f6;
+                    transform: translateY(-1px);
+                }
+                
+                .badge {
+                    display: inline-block;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: 500;
+                }
+                
+                .appellant-badge {
+                    background-color: rgba(49, 130, 206, 0.1);
+                    color: #3182ce;
+                }
+                
+                .respondent-badge {
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }
+                
+                .both-badge {
+                    background-color: rgba(128, 90, 213, 0.1);
+                    color: #805ad5;
+                }
+                
+                .disputed-badge {
+                    background-color: rgba(229, 62, 62, 0.1);
+                    color: #e53e3e;
+                }
+                
+                .undisputed-badge {
+                    background-color: rgba(72, 187, 120, 0.1);
+                    color: #38a169;
+                }
+            </style>
+            """
+            
+            # Create HTML content without f-string conflicts
             html_content = f"""
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-                <style>
-                    .metadata-row {
-                        display: flex;
-                        gap: 30px;
-                        margin-bottom: 12px;
-                        font-size: 14px;
-                    }
-                    
-                    .metadata-item {
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                    }
-                    
-                    .sources-count {
-                        background: #3182ce;
-                        color: white;
-                        padding: 3px 6px;
-                        border-radius: 4px;
-                        font-weight: 500;
-                    }
-                    
-                    .proceedings-tab {
-                        padding: 4px 8px;
-                        border-radius: 4px;
-                        font-size: 11px;
-                        text-transform: capitalize;
-                    }
-                    
-                    .proceedings-registration {
-                        background: #e6fffa;
-                        color: #00695c;
-                    }
-                    
-                    .proceedings-challenge {
-                        background: #fff5f5;
-                        color: #c53030;
-                    }
-                    
-                    .proceedings-evidence {
-                        background: #f0f4ff;
-                        color: #3182ce;
-                    }
-                    
-                    .addressed-status {
-                        font-size: 11px;
-                        color: #666;
-                    }
-                    
-                    .supporting-docs {
-                        margin-top: 15px;
-                    }
-                    
-                    .supporting-docs h4 {
-                        margin-bottom: 10px;
-                        font-size: 15px;
-                        font-weight: 600;
-                    }
-                    
-                    .document-card {
-                        border: 1px solid #e1e5e9;
-                        border-radius: 6px;
-                        margin-bottom: 12px;
-                        background: #fafbfc;
-                    }
-                    
-                    .document-header {
-                        padding: 8px 12px;
-                        border-bottom: 1px solid #e1e5e9;
-                        background: white;
-                    }
-                    
-                    .document-title {
-                        font-weight: 600;
-                        color: #2d3748;
-                        margin-bottom: 2px;
-                        font-size: 14px;
-                    }
-                    
-                    .document-summary {
-                        padding: 10px 12px;
-                        line-height: 1.4;
-                        font-size: 13px;
-                    }
-                    
-                    .document-source {
-                        padding: 8px 12px;
-                        background: #e8f5e8;
-                        border-radius: 0 0 6px 6px;
-                        font-size: 11px;
-                    }
-                    
-                    .source-label {
-                        font-weight: 600;
-                        color: #2d5016;
-                    }
-                    
-                    .page-ref {
-                        font-style: italic;
-                        color: #5a5a5a;
-                        margin-top: 2px;
-                    }
-                    
-                    .document-actions {
-                        display: flex;
-                        gap: 8px;
-                        padding: 8px 12px;
-                        border-top: 1px solid #e1e5e9;
-                        background: #f8f9fa;
-                    }
-                    
-                    .action-btn {
-                        padding: 4px 8px;
-                        border: 1px solid #d1d5db;
-                        border-radius: 4px;
-                        background: white;
-                        cursor: pointer;
-                        font-size: 11px;
-                        display: flex;
-                        align-items: center;
-                        gap: 3px;
-                        transition: all 0.2s;
-                    }
-                    
-                    .action-btn:hover {
-                        background: #f3f4f6;
-                        transform: translateY(-1px);
-                    }
-                    
-                    .badge {
-                        display: inline-block;
-                        padding: 2px 6px;
-                        border-radius: 10px;
-                        font-size: 11px;
-                        font-weight: 500;
-                    }
-                    
-                    .appellant-badge {
-                        background-color: rgba(49, 130, 206, 0.1);
-                        color: #3182ce;
-                    }
-                    
-                    .respondent-badge {
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }
-                    
-                    .both-badge {
-                        background-color: rgba(128, 90, 213, 0.1);
-                        color: #805ad5;
-                    }
-                    
-                    .disputed-badge {
-                        background-color: rgba(229, 62, 62, 0.1);
-                        color: #e53e3e;
-                    }
-                    
-                    .undisputed-badge {
-                        background-color: rgba(72, 187, 120, 0.1);
-                        color: #38a169;
-                    }
-                </style>
+                {css_styles}
                 
                 <div class="metadata-row">
                     <div class="metadata-item">
@@ -494,6 +499,10 @@ def main():
             
             # Add supporting documents
             for doc in fact['supportingDocs']:
+                # Escape quotes in the content to prevent JavaScript errors
+                safe_doc_id = doc['id'].replace("'", "\\'")
+                safe_source = doc['source'].replace("'", "\\'")
+                
                 html_content += f"""
                     <div class="document-card">
                         <div class="document-header">
@@ -508,14 +517,14 @@ def main():
                             <div class="page-ref">{doc['pageRef']}</div>
                         </div>
                         <div class="document-actions">
-                            <button class="action-btn" onclick="alert('Opening document: {doc['id']}')">
+                            <button class="action-btn" onclick="alert('Opening document: {safe_doc_id}')">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                     <polyline points="14,2 14,8 20,8"></polyline>
                                 </svg>
                                 View Document
                             </button>
-                            <button class="action-btn" onclick="alert('Downloading PDF for: {doc['id']}')">
+                            <button class="action-btn" onclick="alert('Downloading PDF for: {safe_doc_id}')">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -523,7 +532,7 @@ def main():
                                 </svg>
                                 Download PDF
                             </button>
-                            <button class="action-btn" onclick="navigator.clipboard.writeText('{doc['source']}'); alert('Source copied to clipboard!')">
+                            <button class="action-btn" onclick="navigator.clipboard.writeText('{safe_source}'); alert('Source copied to clipboard!')">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path>

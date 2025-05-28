@@ -3,7 +3,6 @@ import json
 import streamlit.components.v1 as components
 import pandas as pd
 import base64
-from datetime import datetime
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -216,28 +215,20 @@ def get_all_facts():
     
     return facts
 
-# Function to get party badge color
-def get_party_color(party):
-    if party == 'Appellant':
-        return 'blue'
-    elif party == 'Respondent':
-        return 'red'
-    else:
-        return 'violet'
-
-# Function to get proceedings color
-def get_proceedings_color(proceedings):
-    if proceedings == 'registration':
-        return 'green'
-    elif proceedings == 'challenge':
-        return 'red'
-    else:
-        return 'blue'
+# Function to create CSV download link
+def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
+    return href
 
 # Main app
 def main():
     # Get the facts data
     facts_data = get_all_facts()
+    
+    # Convert data to JSON for JavaScript use
+    facts_json = json.dumps(facts_data)
     
     # Initialize session state if not already done
     if 'view' not in st.session_state:
@@ -256,7 +247,7 @@ def main():
                 <!-- Rounded square background -->
                 <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
                 <!-- WhatsApp phone icon -->
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137367 54.0014Z" fill="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
               </g>
             </svg>
             <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
@@ -297,125 +288,289 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Main content area
+    # Always show Facts regardless of button clicked
+    active_tab = 1  # Facts tab
+    
+    # Initialize the view options as a JavaScript variable
+    view_options_json = json.dumps({
+        "activeTab": active_tab
+    })
+    
+    # Render title
     st.title("Case Chronology")
     
-    # Sort facts by date
-    facts_data.sort(key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'))
+    # Get facts data and sort by date
+    facts_data = get_all_facts()
+    facts_data.sort(key=lambda x: x['date'])
     
-    # Display each fact as a Streamlit card
-    for i, fact in enumerate(facts_data):
+    # Create Streamlit expanders for each chronology entry
+    for index, fact in enumerate(facts_data):
         # Format date for display
-        formatted_date = datetime.strptime(fact['date'], '%Y-%m-%d').strftime('%Y-%m-%d')
+        from datetime import datetime
+        date_obj = datetime.strptime(fact['date'], '%Y-%m-%d')
+        formatted_date = date_obj.strftime('%Y-%m-%d')
         
-        # Create expandable card for each chronology entry
-        with st.expander(f"**{formatted_date}** | {fact['point']}", expanded=False):
+        # Create expander with date and event
+        with st.expander(f"{formatted_date} | {fact['point']}", expanded=False):
+            # Embed HTML content inside the expander
+            html_content = f"""
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                <style>
             
-            # Metadata row with badges
-            col1, col2, col3, col4 = st.columns(4)
-            
-            with col1:
-                st.markdown(f"**{fact['sources']}** Sources")
-            
-            with col2:
-                st.markdown(f"**PROCEEDINGS:** :{get_proceedings_color(fact['proceedings'])}[{fact['proceedings'].title()}]")
-            
-            with col3:
-                st.markdown(f"**ADDRESSED BY:** {fact['addressedBy']}")
-            
-            with col4:
-                # Party and status badges
-                party_color = get_party_color(fact['party'])
-                status_text = "Disputed" if fact['isDisputed'] else "Undisputed"
-                status_color = "red" if fact['isDisputed'] else "green"
+                                /* Sources and metadata */
+                    .metadata-row {
+                        display: flex;
+                        gap: 40px;
+                        margin-bottom: 20px;
+                        font-size: 14px;
+                    }
+                    
+                    .metadata-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    
+                    .sources-count {
+                        background: #3182ce;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-weight: 500;
+                    }
+                    
+                    .proceedings-tab {
+                        padding: 6px 12px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        text-transform: capitalize;
+                    }
+                    
+                    .proceedings-registration {
+                        background: #e6fffa;
+                        color: #00695c;
+                    }
+                    
+                    .proceedings-challenge {
+                        background: #fff5f5;
+                        color: #c53030;
+                    }
+                    
+                    .proceedings-evidence {
+                        background: #f0f4ff;
+                        color: #3182ce;
+                    }
+                    
+                    .addressed-status {
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    
+                    /* Supporting documents */
+                    .supporting-docs {
+                        margin-top: 20px;
+                    }
+                    
+                    .supporting-docs h4 {
+                        margin-bottom: 16px;
+                        font-size: 16px;
+                        font-weight: 600;
+                    }
+                    
+                    .document-card {
+                        border: 1px solid #e1e5e9;
+                        border-radius: 6px;
+                        margin-bottom: 16px;
+                        background: #fafbfc;
+                    }
+                    
+                    .document-header {
+                        padding: 12px 16px;
+                        border-bottom: 1px solid #e1e5e9;
+                        background: white;
+                    }
+                    
+                    .document-title {
+                        font-weight: 600;
+                        color: #2d3748;
+                        margin-bottom: 4px;
+                    }
+                    
+                    .document-summary {
+                        padding: 16px;
+                        line-height: 1.6;
+                    }
+                    
+                    .document-source {
+                        padding: 12px 16px;
+                        background: #e8f5e8;
+                        border-radius: 0 0 6px 6px;
+                        font-size: 12px;
+                    }
+                    
+                    .source-label {
+                        font-weight: 600;
+                        color: #2d5016;
+                    }
+                    
+                    .page-ref {
+                        font-style: italic;
+                        color: #5a5a5a;
+                        margin-top: 4px;
+                    }
+                    
+                    /* Document actions */
+                    .document-actions {
+                        display: flex;
+                        gap: 12px;
+                        padding: 12px 16px;
+                        border-top: 1px solid #e1e5e9;
+                        background: #f8f9fa;
+                    }
+                    
+                    .action-btn {
+                        padding: 6px 12px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 4px;
+                        background: white;
+                        cursor: pointer;
+                        font-size: 12px;
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        transition: all 0.2s;
+                    }
+                    
+                    .action-btn:hover {
+                        background: #f3f4f6;
+                        transform: translateY(-1px);
+                    }
+                    
+                    /* Badge styling */
+                    .badge {
+                        display: inline-block;
+                        padding: 3px 8px;
+                        border-radius: 12px;
+                        font-size: 12px;
+                        font-weight: 500;
+                    }
+                    
+                    .appellant-badge {
+                        background-color: rgba(49, 130, 206, 0.1);
+                        color: #3182ce;
+                    }
+                    
+                    .respondent-badge {
+                        background-color: rgba(229, 62, 62, 0.1);
+                        color: #e53e3e;
+                    }
+                    
+                    .both-badge {
+                        background-color: rgba(128, 90, 213, 0.1);
+                        color: #805ad5;
+                    }
+                    
+                    .exhibit-badge {
+                        background-color: rgba(221, 107, 32, 0.1);
+                        color: #dd6b20;
+                    }
+                    
+                    .disputed-badge {
+                        background-color: rgba(229, 62, 62, 0.1);
+                        color: #e53e3e;
+                    }
+                    
+                    .undisputed-badge {
+                        background-color: rgba(72, 187, 120, 0.1);
+                        color: #38a169;
+                    }
+                </style>
                 
-                st.markdown(f":{party_color}[{fact['party']}] :{status_color}[{status_text}]")
+                <div class="metadata-row">
+                    <div class="metadata-item">
+                        <span class="sources-count">{fact['sources']}</span>
+                        <span>Sources</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span>PROCEEDINGS:</span>
+                        <span class="proceedings-tab proceedings-{fact['proceedings']}">{fact['proceedings']}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span>ADDRESSED BY:</span>
+                        <span class="addressed-status">{fact['addressedBy']}</span>
+                    </div>
+                </div>
+                <div class="metadata-row">
+                    <div class="metadata-item">"""
             
-            st.divider()
+            # Party badge
+            if fact['party'] == 'Both':
+                html_content += '<span class="badge both-badge">Both Parties</span>'
+            elif fact['party'] == 'Appellant':
+                html_content += '<span class="badge appellant-badge">Appellant</span>'
+            else:
+                html_content += '<span class="badge respondent-badge">Respondent</span>'
             
-            # Supporting Documents section
-            st.subheader("Supporting Documents")
+            # Status badge  
+            if fact['isDisputed']:
+                html_content += '<span class="badge disputed-badge">Disputed</span>'
+            else:
+                html_content += '<span class="badge undisputed-badge">Undisputed</span>'
+                
+            html_content += """
+                    </div>
+                </div>
+                <div class="supporting-docs">
+                    <h4>Supporting Documents</h4>"""
             
+            # Supporting documents
             for doc in fact['supportingDocs']:
-                # Create a container for each document
-                with st.container():
-                    st.markdown(f"#### Exhibit {doc['id']} - {doc['title']}")
+                html_content += f"""
+                    <div class="document-card">
+                        <div class="document-header">
+                            <div class="document-title">{doc['id']} - {doc['title']}</div>
+                        </div>
+                        <div class="document-summary">
+                            {doc['summary']}
+                        </div>
+                        <div class="document-source">
+                            <div class="source-label">Source</div>
+                            <div>{doc['source']}</div>
+                            <div class="page-ref">{doc['pageRef']}</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="action-btn" onclick="alert('Opening document: {doc['id']}')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                </svg>
+                                View Document
+                            </button>
+                            <button class="action-btn" onclick="alert('Downloading PDF for: {doc['id']}')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download PDF
+                            </button>
+                            <button class="action-btn" onclick="navigator.clipboard.writeText('{doc['source']}'); alert('Source copied to clipboard!')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy Source
+                            </button>
+                        </div>
+                    </div>"""
                     
-                    # Document summary
-                    st.markdown(f"**Summary:** {doc['summary']}")
-                    
-                    # Source information in a colored container
-                    st.success(f"""
-                    **Source**  
-                    {doc['source']}  
-                    *{doc['pageRef']}*
-                    """)
-                    
-                    # Action buttons
-                    col1, col2, col3 = st.columns(3)
-                    
-                    with col1:
-                        if st.button(f"📄 View Document", key=f"view_{doc['id']}_{i}"):
-                            st.info(f"Opening document: {doc['id']}")
-                    
-                    with col2:
-                        if st.button(f"📥 Download PDF", key=f"download_{doc['id']}_{i}"):
-                            st.info(f"Downloading PDF for: {doc['id']}")
-                    
-                    with col3:
-                        if st.button(f"📋 Copy Source", key=f"copy_{doc['id']}_{i}"):
-                            st.success(f"Source copied: {doc['source']}")
-                    
-                    st.divider()
-    
-    # Add export functionality at the bottom
-    st.subheader("Export Options")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("📋 Copy All Content", use_container_width=True):
-            # Create content string
-            content = "Case Chronology\n\n"
-            for fact in facts_data:
-                formatted_date = datetime.strptime(fact['date'], '%Y-%m-%d').strftime('%Y-%m-%d')
-                content += f"{formatted_date} | {fact['point']}\n"
-                for doc in fact['supportingDocs']:
-                    content += f"  - {doc['id']}: {doc['title']}\n"
-                    content += f"    {doc['summary']}\n"
-                content += "\n"
+            html_content += """
+                </div>
+            </div>
+            """
             
-            st.success("Content formatted for copying!")
-            st.text_area("Copy this content:", content, height=200)
-    
-    with col2:
-        if st.button("📊 Export as CSV", use_container_width=True):
-            # Create DataFrame for CSV export
-            csv_data = []
-            for fact in facts_data:
-                csv_data.append({
-                    'Date': fact['date'],
-                    'Event': fact['point'],
-                    'Party': fact['party'],
-                    'Status': 'Disputed' if fact['isDisputed'] else 'Undisputed',
-                    'Sources': fact['sources'],
-                    'Proceedings': fact['proceedings'],
-                    'Addressed By': fact['addressedBy']
-                })
-            
-            df = pd.DataFrame(csv_data)
-            csv = df.to_csv(index=False)
-            
-            st.download_button(
-                label="Download CSV",
-                data=csv,
-                file_name="case_chronology.csv",
-                mime="text/csv"
-            )
-    
-    with col3:
-        if st.button("📄 Export as PDF", use_container_width=True):
-            st.info("PDF export functionality would be implemented here")
+            # Render HTML inside expander
+            components.html(html_content, height=600)
 
 if __name__ == "__main__":
     main()

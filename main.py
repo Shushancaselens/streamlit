@@ -536,15 +536,9 @@ def main():
             </div>
             """
             
-            # Calculate dynamic height based on content
-            # Base height + metadata + documents
-            base_height = 200  # Base metadata and spacing
-            doc_height = len(fact['supportingDocs']) * 400  # ~400px per document
-            total_height = base_height + doc_height
-            
-            # Render HTML inside expander with dynamic height
-            components.html(html_content, height=total_height)
+            # Use a reasonable fixed height with scrolling enabled
+            # This prevents excessive white space while ensuring content is accessible
+            components.html(html_content, height=500, scrolling=True)
 
 if __name__ == "__main__":
     main()
-

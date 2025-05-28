@@ -536,9 +536,14 @@ def main():
             </div>
             """
             
-            # Render HTML inside expander
-            components.html(html_content, height=600)
+            # Calculate dynamic height based on content
+            # Base height + metadata + documents
+            base_height = 200  # Base metadata and spacing
+            doc_height = len(fact['supportingDocs']) * 400  # ~400px per document
+            total_height = base_height + doc_height
+            
+            # Render HTML inside expander with dynamic height
+            components.html(html_content, height=total_height)
 
 if __name__ == "__main__":
     main()
-

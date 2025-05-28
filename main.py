@@ -537,20 +537,29 @@ def main():
             """
             
             # Calculate precise height based on actual content
-            base_height = 120  # Metadata rows and spacing
+            # Account for all metadata sections at the top
+            base_height = 200  # Increased to include:
+                              # - First metadata row (sources, proceedings, addressed by): ~60px
+                              # - Second metadata row (party badges, status): ~60px  
+                              # - Supporting Documents header: ~40px
+                              # - Margins and spacing: ~40px
             
             # Calculate height for each document more precisely
             doc_height = 0
             for doc in fact['supportingDocs']:
-                # Document header: ~40px
-                # Document summary: estimate based on text length (150 chars per line, 20px per line)
-                summary_lines = max(1, len(doc['summary']) // 150)
-                summary_height = summary_lines * 20
-                # Document source: ~60px  
-                # Document actions: ~50px
-                doc_height += 40 + summary_height + 60 + 50 + 20  # +20 for margins
+                # Document header: ~50px
+                # Document summary: estimate based on text length (120 chars per line, 22px per line)  
+                summary_lines = max(2, len(doc['summary']) // 120)  # minimum 2 lines
+                summary_height = summary_lines * 22
+                # Document source section: ~80px  
+                # Document actions: ~60px
+                # Card margins and borders: ~30px
+                doc_height += 50 + summary_height + 80 + 60 + 30
             
             total_height = base_height + doc_height
+            
+            # Add some extra padding to ensure no cutoff
+            total_height += 50
             
             # Render HTML inside expander with precise height
             components.html(html_content, height=total_height, scrolling=False)

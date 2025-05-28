@@ -3,6 +3,7 @@ import json
 import streamlit.components.v1 as components
 import pandas as pd
 import base64
+from datetime import datetime
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
@@ -215,25 +216,8 @@ def get_all_facts():
     
     return facts
 
-# Function to create CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
-
 # Main app
 def main():
-    # Get the facts data
-    facts_data = get_all_facts()
-    
-    # Convert data to JSON for JavaScript use
-    facts_json = json.dumps(facts_data)
-    
-    # Initialize session state if not already done
-    if 'view' not in st.session_state:
-        st.session_state.view = "Facts"
-    
     # Add Streamlit sidebar with navigation buttons
     with st.sidebar:
         # Add the logo and CaseLens text
@@ -288,14 +272,6 @@ def main():
         st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
         st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
     
-    # Always show Facts regardless of button clicked
-    active_tab = 1  # Facts tab
-    
-    # Initialize the view options as a JavaScript variable
-    view_options_json = json.dumps({
-        "activeTab": active_tab
-    })
-    
     # Render title
     st.title("Case Chronology")
     
@@ -306,129 +282,124 @@ def main():
     # Create Streamlit expanders for each chronology entry
     for index, fact in enumerate(facts_data):
         # Format date for display
-        from datetime import datetime
         date_obj = datetime.strptime(fact['date'], '%Y-%m-%d')
         formatted_date = date_obj.strftime('%Y-%m-%d')
         
         # Create expander with date and event
         with st.expander(f"{formatted_date} | {fact['point']}", expanded=False):
-            # Embed HTML content inside the expander
+            # Create HTML content for inside the expander
             html_content = f"""
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                 <style>
-            
-                                /* Sources and metadata */
-                    .metadata-row {
+                    .metadata-row {{
                         display: flex;
                         gap: 40px;
                         margin-bottom: 20px;
                         font-size: 14px;
-                    }
+                    }}
                     
-                    .metadata-item {
+                    .metadata-item {{
                         display: flex;
                         align-items: center;
                         gap: 8px;
-                    }
+                    }}
                     
-                    .sources-count {
+                    .sources-count {{
                         background: #3182ce;
                         color: white;
                         padding: 4px 8px;
                         border-radius: 4px;
                         font-weight: 500;
-                    }
+                    }}
                     
-                    .proceedings-tab {
+                    .proceedings-tab {{
                         padding: 6px 12px;
                         border-radius: 4px;
                         font-size: 12px;
                         text-transform: capitalize;
-                    }
+                    }}
                     
-                    .proceedings-registration {
+                    .proceedings-registration {{
                         background: #e6fffa;
                         color: #00695c;
-                    }
+                    }}
                     
-                    .proceedings-challenge {
+                    .proceedings-challenge {{
                         background: #fff5f5;
                         color: #c53030;
-                    }
+                    }}
                     
-                    .proceedings-evidence {
+                    .proceedings-evidence {{
                         background: #f0f4ff;
                         color: #3182ce;
-                    }
+                    }}
                     
-                    .addressed-status {
+                    .addressed-status {{
                         font-size: 12px;
                         color: #666;
-                    }
+                    }}
                     
-                    /* Supporting documents */
-                    .supporting-docs {
+                    .supporting-docs {{
                         margin-top: 20px;
-                    }
+                    }}
                     
-                    .supporting-docs h4 {
+                    .supporting-docs h4 {{
                         margin-bottom: 16px;
                         font-size: 16px;
                         font-weight: 600;
-                    }
+                    }}
                     
-                    .document-card {
+                    .document-card {{
                         border: 1px solid #e1e5e9;
                         border-radius: 6px;
                         margin-bottom: 16px;
                         background: #fafbfc;
-                    }
+                    }}
                     
-                    .document-header {
+                    .document-header {{
                         padding: 12px 16px;
                         border-bottom: 1px solid #e1e5e9;
                         background: white;
-                    }
+                    }}
                     
-                    .document-title {
+                    .document-title {{
                         font-weight: 600;
                         color: #2d3748;
                         margin-bottom: 4px;
-                    }
+                    }}
                     
-                    .document-summary {
+                    .document-summary {{
                         padding: 16px;
                         line-height: 1.6;
-                    }
+                    }}
                     
-                    .document-source {
+                    .document-source {{
                         padding: 12px 16px;
                         background: #e8f5e8;
                         border-radius: 0 0 6px 6px;
                         font-size: 12px;
-                    }
+                    }}
                     
-                    .source-label {
+                    .source-label {{
                         font-weight: 600;
                         color: #2d5016;
-                    }
+                    }}
                     
-                    .page-ref {
+                    .page-ref {{
                         font-style: italic;
                         color: #5a5a5a;
                         margin-top: 4px;
-                    }
+                    }}
                     
-                    /* Document actions */
-                    .document-actions {
+                    .document-actions {{
                         display: flex;
                         gap: 12px;
                         padding: 12px 16px;
                         border-top: 1px solid #e1e5e9;
                         background: #f8f9fa;
-                    }
+                    }}
                     
-                    .action-btn {
+                    .action-btn {{
                         padding: 6px 12px;
                         border: 1px solid #d1d5db;
                         border-radius: 4px;
@@ -439,51 +410,45 @@ def main():
                         align-items: center;
                         gap: 4px;
                         transition: all 0.2s;
-                    }
+                    }}
                     
-                    .action-btn:hover {
+                    .action-btn:hover {{
                         background: #f3f4f6;
                         transform: translateY(-1px);
-                    }
+                    }}
                     
-                    /* Badge styling */
-                    .badge {
+                    .badge {{
                         display: inline-block;
                         padding: 3px 8px;
                         border-radius: 12px;
                         font-size: 12px;
                         font-weight: 500;
-                    }
+                    }}
                     
-                    .appellant-badge {
+                    .appellant-badge {{
                         background-color: rgba(49, 130, 206, 0.1);
                         color: #3182ce;
-                    }
+                    }}
                     
-                    .respondent-badge {
+                    .respondent-badge {{
                         background-color: rgba(229, 62, 62, 0.1);
                         color: #e53e3e;
-                    }
+                    }}
                     
-                    .both-badge {
+                    .both-badge {{
                         background-color: rgba(128, 90, 213, 0.1);
                         color: #805ad5;
-                    }
+                    }}
                     
-                    .exhibit-badge {
-                        background-color: rgba(221, 107, 32, 0.1);
-                        color: #dd6b20;
-                    }
-                    
-                    .disputed-badge {
+                    .disputed-badge {{
                         background-color: rgba(229, 62, 62, 0.1);
                         color: #e53e3e;
-                    }
+                    }}
                     
-                    .undisputed-badge {
+                    .undisputed-badge {{
                         background-color: rgba(72, 187, 120, 0.1);
                         color: #38a169;
-                    }
+                    }}
                 </style>
                 
                 <div class="metadata-row">
@@ -500,10 +465,11 @@ def main():
                         <span class="addressed-status">{fact['addressedBy']}</span>
                     </div>
                 </div>
+                
                 <div class="metadata-row">
                     <div class="metadata-item">"""
             
-            # Party badge
+            # Add party badge
             if fact['party'] == 'Both':
                 html_content += '<span class="badge both-badge">Both Parties</span>'
             elif fact['party'] == 'Appellant':
@@ -511,7 +477,7 @@ def main():
             else:
                 html_content += '<span class="badge respondent-badge">Respondent</span>'
             
-            # Status badge  
+            # Add status badge  
             if fact['isDisputed']:
                 html_content += '<span class="badge disputed-badge">Disputed</span>'
             else:
@@ -520,10 +486,11 @@ def main():
             html_content += """
                     </div>
                 </div>
+                
                 <div class="supporting-docs">
                     <h4>Supporting Documents</h4>"""
             
-            # Supporting documents
+            # Add supporting documents
             for doc in fact['supportingDocs']:
                 html_content += f"""
                     <div class="document-card">

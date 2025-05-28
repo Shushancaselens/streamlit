@@ -536,33 +536,24 @@ def main():
             </div>
             """
             
-            # Calculate precise height based on actual content
-            # Account for all metadata sections at the top
-            base_height = 200  # Increased to include:
-                              # - First metadata row (sources, proceedings, addressed by): ~60px
-                              # - Second metadata row (party badges, status): ~60px  
-                              # - Supporting Documents header: ~40px
-                              # - Margins and spacing: ~40px
+            # Calculate dynamic height based on content
+            # Base height for metadata and title
+            base_height = 200
             
-            # Calculate height for each document more precisely
-            doc_height = 0
-            for doc in fact['supportingDocs']:
-                # Document header: ~50px
-                # Document summary: estimate based on text length (120 chars per line, 22px per line)  
-                summary_lines = max(2, len(doc['summary']) // 120)  # minimum 2 lines
-                summary_height = summary_lines * 22
-                # Document source section: ~80px  
-                # Document actions: ~60px
-                # Card margins and borders: ~30px
-                doc_height += 50 + summary_height + 80 + 60 + 30
+            # Add height for each supporting document
+            doc_height = 300  # Height per document (summary + source + actions)
+            total_docs = len(fact['supportingDocs'])
             
-            total_height = base_height + doc_height
+            # Calculate total height needed
+            calculated_height = base_height + (total_docs * doc_height)
             
-            # Add some extra padding to ensure no cutoff
-            total_height += 50
+            # Set minimum and maximum bounds
+            min_height = 300
+            max_height = 1200
+            final_height = max(min_height, min(calculated_height, max_height))
             
-            # Render HTML inside expander with precise height
-            components.html(html_content, height=total_height, scrolling=False)
+            # Render HTML inside expander with dynamic height
+            components.html(html_content, height=final_height)
 
 if __name__ == "__main__":
     main()

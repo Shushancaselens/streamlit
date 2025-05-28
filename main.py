@@ -536,9 +536,24 @@ def main():
             </div>
             """
             
-            # Use a reasonable fixed height with scrolling enabled
-            # This prevents excessive white space while ensuring content is accessible
-            components.html(html_content, height=500, scrolling=True)
+            # Calculate precise height based on actual content
+            base_height = 120  # Metadata rows and spacing
+            
+            # Calculate height for each document more precisely
+            doc_height = 0
+            for doc in fact['supportingDocs']:
+                # Document header: ~40px
+                # Document summary: estimate based on text length (150 chars per line, 20px per line)
+                summary_lines = max(1, len(doc['summary']) // 150)
+                summary_height = summary_lines * 20
+                # Document source: ~60px  
+                # Document actions: ~50px
+                doc_height += 40 + summary_height + 60 + 50 + 20  # +20 for margins
+            
+            total_height = base_height + doc_height
+            
+            # Render HTML inside expander with precise height
+            components.html(html_content, height=total_height, scrolling=False)
 
 if __name__ == "__main__":
     main()

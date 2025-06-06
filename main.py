@@ -1,15 +1,9 @@
 import streamlit as st
 import json
 import streamlit.components.v1 as components
-import pandas as pd
-import base64
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
-
-# Initialize session state to track selected view
-if 'view' not in st.session_state:
-    st.session_state.view = "Arguments"
 
 # Create data structures as JSON for embedded components
 def get_argument_data():
@@ -26,20 +20,27 @@ def get_argument_data():
                 ],
                 "paragraphs": "15-16"
             },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence establishes criteria for sporting succession",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2016/A/4576"],
+                    "paragraphs": "15-17"
+                }
+            ],
             "factualPoints": [
                 {
                     "point": "Continuous operation under same name since 1950",
                     "date": "1950-present",
                     "isDisputed": False,
-                    "paragraphs": "18-19",
-                    "exhibits": ["C-1"]
+                    "paragraphs": "18-19"
                 }
             ],
             "evidence": [
                 {
                     "id": "C-1",
                     "title": "Historical Registration Documents",
-                    "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
+                    "summary": "Official records showing continuous name usage",
                     "citations": ["20", "21", "24"]
                 }
             ],
@@ -47,7 +48,7 @@ def get_argument_data():
                 {
                     "caseNumber": "CAS 2016/A/4576",
                     "title": "Criteria for sporting succession",
-                    "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
+                    "relevance": "Establishes key factors for succession",
                     "paragraphs": "45-48",
                     "citedParagraphs": ["45", "46", "47"]
                 }
@@ -65,6 +66,20 @@ def get_argument_data():
                         ],
                         "paragraphs": "20-21"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Name registration complies with regulations",
+                            "isDisputed": False,
+                            "regulations": ["Name Registration Act"],
+                            "paragraphs": "22-24"
+                        },
+                        {
+                            "point": "Trademark protection since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Law"],
+                            "paragraphs": "25-27"
+                        }
+                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -75,23 +90,21 @@ def get_argument_data():
                                     "point": "Initial registration in 1950",
                                     "date": "1950",
                                     "isDisputed": False,
-                                    "paragraphs": "25-26",
-                                    "exhibits": ["C-2"]
+                                    "paragraphs": "25-26"
                                 },
                                 {
                                     "point": "Brief administrative gap in 1975-1976",
                                     "date": "1975-1976",
                                     "isDisputed": True,
                                     "source": "Respondent",
-                                    "paragraphs": "29-30",
-                                    "exhibits": ["C-2"]
+                                    "paragraphs": "29-30"
                                 }
                             ],
                             "evidence": [
                                 {
                                     "id": "C-2",
                                     "title": "Registration Records",
-                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
+                                    "summary": "Official documentation of registration history",
                                     "citations": ["25", "26", "28"]
                                 }
                             ]
@@ -110,21 +123,28 @@ def get_argument_data():
                         ],
                         "paragraphs": "46-47"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark registration valid since 1960",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "48-50"
+                        }
+                    ],
                     "factualPoints": [
                         {
                             "point": "Consistent use of blue and white since founding",
                             "date": "1950-present",
                             "isDisputed": True,
                             "source": "Respondent",
-                            "paragraphs": "51-52",
-                            "exhibits": ["C-4"]
+                            "paragraphs": "51-52"
                         }
                     ],
                     "evidence": [
                         {
                             "id": "C-4",
                             "title": "Historical Photographs",
-                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
+                            "summary": "Visual evidence of consistent color usage",
                             "citations": ["53", "54", "55"]
                         }
                     ],
@@ -138,15 +158,13 @@ def get_argument_data():
                                     "point": "Minor shade variations do not affect continuity",
                                     "date": "1970-1980",
                                     "isDisputed": False,
-                                    "paragraphs": "56-57",
-                                    "exhibits": ["C-5"]
+                                    "paragraphs": "56-57"
                                 },
                                 {
                                     "point": "Temporary third color addition in 1980s",
                                     "date": "1982-1988",
                                     "isDisputed": False,
-                                    "paragraphs": "58-59",
-                                    "exhibits": ["C-5"]
+                                    "paragraphs": "58-59"
                                 }
                             ],
                             "children": {
@@ -158,7 +176,7 @@ def get_argument_data():
                                         {
                                             "id": "C-5",
                                             "title": "Color Archives",
-                                            "summary": "Detailed color specification documents from club archives, including official style guides, manufacturer specifications, and board meeting minutes about uniform decisions from 1950 to present day.",
+                                            "summary": "Historical documents showing color usage",
                                             "citations": ["61", "62", "63"]
                                         }
                                     ]
@@ -168,6 +186,27 @@ def get_argument_data():
                     }
                 }
             }
+        },
+        "2": {
+            "id": "2",
+            "title": "Doping Violation Chain of Custody",
+            "paragraphs": "70-125",
+            "overview": {
+                "points": [
+                    "Analysis of sample collection and handling procedures",
+                    "Evaluation of laboratory testing protocols",
+                    "Assessment of chain of custody documentation"
+                ],
+                "paragraphs": "70-72"
+            },
+            "legalPoints": [
+                {
+                    "point": "WADA Code Article 5 establishes procedural requirements",
+                    "isDisputed": False,
+                    "regulations": ["WADA Code 2021", "International Standard for Testing"],
+                    "paragraphs": "73-75"
+                }
+            ]
         }
     }
     
@@ -184,21 +223,28 @@ def get_argument_data():
                 ],
                 "paragraphs": "200-202"
             },
+            "legalPoints": [
+                {
+                    "point": "CAS jurisprudence requires operational continuity not merely identification",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2017/A/5465"],
+                    "paragraphs": "203-205"
+                }
+            ],
             "factualPoints": [
                 {
                     "point": "Operations ceased between 1975-1976",
                     "date": "1975-1976",
                     "isDisputed": True,
                     "source": "Claimant",
-                    "paragraphs": "206-207",
-                    "exhibits": ["R-1"]
+                    "paragraphs": "206-207"
                 }
             ],
             "evidence": [
                 {
                     "id": "R-1",
                     "title": "Federation Records",
-                    "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
+                    "summary": "Records showing non-participation in 1975-1976 season",
                     "citations": ["208", "209", "210"]
                 }
             ],
@@ -206,7 +252,7 @@ def get_argument_data():
                 {
                     "caseNumber": "CAS 2017/A/5465",
                     "title": "Operational continuity requirement",
-                    "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
+                    "relevance": "Establishes primacy of operational continuity",
                     "paragraphs": "211-213",
                     "citedParagraphs": ["212"]
                 }
@@ -224,6 +270,14 @@ def get_argument_data():
                         ],
                         "paragraphs": "220-222"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Registration lapse voided legal continuity",
+                            "isDisputed": True,
+                            "regulations": ["Registration Act"],
+                            "paragraphs": "223-225"
+                        }
+                    ],
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
@@ -234,22 +288,20 @@ def get_argument_data():
                                     "point": "Registration formally terminated on April 30, 1975",
                                     "date": "April 30, 1975",
                                     "isDisputed": False,
-                                    "paragraphs": "226-227",
-                                    "exhibits": ["R-2"]
+                                    "paragraphs": "226-227"
                                 },
                                 {
                                     "point": "New entity registered on September 15, 1976",
                                     "date": "September 15, 1976",
                                     "isDisputed": False,
-                                    "paragraphs": "228-229",
-                                    "exhibits": ["R-2"]
+                                    "paragraphs": "228-229"
                                 }
                             ],
                             "evidence": [
                                 {
                                     "id": "R-2",
                                     "title": "Termination Certificate",
-                                    "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
+                                    "summary": "Official documentation of registration termination",
                                     "citations": ["226", "227"]
                                 }
                             ]
@@ -268,21 +320,28 @@ def get_argument_data():
                         ],
                         "paragraphs": "241-242"
                     },
+                    "legalPoints": [
+                        {
+                            "point": "Color trademark lapsed during 1975-1976",
+                            "isDisputed": False,
+                            "regulations": ["Trademark Act"],
+                            "paragraphs": "243-244"
+                        }
+                    ],
                     "factualPoints": [
                         {
                             "point": "Significant color scheme change in 1976",
                             "date": "1976",
                             "isDisputed": True,
                             "source": "Claimant",
-                            "paragraphs": "245-246",
-                            "exhibits": ["R-4"]
+                            "paragraphs": "245-246"
                         }
                     ],
                     "evidence": [
                         {
                             "id": "R-4",
                             "title": "Historical Photographs Comparison",
-                            "summary": "Side-by-side comparison of team uniforms from 1974 (pre-dissolution) and 1976 (post-new registration), showing significant differences in shade, pattern, and design elements. Includes expert color analysis report from textile historian confirming different dye formulations were used.",
+                            "summary": "Visual evidence of color scheme changes",
                             "citations": ["245", "246", "247"]
                         }
                     ],
@@ -296,16 +355,14 @@ def get_argument_data():
                                     "point": "Pre-1976 colors represented original city district",
                                     "date": "1950-1975",
                                     "isDisputed": False,
-                                    "paragraphs": "247",
-                                    "exhibits": ["R-5"]
+                                    "paragraphs": "247"
                                 },
                                 {
                                     "point": "Post-1976 colors represented new ownership region",
                                     "date": "1976-present",
                                     "isDisputed": True,
                                     "source": "Claimant",
-                                    "paragraphs": "248-249",
-                                    "exhibits": ["R-5"]
+                                    "paragraphs": "248-249"
                                 }
                             ],
                             "children": {
@@ -317,7 +374,7 @@ def get_argument_data():
                                         {
                                             "id": "R-5",
                                             "title": "Marketing Materials",
-                                            "summary": "Collection of promotional materials, merchandise, and internal design documents from both pre-1975 and post-1976 periods, showing the deliberate change in color symbolism used in marketing campaigns and communications with fans.",
+                                            "summary": "Historical brand guidelines showing color changes",
                                             "citations": ["250", "251", "252"]
                                         }
                                     ]
@@ -327,6 +384,27 @@ def get_argument_data():
                     }
                 }
             }
+        },
+        "2": {
+            "id": "2",
+            "title": "Doping Chain of Custody Defense",
+            "paragraphs": "250-290",
+            "overview": {
+                "points": [
+                    "Defense of sample collection procedures",
+                    "Validation of laboratory testing protocols",
+                    "Completeness of documentation"
+                ],
+                "paragraphs": "250-252"
+            },
+            "legalPoints": [
+                {
+                    "point": "Minor procedural deviations do not invalidate results",
+                    "isDisputed": False,
+                    "regulations": ["CAS 2019/A/6148"],
+                    "paragraphs": "253-255"
+                }
+            ]
         }
     }
     
@@ -336,6 +414,12 @@ def get_argument_data():
             "title": "Sporting Succession and Identity",
             "description": "Questions of club identity, continuity, and succession rights",
             "argumentIds": ["1"]
+        },
+        {
+            "id": "topic-2",
+            "title": "Doping Violation and Chain of Custody",
+            "description": "Issues related to doping test procedures and evidence handling",
+            "argumentIds": ["2"]
         }
     ]
     
@@ -450,674 +534,570 @@ def get_exhibits_data():
         }
     ]
 
-# Get all facts from the data
-def get_all_facts():
-    args_data = get_argument_data()
-    facts = []
-    
-    # Helper function to extract facts from arguments
-    def extract_facts(arg, party):
-        if not arg:
-            return
-            
-        if 'factualPoints' in arg and arg['factualPoints']:
-            for point in arg['factualPoints']:
-                fact = {
-                    'point': point['point'],
-                    'date': point['date'],
-                    'isDisputed': point['isDisputed'],
-                    'party': party,
-                    'paragraphs': point.get('paragraphs', ''),
-                    'exhibits': point.get('exhibits', []),
-                    'argId': arg['id'],
-                    'argTitle': arg['title']
-                }
-                facts.append(fact)
-                
-        # Process children
-        if 'children' in arg and arg['children']:
-            for child_id, child in arg['children'].items():
-                extract_facts(child, party)
-    
-    # Extract from claimant args
-    for arg_id, arg in args_data['claimantArgs'].items():
-        extract_facts(arg, 'Appellant')
-        
-    # Extract from respondent args
-    for arg_id, arg in args_data['respondentArgs'].items():
-        extract_facts(arg, 'Respondent')
-        
-    return facts
-
-# Function to create CSV download link
-def get_csv_download_link(df, filename="data.csv", text="Download CSV"):
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}">{text}</a>'
-    return href
-
 # Main app
 def main():
     # Get the data for JavaScript
     args_data = get_argument_data()
     timeline_data = get_timeline_data()
     exhibits_data = get_exhibits_data()
-    facts_data = get_all_facts()
     
     # Convert data to JSON for JavaScript use
     args_json = json.dumps(args_data)
     timeline_json = json.dumps(timeline_data)
     exhibits_json = json.dumps(exhibits_data)
-    facts_json = json.dumps(facts_data)
     
-    # Initialize session state if not already done
-    if 'view' not in st.session_state:
-        st.session_state.view = "Arguments"
+    # Title
+    st.title("Legal Arguments Analysis")
     
-    # Add Streamlit sidebar with navigation buttons only
-    with st.sidebar:
-        # Add the logo and CaseLens text
-        st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
-              <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
-                <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
-              </mask>
-              <g mask="url(#whatsapp-mask)">
-                <!-- Rounded square background -->
-                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
-                <!-- WhatsApp phone icon -->
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
-              </g>
-            </svg>
-            <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
-        
-        # Custom CSS for button styling
-        st.markdown("""
-        <style>
-        .stButton > button {
-            width: 100%;
-            border-radius: 6px;
-            height: 50px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-        }
-        .stButton > button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        # Define button click handlers
-        def set_arguments_view():
-            st.session_state.view = "Arguments"
-            
-        def set_facts_view():
-            st.session_state.view = "Facts"
-            
-        def set_exhibits_view():
-            st.session_state.view = "Exhibits"
-        
-        # Create buttons with names
-        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
-    
-    # Determine which view to show based on sidebar selection
-    if st.session_state.view == "Arguments":
-        active_tab = 0
-    elif st.session_state.view == "Facts":
-        active_tab = 1
-    elif st.session_state.view == "Timeline":
-        active_tab = 2
-    else:  # Exhibits
-        active_tab = 3
-    
-    # Initialize the view options as a JavaScript variable
-    view_options_json = json.dumps({
-        "activeTab": active_tab
-    })
-    
-    # Create a single HTML component containing the full UI with minimalistic design
+    # Create a single HTML component containing the full UI
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <style>
-            /* Minimalistic base styling */
+            /* Base styling */
             body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
                 padding: 0;
-                background-color: #fff;
             }}
             
-            /* Simple container */
-            .container {{
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }}
-            
-            /* Content sections */
-            .content-section {{
-                display: none;
-            }}
-            
-            .content-section.active {{
-                display: block;
-            }}
-            
-            /* Card styling */
-            .card {{
-                background-color: #fff;
-                border: 1px solid #f0f0f0;
-                border-radius: 8px;
-                margin-bottom: 16px;
-                overflow: hidden;
-            }}
-            
-            .card-header {{
-                padding: 12px 16px;
-                cursor: pointer;
+            /* Tab navigation */
+            .tabs {{
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid #f0f0f0;
-                background-color: #fafafa;
+                border-bottom: 1px solid #e2e8f0;
+                margin-bottom: 1.5rem;
             }}
-            
-            .card-content {{
-                padding: 16px;
-                display: none;
-            }}
-            
-            /* Arguments layout */
-            .arguments-row {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }}
-            
-            /* Party view styles */
-            .appellant-only .arguments-row > div:nth-child(2) {{
-                display: none;
-            }}
-            .appellant-only .arguments-row > div:nth-child(1) {{
-                grid-column: 1 / span 2;
-            }}
-            .appellant-only .respondent-color {{
-                display: none;
-            }}
-            
-            .respondent-only .arguments-row > div:nth-child(1) {{
-                display: none;
-            }}
-            .respondent-only .arguments-row > div:nth-child(2) {{
-                grid-column: 1 / span 2;
-            }}
-            .respondent-only .appellant-color {{
-                display: none;
-            }}
-            
-            .side-heading {{
-                margin-bottom: 16px;
+            .tab {{
+                padding: 1rem 1.5rem;
                 font-weight: 500;
-            }}
-            
-            .appellant-color {{
-                color: #3182ce;
-            }}
-            
-            .respondent-color {{
-                color: #e53e3e;
-            }}
-            
-            /* Badge styling */
-            .badge {{
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-            }}
-            
-            .appellant-badge {{
-                background-color: rgba(49, 130, 206, 0.1);
-                color: #3182ce;
-            }}
-            
-            .respondent-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .exhibit-badge {{
-                background-color: rgba(221, 107, 32, 0.1);
-                color: #dd6b20;
-            }}
-            
-            .disputed-badge {{
-                background-color: rgba(229, 62, 62, 0.1);
-                color: #e53e3e;
-            }}
-            
-            .para-badge {{
-                background-color: rgba(0, 0, 0, 0.05);
-                color: #666;
-                margin-left: 5px;
-            }}
-            
-            /* Evidence and factual points */
-            .item-block {{
-                background-color: #fafafa;
-                border-radius: 6px;
-                padding: 12px;
-                margin-bottom: 10px;
-            }}
-            
-            .item-title {{
-                font-weight: 600;
-                margin-bottom: 6px;
-                color: #333;
-            }}
-            
-            .evidence-block {{
-                background-color: #fff8f0;
-                border-left: 3px solid #dd6b20;
-                padding: 10px 12px;
-                margin-bottom: 12px;
-                border-radius: 0 4px 4px 0;
-            }}
-            
-            .caselaw-block {{
-                background-color: #ebf8ff;
-                border-left: 3px solid #3182ce;
-                padding: 10px 12px;
-                margin-bottom: 12px;
-                border-radius: 0 4px 4px 0;
-            }}
-            
-            /* Tables */
-            table {{
-                width: 100%;
-                border-collapse: collapse;
-            }}
-            
-            th {{
-                text-align: left;
-                padding: 12px;
-                background-color: #fafafa;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            td {{
-                padding: 12px;
-                border-bottom: 1px solid #f0f0f0;
-            }}
-            
-            tr.disputed {{
-                background-color: rgba(229, 62, 62, 0.05);
-            }}
-            
-            /* Action buttons */
-            .action-buttons {{
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-            }}
-            
-            .action-button {{
-                padding: 8px 16px;
-                background-color: #f9f9f9;
-                border: 1px solid #e1e4e8;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
+                color: #718096;
                 cursor: pointer;
-            }}
-            
-            .action-button:hover {{
-                background-color: #f1f1f1;
-            }}
-            
-            .export-dropdown {{
                 position: relative;
-                display: inline-block;
+            }}
+            .tab:hover {{
+                color: #4a5568;
+            }}
+            .tab.active {{
+                color: #3182ce;
+                border-bottom: 2px solid #3182ce;
             }}
             
-            .export-dropdown-content {{
+            /* Tab content sections */
+            .tab-content {{
                 display: none;
-                position: absolute;
-                right: 0;
-                background-color: #f9f9f9;
-                min-width: 160px;
-                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-                z-index: 1;
-                border-radius: 4px;
             }}
-            
-            .export-dropdown-content a {{
-                color: black;
-                padding: 12px 16px;
-                text-decoration: none;
+            .tab-content.active {{
                 display: block;
-                cursor: pointer;
-            }}
-            
-            .export-dropdown-content a:hover {{
-                background-color: #f1f1f1;
-            }}
-            
-            .export-dropdown:hover .export-dropdown-content {{
-                display: block;
-            }}
-            
-            /* Nested content */
-            .nested-content {{
-                padding-left: 20px;
-                margin-top: 10px;
-                border-left: 1px solid #f0f0f0;
-                /* No display:none to show nested content */
-            }}
-            
-            /* Simple list styling */
-            ul.point-list {{
-                list-style-type: none;
-                padding-left: 0;
-                margin: 0;
-            }}
-            
-            ul.point-list li {{
-                position: relative;
-                padding-left: 16px;
-                margin-bottom: 8px;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-            }}
-            
-            ul.point-list li:before {{
-                content: "•";
-                position: absolute;
-                left: 0;
-                color: #8c8c8c;
-            }}
-            
-            /* Chevron icon */
-            .chevron {{
-                transition: transform 0.2s;
-            }}
-            
-            .chevron.expanded {{
-                transform: rotate(90deg);
-            }}
-            
-            /* Citation tags */
-            .citation-tag {{
-                padding: 2px 5px;
-                background: rgba(0,0,0,0.05);
-                border-radius: 3px;
-                font-size: 11px;
-                color: #666;
-                margin-right: 2px;
-            }}
-            
-            /* Section title */
-            .section-title {{
-                font-size: 1.5rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid #eaeaea;
-            }}
-            
-            /* Table view */
-            .table-view {{
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }}
-            
-            .table-view th {{
-                padding: 12px;
-                text-align: left;
-                background-color: #f8f9fa;
-                border-bottom: 2px solid #dee2e6;
-                position: sticky;
-                top: 0;
-                cursor: pointer;
-            }}
-            
-            .table-view th:hover {{
-                background-color: #e9ecef;
-            }}
-            
-            .table-view td {{
-                padding: 12px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .table-view tr:hover {{
-                background-color: #f8f9fa;
-            }}
-            
-            /* Facts styling */
-            .facts-container {{
-                margin-top: 20px;
-            }}
-            
-            .facts-header {{
-                display: flex;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .tab-button {{
-                padding: 10px 20px;
-                background: none;
-                border: none;
-                cursor: pointer;
-            }}
-            
-            .tab-button.active {{
-                border-bottom: 2px solid #4299e1;
-                color: #4299e1;
-                font-weight: 500;
-            }}
-            
-            .facts-content {{
-                margin-top: 20px;
             }}
             
             /* View toggle */
             .view-toggle {{
                 display: flex;
                 justify-content: flex-end;
-                margin-bottom: 16px;
+                margin-bottom: 1rem;
+            }}
+            .view-toggle-container {{
+                background-color: #f7fafc;
+                border-radius: 0.375rem;
+                padding: 0.25rem;
+            }}
+            .view-btn {{
+                padding: 0.5rem 1rem;
+                border-radius: 0.375rem;
+                border: none;
+                background: none;
+                font-size: 0.875rem;
+                font-weight: 500;
+                cursor: pointer;
+                color: #718096;
+            }}
+            .view-btn.active {{
+                background-color: white;
+                color: #4a5568;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             }}
             
-            .view-toggle button {{
-                padding: 8px 16px;
+            /* Arguments styling */
+            .arguments-header {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+            }}
+            .claimant-color {{
+                color: #3182ce;
+            }}
+            .respondent-color {{
+                color: #e53e3e;
+            }}
+            
+            /* Argument container and pairs */
+            .argument-pair {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+                position: relative;
+            }}
+            .argument-side {{
+                position: relative;
+            }}
+            
+            /* Argument card and details */
+            .argument {{
                 border: 1px solid #e2e8f0;
+                border-radius: 0.375rem;
+                overflow: hidden;
+                margin-bottom: 1rem;
+            }}
+            .argument-header {{
+                padding: 0.75rem 1rem;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }}
+            .argument-header-left {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }}
+            .argument-content {{
+                padding: 1rem;
+                border-top: 1px solid #e2e8f0;
+                display: none;
+                background-color: white;
+            }}
+            .claimant-header {{
+                background-color: #ebf8ff;
+                border-color: #bee3f8;
+            }}
+            .respondent-header {{
+                background-color: #fff5f5;
+                border-color: #fed7d7;
+            }}
+            
+            /* Child arguments container */
+            .argument-children {{
+                padding-left: 1.5rem;
+                display: none;
+                position: relative;
+            }}
+            
+            /* Connector lines for tree structure */
+            .connector-vertical {{
+                position: absolute;
+                left: 0.75rem;
+                top: 0;
+                width: 1px;
+                height: 100%;
+                background-color: #e2e8f0;
+            }}
+            .connector-horizontal {{
+                position: absolute;
+                left: 0.75rem;
+                top: 1.25rem;
+                width: 0.75rem;
+                height: 1px;
+                background-color: #e2e8f0;
+            }}
+            .claimant-connector {{
+                background-color: rgba(59, 130, 246, 0.5);
+            }}
+            .respondent-connector {{
+                background-color: rgba(239, 68, 68, 0.5);
+            }}
+            
+            /* Badge styling */
+            .badge {{
+                display: inline-block;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                font-size: 0.75rem;
+            }}
+            .claimant-badge {{
+                background-color: #ebf8ff;
+                color: #3182ce;
+            }}
+            .respondent-badge {{
+                background-color: #fff5f5;
+                color: #e53e3e;
+            }}
+            .legal-badge {{
+                background-color: #ebf8ff;
+                color: #2c5282;
+                margin-right: 0.25rem;
+            }}
+            .factual-badge {{
+                background-color: #f0fff4;
+                color: #276749;
+                margin-right: 0.25rem;
+            }}
+            .disputed-badge {{
+                background-color: #fed7d7;
+                color: #c53030;
+            }}
+            .type-badge {{
+                background-color: #edf2f7;
+                color: #4a5568;
+            }}
+            
+            /* Content components */
+            .content-section {{
+                margin-bottom: 1.5rem;
+            }}
+            .content-section-title {{
+                font-size: 0.875rem;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+            }}
+            .point-block {{
                 background-color: #f7fafc;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .point-header {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+            }}
+            .point-date {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+                font-size: 0.75rem;
+                color: #718096;
+            }}
+            .point-text {{
+                font-size: 0.875rem;
+                color: #4a5568;
+            }}
+            .point-citation {{
+                display: inline-block;
+                margin-top: 0.5rem;
+                font-size: 0.75rem;
+                color: #718096;
+            }}
+            
+            /* Overview points */
+            .overview-block {{
+                background-color: #f7fafc;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }}
+            .overview-header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            }}
+            .overview-list {{
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }}
+            .overview-item {{
+                display: flex;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }}
+            .overview-bullet {{
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: #3182ce;
+                margin-top: 0.5rem;
+            }}
+            
+            /* Evidence and Case Law */
+            .reference-block {{
+                background-color: #f7fafc;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .reference-header {{
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.25rem;
+            }}
+            .reference-title {{
+                font-size: 0.875rem;
+                font-weight: 500;
+            }}
+            .reference-summary {{
+                font-size: 0.75rem;
+                color: #718096;
+                margin-top: 0.25rem;
+                margin-bottom: 0.5rem;
+            }}
+            .reference-citations {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+                margin-top: 0.5rem;
+            }}
+            .citation-tag {{
+                background-color: #edf2f7;
+                color: #4a5568;
+                padding: 0.125rem 0.375rem;
+                border-radius: 0.25rem;
+                font-size: 0.75rem;
+            }}
+            
+            /* Legal references styling */
+            .legal-point {{
+                background-color: #ebf8ff;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            .factual-point {{
+                background-color: #f0fff4;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }}
+            
+            /* Topic view */
+            .topic-section {{
+                margin-bottom: 2rem;
+            }}
+            .topic-title {{
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #2d3748;
+                margin-bottom: 0.25rem;
+            }}
+            .topic-description {{
+                font-size: 0.875rem;
+                color: #718096;
+                margin-bottom: 1rem;
+            }}
+            
+            /* Timeline & Exhibits */
+            .actions-bar {{
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 1rem;
+            }}
+            .action-btn {{
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                background-color: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.375rem;
+                font-size: 0.875rem;
+                margin-left: 0.5rem;
                 cursor: pointer;
             }}
-            
-            .view-toggle button.active {{
-                background-color: #4299e1;
-                color: white;
-                border-color: #4299e1;
+            .search-bar {{
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+            }}
+            .search-input-container {{
+                position: relative;
+            }}
+            .search-input {{
+                padding: 0.625rem 1rem 0.625rem 2.5rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.375rem;
+                width: 16rem;
+            }}
+            .search-icon {{
+                position: absolute;
+                left: 12px;
+                top: 11px;
             }}
             
-            .view-toggle button:first-child {{
-                border-radius: 4px 0 0 4px;
+            /* Tables */
+            .data-table {{
+                width: 100%;
+                border-collapse: collapse;
+                background-color: white;
+                border-radius: 0.375rem;
+                overflow: hidden;
+                border: 1px solid #e2e8f0;
+            }}
+            .data-table th {{
+                background-color: #f7fafc;
+                padding: 0.75rem 1rem;
+                text-align: left;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #4a5568;
+                border-bottom: 1px solid #e2e8f0;
+            }}
+            .data-table td {{
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                border-bottom: 1px solid #e2e8f0;
+            }}
+            .data-table tr.disputed {{
+                background-color: #fff5f5;
             }}
             
-            .view-toggle button:last-child {{
-                border-radius: 0 4px 4px 0;
+            /* Status indicators */
+            .undisputed {{
+                color: #2f855a;
             }}
-            
-            /* Copy notification */
-            .copy-notification {{
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background-color: #2d3748;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }}
-            
-            .copy-notification.show {{
-                opacity: 1;
+            .disputed {{
+                color: #c53030;
             }}
         </style>
     </head>
     <body>
-        <div class="container">
-            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="arguments">Summary of Arguments</div>
+            <div class="tab" data-tab="timeline">Timeline</div>
+            <div class="tab" data-tab="exhibits">Exhibits</div>
+        </div>
+        
+        <!-- Arguments Tab -->
+        <div id="arguments" class="tab-content active">
+            <div class="view-toggle">
+                <div class="view-toggle-container">
+                    <button class="view-btn active" data-view="standard">Standard View</button>
+                    <button class="view-btn" data-view="topic">Topic View</button>
+                </div>
+            </div>
             
-            <div class="action-buttons">
-                <button class="action-button" onclick="copyAllContent()">
+            <!-- Standard View -->
+            <div id="standard-view" class="view-content">
+                <div class="arguments-header">
+                    <h3 class="claimant-color">Claimant's Arguments</h3>
+                    <h3 class="respondent-color">Respondent's Arguments</h3>
+                </div>
+                <div id="standard-arguments-container"></div>
+            </div>
+            
+            <!-- Topic View -->
+            <div id="topic-view" class="view-content" style="display: none;">
+                <div id="topics-container"></div>
+            </div>
+        </div>
+        
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <div class="actions-bar">
+                <button class="action-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                     Copy
                 </button>
-                <div class="export-dropdown">
-                    <button class="action-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </button>
+            </div>
+            
+            <div class="search-bar">
+                <div style="display: flex; gap: 0.5rem;">
+                    <div class="search-input-container">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        Export
+                        <input type="text" id="timeline-search" class="search-input" placeholder="Search events...">
+                    </div>
+                    <button class="action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Filter
                     </button>
-                    <div class="export-dropdown-content">
-                        <a onclick="exportAsCsv()">CSV</a>
-                        <a onclick="exportAsPdf()">PDF</a>
-                        <a onclick="exportAsWord()">Word</a>
-                    </div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="disputed-only" style="width: 1rem; height: 1rem;">
+                        <span style="font-size: 0.875rem; color: #4a5568;">Disputed events only</span>
+                    </label>
                 </div>
             </div>
             
-            <!-- Arguments Section -->
-            <div id="arguments" class="content-section">
-                <div class="section-title">Issues</div>
-                
-                <!-- Direct inline buttons for view toggling -->
-                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
-                    <div id="party-buttons">
-                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
-                        
-                        <button id="app-btn" onclick="changePartyView('appellant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
-                        
-                        <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
-                    </div>
-                    <div>
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
-                        
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
-                    </div>
-                </div>
-                
-                <!-- Detailed view content -->
-                <div id="detailed-view" class="view-content active">
-                    <div id="topics-container"></div>
-                </div>
-                
-                <!-- Table view content -->
-                <div id="table-view" class="view-content" style="display: none;">
-                    <table class="table-view">
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('table-view-body', 0)">ID</th>
-                                <th onclick="sortTable('table-view-body', 1)">Argument</th>
-                                <th onclick="sortTable('table-view-body', 2)">Party</th>
-                                <th onclick="sortTable('table-view-body', 3)">Status</th>
-                                <th onclick="sortTable('table-view-body', 4)">Evidence</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-view-body"></tbody>
-                    </table>
-                </div>
+            <table id="timeline-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>DATE</th>
+                        <th>APPELLANT'S VERSION</th>
+                        <th>RESPONDENT'S VERSION</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="timeline-body"></tbody>
+            </table>
+        </div>
+        
+        <!-- Exhibits Tab -->
+        <div id="exhibits" class="tab-content">
+            <div class="actions-bar">
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button class="action-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Data
+                </button>
             </div>
             
-            <!-- Facts Section -->
-            <div id="facts" class="content-section">
-                <div class="section-title">Case Facts</div>
-                
-                <div class="facts-header">
-                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <div class="search-input-container">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="exhibits-search" class="search-input" placeholder="Search exhibits...">
                 </div>
                 
-                <div class="facts-content">
-                    <table class="table-view">
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
-                            </tr>
-                        </thead>
-                        <tbody id="facts-table-body"></tbody>
-                    </table>
-                </div>
+                <select id="party-filter" style="padding: 0.625rem 1rem; border: 1px solid #e2e8f0; border-radius: 0.375rem; background-color: white;">
+                    <option value="All Parties">All Parties</option>
+                    <option value="Appellant">Appellant</option>
+                    <option value="Respondent">Respondent</option>
+                </select>
+                
+                <select id="type-filter" style="padding: 0.625rem 1rem; border: 1px solid #e2e8f0; border-radius: 0.375rem; background-color: white;">
+                    <option value="All Types">All Types</option>
+                </select>
             </div>
             
-            <!-- Timeline Section -->
-            <div id="timeline" class="content-section">
-                <div class="section-title">Case Timeline</div>
-                <table id="timeline-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Appellant's Version</th>
-                            <th>Respondent's Version</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="timeline-body"></tbody>
-                </table>
-            </div>
-            
-            <!-- Exhibits Section -->
-            <div id="exhibits" class="content-section">
-                <div class="section-title">Case Exhibits</div>
-                <table id="exhibits-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Party</th>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Summary</th>
-                        </tr>
-                    </thead>
-                    <tbody id="exhibits-body"></tbody>
-                </table>
-            </div>
+            <table id="exhibits-table" class="data-table">
+                <thead>
+                    <tr>
+                        <th>EXHIBIT ID</th>
+                        <th>PARTY</th>
+                        <th>TITLE</th>
+                        <th>TYPE</th>
+                        <th>SUMMARY</th>
+                        <th style="text-align: right;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="exhibits-body"></tbody>
+            </table>
         </div>
         
         <script>
@@ -1125,547 +1105,81 @@ def main():
             const argsData = {args_json};
             const timelineData = {timeline_json};
             const exhibitsData = {exhibits_json};
-            const factsData = {facts_json};
-            const viewOptions = {view_options_json};
             
-            // Function to change party view
-            function changePartyView(view) {{
-                console.log("Changing party view to:", view);
-                
-                // Get the container
-                const container = document.getElementById('topics-container');
-                
-                // Update button styling
-                const bothBtn = document.getElementById('both-btn');
-                const appBtn = document.getElementById('app-btn');
-                const respBtn = document.getElementById('resp-btn');
-                
-                // Reset button styles
-                bothBtn.style.backgroundColor = '#f7fafc';
-                bothBtn.style.color = 'black';
-                appBtn.style.backgroundColor = '#f7fafc';
-                appBtn.style.color = 'black';
-                respBtn.style.backgroundColor = '#f7fafc';
-                respBtn.style.color = 'black';
-                
-                // Apply class to container based on view
-                container.className = '';
-                
-                if (view === 'both') {{
-                    bothBtn.style.backgroundColor = '#4299e1';
-                    bothBtn.style.color = 'white';
-                    // Default view - no special class needed
-                }} else if (view === 'appellant') {{
-                    appBtn.style.backgroundColor = '#4299e1';
-                    appBtn.style.color = 'white';
-                    container.className = 'appellant-only';
-                }} else if (view === 'respondent') {{
-                    respBtn.style.backgroundColor = '#4299e1';
-                    respBtn.style.color = 'white';
-                    container.className = 'respondent-only';
-                }}
-            }}
+            // Keep track of expanded states - we'll use an object to track the state of each argument by its full path ID
+            const expandedStates = {{}};
             
-            // Show the selected view based on sidebar selection
-            document.addEventListener('DOMContentLoaded', function() {{
-                // Show the correct section based on sidebar selection
-                const sections = ['arguments', 'facts', 'timeline', 'exhibits'];
-                const activeSection = sections[viewOptions.activeTab];
-                
-                document.querySelectorAll('.content-section').forEach(section => {{
-                    section.classList.remove('active');
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {{
+                tab.addEventListener('click', function() {{
+                    // Update tabs
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update content
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {{
+                        content.style.display = 'none';
+                    }});
+                    document.getElementById(tabId).style.display = 'block';
+                    
+                    // Initialize content if needed
+                    if (tabId === 'timeline') renderTimeline();
+                    if (tabId === 'exhibits') renderExhibits();
                 }});
-                
-                document.getElementById(activeSection).classList.add('active');
-                
-                // Initialize content as needed
-                if (activeSection === 'arguments') {{
-                    renderTopics();
-                    renderArgumentsTable();
-                }}
-                if (activeSection === 'timeline') renderTimeline();
-                if (activeSection === 'exhibits') renderExhibits();
-                if (activeSection === 'facts') renderFacts();
             }});
             
-            // Switch view between detailed and table
-            function switchView(viewType) {{
-                const detailedBtn = document.getElementById('detailed-view-btn');
-                const tableBtn = document.getElementById('table-view-btn');
-                const detailedView = document.getElementById('detailed-view');
-                const tableView = document.getElementById('table-view');
-                
-                if (viewType === 'detailed') {{
-                    detailedBtn.classList.add('active');
-                    tableBtn.classList.remove('active');
-                    detailedView.style.display = 'block';
-                    tableView.style.display = 'none';
-                }} else {{
-                    detailedBtn.classList.remove('active');
-                    tableBtn.classList.add('active');
-                    detailedView.style.display = 'none';
-                    tableView.style.display = 'block';
-                }}
-            }}
-            
-            // Switch facts tab
-            function switchFactsTab(tabType) {{
-                const allBtn = document.getElementById('all-facts-btn');
-                const disputedBtn = document.getElementById('disputed-facts-btn');
-                const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                
-                // Remove active class from all
-                allBtn.classList.remove('active');
-                disputedBtn.classList.remove('active');
-                undisputedBtn.classList.remove('active');
-                
-                // Add active to selected
-                if (tabType === 'all') {{
-                    allBtn.classList.add('active');
-                    renderFacts('all');
-                }} else if (tabType === 'disputed') {{
-                    disputedBtn.classList.add('active');
-                    renderFacts('disputed');
-                }} else {{
-                    undisputedBtn.classList.add('active');
-                    renderFacts('undisputed');
-                }}
-            }}
-            
-            // Sort table function
-            function sortTable(tableId, columnIndex) {{
-                const table = document.getElementById(tableId);
-                const rows = Array.from(table.rows);
-                let dir = 1; // 1 for ascending, -1 for descending
-                
-                // Check if already sorted in this direction
-                if (table.getAttribute('data-sort-column') === String(columnIndex) &&
-                    table.getAttribute('data-sort-dir') === '1') {{
-                    dir = -1;
-                }}
-                
-                // Sort the rows
-                rows.sort((a, b) => {{
-                    const cellA = a.cells[columnIndex].textContent.trim();
-                    const cellB = b.cells[columnIndex].textContent.trim();
-                    
-                    // Handle date sorting
-                    if (columnIndex === 0 && tableId === 'facts-table-body') {{
-                        // Attempt to parse as dates
-                        const dateA = new Date(cellA);
-                        const dateB = new Date(cellB);
-                        
-                        if (!isNaN(dateA) && !isNaN(dateB)) {{
-                            return dir * (dateA - dateB);
-                        }}
-                    }}
-                    
-                    return dir * cellA.localeCompare(cellB);
-                }});
-                
-                // Remove existing rows and append in new order
-                rows.forEach(row => table.appendChild(row));
-                
-                // Store current sort direction and column
-                table.setAttribute('data-sort-column', columnIndex);
-                table.setAttribute('data-sort-dir', dir);
-            }}
-            
-            // Copy all content function
-            function copyAllContent() {{
-                const activeSection = document.querySelector('.content-section.active');
-                if (!activeSection) return;
-                
-                let contentToCopy = '';
-                
-                // Extract content based on section
-                if (activeSection.id === 'arguments') {{
-                    if (document.getElementById('detailed-view').style.display !== 'none') {{
-                        contentToCopy = extractArgumentsDetailedText();
-                    }} else {{
-                        contentToCopy = extractArgumentsTableText();
-                    }}
-                }} else if (activeSection.id === 'timeline') {{
-                    contentToCopy = extractTimelineText();
-                }} else if (activeSection.id === 'exhibits') {{
-                    contentToCopy = extractExhibitsText();
-                }} else if (activeSection.id === 'facts') {{
-                    contentToCopy = extractFactsText();
-                }}
-                
-                // Create a temporary textarea to copy the content
-                const textarea = document.createElement('textarea');
-                textarea.value = contentToCopy;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                
-                // Show notification
-                const notification = document.getElementById('copy-notification');
-                notification.classList.add('show');
-                
-                setTimeout(() => {{
-                    notification.classList.remove('show');
-                }}, 2000);
-            }}
-            
-            // Export functions
-            function exportAsCsv() {{
-                const activeSection = document.querySelector('.content-section.active');
-                if (!activeSection) return;
-                
-                let contentToCsv = '';
-                
-                // Extract content based on section
-                if (activeSection.id === 'arguments') {{
-                    if (document.getElementById('detailed-view').style.display !== 'none') {{
-                        contentToCsv = extractArgumentsDetailedText();
-                    }} else {{
-                        contentToCsv = extractArgumentsTableText();
-                    }}
-                }} else if (activeSection.id === 'timeline') {{
-                    contentToCsv = extractTimelineText();
-                }} else if (activeSection.id === 'exhibits') {{
-                    contentToCsv = extractExhibitsText();
-                }} else if (activeSection.id === 'facts') {{
-                    contentToCsv = extractFactsText();
-                }}
-                
-                // Create link for CSV download
-                const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(contentToCsv);
-                const encodedUri = csvContent;
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", activeSection.id + ".csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }}
-            
-            function exportAsPdf() {{
-                alert("PDF export functionality would be implemented here");
-            }}
-            
-            function exportAsWord() {{
-                alert("Word export functionality would be implemented here");
-            }}
-            
-            // Extract text from arguments detailed view
-            function extractArgumentsDetailedText() {{
-                const container = document.getElementById('topics-container');
-                return container.innerText;
-            }}
-            
-            // Extract text from arguments table
-            function extractArgumentsTableText() {{
-                const table = document.querySelector('#table-view table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .filter(header => header !== 'Actions')
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .filter((td, index) => index !== row.cells.length - 1) // Exclude Actions column
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
-            // Extract text from timeline
-            function extractTimelineText() {{
-                const table = document.getElementById('timeline-table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
-            // Extract text from exhibits
-            function extractExhibitsText() {{
-                const table = document.getElementById('exhibits-table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
-            // Extract text from facts
-            function extractFactsText() {{
-                const table = document.querySelector('.facts-content table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
-            // Render arguments in table format
-            function renderArgumentsTable() {{
-                const tableBody = document.getElementById('table-view-body');
-                tableBody.innerHTML = '';
-                
-                // Helper function to flatten arguments
-                function flattenArguments(args, party) {{
-                    let result = [];
-                    
-                    Object.values(args).forEach(arg => {{
-                        // Track if argument has disputed facts
-                        const hasDisputedFacts = arg.factualPoints && 
-                            arg.factualPoints.some(point => point.isDisputed);
-                        
-                        // Count pieces of evidence
-                        const evidenceCount = arg.evidence ? arg.evidence.length : 0;
-                        
-                        // Add this argument
-                        result.push({{
-                            id: arg.id,
-                            title: arg.title,
-                            party: party,
-                            hasDisputedFacts: hasDisputedFacts,
-                            evidenceCount: evidenceCount,
-                            paragraphs: arg.paragraphs
-                        }});
-                        
-                        // Process children recursively
-                        if (arg.children) {{
-                            Object.values(arg.children).forEach(child => {{
-                                result = result.concat(flattenArguments({{[child.id]: child}}, party));
-                            }});
-                        }}
+            // View switching
+            document.querySelectorAll('.view-btn').forEach(btn => {{
+                btn.addEventListener('click', function() {{
+                    // Update buttons
+                    document.querySelectorAll('.view-btn').forEach(b => {{
+                        b.classList.remove('active');
+                        b.style.backgroundColor = '';
+                        b.style.boxShadow = '';
                     }});
+                    this.classList.add('active');
+                    this.style.backgroundColor = 'white';
+                    this.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
                     
-                    return result;
-                }}
-                
-                // Get flattened arguments
-                const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
-                const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
-                const allArgs = [...appellantArgs, ...respondentArgs];
-                
-                // Render rows
-                allArgs.forEach(arg => {{
-                    const row = document.createElement('tr');
-                    
-                    // ID column
-                    const idCell = document.createElement('td');
-                    idCell.textContent = arg.id;
-                    row.appendChild(idCell);
-                    
-                    // Title column
-                    const titleCell = document.createElement('td');
-                    titleCell.textContent = arg.title;
-                    row.appendChild(titleCell);
-                    
-                    // Party column
-                    const partyCell = document.createElement('td');
-                    const partyBadge = document.createElement('span');
-                    partyBadge.className = `badge ${{arg.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                    partyBadge.textContent = arg.party;
-                    partyCell.appendChild(partyBadge);
-                    row.appendChild(partyCell);
-                    
-                    // Status column
-                    const statusCell = document.createElement('td');
-                    if (arg.hasDisputedFacts) {{
-                        const disputedBadge = document.createElement('span');
-                        disputedBadge.className = 'badge disputed-badge';
-                        disputedBadge.textContent = 'Disputed';
-                        statusCell.appendChild(disputedBadge);
+                    // Update content
+                    const viewId = this.getAttribute('data-view');
+                    if (viewId === 'standard') {{
+                        document.getElementById('standard-view').style.display = 'block';
+                        document.getElementById('topic-view').style.display = 'none';
                     }} else {{
-                        statusCell.textContent = 'Undisputed';
+                        document.getElementById('standard-view').style.display = 'none';
+                        document.getElementById('topic-view').style.display = 'block';
                     }}
-                    row.appendChild(statusCell);
-                    
-                    // Evidence column
-                    const evidenceCell = document.createElement('td');
-                    evidenceCell.textContent = arg.evidenceCount > 0 ? `${{arg.evidenceCount}} items` : 'None';
-                    row.appendChild(evidenceCell);
-                    
-                    // Actions column
-                    const actionsCell = document.createElement('td');
-                    const viewBtn = document.createElement('button');
-                    viewBtn.textContent = 'View';
-                    viewBtn.style.padding = '4px 8px';
-                    viewBtn.style.marginRight = '8px';
-                    viewBtn.style.border = '1px solid #e2e8f0';
-                    viewBtn.style.borderRadius = '4px';
-                    viewBtn.style.backgroundColor = '#f7fafc';
-                    viewBtn.style.cursor = 'pointer';
-                    viewBtn.onclick = function() {{
-                        // Switch to detailed view and expand this argument
-                        switchView('detailed');
-                        // Logic to find and expand the argument would go here
-                    }};
-                    actionsCell.appendChild(viewBtn);
-                    row.appendChild(actionsCell);
-                    
-                    tableBody.appendChild(row);
                 }});
-            }}
-            
-            // Render facts table
-            function renderFacts(type = 'all') {{
-                const tableBody = document.getElementById('facts-table-body');
-                tableBody.innerHTML = '';
-                
-                // Filter by type
-                let filteredFacts = factsData;
-                
-                if (type === 'disputed') {{
-                    filteredFacts = factsData.filter(fact => fact.isDisputed);
-                }} else if (type === 'undisputed') {{
-                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                }}
-                
-                // Sort by date
-                filteredFacts.sort((a, b) => {{
-                    // Handle date ranges like "1950-present"
-                    const dateA = a.date.split('-')[0];
-                    const dateB = b.date.split('-')[0];
-                    return new Date(dateA) - new Date(dateB);
-                }});
-                
-                // Render rows
-                filteredFacts.forEach(fact => {{
-                    const row = document.createElement('tr');
-                    
-                    // Date column
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = fact.date;
-                    row.appendChild(dateCell);
-                    
-                    // Event column
-                    const eventCell = document.createElement('td');
-                    eventCell.textContent = fact.point;
-                    row.appendChild(eventCell);
-                    
-                    // Party column
-                    const partyCell = document.createElement('td');
-                    const partyBadge = document.createElement('span');
-                    partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
-                    partyBadge.textContent = fact.party;
-                    partyCell.appendChild(partyBadge);
-                    row.appendChild(partyCell);
-                    
-                    // Status column
-                    const statusCell = document.createElement('td');
-                    if (fact.isDisputed) {{
-                        const disputedBadge = document.createElement('span');
-                        disputedBadge.className = 'badge disputed-badge';
-                        disputedBadge.textContent = 'Disputed';
-                        statusCell.appendChild(disputedBadge);
-                    }} else {{
-                        statusCell.textContent = 'Undisputed';
-                    }}
-                    row.appendChild(statusCell);
-                    
-                    // Related argument
-                    const argCell = document.createElement('td');
-                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                    row.appendChild(argCell);
-                    
-                    // Evidence column
-                    const evidenceCell = document.createElement('td');
-                    if (fact.exhibits && fact.exhibits.length > 0) {{
-                        fact.exhibits.forEach(exhibitId => {{
-                            const exhibitBadge = document.createElement('span');
-                            exhibitBadge.className = 'badge exhibit-badge';
-                            exhibitBadge.textContent = exhibitId;
-                            exhibitBadge.style.marginRight = '4px';
-                            evidenceCell.appendChild(exhibitBadge);
-                        }});
-                    }} else {{
-                        evidenceCell.textContent = 'None';
-                    }}
-                    row.appendChild(evidenceCell);
-                    
-                    tableBody.appendChild(row);
-                }});
-            }}
+            }});
             
             // Render overview points
             function renderOverviewPoints(overview) {{
                 if (!overview || !overview.points || overview.points.length === 0) return '';
                 
-                const pointsList = overview.points.map(point => 
-                    `<li>
-                        <span>${{point}}</span>
-                        <span class="para-badge">¶${{overview.paragraphs}}</span>
-                    </li>`
+                const pointsHtml = overview.points.map(point => 
+                    `<div class="overview-item">
+                        <div class="overview-bullet"></div>
+                        <span class="point-text">${{point}}</span>
+                    </div>`
                 ).join('');
                 
                 return `
-                <div class="item-block">
-                    <div class="item-title">Supporting Points</div>
-                    <ul class="point-list">
-                        ${{pointsList}}
-                    </ul>
+                <div class="overview-block">
+                    <div class="overview-header">
+                        <h6 class="content-section-title">Key Points</h6>
+                        <span class="badge claimant-badge">¶${{overview.paragraphs}}</span>
+                    </div>
+                    <div class="overview-list">
+                        ${{pointsHtml}}
+                    </div>
                 </div>
                 `;
             }}
             
-            // Render factual points (now called Events)
-            function renderFactualPoints(points) {{
+            // Render legal points
+            function renderLegalPoints(points) {{
                 if (!points || points.length === 0) return '';
                 
                 const pointsHtml = points.map(point => {{
@@ -1673,28 +1187,66 @@ def main():
                         ? `<span class="badge disputed-badge">Disputed</span>` 
                         : '';
                     
-                    // Exhibits badges
-                    const exhibitBadges = point.exhibits && point.exhibits.length > 0
-                        ? point.exhibits.map(exhibitId => `<span class="badge exhibit-badge">${{exhibitId}}</span>`).join(' ')
+                    const regulations = point.regulations 
+                        ? point.regulations.map(reg => `<span class="badge legal-badge">${{reg}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div class="item-block">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>${{point.point}}</span>
-                            <span>
-                                ${{disputed}}
-                                ${{exhibitBadges}}
-                            </span>
+                    <div class="legal-point">
+                        <div class="point-header">
+                            <span class="badge legal-badge">Legal</span>
+                            ${{disputed}}
                         </div>
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${{point.date}}</div>
+                        <p class="point-text">${{point.point}}</p>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center;">
+                            ${{regulations}}
+                            <span class="point-citation">¶${{point.paragraphs}}</span>
+                        </div>
                     </div>
                     `;
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
-                    <div class="item-title">Events</div>
+                <div class="content-section">
+                    <h6 class="content-section-title">Legal Points</h6>
+                    ${{pointsHtml}}
+                </div>
+                `;
+            }}
+            
+            // Render factual points
+            function renderFactualPoints(points) {{
+                if (!points || points.length === 0) return '';
+                
+                const pointsHtml = points.map(point => {{
+                    const disputed = point.isDisputed 
+                        ? `<span class="badge disputed-badge">Disputed by ${{point.source || ''}}</span>` 
+                        : '';
+                    
+                    return `
+                    <div class="factual-point">
+                        <div class="point-header">
+                            <span class="badge factual-badge">Factual</span>
+                            ${{disputed}}
+                        </div>
+                        <div class="point-date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            ${{point.date}}
+                        </div>
+                        <p class="point-text">${{point.point}}</p>
+                        <span class="point-citation">¶${{point.paragraphs}}</span>
+                    </div>
+                    `;
+                }}).join('');
+                
+                return `
+                <div class="content-section">
+                    <h6 class="content-section-title">Factual Points</h6>
                     ${{pointsHtml}}
                 </div>
                 `;
@@ -1704,17 +1256,25 @@ def main():
             function renderEvidence(evidence) {{
                 if (!evidence || evidence.length === 0) return '';
                 
-                const evidenceHtml = evidence.map(item => {{
-                    const citations = item.citations && item.citations.length > 0
-                        ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                const itemsHtml = evidence.map(item => {{
+                    const citations = item.citations 
+                        ? item.citations.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div class="evidence-block">
-                        <div class="item-title">${{item.id}}: ${{item.title}}</div>
-                        <div style="margin: 6px 0;">${{item.summary}}</div>
-                        <div style="margin-top: 8px; font-size: 12px;">
-                            <span style="color: #666; margin-right: 5px;">Cited in:</span>
+                    <div class="reference-block">
+                        <div class="reference-header">
+                            <span class="reference-title">${{item.id}}: ${{item.title}}</span>
+                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="reference-summary">${{item.summary}}</p>
+                        <div class="reference-citations">
+                            <span style="font-size: 0.75rem; color: #718096;">Cited in:</span>
                             ${{citations}}
                         </div>
                     </div>
@@ -1722,9 +1282,9 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
-                    <div class="item-title">Evidence</div>
-                    ${{evidenceHtml}}
+                <div class="content-section">
+                    <h6 class="content-section-title">Evidence</h6>
+                    ${{itemsHtml}}
                 </div>
                 `;
             }}
@@ -1733,19 +1293,29 @@ def main():
             function renderCaseLaw(cases) {{
                 if (!cases || cases.length === 0) return '';
                 
-                const casesHtml = cases.map(item => {{
-                    const citedParagraphs = item.citedParagraphs && item.citedParagraphs.length > 0
-                        ? item.citedParagraphs.map(cite => `<span class="citation-tag">¶${{cite}}</span>`).join('')
+                const itemsHtml = cases.map(item => {{
+                    const citedParagraphs = item.citedParagraphs 
+                        ? item.citedParagraphs.map(para => `<span class="citation-tag">¶${{para}}</span>`).join('') 
                         : '';
                     
                     return `
-                    <div class="caselaw-block">
-                        <div class="item-title">${{item.caseNumber}}</div>
-                        <div style="font-size: 12px; margin: 2px 0 8px 0;">¶${{item.paragraphs}}</div>
-                        <div style="font-weight: 500; margin-bottom: 4px;">${{item.title}}</div>
-                        <div style="margin: 6px 0;">${{item.relevance}}</div>
-                        <div style="margin-top: 8px; font-size: 12px;">
-                            <span style="color: #666; margin-right: 5px;">Key Paragraphs:</span>
+                    <div class="reference-block">
+                        <div class="reference-header">
+                            <div>
+                                <span class="reference-title">${{item.caseNumber}}</span>
+                                <span class="point-citation" style="margin-left: 0.5rem;">¶${{item.paragraphs}}</span>
+                            </div>
+                            <button class="action-btn" style="padding: 0; height: 20px; background: none; border: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3182ce" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="reference-summary">${{item.title}}</p>
+                        <p class="point-text">${{item.relevance}}</p>
+                        <div class="reference-citations">
+                            <span style="font-size: 0.75rem; color: #718096;">Key Paragraphs:</span>
                             ${{citedParagraphs}}
                         </div>
                     </div>
@@ -1753,9 +1323,9 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
-                    <div class="item-title">Case Law</div>
-                    ${{casesHtml}}
+                <div class="content-section">
+                    <h6 class="content-section-title">Case Law</h6>
+                    ${{itemsHtml}}
                 </div>
                 `;
             }}
@@ -1767,6 +1337,11 @@ def main():
                 // Overview points
                 if (arg.overview) {{
                     content += renderOverviewPoints(arg.overview);
+                }}
+                
+                // Legal points
+                if (arg.legalPoints) {{
+                    content += renderLegalPoints(arg.legalPoints);
                 }}
                 
                 // Factual points
@@ -1788,152 +1363,211 @@ def main():
             }}
             
             // Render a single argument including its children
-            function renderArgument(arg, side) {{
+            function renderArgument(arg, side, path = '', level = 0) {{
                 if (!arg) return '';
                 
-                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
-                const argId = `${{side}}-${{arg.id}}`;
+                const argId = path ? `${{path}}-${{arg.id}}` : arg.id;
+                const fullId = `${{side}}-${{argId}}`;
                 
-                // Store corresponding pair ID for synchronization
-                const pairId = arg.id;
+                const hasChildren = arg.children && Object.keys(arg.children).length > 0;
+                const childCount = hasChildren ? Object.keys(arg.children).length : 0;
                 
                 // Style based on side
-                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                const baseColor = side === 'claimant' ? '#3182ce' : '#e53e3e';
+                const headerClass = side === 'claimant' ? 'claimant-header' : 'respondent-header';
+                const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
+                const connectorClass = side === 'claimant' ? 'claimant-connector' : 'respondent-connector';
                 
-                // Render children if any - removed style="display: none;"
+                // Header content
+                const headerHtml = `
+                <div class="argument-header-left">
+                    <svg id="chevron-${{fullId}}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease;">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                    <h5 style="font-size: 0.875rem; font-weight: 500; color: ${{baseColor}};">
+                        ${{arg.id}}. ${{arg.title}}
+                    </h5>
+                </div>
+                <div>
+                    ${{hasChildren 
+                        ? `<span class="badge ${{badgeClass}}" style="border-radius: 9999px;">${{childCount}} subarguments</span>` 
+                        : `<span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>`
+                    }}
+                </div>
+                `;
+                
+                // Detailed content
+                const contentHtml = renderArgumentContent(arg);
+                
+                // Child arguments
                 let childrenHtml = '';
                 if (hasChildren) {{
-                    childrenHtml = `<div class="nested-content" id="children-${{argId}}">`;
+                    const childrenArgs = Object.entries(arg.children).map(([childId, child]) => {{
+                        // Pass the full path for this argument's children
+                        return renderArgument(child, side, argId, level + 1);
+                    }}).join('');
                     
-                    Object.values(arg.children).forEach(child => {{
-                        childrenHtml += renderArgument(child, side);
-                    }});
-                    
-                    childrenHtml += `</div>`;
+                    childrenHtml = `
+                    <div id="children-${{fullId}}" class="argument-children">
+                        <div class="connector-vertical ${{connectorClass}}"></div>
+                        ${{childrenArgs}}
+                    </div>
+                    `;
                 }}
                 
+                // Complete argument HTML
                 return `
-                <div class="card">
-                    <div class="card-header" onclick="toggleArgument('${{argId}}', '${{pairId}}', '${{side}}')">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <svg id="chevron-${{argId}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                            <span>${{arg.id}}. ${{arg.title}}</span>
-                        </div>
-                        <span class="badge ${{badgeClass}}">¶${{arg.paragraphs}}</span>
+                <div class="argument ${{headerClass}}" style="${{level > 0 ? 'position: relative;' : ''}}">
+                    ${{level > 0 ? `<div class="connector-horizontal ${{connectorClass}}"></div>` : ''}}
+                    <div class="argument-header" onclick="toggleArgument('${{fullId}}', '${{argId}}')">
+                        ${{headerHtml}}
                     </div>
-                    <div class="card-content" id="content-${{argId}}">
-                        ${{renderArgumentContent(arg)}}
+                    <div id="content-${{fullId}}" class="argument-content">
+                        ${{contentHtml}}
                     </div>
                     ${{childrenHtml}}
                 </div>
                 `;
             }}
             
-            // Render arguments by topic
-            function renderTopics() {{
-                const container = document.getElementById('topics-container');
+            // Render a pair of arguments (claimant and respondent)
+            function renderArgumentPair(claimantArg, respondentArg, topLevel = true) {{
+                return `
+                <div class="argument-pair">
+                    <div class="argument-side">
+                        ${{renderArgument(claimantArg, 'claimant')}}
+                    </div>
+                    <div class="argument-side">
+                        ${{renderArgument(respondentArg, 'respondent')}}
+                    </div>
+                </div>
+                `;
+            }}
+            
+            // Render the standard arguments view
+            function renderStandardArguments() {{
+                const container = document.getElementById('standard-arguments-container');
                 let html = '';
                 
-                argsData.topics.forEach(topic => {{
-                    html += `
-                    <div class="card" style="margin-bottom: 24px;">
-                        <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <svg id="chevron-topic-${{topic.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                                <span>${{topic.title}}</span>
-                            </div>
-                        </div>
-                        <div class="card-content" id="content-topic-${{topic.id}}">
-                            <p>${{topic.description}}</p>
-                            
-                            ${{topic.argumentIds.map(argId => {{
-                                if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
-                                    return `
-                                    <div style="margin-top: 16px;">
-                                        <div class="arguments-row">
-                                            <div>
-                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
-                                            </div>
-                                            <div>
-                                                <h3 class="side-heading respondent-color">Respondent's Position</h3>
-                                                ${{renderArgument(argsData.respondentArgs[argId], 'respondent')}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    `;
-                                }}
-                                return '';
-                            }}).join('')}}
-                        </div>
-                    </div>
-                    `;
+                // For each top-level argument
+                Object.keys(argsData.claimantArgs).forEach(argId => {{
+                    if (argsData.respondentArgs[argId]) {{
+                        const claimantArg = argsData.claimantArgs[argId];
+                        const respondentArg = argsData.respondentArgs[argId];
+                        
+                        html += renderArgumentPair(claimantArg, respondentArg);
+                    }}
                 }});
                 
                 container.innerHTML = html;
-                
-                // Auto-expand first topic
-                setTimeout(() => {{
-                    const firstTopic = argsData.topics[0];
-                    if (firstTopic) {{
-                        toggleCard(`topic-${{firstTopic.id}}`);
-                    }}
-                }}, 100);
             }}
             
-            // Toggle a card without synchronizing - modified to only toggle content, not children
-            function toggleCard(id) {{
-                const contentEl = document.getElementById(`content-${{id}}`);
-                const chevronEl = document.getElementById(`chevron-${{id}}`);
+            // Render the topic view
+            function renderTopicView() {{
+                const container = document.getElementById('topics-container');
+                let html = '';
                 
-                if (contentEl) {{
-                    contentEl.style.display = contentEl.style.display === 'block' ? 'none' : 'block';
-                }}
-                
-                if (chevronEl) {{
-                    chevronEl.classList.toggle('expanded');
-                }}
-            }}
-            
-            // Toggle an argument and its counterpart - modified to only toggle content
-            function toggleArgument(argId, pairId, side) {{
-                // First, handle the clicked argument
-                toggleCard(argId);
-                
-                // Then, determine and handle the counterpart
-                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
-                const counterpartId = `${{otherSide}}-${{pairId}}`;
-                
-                // Toggle the counterpart (if it exists)
-                const counterpartContentEl = document.getElementById(`content-${{counterpartId}}`);
-                if (counterpartContentEl) {{
-                    const counterpartChevronEl = document.getElementById(`chevron-${{counterpartId}}`);
+                // For each topic
+                argsData.topics.forEach(topic => {{
+                    html += `
+                    <div class="topic-section">
+                        <h2 class="topic-title">${{topic.title}}</h2>
+                        <p class="topic-description">${{topic.description}}</p>
+                        
+                        <div class="arguments-header">
+                            <h3 class="claimant-color">Claimant's Arguments</h3>
+                            <h3 class="respondent-color">Respondent's Arguments</h3>
+                        </div>
+                    `;
                     
-                    // Make sure the counterpart's state matches the toggled argument
-                    const originalDisplay = document.getElementById(`content-${{argId}}`).style.display;
-                    counterpartContentEl.style.display = originalDisplay;
-                    
-                    if (counterpartChevronEl) {{
-                        if (originalDisplay === 'block') {{
-                            counterpartChevronEl.classList.add('expanded');
-                        }} else {{
-                            counterpartChevronEl.classList.remove('expanded');
+                    // Add arguments for this topic
+                    topic.argumentIds.forEach(argId => {{
+                        if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
+                            const claimantArg = argsData.claimantArgs[argId];
+                            const respondentArg = argsData.respondentArgs[argId];
+                            
+                            html += renderArgumentPair(claimantArg, respondentArg);
                         }}
-                    }}
+                    }});
+                    
+                    html += `</div>`;
+                }});
+                
+                container.innerHTML = html;
+            }}
+            
+            // Toggle argument expansion - updated to handle nested paths
+            function toggleArgument(fullId, argPath) {{
+                // Determine the side (claimant or respondent)
+                const [side, ...rest] = fullId.split('-');
+                
+                // Toggle this argument
+                const contentEl = document.getElementById(`content-${{fullId}}`);
+                const childrenEl = document.getElementById(`children-${{fullId}}`);
+                const chevronEl = document.getElementById(`chevron-${{fullId}}`);
+                
+                const isExpanded = contentEl.style.display === 'block';
+                contentEl.style.display = isExpanded ? 'none' : 'block';
+                if (chevronEl) {{
+                    chevronEl.style.transform = isExpanded ? '' : 'rotate(90deg)';
+                }}
+                if (childrenEl) {{
+                    childrenEl.style.display = isExpanded ? 'none' : 'block';
+                }}
+                
+                // Save expanded state
+                expandedStates[fullId] = !isExpanded;
+                
+                // Find and toggle the paired argument based on the path
+                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
+                const pairedId = `${{otherSide}}-${{argPath}}`;
+                
+                const pairedContentEl = document.getElementById(`content-${{pairedId}}`);
+                const pairedChildrenEl = document.getElementById(`children-${{pairedId}}`);
+                const pairedChevronEl = document.getElementById(`chevron-${{pairedId}}`);
+                
+                if (pairedContentEl) {{
+                    pairedContentEl.style.display = contentEl.style.display;
+                    expandedStates[pairedId] = expandedStates[fullId];
+                }}
+                
+                if (pairedChevronEl) {{
+                    pairedChevronEl.style.transform = chevronEl.style.transform;
+                }}
+                
+                if (pairedChildrenEl) {{
+                    pairedChildrenEl.style.display = isExpanded ? 'none' : 'block';
                 }}
             }}
             
             // Render timeline
             function renderTimeline() {{
                 const tbody = document.getElementById('timeline-body');
+                
+                // Clear existing content
                 tbody.innerHTML = '';
                 
-                timelineData.forEach(item => {{
+                // Filter data if needed
+                const searchTerm = document.getElementById('timeline-search').value.toLowerCase();
+                const disputedOnly = document.getElementById('disputed-only').checked;
+                
+                const filteredData = timelineData.filter(item => {{
+                    // Search filter
+                    const matchesSearch = 
+                        !searchTerm || 
+                        item.appellantVersion.toLowerCase().includes(searchTerm) || 
+                        item.respondentVersion.toLowerCase().includes(searchTerm);
+                    
+                    // Disputed filter
+                    const matchesDisputed = !disputedOnly || item.status === 'Disputed';
+                    
+                    return matchesSearch && matchesDisputed;
+                }});
+                
+                // Render rows
+                filteredData.forEach(item => {{
                     const row = document.createElement('tr');
+                    
                     if (item.status === 'Disputed') {{
                         row.classList.add('disputed');
                     }}
@@ -1942,7 +1576,7 @@ def main():
                         <td>${{item.date}}</td>
                         <td>${{item.appellantVersion}}</td>
                         <td>${{item.respondentVersion}}</td>
-                        <td>${{item.status}}</td>
+                        <td class="${{item.status.toLowerCase()}}">${{item.status}}</td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1952,31 +1586,87 @@ def main():
             // Render exhibits
             function renderExhibits() {{
                 const tbody = document.getElementById('exhibits-body');
+                const typeFilter = document.getElementById('type-filter');
+                
+                // Clear existing content
                 tbody.innerHTML = '';
                 
-                exhibitsData.forEach(item => {{
+                // Populate type filter if needed
+                if (typeFilter.options.length === 1) {{
+                    const types = [...new Set(exhibitsData.map(item => item.type))];
+                    types.forEach(type => {{
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                        typeFilter.appendChild(option);
+                    }});
+                }}
+                
+                // Filter data if needed
+                const searchTerm = document.getElementById('exhibits-search').value.toLowerCase();
+                const partyFilter = document.getElementById('party-filter').value;
+                const selectedType = typeFilter.value;
+                
+                const filteredData = exhibitsData.filter(item => {{
+                    // Search filter
+                    const matchesSearch = 
+                        !searchTerm || 
+                        item.id.toLowerCase().includes(searchTerm) || 
+                        item.title.toLowerCase().includes(searchTerm) ||
+                        item.summary.toLowerCase().includes(searchTerm);
+                    
+                    // Party filter
+                    const matchesParty = 
+                        partyFilter === 'All Parties' || 
+                        item.party === partyFilter;
+                    
+                    // Type filter
+                    const matchesType = 
+                        selectedType === 'All Types' || 
+                        item.type === selectedType;
+                    
+                    return matchesSearch && matchesParty && matchesType;
+                }});
+                
+                // Render rows
+                filteredData.forEach(item => {{
                     const row = document.createElement('tr');
-                    const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
+                    const badgeClass = item.party === 'Appellant' ? 'claimant-badge' : 'respondent-badge';
                     
                     row.innerHTML = `
                         <td>${{item.id}}</td>
                         <td><span class="badge ${{badgeClass}}">${{item.party}}</span></td>
                         <td>${{item.title}}</td>
-                        <td>${{item.type}}</td>
+                        <td><span class="badge type-badge">${{item.type}}</span></td>
                         <td>${{item.summary}}</td>
+                        <td style="text-align: right;"><a href="#" style="color: #3182ce; text-decoration: none;">View</a></td>
                     `;
                     
                     tbody.appendChild(row);
                 }});
             }}
+            
+            // Initialize the page
+            renderStandardArguments();
+            renderTopicView();
+            
+            // Set up event listeners
+            document.getElementById('timeline-search').addEventListener('input', renderTimeline);
+            document.getElementById('disputed-only').addEventListener('change', renderTimeline);
+            document.getElementById('exhibits-search').addEventListener('input', renderExhibits);
+            document.getElementById('party-filter').addEventListener('change', renderExhibits);
+            document.getElementById('type-filter').addEventListener('change', renderExhibits);
+            
+            // Set initial active button style
+            document.querySelector('.view-btn.active').style.backgroundColor = 'white';
+            document.querySelector('.view-btn.active').style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
         </script>
     </body>
     </html>
     """
     
     # Render the HTML in Streamlit
-    st.title("Summary of arguments")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()

@@ -1,37 +1,4 @@
-# Show existing documents in this set with clear table
-                    if doc_set["documents"]:
-                        st.markdown("**📋 Documents in this category:**")
-                        
-                        # Create a clean table of recent documents
-                        recent_docs = doc_set["documents"][-5:]  # Show last 5 documents
-                        doc_data = []
-                        
-                        for doc in recent_docs:
-                            file_key = f"{doc_set['id']}-{doc['id']}"
-                            is_uploaded = file_key in st.session_state.uploaded_files
-                            
-                            # Get file info if available
-                            file_size = ""
-                            if is_uploaded:
-                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
-                            
-                            doc_data.append({
-                                "Document": doc['name'],
-                                "Party": doc['party'], 
-                                "Status": "✅ Uploaded" if is_uploaded else "❌ Missing File",
-                                "Size": file_size if file_size else "-"
-                            })
-                        
-                        # Display as dataframe for better readability
-                        if doc_data:
-                            df = pd.DataFrame(doc_data)
-                            st.dataframe(df, use_container_width=True, hide_index=True)
-                        
-                        # Show count if there are more documents
-                        if len(doc_set["documents"]) > 5:
-                            st.caption(f"Showing recent 5 of {len(doc_set['documents'])} total documents")
-                    else:
-                        st.info("📭 No documents in this category yet - upload your first one above!")import streamlit as st
+import streamlit as st
 import json
 import streamlit.components.v1 as components
 import pandas as pd
@@ -1531,4 +1498,3 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
 # Run the main app
 if __name__ == "__main__":
     main()
-

@@ -1531,4 +1531,3 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
 # Run the main app
 if __name__ == "__main__":
     main()
-

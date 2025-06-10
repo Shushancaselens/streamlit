@@ -5,13 +5,13 @@ import pandas as pd
 import base64
 import os
 from datetime import datetime
-import re
 
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
 # Sample document sets for demonstrating the document set view
 def get_document_sets():
+    # Return grouped document sets with individual document subfolders
     return [
         {
             "id": "appeal",
@@ -20,10 +20,10 @@ def get_document_sets():
             "category": "Appeal",
             "isGroup": True,
             "documents": [
-                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal", "status": "Processed", "file_type": "PDF"},
-                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal", "status": "Processed", "file_type": "PDF"},
-                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal", "status": "Processed", "file_type": "PDF"},
-                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal", "status": "Processed", "file_type": "PDF"}
+                {"id": "1", "name": "1. Statement of Appeal", "party": "Appellant", "category": "Appeal"},
+                {"id": "2", "name": "2. Request for a Stay", "party": "Appellant", "category": "Appeal"},
+                {"id": "5", "name": "5. Appeal Brief", "party": "Appellant", "category": "Appeal"},
+                {"id": "10", "name": "Jurisprudence", "party": "Shared", "category": "Appeal"}
             ]
         },
         {
@@ -33,8 +33,8 @@ def get_document_sets():
             "category": "provisional messier",
             "isGroup": True,
             "documents": [
-                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier", "status": "Processed", "file_type": "PDF"},
-                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier", "status": "Processing", "file_type": "DOCX"}
+                {"id": "3", "name": "3. Answer to Request for PM", "party": "Respondent", "category": "provisional messier"},
+                {"id": "4", "name": "4. Answer to PM", "party": "Respondent", "category": "provisional messier"}
             ]
         },
         {
@@ -44,9 +44,9 @@ def get_document_sets():
             "category": "admissibility",
             "isGroup": True,
             "documents": [
-                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility", "status": "Processed", "file_type": "PDF"},
-                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility", "status": "Processed", "file_type": "PDF"},
-                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility", "status": "Error", "file_type": "PDF"}
+                {"id": "6", "name": "6. Brief on Admissibility", "party": "Respondent", "category": "admissibility"},
+                {"id": "7", "name": "7. Reply to Objection to Admissibility", "party": "Appellant", "category": "admissibility"},
+                {"id": "11", "name": "Objection to Admissibility", "party": "Respondent", "category": "admissibility"}
             ]
         },
         {
@@ -56,9 +56,9 @@ def get_document_sets():
             "category": "challenge",
             "isGroup": True,
             "documents": [
-                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge", "status": "Processed", "file_type": "PDF"},
-                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge", "status": "Processed", "file_type": "TXT"},
-                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge", "status": "Processed", "file_type": "PDF"}
+                {"id": "8", "name": "8. Challenge", "party": "Appellant", "category": "challenge"},
+                {"id": "9", "name": "ChatGPT", "party": "Shared", "category": "challenge"},
+                {"id": "12", "name": "Swiss Court", "party": "Shared", "category": "challenge"}
             ]
         }
     ]
@@ -82,223 +82,70 @@ if 'creating_set' not in st.session_state:
 if 'viewing_set' not in st.session_state:
     st.session_state.viewing_set = None
 
-if 'viewing_document' not in st.session_state:
-    st.session_state.viewing_document = None
-
-if 'breadcrumbs' not in st.session_state:
-    st.session_state.breadcrumbs = []
-
-if 'recent_activities' not in st.session_state:
-    st.session_state.recent_activities = []
-
-# Smart file analysis function
-def analyze_document_content(filename, file_content=None):
-    """Analyze document and extract key information"""
-    filename_lower = filename.lower()
-    
-    # Extract potential dates from filename
-    dates = re.findall(r'\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4}|\d{2}-\d{2}-\d{4}', filename)
-    
-    # Smart categorization based on filename
-    if any(word in filename_lower for word in ["appeal", "motion", "brief", "petition"]):
-        category = "Appeals"
-        confidence = 0.9
-    elif any(word in filename_lower for word in ["evidence", "exhibit", "proof", "document"]):
-        category = "Evidence"
-        confidence = 0.8
-    elif any(word in filename_lower for word in ["contract", "agreement", "terms", "deal"]):
-        category = "Contracts"
-        confidence = 0.85
-    elif any(word in filename_lower for word in ["witness", "testimony", "statement"]):
-        category = "Witness Statements"
-        confidence = 0.8
-    elif any(word in filename_lower for word in ["expert", "report", "analysis"]):
-        category = "Expert Reports"
-        confidence = 0.85
-    elif any(word in filename_lower for word in ["correspondence", "email", "letter"]):
-        category = "Correspondence"
-        confidence = 0.7
-    else:
-        category = "General Documents"
-        confidence = 0.5
-    
-    # Smart party detection
-    party = "Shared"
-    if any(word in filename_lower for word in ["plaintiff", "appellant", "claimant"]):
-        party = "Appellant"
-    elif any(word in filename_lower for word in ["defendant", "respondent"]):
-        party = "Respondent"
-    
-    # Extract key information
-    key_facts = []
-    if dates:
-        key_facts.append(f"Contains dates: {', '.join(dates)}")
-    
-    # Detect document importance
-    importance = "Normal"
-    if any(word in filename_lower for word in ["final", "judgment", "order", "ruling"]):
-        importance = "High"
-    elif any(word in filename_lower for word in ["draft", "preliminary", "temp"]):
-        importance = "Low"
-    
-    return {
-        "suggested_category": category,
-        "confidence": confidence,
-        "suggested_party": party,
-        "extracted_dates": dates,
-        "key_facts": key_facts,
-        "importance": importance,
-        "file_size_category": "Small" if file_content and len(file_content) < 100000 else "Large"
-    }
-
-# Get file type icon
-def get_file_icon(file_type):
-    """Return appropriate icon for file type"""
-    icons = {
-        "PDF": "📄",
-        "DOCX": "📝",
-        "DOC": "📝", 
-        "TXT": "📋",
-        "XLSX": "📊",
-        "CSV": "📈",
-        "JPG": "🖼️",
-        "PNG": "🖼️",
-        "JPEG": "🖼️"
-    }
-    return icons.get(file_type.upper(), "📎")
-
-# Enhanced file processing function
-def process_uploaded_file(uploaded_file):
-    """Enhanced file processing with analysis"""
-    try:
-        file_content = uploaded_file.read()
-        
-        # Analyze document content
-        analysis = analyze_document_content(uploaded_file.name, file_content)
-        
-        doc_data = {
-            "id": f"doc_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            "name": uploaded_file.name,
-            "party": analysis["suggested_party"],
-            "category": analysis["suggested_category"],
-            "upload_date": datetime.now().strftime("%Y-%m-%d"),
-            "file_type": uploaded_file.type.split('/')[-1].upper() if uploaded_file.type else "Unknown",
-            "size": f"{uploaded_file.size/1024:.1f} KB" if uploaded_file.size else "Unknown",
-            "status": "Processed",
-            "preview": f"Document analyzed: {uploaded_file.name}",
-            "key_facts": analysis["key_facts"],
-            "analysis": analysis,
-            "icon": get_file_icon(uploaded_file.type.split('/')[-1] if uploaded_file.type else "")
-        }
-        
-        # Store file data
-        st.session_state.uploaded_files[doc_data["id"]] = {
-            "content": file_content,
-            "original_name": uploaded_file.name,
-            "type": uploaded_file.type,
-            "size": uploaded_file.size
-        }
-        
-        # Add to recent activities
-        st.session_state.recent_activities.insert(0, {
-            "action": "Document Uploaded",
-            "item": uploaded_file.name,
-            "time": datetime.now().strftime("%H:%M"),
-            "type": "upload"
-        })
-        
-        # Keep only last 10 activities
-        st.session_state.recent_activities = st.session_state.recent_activities[:10]
-        
-        return doc_data
-        
-    except Exception as e:
-        st.error(f"Error processing file: {e}")
-        return None
-
-# Update breadcrumbs function
-def update_breadcrumbs(view, additional_info=None):
-    """Update navigation breadcrumbs"""
-    breadcrumbs = [("🏠 Home", "Upload")]
-    
-    if view != "Upload":
-        breadcrumbs.append((f"📑 {view}", view))
-    
-    if additional_info:
-        breadcrumbs.append(additional_info)
-    
-    st.session_state.breadcrumbs = breadcrumbs
-
-# Function to add a document set (enhanced)
+# Function to add a document set (auto-generates category)
 def add_document_set(set_name, set_party):
+    # Create a unique ID based on the set name
     set_id = set_name.lower().replace(' ', '_')
+    
+    # Auto-generate category from set name
     set_category = set_name.lower().replace(' ', '_')
     
+    # Check if ID already exists
     existing_ids = [ds["id"] for ds in st.session_state.document_sets]
     if set_id in existing_ids:
+        # Add timestamp to make it unique
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         set_id = f"{set_id}_{timestamp}"
     
+    # Create the new document set
     new_set = {
         "id": set_id,
         "name": set_name,
         "party": set_party,
         "category": set_category,
         "isGroup": True,
-        "documents": [],
-        "created_date": datetime.now().strftime("%Y-%m-%d"),
-        "status": "Active"
+        "documents": []
     }
     
+    # Add to session state
     st.session_state.document_sets.append(new_set)
-    
-    # Add to recent activities
-    st.session_state.recent_activities.insert(0, {
-        "action": "Document Set Created",
-        "item": set_name,
-        "time": datetime.now().strftime("%H:%M"),
-        "type": "create"
-    })
     
     return set_id
 
-# Function to add a document to a set (enhanced)
-def add_document_to_set(doc_name, doc_party, set_id, doc_data=None):
+# Function to add a document to a set
+def add_document_to_set(doc_name, doc_party, set_id):
+    # Find the set
     for doc_set in st.session_state.document_sets:
         if doc_set["id"] == set_id:
+            # Create a new document ID
             if doc_set["documents"]:
+                # Use the next available number
                 existing_ids = [int(doc["id"]) for doc in doc_set["documents"] if doc["id"].isdigit()]
                 next_id = str(max(existing_ids) + 1) if existing_ids else "1"
             else:
                 next_id = "1"
             
+            # Create the document
             new_doc = {
                 "id": next_id,
                 "name": doc_name,
                 "party": doc_party,
-                "category": doc_set["category"],
-                "status": "Processed",
-                "file_type": doc_data.get("file_type", "Unknown") if doc_data else "Unknown",
-                "upload_date": datetime.now().strftime("%Y-%m-%d")
+                "category": doc_set["category"]
             }
             
-            if doc_data:
-                new_doc.update({
-                    "analysis": doc_data.get("analysis", {}),
-                    "key_facts": doc_data.get("key_facts", []),
-                    "icon": doc_data.get("icon", "📎")
-                })
-            
+            # Add to the set
             doc_set["documents"].append(new_doc)
             return next_id
     
     return None
 
-# Function to save uploaded file (enhanced)
+# Function to save uploaded file
 def save_uploaded_file(uploaded_file, set_id, doc_id):
     try:
+        # Read file content
         file_content = uploaded_file.read()
         
+        # Store in session state
         file_key = f"{set_id}-{doc_id}"
         st.session_state.uploaded_files[file_key] = {
             "filename": uploaded_file.name,
@@ -530,6 +377,7 @@ def get_all_facts():
     args_data = get_argument_data()
     facts = []
     
+    # Helper function to extract facts from arguments
     def extract_facts(arg, party):
         if not arg:
             return
@@ -549,13 +397,16 @@ def get_all_facts():
                 }
                 facts.append(fact)
                 
+        # Process children
         if 'children' in arg and arg['children']:
             for child_id, child in arg['children'].items():
                 extract_facts(child, party)
     
+    # Extract from claimant args
     for arg_id, arg in args_data['claimantArgs'].items():
         extract_facts(arg, 'Appellant')
         
+    # Extract from respondent args
     for arg_id, arg in args_data['respondentArgs'].items():
         extract_facts(arg, 'Respondent')
         
@@ -563,6 +414,7 @@ def get_all_facts():
 
 # Get enhanced timeline data with additional events
 def get_timeline_data():
+    # Create a richer set of timeline events
     timeline_events = [
         {
             "point": "Club founded and officially registered in the Football Federation",
@@ -593,135 +445,14 @@ def get_timeline_data():
             "argId": "1",
             "argTitle": "Sporting Succession Rebuttal",
             "source": "provisional messier - Answer to PM"
-        }
+        },
+        # More timeline events would be here
     ]
     
+    # Sort events chronologically
     timeline_events.sort(key=lambda x: x['date'])
+    
     return timeline_events
-
-# Render breadcrumbs
-def render_breadcrumbs():
-    """Render navigation breadcrumbs"""
-    if st.session_state.breadcrumbs:
-        breadcrumb_html = ""
-        for i, (label, view) in enumerate(st.session_state.breadcrumbs):
-            if i == len(st.session_state.breadcrumbs) - 1:
-                # Current page
-                breadcrumb_html += f'<span style="color: #6b7280;">{label}</span>'
-            else:
-                # Clickable breadcrumb
-                breadcrumb_html += f'<a href="#" onclick="navigateTo(\'{view}\')" style="color: #4D68F9; text-decoration: none;">{label}</a>'
-                if i < len(st.session_state.breadcrumbs) - 1:
-                    breadcrumb_html += ' <span style="color: #d1d5db; margin: 0 8px;">›</span> '
-        
-        st.markdown(f"""
-        <div style="margin-bottom: 20px; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
-            <nav style="font-size: 14px;">
-                {breadcrumb_html}
-            </nav>
-        </div>
-        """, unsafe_allow_html=True)
-
-# Render dashboard
-def render_dashboard():
-    """Enhanced dashboard with better metrics and recent activity"""
-    update_breadcrumbs("Dashboard")
-    render_breadcrumbs()
-    
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; margin-bottom: 30px; color: white; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-        <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">📋 Case Dashboard</h1>
-        <p style="margin: 10px 0 0 0; font-size: 1.1rem; opacity: 0.9;">Your legal documents and case analysis overview</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Enhanced metrics
-    all_docs = []
-    for doc_set in st.session_state.document_sets:
-        all_docs.extend(doc_set["documents"])
-    
-    facts = get_all_facts()
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("📄 Total Documents", len(all_docs), delta=f"+{len(st.session_state.uploaded_files)} uploaded")
-    with col2:
-        processing = sum(1 for doc in all_docs if doc.get("status") == "Processing")
-        processed = sum(1 for doc in all_docs if doc.get("status") == "Processed")
-        st.metric("✅ Processed", processed, delta=f"{processing} processing")
-    with col3:
-        disputed_facts = sum(1 for fact in facts if fact.get("isDisputed"))
-        st.metric("⚠️ Disputed Facts", disputed_facts, delta=f"{len(facts) - disputed_facts} undisputed")
-    with col4:
-        categories = len(set(doc_set["category"] for doc_set in st.session_state.document_sets))
-        st.metric("📂 Document Sets", len(st.session_state.document_sets), delta=f"{categories} categories")
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Quick actions with improved design
-    st.subheader("🚀 Quick Actions")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        if st.button("📤 Upload Documents", use_container_width=True, type="primary"):
-            st.session_state.view = "Upload"
-            st.rerun()
-    
-    with col2:
-        if st.button("📊 Analyze Facts", use_container_width=True):
-            st.session_state.view = "Facts"
-            st.rerun()
-    
-    with col3:
-        if st.button("📁 Browse Documents", use_container_width=True):
-            st.session_state.view = "Documents"
-            st.rerun()
-    
-    with col4:
-        if st.button("📈 View Timeline", use_container_width=True):
-            st.session_state.view = "Timeline"
-            st.rerun()
-    
-    # Two-column layout for recent activity and document sets
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.subheader("📈 Recent Activity")
-        if st.session_state.recent_activities:
-            for activity in st.session_state.recent_activities[:5]:
-                icon = "📤" if activity["type"] == "upload" else "➕" if activity["type"] == "create" else "👁️"
-                st.markdown(f"""
-                <div style="background: white; padding: 12px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid #4D68F9; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="display: flex; justify-content: between; align-items: center;">
-                        <span style="font-weight: 500;">{icon} {activity['action']}</span>
-                        <span style="color: #6b7280; font-size: 12px; margin-left: auto;">{activity['time']}</span>
-                    </div>
-                    <div style="color: #6b7280; font-size: 14px; margin-top: 4px;">{activity['item']}</div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("No recent activity. Start by uploading some documents!")
-    
-    with col2:
-        st.subheader("📁 Document Sets Overview")
-        if st.session_state.document_sets:
-            for doc_set in st.session_state.document_sets[:5]:
-                doc_count = len(doc_set["documents"])
-                party_color = "#3b82f6" if doc_set["party"] == "Appellant" else "#ef4444" if doc_set["party"] == "Respondent" else "#6b7280"
-                
-                st.markdown(f"""
-                <div style="background: white; padding: 12px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid {party_color}; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="display: flex; justify-content: between; align-items: center;">
-                        <span style="font-weight: 500;">📂 {doc_set['name']}</span>
-                        <span style="color: {party_color}; font-size: 12px; font-weight: 500; margin-left: auto;">{doc_set['party']}</span>
-                    </div>
-                    <div style="color: #6b7280; font-size: 14px; margin-top: 4px;">{doc_count} documents</div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("No document sets created yet.")
 
 # Main application
 def main():
@@ -753,168 +484,165 @@ def main():
         
         st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
         
-        # Enhanced CSS
+        # Custom CSS for button styling and UI improvements
         st.markdown("""
         <style>
-        /* Enhanced button styling */
+        /* Button styling - keep original structure but enhance appearance */
         .stButton > button {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 6px;
             height: 50px;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            transition: all 0.3s;
             font-weight: 500;
             border: none;
-            position: relative;
-            overflow: hidden;
         }
         
         .stButton > button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .stButton > button:active {
-            transform: translateY(0);
-        }
-        
-        /* Enhanced badge styling */
+        /* Badge styling - slightly improved but keeping original look */
         .badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 3px 8px;
+            border-radius: 12px;
             font-size: 12px;
-            font-weight: 600;
-            margin-right: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
-        }
-        
-        .badge:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            font-weight: 500;
+            margin-right: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         .appellant-badge {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
+            background-color: rgba(49, 130, 206, 0.1);
+            color: #3182ce;
+            border: 1px solid rgba(49, 130, 206, 0.2);
         }
         
         .respondent-badge {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
+            background-color: rgba(229, 62, 62, 0.1);
+            color: #e53e3e;
+            border: 1px solid rgba(229, 62, 62, 0.2);
         }
         
         .shared-badge {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            color: white;
+            background-color: rgba(128, 128, 128, 0.1);
+            color: #666;
+            border: 1px solid rgba(128, 128, 128, 0.2);
         }
         
-        .status-processed {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
+        /* Improve uploaded file cards */
+        .uploaded-file-card {
+            border: 1px solid #e6e6e6;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background-color: #f9f9f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        .status-processing {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
+        /* Improve document set headers */
+        .document-set-header {
+            background-color: #f0f5ff;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border-left: 3px solid #4D68F9;
+        }
+        
+        .document-set-content {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-left: 2px solid #e0e7ff;
+        }
+        
+        /* Improve form appearance */
+        [data-testid="stForm"] {
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+        
+        /* Better headings */
+        h1, h2, h3 {
+            color: #111927;
+            font-weight: 600;
+        }
+        
+        /* Better file uploader */
+        [data-testid="stFileUploader"] {
+            border: 1px solid #e5e7eb;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        /* Improve expander styling */
+        .streamlit-expanderHeader {
+            font-weight: 500;
+            color: #111927;
+            background-color: #f8fafc;
+            border-radius: 4px;
+        }
+        
+        /* Better tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 8px;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 4px 4px 0 0;
+            padding: 0px 16px;
+            background-color: #f3f4f6;
+        }
+        
+        .stTabs [aria-selected="true"] {
+            background-color: white !important;
+            border-bottom: 2px solid #4D68F9 !important;
+        }
+        
+        /* Status indicators */
+        .status-badge {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        
+        .status-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
         }
         
         .status-error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
         
-        /* Enhanced file uploader */
-        [data-testid="stFileUploader"] {
+        /* Quick upload improvements */
+        .quick-upload-area {
             border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 20px;
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            transition: all 0.3s ease;
-        }
-        
-        [data-testid="stFileUploader"]:hover {
-            border-color: #4D68F9;
-            background: linear-gradient(135deg, #f0f5ff, #e0e7ff);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(77, 104, 249, 0.15);
-        }
-        
-        /* Enhanced form styling */
-        [data-testid="stForm"] {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        
-        /* Enhanced metric styling */
-        [data-testid="metric-container"] {
-            background: white;
-            border: 1px solid #e1e5e9;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        [data-testid="metric-container"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        
-        /* Progress bar styling */
-        .stProgress > div > div > div > div {
-            background: linear-gradient(90deg, #4D68F9, #667eea);
-        }
-        
-        /* Enhanced dataframe styling */
-        .dataframe {
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            background-color: #f8fafc;
+            margin-bottom: 20px;
         }
         
-        /* Loading animation */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .loading {
-            animation: pulse 1.5s infinite;
-        }
-        
-        /* Success animation */
-        @keyframes bounce {
-            0%, 20%, 60%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            80% { transform: translateY(-5px); }
-        }
-        
-        .success-bounce {
-            animation: bounce 0.6s ease;
-        }
-        
-        /* File type icons with better styling */
-        .file-icon {
-            font-size: 24px;
-            margin-right: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-        
-        /* Document card enhancements */
-        .document-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .document-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        .quick-upload-area:hover {
+            border-color: #4D68F9;
+            background-color: #f0f5ff;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -935,351 +663,393 @@ def main():
     elif st.session_state.view == "Facts":
         render_facts_page(facts_data, document_sets, timeline_data, args_data)
     else:
-        # Placeholder for other views        
+        # Placeholder for other views
         st.title(f"{st.session_state.view} View")
         st.info(f"This is a placeholder for the {st.session_state.view} view.")
 
-# Function to render the enhanced upload page
+# Function to render the upload page with UX improvements
 def render_upload_page():
-    """Enhanced upload page with better UX"""
-    st.title("📤 Document Management")
+    st.title("Document Management")
     
-    # Enhanced quick upload section
+    # Add quick upload at the top for better UX
     st.markdown("### 🚀 Quick Upload")
-    st.markdown("Drop files here for intelligent auto-categorization, or use organized upload below for manual control.")
+    st.markdown("Drop files here to automatically organize them, or use the options below for more control.")
     
-    # Enhanced drag-and-drop area
-    st.markdown("""
-    <div style="border: 2px dashed #4D68F9; border-radius: 12px; padding: 40px; text-align: center; background: linear-gradient(135deg, #f0f5ff, #e0e7ff); margin-bottom: 30px; transition: all 0.3s ease;">
-        <div style="font-size: 48px; margin-bottom: 15px;">📁</div>
-        <h3 style="color: #4D68F9; margin-bottom: 10px;">Smart Document Upload</h3>
-        <p style="color: #6b7280; margin-bottom: 20px;">Files will be automatically analyzed and categorized</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Enhanced file uploader
+    # Quick upload area
     quick_upload = st.file_uploader(
-        "Drag and drop files here or click to browse",
+        "Drag and drop files here for quick upload",
         type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
         accept_multiple_files=True,
-        help="Supported: PDF, Word, Text, Images, Excel, CSV. Files will be analyzed automatically.",
+        help="Files will be automatically categorized. You can organize them later.",
         key="quick_upload"
     )
     
     if quick_upload:
-        st.success(f"📁 {len(quick_upload)} file(s) ready for processing")
-        
-        # Show file analysis preview
-        with st.expander("📋 View File Analysis Preview", expanded=True):
+        if st.button("🔄 Process Files Automatically", type="primary", use_container_width=True):
             for uploaded_file in quick_upload:
-                analysis = analyze_document_content(uploaded_file.name)
+                # Auto-create a document set based on file type if none exists
+                filename = uploaded_file.name.lower()
                 
-                col1, col2 = st.columns([2, 1])
+                # Auto-categorize
+                if any(word in filename for word in ["appeal", "motion", "brief"]):
+                    category = "Appeals"
+                elif any(word in filename for word in ["evidence", "exhibit"]):
+                    category = "Evidence"
+                elif any(word in filename for word in ["contract", "agreement"]):
+                    category = "Contracts"
+                else:
+                    category = "General Documents"
+                
+                # Check if category set exists, if not create it
+                existing_set = next((ds for ds in st.session_state.document_sets if ds["name"] == category), None)
+                if not existing_set:
+                    set_id = add_document_set(category, "Mixed")
+                else:
+                    set_id = existing_set["id"]
+                
+                # Add document to set
+                doc_id = add_document_to_set(uploaded_file.name, "Shared", set_id)
+                if doc_id:
+                    save_uploaded_file(uploaded_file, set_id, doc_id)
+            
+            st.success(f"Successfully processed {len(quick_upload)} files!")
+            st.balloons()
+    
+    st.markdown("---")
+    
+    # Create tabs for upload functionality
+    tab1, tab2, tab3 = st.tabs(["📄 Organized Upload", "📁 Manage Document Sets", "🕒 Recent Uploads"])
+    
+    with tab1:
+        # Upload interface with better flow
+        st.subheader("Organized Upload")
+        st.markdown("Upload documents to specific categories for better organization.")
+        
+        # Show existing document sets first for better UX
+        if st.session_state.document_sets:
+            st.markdown("#### Select a Document Set")
+            
+            # Create a more visual set selector
+            for doc_set in st.session_state.document_sets:
+                party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
+                                    "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
+                
+                col1, col2 = st.columns([3, 1])
+                
                 with col1:
                     st.markdown(f"""
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #4D68F9;">
-                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                            <span style="font-size: 20px; margin-right: 10px;">{get_file_icon(uploaded_file.type.split('/')[-1] if uploaded_file.type else "")}</span>
-                            <strong>{uploaded_file.name}</strong>
-                        </div>
-                        <div style="font-size: 14px; color: #6b7280;">
-                            📂 Suggested Category: <strong>{analysis['suggested_category']}</strong> ({analysis['confidence']:.0%} confidence)<br>
-                            ⚖️ Suggested Party: <strong>{analysis['suggested_party']}</strong><br>
-                            📏 Size: {uploaded_file.size/1024:.1f} KB
+                    <div style="border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin: 0; color: #1f2937;">{doc_set['name']}</h4>
+                                <div style="margin-top: 5px;">
+                                    <span class="badge {party_badge_class}">{doc_set["party"]}</span>
+                                    <span class="badge shared-badge">{len(doc_set["documents"])} documents</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
                 
                 with col2:
-                    st.markdown(f"**Confidence: {analysis['confidence']:.0%}**")
-                    if analysis['confidence'] < 0.7:
-                        st.warning("⚠️ Low confidence - manual review recommended")
-                    else:
-                        st.success("✅ High confidence")
-        
-        if st.button("🔄 Process All Files Automatically", type="primary", use_container_width=True):
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            
-            for i, uploaded_file in enumerate(quick_upload):
-                status_text.text(f"📄 Processing {uploaded_file.name}...")
-                progress_bar.progress((i + 1) / len(quick_upload))
-                
-                # Process the file with enhanced analysis
-                doc_data = process_uploaded_file(uploaded_file)
-                if doc_data:
-                    analysis = doc_data['analysis']
-                    category = analysis['suggested_category']
-                    
-                    # Auto-create or find document set
-                    existing_set = next((ds for ds in st.session_state.document_sets if ds["name"] == category), None)
-                    if not existing_set:
-                        set_id = add_document_set(category, analysis['suggested_party'])
-                    else:
-                        set_id = existing_set["id"]
-                    
-                    # Add document to set
-                    doc_id = add_document_to_set(uploaded_file.name, analysis['suggested_party'], set_id, doc_data)
-                    if doc_id:
-                        save_uploaded_file(uploaded_file, set_id, doc_id)
-            
-            progress_bar.progress(1.0)
-            status_text.text("✅ All documents processed successfully!")
-            
-            st.balloons()
-            st.success(f"🎉 Successfully processed {len(quick_upload)} documents with AI analysis!")
-            
-            # Show processing results
-            st.markdown("### 📊 Processing Results")
-            for uploaded_file in quick_upload:
-                st.markdown(f"✅ **{uploaded_file.name}** - Categorized and analyzed")
-    
-    st.markdown("---")
-    
-    # Enhanced organized upload tabs
-    tab1, tab2, tab3 = st.tabs(["📄 Organized Upload", "📁 Manage Document Sets", "🕒 Recent Activity"])
-    
-    with tab1:
-        st.subheader("📄 Organized Upload")
-        st.markdown("Upload documents to specific categories with manual control.")
-        
-        # Enhanced document set selection
-        if st.session_state.document_sets:
-            st.markdown("#### 📂 Select Document Set")
-            
-            # Grid layout for document sets
-            cols = st.columns(2)
-            for i, doc_set in enumerate(st.session_state.document_sets):
-                with cols[i % 2]:
-                    party_color = "#3b82f6" if doc_set["party"] == "Appellant" else "#ef4444" if doc_set["party"] == "Respondent" else "#6b7280"
-                    
-                    if st.button(
-                        f"📂 {doc_set['name']}\n{len(doc_set['documents'])} documents | {doc_set['party']}",
-                        key=f"select_set_{doc_set['id']}",
-                        use_container_width=True
-                    ):
+                    if st.button(f"📤 Upload Here", key=f"select_{doc_set['id']}", use_container_width=True):
                         st.session_state.selected_set = doc_set["id"]
                         st.session_state.creating_set = False
         
-        # Enhanced upload form
+        # Upload form - only show when a set is selected
         if st.session_state.selected_set:
             selected_set = next((ds for ds in st.session_state.document_sets if ds["id"] == st.session_state.selected_set), None)
             if selected_set:
-                st.markdown(f"#### 📤 Uploading to: **{selected_set['name']}**")
+                st.markdown(f"#### Uploading to: **{selected_set['name']}**")
                 
-                with st.form("organized_upload_form", clear_on_submit=True):
-                    col1, col2 = st.columns(2)
+                with st.form("upload_form", clear_on_submit=True):
+                    # Document name field
+                    doc_name = st.text_input("Document Name", placeholder="Enter document name or title")
                     
-                    with col1:
-                        doc_name = st.text_input("📝 Document Name", placeholder="Enter document name or title")
-                        
-                        party_options = ["Appellant", "Respondent", "Shared"]
-                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else "Shared"
-                        default_index = party_options.index(default_party) if default_party in party_options else 0
-                        doc_party = st.selectbox("⚖️ Party", party_options, index=default_index)
+                    # Party selection (default to the set's party if not Mixed)
+                    party_options = ["Appellant", "Respondent", "Shared"]
+                    default_party = selected_set["party"] if selected_set["party"] != "Mixed" else "Shared"
+                    default_index = party_options.index(default_party) if default_party in party_options else 0
+                    doc_party = st.selectbox("Party", party_options, index=default_index)
                     
-                    with col2:
-                        uploaded_file = st.file_uploader(
-                            "📎 Select File",
-                            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"]
-                        )
-                        
-                        if uploaded_file:
-                            st.success(f"✅ File selected: {uploaded_file.name}")
+                    # File uploader
+                    uploaded_file = st.file_uploader(
+                        "Select File",
+                        type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"]
+                    )
                     
+                    # Submit button
                     col1, col2, col3 = st.columns([1, 1, 1])
                     with col2:
-                        submit_btn = st.form_submit_button("📤 Upload Document", use_container_width=True, type="primary")
+                        submit_btn = st.form_submit_button("Upload Document", use_container_width=True, type="primary")
                     
                     if submit_btn:
                         if not doc_name:
-                            st.error("❌ Please provide a document name")
+                            st.error("Please provide a document name")
                         elif not uploaded_file:
-                            st.error("❌ Please select a file")
+                            st.error("Please select a file")
                         else:
-                            # Enhanced processing
-                            with st.spinner("🔄 Processing document..."):
-                                doc_data = process_uploaded_file(uploaded_file)
-                                if doc_data:
-                                    doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set, doc_data)
-                                    if doc_id:
-                                        if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
-                                            st.success(f"🎉 Successfully uploaded: {doc_name}")
-                                            st.session_state.selected_set = None
-                                            st.rerun()
-                                        else:
-                                            st.error("❌ Error saving file")
-                                    else:
-                                        st.error("❌ Error adding document")
+                            # Add document to set
+                            doc_id = add_document_to_set(doc_name, doc_party, st.session_state.selected_set)
+                            if doc_id:
+                                # Save the uploaded file
+                                if save_uploaded_file(uploaded_file, st.session_state.selected_set, doc_id):
+                                    st.success(f"Uploaded: {doc_name}")
+                                    st.session_state.selected_set = None  # Reset selection
+                                    st.rerun()
+                                else:
+                                    st.error("Error saving file")
+                            else:
+                                st.error("Error adding document")
         
-        # Enhanced create new set option
+        # Option to create new set
         st.markdown("---")
-        st.markdown("#### ➕ Create New Document Set")
+        st.markdown("#### Or Create New Document Set")
         
         col1, col2 = st.columns(2)
         with col1:
             if st.button("➕ Create New Document Set", use_container_width=True):
                 st.session_state.creating_set = True
         
+        # Show create set form if needed
         if st.session_state.creating_set:
             with st.form("new_set_form", clear_on_submit=True):
-                st.markdown("**📁 Create Document Set**")
+                st.markdown("**Create Document Set**")
                 
-                col1, col2 = st.columns(2)
-                with col1:
-                    set_name = st.text_input("📝 Set Name", placeholder="e.g., Expert Reports, Contracts")
-                with col2:
-                    party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
-                    set_party = st.selectbox("⚖️ Party", party_options)
+                set_name = st.text_input("Set Name", placeholder="e.g., Witness Statements, Expert Reports")
+                
+                party_options = ["Appellant", "Respondent", "Mixed", "Shared"]
+                set_party = st.selectbox("Party", party_options)
                 
                 col1, col2, col3 = st.columns([1, 1, 1])
                 with col2:
-                    create_btn = st.form_submit_button("✨ Create Set", use_container_width=True, type="primary")
+                    create_btn = st.form_submit_button("Create Set", use_container_width=True, type="primary")
                 
                 if create_btn:
                     if not set_name:
-                        st.error("❌ Please provide a name for this document set")
+                        st.error("Please provide a name for this document set")
                     else:
+                        # Add new set
                         set_id = add_document_set(set_name, set_party)
                         st.session_state.selected_set = set_id
                         st.session_state.creating_set = False
-                        st.success(f"🎉 Created: {set_name}")
+                        st.success(f"Created: {set_name}")
                         st.rerun()
     
     with tab2:
-        st.subheader("📁 Manage Document Sets")
+        # Document set management with improvements
+        st.subheader("Manage Document Sets")
         
         if not st.session_state.document_sets:
+            # Empty state message
             st.markdown("""
-            <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px; border: 2px dashed #cbd5e1;">
-                <div style="font-size: 48px; margin-bottom: 15px;">📂</div>
-                <h3 style="color: #374151; margin-bottom: 10px;">No Document Sets Yet</h3>
-                <p style="color: #6b7280;">Create your first document set to organize your legal documents</p>
+            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <p style="margin: 0; color: #64748b; font-size: 16px;">No document sets exist yet</p>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Create your first document set above</p>
             </div>
             """, unsafe_allow_html=True)
         else:
-            # Enhanced search
-            search_term = st.text_input("🔍 Search document sets", placeholder="Search by name, category, or party...")
+            # Search for document sets
+            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
+                                     help="Filter document sets by name or category")
             
+            # Filter document sets if search is provided
             filtered_sets = st.session_state.document_sets
             if search_term:
                 filtered_sets = [ds for ds in st.session_state.document_sets 
                                 if search_term.lower() in ds['name'].lower() or 
-                                   search_term.lower() in ds['category'].lower() or
-                                   search_term.lower() in ds['party'].lower()]
+                                   search_term.lower() in ds['category'].lower()]
+                
+                if not filtered_sets:
+                    st.warning(f"No document sets found matching '{search_term}'")
             
-            # Enhanced document set display
+            # Display all document sets
             for doc_set in filtered_sets:
-                with st.expander(f"📂 {doc_set['name']} ({len(doc_set['documents'])} documents)", expanded=False):
-                    # Enhanced set details
-                    party_color = "#3b82f6" if doc_set["party"] == "Appellant" else "#ef4444" if doc_set["party"] == "Respondent" else "#6b7280"
+                # Create an expander for each document set
+                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                    # Show set details
+                    party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
+                                       "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
                     
-                    col1, col2 = st.columns([2, 1])
-                    
-                    with col1:
-                        st.markdown(f"""
-                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid {party_color};">
-                            <h4 style="margin: 0; color: #1f2937;">{doc_set['name']}</h4>
-                            <div style="margin-top: 10px;">
-                                <span style="background: {party_color}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                                    {doc_set["party"]}
-                                </span>
-                                <span style="background: #f3f4f6; color: #374151; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin-left: 8px;">
-                                    {doc_set["category"]}
-                                </span>
-                            </div>
-                            <div style="margin-top: 10px; font-size: 14px; color: #6b7280;">
-                                📅 Created: {doc_set.get('created_date', 'Unknown')} | 📊 Status: {doc_set.get('status', 'Active')}
-                            </div>
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div>
+                            <span class="badge {party_badge_class}">{doc_set["party"]}</span>
+                            <span class="badge shared-badge">{doc_set["category"]}</span>
                         </div>
-                        """, unsafe_allow_html=True)
+                        <div>
+                            <span style="color: #64748b; font-size: 13px;">ID: {doc_set["id"]}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    with col2:
-                        # Quick stats
-                        total_docs = len(doc_set["documents"])
-                        uploaded_docs = sum(1 for doc in doc_set["documents"] 
-                                           if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                        completion = int(uploaded_docs/total_docs*100) if total_docs > 0 else 0
-                        
-                        st.metric("📊 Completion", f"{completion}%", delta=f"{uploaded_docs}/{total_docs}")
-                    
-                    # Enhanced document table
+                    # Show documents in this set
                     if doc_set["documents"]:
+                        # Create a table of documents
                         doc_data = []
                         for doc in doc_set["documents"]:
+                            # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
-                            size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB" if file_key in st.session_state.uploaded_files else ""
+                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            
+                            # Get file size if available
+                            file_size = ""
+                            if file_key in st.session_state.uploaded_files:
+                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
                             
                             doc_data.append({
-                                "📄 Name": f"{doc.get('icon', '📎')} {doc['name']}",
-                                "⚖️ Party": doc["party"],
-                                "📊 Status": doc.get("status", "Unknown"),
-                                "📁 File Status": status,
-                                "📏 Size": size
+                                "ID": doc["id"],
+                                "Name": doc["name"],
+                                "Party": doc["party"],
+                                "Status": file_status,
+                                "Size": file_size
                             })
                         
-                        df = pd.DataFrame(doc_data)
-                        st.dataframe(df, use_container_width=True, height=200)
+                        if doc_data:
+                            # Use native Streamlit dataframe
+                            df = pd.DataFrame(doc_data)
+                            st.dataframe(df, use_container_width=True, height=None)
+                            
+                            # Action buttons
+                            col1, col2, col3 = st.columns(3)
+                            
+                            with col1:
+                                # Button to add documents to this set
+                                if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
+                                    st.session_state.selected_set = doc_set["id"]
+                                    st.session_state.creating_set = False
+                                    st.rerun()
+                            
+                            with col2:
+                                # Export to CSV button
+                                csv = df.to_csv(index=False).encode('utf-8')
+                                st.download_button(
+                                    label="📥 Export CSV",
+                                    data=csv,
+                                    file_name=f"{doc_set['name']}_documents.csv",
+                                    mime='text/csv',
+                                    key=f"export_{doc_set['id']}"
+                                )
+                            
+                            with col3:
+                                # View details button
+                                if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
+                                    if st.session_state.viewing_set == doc_set["id"]:
+                                        st.session_state.viewing_set = None  # Toggle off
+                                    else:
+                                        st.session_state.viewing_set = doc_set["id"]  # Toggle on
+                            
+                            # If viewing this set, show additional details
+                            if st.session_state.get('viewing_set') == doc_set["id"]:
+                                st.markdown("""
+                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
+                                """, unsafe_allow_html=True)
+                                
+                                # Show document stats
+                                total_docs = len(doc_set["documents"])
+                                uploaded_docs = sum(1 for doc in doc_set["documents"] 
+                                                   if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
+                                
+                                col1, col2, col3 = st.columns(3)
+                                col1.metric("Total Documents", total_docs)
+                                col2.metric("Uploaded", uploaded_docs)
+                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
+                                
+                                st.markdown("</div>", unsafe_allow_html=True)
+                    else:
+                        # Empty state for documents
+                        st.markdown("""
+                        <div style="padding: 15px; background-color: #f8fafc; border-radius: 4px; text-align: center;">
+                            <p style="margin: 0; color: #64748b;">No documents in this set yet</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
-                        # Enhanced action buttons
-                        col1, col2, col3, col4 = st.columns(4)
-                        
-                        with col1:
-                            if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
-                                st.session_state.selected_set = doc_set["id"]
-                                st.session_state.view = "Upload"
-                                st.rerun()
-                        
-                        with col2:
-                            csv = df.to_csv(index=False).encode('utf-8')
-                            st.download_button(
-                                label="📥 Export CSV",
-                                data=csv,
-                                file_name=f"{doc_set['name']}_documents.csv",
-                                mime='text/csv',
-                                key=f"export_{doc_set['id']}"
-                            )
-                        
-                        with col3:
-                            if st.button(f"📊 Analytics", key=f"analytics_{doc_set['id']}"):
-                                st.info("📈 Analytics feature coming soon!")
-                        
-                        with col4:
-                            if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
-                                st.session_state.viewing_set = doc_set["id"] if st.session_state.viewing_set != doc_set["id"] else None
+                        # Add first document button
+                        if st.button(f"Add First Document", key=f"add_first_{doc_set['id']}"):
+                            st.session_state.selected_set = doc_set["id"]
+                            st.session_state.creating_set = False
+                            st.rerun()
     
     with tab3:
-        st.subheader("🕒 Recent Activity")
+        # Recent uploads tab
+        st.subheader("Recent Uploads")
         
-        if st.session_state.recent_activities:
-            for activity in st.session_state.recent_activities:
-                icon = "📤" if activity["type"] == "upload" else "➕" if activity["type"] == "create" else "👁️"
-                
-                st.markdown(f"""
-                <div style="background: white; border-radius: 10px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #4D68F9; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <div style="display: flex; justify-content: between; align-items: center;">
-                        <div style="display: flex; align-items: center;">
-                            <span style="font-size: 20px; margin-right: 12px;">{icon}</span>
-                            <div>
-                                <div style="font-weight: 600; color: #1f2937;">{activity['action']}</div>
-                                <div style="color: #6b7280; font-size: 14px; margin-top: 2px;">{activity['item']}</div>
-                            </div>
-                        </div>
-                        <span style="color: #9ca3af; font-size: 12px; margin-left: auto;">{activity['time']}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
+        if not st.session_state.uploaded_files:
+            # Empty state message
             st.markdown("""
-            <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 12px;">
-                <div style="font-size: 48px; margin-bottom: 15px;">📊</div>
-                <h3 style="color: #374151; margin-bottom: 10px;">No Recent Activity</h3>
-                <p style="color: #6b7280;">Your recent document uploads and activities will appear here</p>
+            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <p style="margin: 0; color: #64748b; font-size: 16px;">No documents have been uploaded yet</p>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Upload documents to see them listed here</p>
             </div>
             """, unsafe_allow_html=True)
+        else:
+            # Get list of uploaded files
+            uploads = []
+            for file_key, file_info in st.session_state.uploaded_files.items():
+                set_id, doc_id = file_key.split("-")
+                
+                # Find document set and document
+                doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
+                
+                if doc_set:
+                    doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
+                    
+                    if doc:
+                        # Format upload time nicely
+                        upload_time = file_info.get("upload_time", "Just now")
+                        
+                        uploads.append({
+                            "Name": doc["name"],
+                            "Set": doc_set["name"],
+                            "Party": doc["party"],
+                            "Type": file_info.get("type", "Unknown"),
+                            "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
+                            "Time": upload_time
+                        })
+            
+            # Sort uploads by time (most recent first)
+            uploads = sorted(uploads, key=lambda x: x.get("Time", ""), reverse=True)
+            
+            # Display uploads in a table
+            if uploads:
+                # Create styled upload cards
+                for upload in uploads:
+                    # Determine party badge class
+                    party_badge_class = "appellant-badge" if upload["Party"] == "Appellant" else \
+                                       "respondent-badge" if upload["Party"] == "Respondent" else "shared-badge"
+                    
+                    # Create card for each upload
+                    st.markdown(f"""
+                    <div style="background-color: white; border-radius: 6px; padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="font-weight: 500; color: #111927;">{upload["Name"]}</div>
+                            <div style="font-size: 12px; color: #64748b;">{upload["Time"]}</div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                            <div>
+                                <span style="font-size: 12px; color: #64748b;">Set:</span>
+                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Set"]}</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b;">Party:</span>
+                                <span class="badge {party_badge_class}">{upload["Party"]}</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b;">Type:</span>
+                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Type"]}</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b;">Size:</span>
+                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Size"]}</span>
+                            </div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("No upload information available.")
 
-# Function to render the facts page (kept the same but with breadcrumbs)
+# Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):
     # Convert data to JSON for JavaScript
     args_json = json.dumps(args_data)
@@ -1287,13 +1057,13 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
     document_sets_json = json.dumps(document_sets)
     timeline_json = json.dumps(timeline_data)
     
-    # Create HTML content for the Facts view (same as before)
+    # Create HTML content for the Facts view
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <style>
-            /* Same styles as before */
+            /* Minimalistic base styling */
             body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
@@ -1303,12 +1073,14 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 background-color: #fff;
             }}
             
+            /* Simple container */
             .container {{
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 20px;
             }}
             
+            /* Content sections */
             .content-section {{
                 display: none;
             }}
@@ -1317,6 +1089,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 display: block;
             }}
             
+            /* Badge styling */
             .badge {{
                 display: inline-block;
                 padding: 3px 8px;
@@ -1350,6 +1123,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 color: #e53e3e;
             }}
             
+            /* Tables */
             table {{
                 width: 100%;
                 border-collapse: collapse;
@@ -1371,6 +1145,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 background-color: rgba(229, 62, 62, 0.05);
             }}
             
+            /* Action buttons */
             .action-buttons {{
                 position: absolute;
                 top: 20px;
@@ -1394,6 +1169,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 background-color: #f1f1f1;
             }}
             
+            /* Copy notification */
             .copy-notification {{
                 position: fixed;
                 bottom: 20px;
@@ -1411,6 +1187,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 opacity: 1;
             }}
             
+            /* Facts styling */
             .facts-container {{
                 margin-top: 20px;
             }}
@@ -1438,6 +1215,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 margin-top: 20px;
             }}
             
+            /* Section title */
             .section-title {{
                 font-size: 1.5rem;
                 font-weight: 600;
@@ -1446,6 +1224,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 border-bottom: 1px solid #eaeaea;
             }}
             
+            /* Table view */
             .table-view {{
                 width: 100%;
                 border-collapse: collapse;
@@ -1475,6 +1254,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 background-color: #f8f9fa;
             }}
             
+            /* View toggle */
             .view-toggle {{
                 display: flex;
                 justify-content: flex-end;
@@ -1523,6 +1303,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 </button>
             </div>
             
+            <!-- Facts Section -->
             <div id="facts" class="content-section active">
                 <div class="section-title">Case Facts</div>
                 
@@ -1538,6 +1319,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                     <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
                 </div>
                 
+                <!-- Table View -->
                 <div id="table-view-content" class="facts-content">
                     <table class="table-view">
                         <thead>
@@ -1554,6 +1336,7 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                     </table>
                 </div>
                 
+                <!-- Other views would go here -->
                 <div id="timeline-view-content" class="facts-content" style="display: none;">
                     Timeline content would go here
                 </div>
@@ -1565,10 +1348,12 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
         </div>
         
         <script>
+            // Initialize data
             const factsData = {facts_json};
             const documentSets = {document_sets_json};
             const timelineData = {timeline_json};
             
+            // Switch view between table, timeline, and document sets
             function switchView(viewType) {{
                 const tableBtn = document.getElementById('table-view-btn');
                 const timelineBtn = document.getElementById('timeline-view-btn');
@@ -1578,14 +1363,17 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 const timelineContent = document.getElementById('timeline-view-content');
                 const docsetContent = document.getElementById('docset-view-content');
                 
+                // Remove active class from all buttons
                 tableBtn.classList.remove('active');
                 timelineBtn.classList.remove('active');
                 docsetBtn.classList.remove('active');
                 
+                // Hide all content
                 tableContent.style.display = 'none';
                 timelineContent.style.display = 'none';
                 docsetContent.style.display = 'none';
                 
+                // Activate the selected view
                 if (viewType === 'table') {{
                     tableBtn.classList.add('active');
                     tableContent.style.display = 'block';
@@ -1593,21 +1381,26 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 }} else if (viewType === 'timeline') {{
                     timelineBtn.classList.add('active');
                     timelineContent.style.display = 'block';
+                    // Timeline rendering would go here
                 }} else if (viewType === 'docset') {{
                     docsetBtn.classList.add('active');
                     docsetContent.style.display = 'block';
+                    // Document set rendering would go here
                 }}
             }}
             
+            // Switch facts tab
             function switchFactsTab(tabType) {{
                 const allBtn = document.getElementById('all-facts-btn');
                 const disputedBtn = document.getElementById('disputed-facts-btn');
                 const undisputedBtn = document.getElementById('undisputed-facts-btn');
                 
+                // Remove active class from all
                 allBtn.classList.remove('active');
                 disputedBtn.classList.remove('active');
                 undisputedBtn.classList.remove('active');
                 
+                // Add active to selected
                 if (tabType === 'all') {{
                     allBtn.classList.add('active');
                 }} else if (tabType === 'disputed') {{
@@ -1616,9 +1409,11 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                     undisputedBtn.classList.add('active');
                 }}
                 
+                // Update active view with filtered facts
                 renderFacts(tabType);
             }}
             
+            // Copy content function
             function copyAllContent() {{
                 const notification = document.getElementById('copy-notification');
                 notification.classList.add('show');
@@ -1628,14 +1423,17 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 }}, 2000);
             }}
             
+            // Sort table function
             function sortTable(tableId, columnIndex) {{
                 // Sorting logic would go here
             }}
             
+            // Render facts table
             function renderFacts(type = 'all') {{
                 const tableBody = document.getElementById('facts-table-body');
                 tableBody.innerHTML = '';
                 
+                // Filter by type
                 let filteredFacts = factsData;
                 
                 if (type === 'disputed') {{
@@ -1644,34 +1442,41 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                     filteredFacts = factsData.filter(fact => !fact.isDisputed);
                 }}
                 
+                // Render rows
                 filteredFacts.forEach(fact => {{
                     const row = document.createElement('tr');
                     if (fact.isDisputed) {{
                         row.classList.add('disputed');
                     }}
                     
+                    // Date column
                     const dateCell = document.createElement('td');
                     dateCell.textContent = fact.date;
                     row.appendChild(dateCell);
                     
+                    // Event column
                     const eventCell = document.createElement('td');
                     eventCell.textContent = fact.point;
                     row.appendChild(eventCell);
                     
+                    // Party column
                     const partyCell = document.createElement('td');
                     partyCell.innerHTML = `<span class="badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}">${{fact.party}}</span>`;
                     row.appendChild(partyCell);
                     
+                    // Status column
                     const statusCell = document.createElement('td');
                     statusCell.innerHTML = fact.isDisputed ? 
                         '<span class="badge disputed-badge">Disputed</span>' : 
                         'Undisputed';
                     row.appendChild(statusCell);
                     
+                    // Related argument
                     const argCell = document.createElement('td');
                     argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
                     row.appendChild(argCell);
                     
+                    // Evidence column
                     const evidenceCell = document.createElement('td');
                     if (fact.exhibits && fact.exhibits.length > 0) {{
                         evidenceCell.innerHTML = fact.exhibits.map(ex => 
@@ -1686,17 +1491,20 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
                 }});
             }}
             
+            // Initialize facts on page load
             document.addEventListener('DOMContentLoaded', function() {{
                 renderFacts('all');
             }});
             
+            // Initialize facts immediately
             renderFacts('all');
         </script>
     </body>
     </html>
     """
     
-    st.title("📊 Case Facts")
+    # Render the HTML component
+    st.title("Case Facts")
     components.html(html_content, height=800, scrolling=True)
 
 # Run the main app

@@ -65,7 +65,7 @@ def get_document_sets():
 
 # Initialize session state
 if 'view' not in st.session_state:
-    st.session_state.view = "Dashboard"
+    st.session_state.view = "Upload"  # Start with Upload view
 
 if 'document_sets' not in st.session_state:
     st.session_state.document_sets = get_document_sets()
@@ -219,9 +219,9 @@ def process_uploaded_file(uploaded_file):
 # Update breadcrumbs function
 def update_breadcrumbs(view, additional_info=None):
     """Update navigation breadcrumbs"""
-    breadcrumbs = [("🏠 Home", "Dashboard")]
+    breadcrumbs = [("🏠 Home", "Upload")]
     
-    if view != "Dashboard":
+    if view != "Upload":
         breadcrumbs.append((f"📑 {view}", view))
     
     if additional_info:
@@ -923,79 +923,25 @@ def main():
         def set_view(view_name):
             st.session_state.view = view_name
         
-        # Enhanced navigation buttons with current view highlighting
-        current_view = st.session_state.view
-        
-        dashboard_style = "primary" if current_view == "Dashboard" else "secondary"
-        upload_style = "primary" if current_view == "Upload" else "secondary"
-        args_style = "primary" if current_view == "Arguments" else "secondary"
-        facts_style = "primary" if current_view == "Facts" else "secondary"
-        exhibits_style = "primary" if current_view == "Exhibits" else "secondary"
-        
-        st.button("🏠 Dashboard", key="dashboard_button", type=dashboard_style, on_click=set_view, args=("Dashboard",), use_container_width=True)
-        st.button("📤 Upload Documents", key="upload_button", type=upload_style, on_click=set_view, args=("Upload",), use_container_width=True)
-        st.button("📑 Arguments", key="args_button", type=args_style, on_click=set_view, args=("Arguments",), use_container_width=True)
-        st.button("📊 Facts", key="facts_button", type=facts_style, on_click=set_view, args=("Facts",), use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", type=exhibits_style, on_click=set_view, args=("Exhibits",), use_container_width=True)
-        
-        # Quick stats in sidebar
-        st.markdown("---")
-        st.markdown("### 📊 Quick Stats")
-        
-        all_docs = []
-        for doc_set in st.session_state.document_sets:
-            all_docs.extend(doc_set["documents"])
-        
-        st.markdown(f"""
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-            <div style="font-size: 24px; font-weight: bold; color: #4D68F9;">{len(all_docs)}</div>
-            <div style="font-size: 12px; color: #6b7280;">Total Documents</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown(f"""
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-            <div style="font-size: 24px; font-weight: bold; color: #10b981;">{len(st.session_state.document_sets)}</div>
-            <div style="font-size: 12px; color: #6b7280;">Document Sets</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Original order of buttons with Upload Documents first
+        st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
+        st.button("📑 Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
+        st.button("📊 Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
+        st.button("📁 Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
     
     # Render the appropriate view based on session state
-    if st.session_state.view == "Dashboard":
-        render_dashboard()
-    elif st.session_state.view == "Upload":
+    if st.session_state.view == "Upload":
         render_upload_page()
     elif st.session_state.view == "Facts":
         render_facts_page(facts_data, document_sets, timeline_data, args_data)
     else:
-        # Enhanced placeholder for other views
-        update_breadcrumbs(st.session_state.view)
-        render_breadcrumbs()
-        
+        # Placeholder for other views        
         st.title(f"{st.session_state.view} View")
-        
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #f3f4f6, #e5e7eb); padding: 40px; border-radius: 12px; text-align: center; margin: 40px 0;">
-            <div style="font-size: 64px; margin-bottom: 20px;">🚧</div>
-            <h2 style="color: #374151; margin-bottom: 10px;">Coming Soon</h2>
-            <p style="color: #6b7280; font-size: 16px;">The {st.session_state.view} view is currently under development.</p>
-            <p style="color: #9ca3af; font-size: 14px;">In the meantime, you can explore the other available features.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Quick navigation back
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            if st.button("← Back to Dashboard", type="primary", use_container_width=True):
-                st.session_state.view = "Dashboard"
-                st.rerun()
+        st.info(f"This is a placeholder for the {st.session_state.view} view.")
 
 # Function to render the enhanced upload page
 def render_upload_page():
     """Enhanced upload page with better UX"""
-    update_breadcrumbs("Upload")
-    render_breadcrumbs()
-    
     st.title("📤 Document Management")
     
     # Enhanced quick upload section
@@ -1335,9 +1281,6 @@ def render_upload_page():
 
 # Function to render the facts page (kept the same but with breadcrumbs)
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):
-    update_breadcrumbs("Facts")
-    render_breadcrumbs()
-    
     # Convert data to JSON for JavaScript
     args_json = json.dumps(args_data)
     facts_json = json.dumps(facts_data)
@@ -1759,4 +1702,3 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
 # Run the main app
 if __name__ == "__main__":
     main()
-

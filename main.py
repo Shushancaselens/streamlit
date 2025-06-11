@@ -806,15 +806,9 @@ def render_upload_page():
             </div>
             """, unsafe_allow_html=True)
         else:
-            # Search and bulk actions
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
-                                         help="Filter document sets by name or category")
-            with col2:
-                st.markdown("<br>", unsafe_allow_html=True)  # Spacing
-                if st.button("🗑️ Bulk Actions", help="Coming soon: bulk delete, merge, etc."):
-                    st.info("Bulk actions feature coming soon!")
+            # Search for document sets
+            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
+                                     help="Filter document sets by name or category")
             
             # Filter document sets if search is provided
             filtered_sets = st.session_state.document_sets

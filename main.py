@@ -657,197 +657,71 @@ def render_upload_page():
     st.title("Document Management")
     
     # Create tabs for upload functionality
-    tab1, tab2, tab3, tab4 = st.tabs(["⚡ Bulk Upload", "📄 Single Upload", "📁 Manage Document Sets", "🕒 Recent Uploads"])
+    tab1, tab2, tab3, tab4 = st.tabs(["⚡ Quick Upload", "📄 Advanced Upload", "📁 Manage Document Sets", "🕒 Recent Uploads"])
     
     with tab1:
-        # Bulk upload interface - main feature for handling hundreds of documents
-        st.subheader("⚡ Bulk Document Upload")
-        st.markdown("Upload multiple documents at once with automatic organization")
+        # Super simple bulk upload - just drag and drop
+        st.subheader("⚡ Quick Upload - Just Drag & Drop")
+        st.markdown("Upload hundreds of documents instantly. Names and organization are handled automatically.")
         
-        # Quick setup section
-        col1, col2 = st.columns(2)
-        with col1:
-            # Auto-create or select document set
-            st.markdown("**📁 Document Set**")
-            use_existing = st.radio("", ["Create New Set", "Use Existing Set"], key="bulk_set_choice", horizontal=True)
-            
-            if use_existing == "Create New Set":
-                new_set_name = st.text_input("New Set Name", placeholder="e.g., Case Documents 2024", key="bulk_new_set")
-                set_party = st.selectbox("Default Party", ["Appellant", "Respondent", "Mixed", "Shared"], key="bulk_party")
-            else:
-                if st.session_state.document_sets:
-                    set_options = [ds["name"] for ds in st.session_state.document_sets]
-                    selected_set_name = st.selectbox("Select Document Set", set_options, key="bulk_existing_set")
-                else:
-                    st.warning("No existing document sets. Please create a new one.")
-                    use_existing = "Create New Set"
-        
-        with col2:
-            # Default settings for all uploads
-            st.markdown("**⚙️ Default Settings**")
-            default_party = st.selectbox("Default Party for Documents", ["Appellant", "Respondent", "Shared"], key="bulk_default_party")
-            auto_name = st.checkbox("Auto-generate names from filenames", value=True, key="bulk_auto_name")
-            smart_categorize = st.checkbox("Smart categorization (experimental)", value=True, key="bulk_smart_cat")
-        
-        st.markdown("---")
-        
-        # Bulk file uploader
-        st.markdown("**📤 Upload Multiple Files**")
+        # Single large file uploader
         uploaded_files = st.file_uploader(
-            "Drag and drop multiple files or click to browse",
+            "🎯 Drop all your files here",
             type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
             accept_multiple_files=True,
-            help="You can upload hundreds of files at once. Names will be auto-generated from filenames."
+            help="Select all files at once - everything else is automatic"
         )
         
         if uploaded_files:
-            st.markdown(f"**📋 Preview: {len(uploaded_files)} files selected**")
+            # Show count and upload button
+            st.success(f"📁 {len(uploaded_files)} files ready to upload")
             
-            # Show preview of files with auto-generated names
-            preview_data = []
-            for i, file in enumerate(uploaded_files[:10]):  # Show first 10 as preview
-                # Auto-generate document name from filename
-                auto_doc_name = file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
+            if st.button("🚀 Upload All Files", type="primary", use_container_width=True):
+                # Auto-create document set with timestamp
+                set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                set_id = add_document_set(set_name, "Mixed")
                 
-                # Smart categorization
-                suggested_party = default_party
-                if smart_categorize:
-                    filename_lower = file.name.lower()
-                    if any(word in filename_lower for word in ['appellant', 'claimant', 'plaintiff']):
-                        suggested_party = "Appellant"
-                    elif any(word in filename_lower for word in ['respondent', 'defendant']):
-                        suggested_party = "Respondent"
-                    elif any(word in filename_lower for word in ['shared', 'joint', 'common']):
-                        suggested_party = "Shared"
+                # Progress bar
+                progress_bar = st.progress(0)
+                status_text = st.empty()
                 
-                preview_data.append({
-                    "Filename": file.name,
-                    "Generated Name": auto_doc_name,
-                    "Party": suggested_party,
-                    "Size": f"{file.size/1024:.1f} KB"
-                })
-            
-            # Show preview table
-            preview_df = pd.DataFrame(preview_data)
-            st.dataframe(preview_df, use_container_width=True)
-            
-            if len(uploaded_files) > 10:
-                st.info(f"Showing preview of first 10 files. Total: {len(uploaded_files)} files")
-            
-            # Upload button
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                if st.button("🚀 Upload All Documents", type="primary", use_container_width=True):
-                    # Process the bulk upload
-                    progress_bar = st.progress(0)
-                    status_text = st.empty()
-                    
-                    # Create or get document set
-                    if use_existing == "Create New Set" or not st.session_state.document_sets:
-                        if use_existing == "Create New Set" and new_set_name:
-                            set_id = add_document_set(new_set_name, set_party)
-                        else:
-                            # Create default set if no name provided
-                            default_name = f"Bulk Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                            set_id = add_document_set(default_name, set_party if use_existing == "Create New Set" else "Mixed")
-                    else:
-                        # Find existing set
-                        selected_set = next((ds for ds in st.session_state.document_sets if ds["name"] == selected_set_name), None)
-                        set_id = selected_set["id"] if selected_set else None
-                    
-                    if set_id:
-                        success_count = 0
-                        error_count = 0
+                success_count = 0
+                
+                # Process all files
+                for i, file in enumerate(uploaded_files):
+                    try:
+                        # Auto-generate name from filename
+                        doc_name = file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
                         
-                        for i, file in enumerate(uploaded_files):
-                            try:
-                                # Generate document name
-                                if auto_name:
-                                    doc_name = file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
-                                else:
-                                    doc_name = file.name
-                                
-                                # Determine party
-                                file_party = default_party
-                                if smart_categorize:
-                                    filename_lower = file.name.lower()
-                                    if any(word in filename_lower for word in ['appellant', 'claimant', 'plaintiff']):
-                                        file_party = "Appellant"
-                                    elif any(word in filename_lower for word in ['respondent', 'defendant']):
-                                        file_party = "Respondent"
-                                    elif any(word in filename_lower for word in ['shared', 'joint', 'common']):
-                                        file_party = "Shared"
-                                
-                                # Add document to set
-                                doc_id = add_document_to_set(doc_name, file_party, set_id)
-                                if doc_id:
-                                    # Save file
-                                    if save_uploaded_file(file, set_id, doc_id):
-                                        success_count += 1
-                                    else:
-                                        error_count += 1
-                                else:
-                                    error_count += 1
-                                
-                                # Update progress
-                                progress = (i + 1) / len(uploaded_files)
-                                progress_bar.progress(progress)
-                                status_text.text(f"Processing {i + 1}/{len(uploaded_files)}: {file.name}")
-                                
-                            except Exception as e:
-                                error_count += 1
-                                st.error(f"Error processing {file.name}: {str(e)}")
+                        # Add document
+                        doc_id = add_document_to_set(doc_name, "Mixed", set_id)
+                        if doc_id and save_uploaded_file(file, set_id, doc_id):
+                            success_count += 1
                         
-                        # Show final results
-                        progress_bar.empty()
-                        status_text.empty()
+                        # Update progress
+                        progress_bar.progress((i + 1) / len(uploaded_files))
+                        status_text.text(f"Uploaded {i + 1}/{len(uploaded_files)}")
                         
-                        if success_count > 0:
-                            st.success(f"✅ Successfully uploaded {success_count} documents!")
-                        if error_count > 0:
-                            st.error(f"❌ Failed to upload {error_count} documents.")
-                        
-                        # Show summary
-                        st.markdown(f"""
-                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px;">
-                            <h4 style="margin-top: 0;">Upload Summary</h4>
-                            <div style="display: flex; gap: 20px;">
-                                <div><strong>Total Files:</strong> {len(uploaded_files)}</div>
-                                <div><strong>Successful:</strong> {success_count}</div>
-                                <div><strong>Failed:</strong> {error_count}</div>
-                                <div><strong>Document Set:</strong> {new_set_name if use_existing == "Create New Set" else selected_set_name}</div>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.error("Failed to create or find document set.")
+                    except:
+                        pass  # Skip errors, continue with rest
+                
+                # Done
+                progress_bar.empty()
+                status_text.empty()
+                st.success(f"✅ Done! Uploaded {success_count} documents to '{set_name}'")
+                
+                if success_count < len(uploaded_files):
+                    st.warning(f"⚠️ {len(uploaded_files) - success_count} files skipped (duplicates or errors)")
     
     with tab2:
-        # Single upload interface (simplified version of original)
-        st.subheader("📄 Single Document Upload")
-        st.markdown("Upload one document with full control over metadata")
+        # Advanced upload for users who want control
+        st.subheader("📄 Advanced Upload")
+        st.markdown("For when you need specific organization or metadata")
         
         # Document set selection
         if not st.session_state.document_sets:
-            st.warning("No document sets exist. Use Bulk Upload to create one automatically, or create manually below.")
-            
-            # Quick set creation
-            with st.expander("➕ Quick Create Document Set"):
-                col1, col2 = st.columns(2)
-                with col1:
-                    quick_set_name = st.text_input("Set Name", placeholder="e.g., Expert Reports")
-                with col2:
-                    quick_set_party = st.selectbox("Party", ["Appellant", "Respondent", "Mixed", "Shared"])
-                
-                if st.button("Create Set"):
-                    if quick_set_name:
-                        set_id = add_document_set(quick_set_name, quick_set_party)
-                        st.success(f"Created: {quick_set_name}")
-                        st.rerun()
-                    else:
-                        st.error("Please provide a set name")
+            st.warning("No document sets exist. Use Quick Upload to create one automatically.")
         else:
-            # Document set selection
             set_options = [ds["name"] for ds in st.session_state.document_sets]
             selected_set_name = st.selectbox("Select Document Set", set_options)
             

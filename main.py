@@ -793,61 +793,169 @@ def render_upload_page():
                             st.error("Please provide a document name")
     
     with tab3:
-        # User-friendly document set management
-        st.subheader("Your Documents")
+        # Document set management with improvements
+        st.subheader("Manage Document Sets")
         
         if not st.session_state.document_sets:
-            st.info("No documents yet. Use Quick Upload to get started.")
+            # Empty state message
+            st.markdown("""
+            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                <p style="margin: 0; color: #64748b; font-size: 16px;">No document sets exist yet</p>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Use Quick Upload to create document sets automatically</p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
-            # Simple, actionable view
-            for doc_set in st.session_state.document_sets:
-                # Count uploaded documents
-                uploaded_count = 0
-                for doc in doc_set["documents"]:
-                    file_key = f"{doc_set['id']}-{doc['id']}"
-                    if file_key in st.session_state.uploaded_files:
-                        uploaded_count += 1
+            # Search for document sets
+            search_term = st.text_input("Search document sets", placeholder="Type to filter document sets...", 
+                                     help="Filter document sets by name or category")
+            
+            # Filter document sets if search is provided
+            filtered_sets = st.session_state.document_sets
+            if search_term:
+                filtered_sets = [ds for ds in st.session_state.document_sets 
+                                if search_term.lower() in ds['name'].lower() or 
+                                   search_term.lower() in ds['category'].lower()]
                 
-                total_docs = len(doc_set["documents"])
-                is_complete = uploaded_count == total_docs
-                
-                # Card-style layout for each set
-                with st.container():
-                    col1, col2 = st.columns([3, 1])
+                if not filtered_sets:
+                    st.warning(f"No document sets found matching '{search_term}'")
+            
+            # Summary stats
+            total_docs = sum(len(ds["documents"]) for ds in st.session_state.document_sets)
+            total_uploaded = 0
+            try:
+                for ds in st.session_state.document_sets:
+                    for doc in ds["documents"]:
+                        file_key = f"{ds['id']}-{doc['id']}"
+                        if file_key in st.session_state.uploaded_files:
+                            total_uploaded += 1
+            except Exception:
+                total_uploaded = 0
+            
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Total Sets", len(st.session_state.document_sets))
+            col2.metric("Total Documents", total_docs)
+            col3.metric("Uploaded Files", total_uploaded)
+            
+            st.markdown("---")
+            
+            # Display all document sets
+            for doc_set in filtered_sets:
+                # Create an expander for each document set
+                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                    # Show set details
+                    party_badge_class = "appellant-badge" if doc_set["party"] == "Appellant" else \
+                                       "respondent-badge" if doc_set["party"] == "Respondent" else "shared-badge"
                     
-                    with col1:
-                        if is_complete:
-                            st.success(f"✅ **{doc_set['name']}** - All {total_docs} documents uploaded")
-                        else:
-                            st.warning(f"📤 **{doc_set['name']}** - {uploaded_count}/{total_docs} uploaded")
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <div>
+                            <span class="badge {party_badge_class}">{doc_set["party"]}</span>
+                            <span class="badge shared-badge">{doc_set["category"]}</span>
+                        </div>
+                        <div>
+                            <span style="color: #64748b; font-size: 13px;">ID: {doc_set["id"]}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    with col2:
-                        if not is_complete:
-                            if st.button("Upload Missing", key=f"upload_{doc_set['id']}", type="primary"):
-                                st.session_state.selected_set = doc_set["id"]
-                                st.session_state.view = "Upload"
-                                st.rerun()
-                        else:
-                            if st.button("Add More", key=f"add_{doc_set['id']}"):
-                                st.session_state.selected_set = doc_set["id"]  
-                                st.session_state.view = "Upload"
-                                st.rerun()
-                    
-                    # Show what's missing (only if incomplete)
-                    if not is_complete and total_docs > 0:
-                        missing_docs = []
+                    # Show documents in this set
+                    if doc_set["documents"]:
+                        # Create a table of documents
+                        doc_data = []
                         for doc in doc_set["documents"]:
+                            # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            if file_key not in st.session_state.uploaded_files:
-                                missing_docs.append(doc['name'])
+                            file_status = "Uploaded" if file_key in st.session_state.uploaded_files else "Missing"
+                            
+                            # Get file size if available
+                            file_size = ""
+                            try:
+                                if file_key in st.session_state.uploaded_files:
+                                    file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
+                            except (KeyError, TypeError):
+                                file_size = "Unknown"
+                            
+                            doc_data.append({
+                                "ID": doc["id"],
+                                "Name": doc["name"],
+                                "Party": doc["party"],
+                                "Status": file_status,
+                                "Size": file_size
+                            })
                         
-                        if missing_docs:
-                            missing_text = ", ".join(missing_docs[:3])
-                            if len(missing_docs) > 3:
-                                missing_text += f" and {len(missing_docs) - 3} more"
-                            st.caption(f"Missing: {missing_text}")
-                    
-                    st.markdown("---")
+                        if doc_data:
+                            # Use native Streamlit dataframe
+                            df = pd.DataFrame(doc_data)
+                            st.dataframe(df, use_container_width=True, height=None)
+                            
+                            # Action buttons
+                            col1, col2, col3 = st.columns(3)
+                            
+                            with col1:
+                                # Button to add documents to this set
+                                if st.button(f"Add Document", key=f"add_to_{doc_set['id']}"):
+                                    st.session_state.selected_set = doc_set["id"]
+                                    st.session_state.creating_set = False
+                                    st.session_state.view = "Upload"
+                                    st.rerun()
+                            
+                            with col2:
+                                # Export to CSV button
+                                csv = df.to_csv(index=False).encode('utf-8')
+                                st.download_button(
+                                    label="Export CSV",
+                                    data=csv,
+                                    file_name=f"{doc_set['name']}_documents.csv",
+                                    mime='text/csv',
+                                    key=f"export_{doc_set['id']}"
+                                )
+                            
+                            with col3:
+                                # View details button
+                                if st.button(f"View Details", key=f"view_{doc_set['id']}"):
+                                    if st.session_state.viewing_set == doc_set["id"]:
+                                        st.session_state.viewing_set = None  # Toggle off
+                                    else:
+                                        st.session_state.viewing_set = doc_set["id"]  # Toggle on
+                            
+                            # If viewing this set, show additional details
+                            if st.session_state.get('viewing_set') == doc_set["id"]:
+                                st.markdown("""
+                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
+                                """, unsafe_allow_html=True)
+                                
+                                # Show document stats
+                                total_docs = len(doc_set["documents"])
+                                uploaded_docs = 0
+                                try:
+                                    for doc in doc_set["documents"]:
+                                        file_key = f"{doc_set['id']}-{doc['id']}"
+                                        if file_key in st.session_state.uploaded_files:
+                                            uploaded_docs += 1
+                                except Exception:
+                                    uploaded_docs = 0
+                                
+                                col1, col2, col3 = st.columns(3)
+                                col1.metric("Total Documents", total_docs)
+                                col2.metric("Uploaded", uploaded_docs)
+                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
+                                
+                                st.markdown("</div>", unsafe_allow_html=True)
+                    else:
+                        # Empty state for documents
+                        st.markdown("""
+                        <div style="padding: 15px; background-color: #f8fafc; border-radius: 4px; text-align: center;">
+                            <p style="margin: 0; color: #64748b;">No documents in this set yet</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Add first document button
+                        if st.button(f"Add First Document", key=f"add_first_{doc_set['id']}"):
+                            st.session_state.selected_set = doc_set["id"]
+                            st.session_state.creating_set = False
+                            st.session_state.view = "Upload"
+                            st.rerun()
 
 # Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):

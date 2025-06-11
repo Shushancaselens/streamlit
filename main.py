@@ -637,10 +637,10 @@ def main():
             st.session_state.view = view_name
         
         # Original order of buttons with Upload Documents first
-        st.button("📤 Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
-        st.button("📑 Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
+        st.button("Upload Documents", key="upload_button", on_click=set_view, args=("Upload",), use_container_width=True)
+        st.button("Arguments", key="args_button", on_click=set_view, args=("Arguments",), use_container_width=True)
+        st.button("Facts", key="facts_button", on_click=set_view, args=("Facts",), use_container_width=True)
+        st.button("Exhibits", key="exhibits_button", on_click=set_view, args=("Exhibits",), use_container_width=True)
     
     # Render the appropriate view based on session state
     if st.session_state.view == "Upload":
@@ -656,8 +656,8 @@ def main():
 def render_upload_page():
     st.title("Document Management")
     
-    # Create tabs for upload functionality
-    tab1, tab2, tab3, tab4 = st.tabs(["Quick Upload", "Advanced Upload", "Manage Document Sets", "Recent Uploads"])
+    # Create tabs for upload functionality - simplified to 3 essential tabs
+    tab1, tab2, tab3 = st.tabs(["Quick Upload", "Advanced Upload", "Manage Document Sets"])
     
     with tab1:
         # Super simple bulk upload - just drag and drop
@@ -726,7 +726,6 @@ def render_upload_page():
                 st.markdown("**Next steps:**")
                 st.markdown("- View your documents in the **Manage Document Sets** tab")
                 st.markdown("- Use **Advanced Upload** if you need to organize by party (Appellant/Respondent)")
-                st.markdown("- Check **Recent Uploads** to see all uploaded files")
     
     with tab2:
         # Advanced upload for users who want control
@@ -957,131 +956,6 @@ def render_upload_page():
                             st.session_state.creating_set = False
                             st.session_state.view = "Upload"
                             st.rerun()
-    
-    with tab4:
-        # Recent uploads tab with enhanced features
-        st.subheader("Recent Uploads")
-        
-        if not st.session_state.uploaded_files:
-            # Empty state message
-            st.markdown("""
-            <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
-                <p style="margin: 0; color: #64748b; font-size: 16px;">No documents have been uploaded yet</p>
-                <p style="margin: 5px 0 0 0; color: #94a3b8;">Upload documents to see them listed here</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            # Filter and sort options
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                filter_party = st.selectbox("Filter by Party", ["All", "Appellant", "Respondent", "Shared"])
-            with col2:
-                sort_by = st.selectbox("Sort by", ["Upload Time (Newest)", "Upload Time (Oldest)", "File Size", "Name"])
-            with col3:
-                show_limit = st.selectbox("Show", ["All", "Last 10", "Last 25", "Last 50"])
-            
-            # Get list of uploaded files
-            uploads = []
-            for file_key, file_info in st.session_state.uploaded_files.items():
-                try:
-                    # Safely split the file key
-                    if "-" not in file_key:
-                        continue  # Skip invalid keys
-                    
-                    parts = file_key.split("-", 1)  # Split only on first dash
-                    if len(parts) != 2:
-                        continue  # Skip invalid keys
-                        
-                    set_id, doc_id = parts
-                    
-                    # Find document set and document
-                    doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
-                    
-                    if doc_set:
-                        doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
-                        
-                        if doc:
-                            # Format upload time nicely
-                            upload_time = file_info.get("upload_time", "Just now")
-                            
-                            upload_entry = {
-                                "Name": doc["name"],
-                                "Set": doc_set["name"],
-                                "Party": doc["party"],
-                                "Type": file_info.get("type", "Unknown"),
-                                "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
-                                "SizeBytes": file_info.get('size', 0),
-                                "Time": upload_time,
-                                "Filename": file_info.get("filename", "")
-                            }
-                            
-                            # Apply party filter
-                            if filter_party == "All" or upload_entry["Party"] == filter_party:
-                                uploads.append(upload_entry)
-                except Exception as e:
-                    # Skip problematic entries
-                    continue
-            
-            # Sort uploads
-            if sort_by == "Upload Time (Newest)":
-                uploads = sorted(uploads, key=lambda x: x.get("Time", ""), reverse=True)
-            elif sort_by == "Upload Time (Oldest)":
-                uploads = sorted(uploads, key=lambda x: x.get("Time", ""))
-            elif sort_by == "File Size":
-                uploads = sorted(uploads, key=lambda x: x.get("SizeBytes", 0), reverse=True)
-            elif sort_by == "Name":
-                uploads = sorted(uploads, key=lambda x: x.get("Name", "").lower())
-            
-            # Apply limit
-            if show_limit != "All":
-                limit = int(show_limit.split()[-1])
-                uploads = uploads[:limit]
-            
-            # Display uploads summary
-            if uploads:
-                total_size = sum(upload["SizeBytes"] for upload in uploads)
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Showing", len(uploads))
-                col2.metric("Total Size", f"{total_size/1024/1024:.1f} MB" if total_size > 1024*1024 else f"{total_size/1024:.1f} KB")
-                col3.metric("Unique Sets", len(set(upload["Set"] for upload in uploads)))
-                
-                st.markdown("---")
-                
-                # Create styled upload cards
-                for upload in uploads:
-                    # Determine party badge class
-                    party_badge_class = "appellant-badge" if upload["Party"] == "Appellant" else \
-                                       "respondent-badge" if upload["Party"] == "Respondent" else "shared-badge"
-                    
-                    # Create card for each upload
-                    st.markdown(f"""
-                    <div style="background-color: white; border-radius: 6px; padding: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="font-weight: 500; color: #111927;">{upload["Name"]}</div>
-                            <div style="font-size: 12px; color: #64748b;">{upload["Time"]}</div>
-                        </div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Set:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Set"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Party:</span>
-                                <span class="badge {party_badge_class}">{upload["Party"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Type:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Type"]}</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 12px; color: #64748b;">Size:</span>
-                                <span style="font-size: 13px; font-weight: 500; color: #111927;"> {upload["Size"]}</span>
-                            </div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("No uploads match the current filters.")
 
 # Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):

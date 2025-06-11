@@ -664,6 +664,12 @@ def render_upload_page():
         st.subheader("⚡ Quick Upload - Just Drag & Drop")
         st.markdown("Upload hundreds of documents instantly. Names and organization are handled automatically.")
         
+        # Show what will happen
+        if not st.session_state.document_sets:
+            st.info("📁 A new document set will be created automatically when you upload files")
+        else:
+            st.info("📁 Files will be added to a new document set (or you can use Advanced Upload to choose an existing one)")
+        
         # Single large file uploader
         uploaded_files = st.file_uploader(
             "🎯 Drop all your files here",
@@ -673,13 +679,16 @@ def render_upload_page():
         )
         
         if uploaded_files:
-            # Show count and upload button
+            # Show what will be created
+            auto_set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            
+            # Show count and what will happen
             st.success(f"📁 {len(uploaded_files)} files ready to upload")
+            st.markdown(f"**Will be saved to:** `{auto_set_name}` (auto-created)")
             
             if st.button("🚀 Upload All Files", type="primary", use_container_width=True):
                 # Auto-create document set with timestamp
-                set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                set_id = add_document_set(set_name, "Mixed")
+                set_id = add_document_set(auto_set_name, "Mixed")
                 
                 # Progress bar
                 progress_bar = st.progress(0)
@@ -708,10 +717,16 @@ def render_upload_page():
                 # Done
                 progress_bar.empty()
                 status_text.empty()
-                st.success(f"✅ Done! Uploaded {success_count} documents to '{set_name}'")
+                st.success(f"✅ Done! Uploaded {success_count} documents to '{auto_set_name}'")
                 
                 if success_count < len(uploaded_files):
                     st.warning(f"⚠️ {len(uploaded_files) - success_count} files skipped (duplicates or errors)")
+                
+                # Show next steps
+                st.markdown("**Next steps:**")
+                st.markdown("- View your documents in the **Manage Document Sets** tab")
+                st.markdown("- Use **Advanced Upload** if you need to organize by party (Appellant/Respondent)")
+                st.markdown("- Check **Recent Uploads** to see all uploaded files")
     
     with tab2:
         # Advanced upload for users who want control

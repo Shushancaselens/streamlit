@@ -799,19 +799,46 @@ def render_upload_page():
         if not st.session_state.document_sets:
             st.info("No document sets exist yet. Use Quick Upload to create one.")
         else:
-            st.markdown(f"**{len(st.session_state.document_sets)} document sets found**")
+            st.markdown(f"**{len(st.session_state.document_sets)} document sets**")
             
             # Simple list of document sets
             for doc_set in st.session_state.document_sets:
-                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                # Count uploaded documents
+                uploaded_count = 0
+                for doc in doc_set["documents"]:
+                    file_key = f"{doc_set['id']}-{doc['id']}"
+                    if file_key in st.session_state.uploaded_files:
+                        uploaded_count += 1
+                
+                total_docs = len(doc_set["documents"])
+                
+                with st.expander(f"{doc_set['name']} - {uploaded_count}/{total_docs} uploaded"):
                     if doc_set["documents"]:
-                        # Simple table of documents
+                        # Group documents by upload status
+                        uploaded_docs = []
+                        missing_docs = []
+                        
                         for doc in doc_set["documents"]:
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            status = "✓" if file_key in st.session_state.uploaded_files else "✗"
-                            st.write(f"{status} {doc['name']} ({doc['party']})")
+                            if file_key in st.session_state.uploaded_files:
+                                uploaded_docs.append(doc)
+                            else:
+                                missing_docs.append(doc)
+                        
+                        # Show uploaded documents
+                        if uploaded_docs:
+                            st.markdown("**✅ Uploaded:**")
+                            for doc in uploaded_docs:
+                                st.markdown(f"• {doc['name']}")
+                        
+                        # Show missing documents
+                        if missing_docs:
+                            st.markdown("**📤 Not uploaded yet:**")
+                            for doc in missing_docs:
+                                st.markdown(f"• {doc['name']}")
+                                
                     else:
-                        st.write("No documents in this set")
+                        st.markdown("*No documents in this set*")
 
 # Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):

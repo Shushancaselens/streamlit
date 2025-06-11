@@ -793,15 +793,13 @@ def render_upload_page():
                             st.error("Please provide a document name")
     
     with tab3:
-        # Simple document set management - MVP version
-        st.subheader("Manage Document Sets")
+        # User-friendly document set management
+        st.subheader("Your Documents")
         
         if not st.session_state.document_sets:
-            st.info("No document sets exist yet. Use Quick Upload to create one.")
+            st.info("No documents yet. Use Quick Upload to get started.")
         else:
-            st.markdown(f"**{len(st.session_state.document_sets)} document sets**")
-            
-            # Simple list of document sets
+            # Simple, actionable view
             for doc_set in st.session_state.document_sets:
                 # Count uploaded documents
                 uploaded_count = 0
@@ -811,34 +809,45 @@ def render_upload_page():
                         uploaded_count += 1
                 
                 total_docs = len(doc_set["documents"])
+                is_complete = uploaded_count == total_docs
                 
-                with st.expander(f"{doc_set['name']} - {uploaded_count}/{total_docs} uploaded"):
-                    if doc_set["documents"]:
-                        # Group documents by upload status
-                        uploaded_docs = []
+                # Card-style layout for each set
+                with st.container():
+                    col1, col2 = st.columns([3, 1])
+                    
+                    with col1:
+                        if is_complete:
+                            st.success(f"✅ **{doc_set['name']}** - All {total_docs} documents uploaded")
+                        else:
+                            st.warning(f"📤 **{doc_set['name']}** - {uploaded_count}/{total_docs} uploaded")
+                    
+                    with col2:
+                        if not is_complete:
+                            if st.button("Upload Missing", key=f"upload_{doc_set['id']}", type="primary"):
+                                st.session_state.selected_set = doc_set["id"]
+                                st.session_state.view = "Upload"
+                                st.rerun()
+                        else:
+                            if st.button("Add More", key=f"add_{doc_set['id']}"):
+                                st.session_state.selected_set = doc_set["id"]  
+                                st.session_state.view = "Upload"
+                                st.rerun()
+                    
+                    # Show what's missing (only if incomplete)
+                    if not is_complete and total_docs > 0:
                         missing_docs = []
-                        
                         for doc in doc_set["documents"]:
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            if file_key in st.session_state.uploaded_files:
-                                uploaded_docs.append(doc)
-                            else:
-                                missing_docs.append(doc)
+                            if file_key not in st.session_state.uploaded_files:
+                                missing_docs.append(doc['name'])
                         
-                        # Show uploaded documents
-                        if uploaded_docs:
-                            st.markdown("**✅ Uploaded:**")
-                            for doc in uploaded_docs:
-                                st.markdown(f"• {doc['name']}")
-                        
-                        # Show missing documents
                         if missing_docs:
-                            st.markdown("**📤 Not uploaded yet:**")
-                            for doc in missing_docs:
-                                st.markdown(f"• {doc['name']}")
-                                
-                    else:
-                        st.markdown("*No documents in this set*")
+                            missing_text = ", ".join(missing_docs[:3])
+                            if len(missing_docs) > 3:
+                                missing_text += f" and {len(missing_docs) - 3} more"
+                            st.caption(f"Missing: {missing_text}")
+                    
+                    st.markdown("---")
 
 # Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):

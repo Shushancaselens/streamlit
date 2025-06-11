@@ -870,7 +870,7 @@ def render_upload_page():
                             st.dataframe(df, use_container_width=True, height=None)
                             
                             # Action buttons
-                            col1, col2, col3, col4 = st.columns(4)
+                            col1, col2, col3 = st.columns(3)
                             
                             with col1:
                                 # Button to add documents to this set
@@ -896,14 +896,6 @@ def render_upload_page():
                                     mime='text/csv',
                                     key=f"export_{doc_set['id']}"
                                 )
-                            
-                            with col4:
-                                # View details button
-                                if st.button(f"View Details", key=f"view_{doc_set['id']}"):
-                                    if st.session_state.viewing_set == doc_set["id"]:
-                                        st.session_state.viewing_set = None  # Toggle off
-                                    else:
-                                        st.session_state.viewing_set = doc_set["id"]  # Toggle on
                             
                             # Show organization interface if active
                             if st.session_state.get(f"organizing_{doc_set['id']}", False):
@@ -1009,31 +1001,6 @@ def render_upload_page():
                                         
                                         st.success("✅ Created separate document sets by party!")
                                         st.rerun()
-                            
-                            # If viewing this set, show additional details
-                            if st.session_state.get('viewing_set') == doc_set["id"]:
-                                st.markdown("""
-                                <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px solid #e2e8f0;">
-                                    <h4 style="margin-top: 0; color: #0f172a;">Document Set Details</h4>
-                                """, unsafe_allow_html=True)
-                                
-                                # Show document stats
-                                total_docs = len(doc_set["documents"])
-                                uploaded_docs = 0
-                                try:
-                                    for doc in doc_set["documents"]:
-                                        file_key = f"{doc_set['id']}-{doc['id']}"
-                                        if file_key in st.session_state.uploaded_files:
-                                            uploaded_docs += 1
-                                except Exception:
-                                    uploaded_docs = 0
-                                
-                                col1, col2, col3 = st.columns(3)
-                                col1.metric("Total Documents", total_docs)
-                                col2.metric("Uploaded", uploaded_docs)
-                                col3.metric("Completion", f"{int(uploaded_docs/total_docs*100)}%" if total_docs > 0 else "0%")
-                                
-                                st.markdown("</div>", unsafe_allow_html=True)
                     else:
                         # Empty state for documents
                         st.markdown("""

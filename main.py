@@ -855,19 +855,20 @@ def render_upload_page():
             # Apply search filter
             if search_term:
                 search_lower = search_term.lower()
-                filtered_sets = []
-                for ds in st.session_state.document_sets:
+                search_filtered = []
+                for ds in filtered_sets:
                     # Search in set name, category
                     if (search_lower in ds['name'].lower() or 
                         search_lower in ds['category'].lower()):
-                        if ds not in filtered_sets:
-                            filtered_sets.append(ds)
+                        if ds not in search_filtered:
+                            search_filtered.append(ds)
                     # Search in document names
                     for doc in ds['documents']:
                         if search_lower in doc['name'].lower():
-                            if ds not in filtered_sets:
-                                filtered_sets.append(ds)
+                            if ds not in search_filtered:
+                                search_filtered.append(ds)
                             break
+                filtered_sets = search_filtered
             
             # Apply sorting
             if sort_by == "Name (A-Z)":
@@ -887,39 +888,35 @@ def render_upload_page():
             
             if not filtered_sets:
                 st.warning(f"No document sets found matching your criteria")
-                return
-            
-            # Summary stats for filtered results
-            total_docs = sum(len(ds["documents"]) for ds in filtered_sets)
-            total_uploaded = 0
-            try:
-                for ds in filtered_sets:
-                    for doc in ds["documents"]:
-                        file_key = f"{ds['id']}-{doc['id']}"
-                        if file_key in st.session_state.uploaded_files:
-                            total_uploaded += 1
-            except Exception:
-                total_uploaded = 0
-            
-            # Enhanced metrics
-            col1, col2, col3, col4 = st.columns(4)
-            col1.metric("Document Sets", len(filtered_sets))
-            col2.metric("Total Documents", total_docs)
-            col3.metric("Uploaded Files", total_uploaded)
-            col4.metric("Upload Progress", f"{int(total_uploaded/total_docs*100) if total_docs > 0 else 0}%")
-            
-            st.markdown("---")
-            
-            # Render based on view mode
-            if view_mode == "Card View":
-                # Card-based layout
-                render_card_view(filtered_sets)
-            elif view_mode == "Table View":
-                # Table-based layout
-                render_table_view(filtered_sets)
             else:
-                # List-based layout (enhanced version of current)
-                render_list_view(filtered_sets)
+                # Summary stats for filtered results
+                total_docs = sum(len(ds["documents"]) for ds in filtered_sets)
+                total_uploaded = 0
+                try:
+                    for ds in filtered_sets:
+                        for doc in ds["documents"]:
+                            file_key = f"{ds['id']}-{doc['id']}"
+                            if file_key in st.session_state.uploaded_files:
+                                total_uploaded += 1
+                except Exception:
+                    total_uploaded = 0
+                
+                # Enhanced metrics
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Document Sets", len(filtered_sets))
+                col2.metric("Total Documents", total_docs)
+                col3.metric("Uploaded Files", total_uploaded)
+                col4.metric("Upload Progress", f"{int(total_uploaded/total_docs*100) if total_docs > 0 else 0}%")
+                
+                st.markdown("---")
+                
+                # Render based on view mode
+                if view_mode == "Card View":
+                    render_card_view(filtered_sets)
+                elif view_mode == "Table View":
+                    render_table_view(filtered_sets)
+                else:
+                    render_list_view(filtered_sets)
 
 def render_card_view(document_sets):
     """Render document sets as cards"""
@@ -1659,5 +1656,3 @@ def render_facts_page(facts_data, document_sets, timeline_data, args_data):
 # Run the main app
 if __name__ == "__main__":
     main()
-
-

@@ -813,9 +813,15 @@ def render_upload_page():
             
             # Summary stats
             total_docs = sum(len(ds["documents"]) for ds in st.session_state.document_sets)
-            total_uploaded = sum(1 for ds in st.session_state.document_sets 
-                               for doc in ds["documents"] 
-                               if f"{ds['id']}-{doc['id']}" in st.session_state.uploaded_files)
+            total_uploaded = 0
+            try:
+                for ds in st.session_state.document_sets:
+                    for doc in ds["documents"]:
+                        file_key = f"{ds['id']}-{doc['id']}"
+                        if file_key in st.session_state.uploaded_files:
+                            total_uploaded += 1
+            except Exception:
+                total_uploaded = 0
             
             col1, col2, col3 = st.columns(3)
             col1.metric("Total Sets", len(st.session_state.document_sets))
@@ -855,8 +861,11 @@ def render_upload_page():
                             
                             # Get file size if available
                             file_size = ""
-                            if file_key in st.session_state.uploaded_files:
-                                file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
+                            try:
+                                if file_key in st.session_state.uploaded_files:
+                                    file_size = f"{st.session_state.uploaded_files[file_key]['size']/1024:.1f} KB"
+                            except (KeyError, TypeError):
+                                file_size = "Unknown"
                             
                             doc_data.append({
                                 "ID": doc["id"],
@@ -910,8 +919,14 @@ def render_upload_page():
                                 
                                 # Show document stats
                                 total_docs = len(doc_set["documents"])
-                                uploaded_docs = sum(1 for doc in doc_set["documents"] 
-                                                   if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
+                                uploaded_docs = 0
+                                try:
+                                    for doc in doc_set["documents"]:
+                                        file_key = f"{doc_set['id']}-{doc['id']}"
+                                        if file_key in st.session_state.uploaded_files:
+                                            uploaded_docs += 1
+                                except Exception:
+                                    uploaded_docs = 0
                                 
                                 col1, col2, col3 = st.columns(3)
                                 col1.metric("Total Documents", total_docs)
@@ -959,32 +974,44 @@ def render_upload_page():
             # Get list of uploaded files
             uploads = []
             for file_key, file_info in st.session_state.uploaded_files.items():
-                set_id, doc_id = file_key.split("-")
-                
-                # Find document set and document
-                doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
-                
-                if doc_set:
-                    doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
+                try:
+                    # Safely split the file key
+                    if "-" not in file_key:
+                        continue  # Skip invalid keys
                     
-                    if doc:
-                        # Format upload time nicely
-                        upload_time = file_info.get("upload_time", "Just now")
+                    parts = file_key.split("-", 1)  # Split only on first dash
+                    if len(parts) != 2:
+                        continue  # Skip invalid keys
                         
-                        upload_entry = {
-                            "Name": doc["name"],
-                            "Set": doc_set["name"],
-                            "Party": doc["party"],
-                            "Type": file_info.get("type", "Unknown"),
-                            "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
-                            "SizeBytes": file_info.get('size', 0),
-                            "Time": upload_time,
-                            "Filename": file_info.get("filename", "")
-                        }
+                    set_id, doc_id = parts
+                    
+                    # Find document set and document
+                    doc_set = next((ds for ds in st.session_state.document_sets if ds["id"] == set_id), None)
+                    
+                    if doc_set:
+                        doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
                         
-                        # Apply party filter
-                        if filter_party == "All" or upload_entry["Party"] == filter_party:
-                            uploads.append(upload_entry)
+                        if doc:
+                            # Format upload time nicely
+                            upload_time = file_info.get("upload_time", "Just now")
+                            
+                            upload_entry = {
+                                "Name": doc["name"],
+                                "Set": doc_set["name"],
+                                "Party": doc["party"],
+                                "Type": file_info.get("type", "Unknown"),
+                                "Size": f"{file_info.get('size', 0)/1024:.1f} KB",
+                                "SizeBytes": file_info.get('size', 0),
+                                "Time": upload_time,
+                                "Filename": file_info.get("filename", "")
+                            }
+                            
+                            # Apply party filter
+                            if filter_party == "All" or upload_entry["Party"] == filter_party:
+                                uploads.append(upload_entry)
+                except Exception as e:
+                    # Skip problematic entries
+                    continue
             
             # Sort uploads
             if sort_by == "Upload Time (Newest)":

@@ -902,11 +902,11 @@ def render_upload_page():
                                 st.markdown("---")
                                 st.markdown("**📋 Organize Documents**")
                                 
-                                # Smart bulk assignment tools
-                                st.markdown("**🔍 Smart Bulk Assignment:**")
+                                # Smart bulk assignment tools using tabs
+                                org_tab1, org_tab2, org_tab3, org_tab4 = st.tabs(["📝 Filename Pattern", "📄 File Type", "🎯 All Remaining", "✏️ Manual Select"])
                                 
-                                # Method 1: Assign by filename pattern
-                                with st.expander("📝 Assign by Filename Pattern"):
+                                with org_tab1:
+                                    st.markdown("**Assign by Filename Pattern**")
                                     col1, col2 = st.columns(2)
                                     with col1:
                                         pattern = st.text_input("Files containing:", placeholder="e.g., appellant, claimant, plaintiff", key=f"pattern_{doc_set['id']}")
@@ -924,8 +924,8 @@ def render_upload_page():
                                         st.success(f"✅ Assigned {len(matching_docs)} documents as {target_party}")
                                         st.rerun()
                                 
-                                # Method 2: Assign by file type
-                                with st.expander("📄 Assign by File Type"):
+                                with org_tab2:
+                                    st.markdown("**Assign by File Type**")
                                     # Get file types from uploaded files
                                     file_types = set()
                                     for doc in doc_set["documents"]:
@@ -962,9 +962,11 @@ def render_upload_page():
                                                         count += 1
                                             st.success(f"✅ Assigned {count} {selected_type} files as {type_party}")
                                             st.rerun()
+                                    else:
+                                        st.info("No file type information available")
                                 
-                                # Method 3: Assign all remaining
-                                with st.expander("🎯 Assign All Remaining Documents"):
+                                with org_tab3:
+                                    st.markdown("**Assign All Remaining Documents**")
                                     mixed_docs = [doc for doc in doc_set["documents"] if doc["party"] == "Mixed"]
                                     if mixed_docs:
                                         st.write(f"📊 {len(mixed_docs)} documents still marked as 'Mixed'")
@@ -980,9 +982,9 @@ def render_upload_page():
                                     else:
                                         st.info("✅ All documents have been assigned to parties")
                                 
-                                # Method 4: Manual selection (for small adjustments)
-                                with st.expander("✏️ Manual Selection (for small adjustments)"):
-                                    st.markdown("*Use this only for final adjustments of specific documents*")
+                                with org_tab4:
+                                    st.markdown("**Manual Selection (for small adjustments)**")
+                                    st.caption("Use this only for final adjustments of specific documents")
                                     
                                     # Search/filter first
                                     search_docs = st.text_input("Search documents:", placeholder="Filter documents first...", key=f"search_docs_{doc_set['id']}")
@@ -1024,9 +1026,10 @@ def render_upload_page():
                                                     st.success(f"Set {len(selected_docs)} documents as Shared")
                                                     st.rerun()
                                     else:
-                                        st.warning(f"⚠️ Too many documents ({len(display_docs)}) for manual selection. Use pattern-based assignment above or filter further.")
+                                        st.warning(f"⚠️ Too many documents ({len(display_docs)}) for manual selection. Use pattern-based assignment or filter further.")
                                 
                                 # Show current party distribution
+                                st.markdown("---")
                                 st.markdown("**📊 Current Distribution:**")
                                 party_counts = {}
                                 for doc in doc_set["documents"]:

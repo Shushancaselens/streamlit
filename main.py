@@ -657,22 +657,22 @@ def render_upload_page():
     st.title("Document Management")
     
     # Create tabs for upload functionality
-    tab1, tab2, tab3, tab4 = st.tabs(["⚡ Quick Upload", "📄 Advanced Upload", "📁 Manage Document Sets", "🕒 Recent Uploads"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Quick Upload", "Advanced Upload", "Manage Document Sets", "Recent Uploads"])
     
     with tab1:
         # Super simple bulk upload - just drag and drop
-        st.subheader("⚡ Quick Upload - Just Drag & Drop")
+        st.subheader("Quick Upload - Just Drag & Drop")
         st.markdown("Upload hundreds of documents instantly. Names and organization are handled automatically.")
         
         # Show what will happen
         if not st.session_state.document_sets:
-            st.info("📁 A new document set will be created automatically when you upload files")
+            st.info("A new document set will be created automatically when you upload files")
         else:
-            st.info("📁 Files will be added to a new document set (or you can use Advanced Upload to choose an existing one)")
+            st.info("Files will be added to a new document set (or you can use Advanced Upload to choose an existing one)")
         
         # Single large file uploader
         uploaded_files = st.file_uploader(
-            "🎯 Drop all your files here",
+            "Drop all your files here",
             type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
             accept_multiple_files=True,
             help="Select all files at once - everything else is automatic"
@@ -683,10 +683,10 @@ def render_upload_page():
             auto_set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
             
             # Show count and what will happen
-            st.success(f"📁 {len(uploaded_files)} files ready to upload")
+            st.success(f"{len(uploaded_files)} files ready to upload")
             st.markdown(f"**Will be saved to:** `{auto_set_name}` (auto-created)")
             
-            if st.button("🚀 Upload All Files", type="primary", use_container_width=True):
+            if st.button("Upload All Files", type="primary", use_container_width=True):
                 # Auto-create document set with timestamp
                 set_id = add_document_set(auto_set_name, "Mixed")
                 
@@ -717,10 +717,10 @@ def render_upload_page():
                 # Done
                 progress_bar.empty()
                 status_text.empty()
-                st.success(f"✅ Done! Uploaded {success_count} documents to '{auto_set_name}'")
+                st.success(f"Done! Uploaded {success_count} documents to '{auto_set_name}'")
                 
                 if success_count < len(uploaded_files):
-                    st.warning(f"⚠️ {len(uploaded_files) - success_count} files skipped (duplicates or errors)")
+                    st.warning(f"{len(uploaded_files) - success_count} files skipped (duplicates or errors)")
                 
                 # Show next steps
                 st.markdown("**Next steps:**")
@@ -730,7 +730,7 @@ def render_upload_page():
     
     with tab2:
         # Advanced upload for users who want control
-        st.subheader("📄 Advanced Upload")
+        st.subheader("Advanced Upload")
         st.markdown("For when you need specific organization or metadata")
         
         # Document set selection
@@ -785,7 +785,7 @@ def render_upload_page():
                             doc_id = add_document_to_set(doc_name, doc_party, selected_set["id"])
                             if doc_id:
                                 if save_uploaded_file(uploaded_file, selected_set["id"], doc_id):
-                                    st.success(f"✅ Uploaded: {doc_name}")
+                                    st.success(f"Uploaded: {doc_name}")
                                 else:
                                     st.error("Error saving file")
                             else:
@@ -795,19 +795,19 @@ def render_upload_page():
     
     with tab3:
         # Document set management with improvements
-        st.subheader("📁 Manage Document Sets")
+        st.subheader("Manage Document Sets")
         
         if not st.session_state.document_sets:
             # Empty state message
             st.markdown("""
             <div style="text-align: center; padding: 30px; background-color: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
                 <p style="margin: 0; color: #64748b; font-size: 16px;">No document sets exist yet</p>
-                <p style="margin: 5px 0 0 0; color: #94a3b8;">Use Bulk Upload to create document sets automatically</p>
+                <p style="margin: 5px 0 0 0; color: #94a3b8;">Use Quick Upload to create document sets automatically</p>
             </div>
             """, unsafe_allow_html=True)
         else:
             # Search for document sets
-            search_term = st.text_input("🔍 Search document sets", placeholder="Type to filter document sets...", 
+            search_term = st.text_input("Search document sets", placeholder="Type to filter document sets...", 
                                      help="Filter document sets by name or category")
             
             # Filter document sets if search is provided
@@ -866,7 +866,7 @@ def render_upload_page():
                         for doc in doc_set["documents"]:
                             # Check if the file is in our uploaded files
                             file_key = f"{doc_set['id']}-{doc['id']}"
-                            file_status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
+                            file_status = "Uploaded" if file_key in st.session_state.uploaded_files else "Missing"
                             
                             # Get file size if available
                             file_size = ""
@@ -894,7 +894,7 @@ def render_upload_page():
                             
                             with col1:
                                 # Button to add documents to this set
-                                if st.button(f"➕ Add Document", key=f"add_to_{doc_set['id']}"):
+                                if st.button(f"Add Document", key=f"add_to_{doc_set['id']}"):
                                     st.session_state.selected_set = doc_set["id"]
                                     st.session_state.creating_set = False
                                     st.session_state.view = "Upload"
@@ -904,7 +904,7 @@ def render_upload_page():
                                 # Export to CSV button
                                 csv = df.to_csv(index=False).encode('utf-8')
                                 st.download_button(
-                                    label="📥 Export CSV",
+                                    label="Export CSV",
                                     data=csv,
                                     file_name=f"{doc_set['name']}_documents.csv",
                                     mime='text/csv',
@@ -913,7 +913,7 @@ def render_upload_page():
                             
                             with col3:
                                 # View details button
-                                if st.button(f"🔍 View Details", key=f"view_{doc_set['id']}"):
+                                if st.button(f"View Details", key=f"view_{doc_set['id']}"):
                                     if st.session_state.viewing_set == doc_set["id"]:
                                         st.session_state.viewing_set = None  # Toggle off
                                     else:
@@ -960,7 +960,7 @@ def render_upload_page():
     
     with tab4:
         # Recent uploads tab with enhanced features
-        st.subheader("🕒 Recent Uploads")
+        st.subheader("Recent Uploads")
         
         if not st.session_state.uploaded_files:
             # Empty state message

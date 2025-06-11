@@ -902,142 +902,103 @@ def render_upload_page():
                                 st.markdown("---")
                                 st.markdown("**📋 Organize Documents**")
                                 
-                                # Smart bulk assignment tools using tabs
-                                org_tab1, org_tab2, org_tab3, org_tab4 = st.tabs(["📝 Filename Pattern", "📄 File Type", "🎯 All Remaining", "✏️ Manual Select"])
+                                # Simple bulk assignment
+                                st.markdown("**Quick Assignment:**")
                                 
-                                with org_tab1:
-                                    st.markdown("**Assign by Filename Pattern**")
-                                    col1, col2 = st.columns(2)
-                                    with col1:
-                                        pattern = st.text_input("Files containing:", placeholder="e.g., appellant, claimant, plaintiff", key=f"pattern_{doc_set['id']}")
-                                        if pattern:
-                                            matching_docs = [doc for doc in doc_set["documents"] if pattern.lower() in doc["name"].lower()]
-                                            st.write(f"Found {len(matching_docs)} documents matching '{pattern}'")
-                                    
-                                    with col2:
-                                        target_party = st.selectbox("Assign as:", ["Appellant", "Respondent", "Shared"], key=f"pattern_party_{doc_set['id']}")
-                                    
-                                    if pattern and st.button("🎯 Assign Matching Documents", key=f"assign_pattern_{doc_set['id']}"):
-                                        matching_docs = [doc for doc in doc_set["documents"] if pattern.lower() in doc["name"].lower()]
-                                        for doc in matching_docs:
-                                            doc["party"] = target_party
-                                        st.success(f"✅ Assigned {len(matching_docs)} documents as {target_party}")
-                                        st.rerun()
-                                
-                                with org_tab2:
-                                    st.markdown("**Assign by File Type**")
-                                    # Get file types from uploaded files
-                                    file_types = set()
-                                    for doc in doc_set["documents"]:
-                                        file_key = f"{doc_set['id']}-{doc['id']}"
-                                        if file_key in st.session_state.uploaded_files:
-                                            file_type = st.session_state.uploaded_files[file_key].get("type", "unknown")
-                                            file_types.add(file_type.split("/")[-1] if "/" in file_type else file_type)
-                                    
-                                    if file_types:
-                                        col1, col2 = st.columns(2)
-                                        with col1:
-                                            selected_type = st.selectbox("Select file type:", list(file_types), key=f"type_{doc_set['id']}")
-                                            if selected_type:
-                                                type_docs = []
-                                                for doc in doc_set["documents"]:
-                                                    file_key = f"{doc_set['id']}-{doc['id']}"
-                                                    if file_key in st.session_state.uploaded_files:
-                                                        file_type = st.session_state.uploaded_files[file_key].get("type", "")
-                                                        if selected_type in file_type:
-                                                            type_docs.append(doc)
-                                                st.write(f"Found {len(type_docs)} {selected_type} files")
-                                        
-                                        with col2:
-                                            type_party = st.selectbox("Assign as:", ["Appellant", "Respondent", "Shared"], key=f"type_party_{doc_set['id']}")
-                                        
-                                        if st.button("📄 Assign by File Type", key=f"assign_type_{doc_set['id']}"):
-                                            count = 0
-                                            for doc in doc_set["documents"]:
-                                                file_key = f"{doc_set['id']}-{doc['id']}"
-                                                if file_key in st.session_state.uploaded_files:
-                                                    file_type = st.session_state.uploaded_files[file_key].get("type", "")
-                                                    if selected_type in file_type:
-                                                        doc["party"] = type_party
-                                                        count += 1
-                                            st.success(f"✅ Assigned {count} {selected_type} files as {type_party}")
-                                            st.rerun()
-                                    else:
-                                        st.info("No file type information available")
-                                
-                                with org_tab3:
-                                    st.markdown("**Assign All Remaining Documents**")
-                                    mixed_docs = [doc for doc in doc_set["documents"] if doc["party"] == "Mixed"]
-                                    if mixed_docs:
-                                        st.write(f"📊 {len(mixed_docs)} documents still marked as 'Mixed'")
-                                        col1, col2 = st.columns(2)
-                                        with col1:
-                                            remaining_party = st.selectbox("Assign all remaining as:", ["Appellant", "Respondent", "Shared"], key=f"remaining_party_{doc_set['id']}")
-                                        with col2:
-                                            if st.button("🎯 Assign All Remaining", key=f"assign_remaining_{doc_set['id']}"):
-                                                for doc in mixed_docs:
-                                                    doc["party"] = remaining_party
-                                                st.success(f"✅ Assigned {len(mixed_docs)} remaining documents as {remaining_party}")
-                                                st.rerun()
-                                    else:
-                                        st.info("✅ All documents have been assigned to parties")
-                                
-                                with org_tab4:
-                                    st.markdown("**Manual Selection (for small adjustments)**")
-                                    st.caption("Use this only for final adjustments of specific documents")
-                                    
-                                    # Search/filter first
-                                    search_docs = st.text_input("Search documents:", placeholder="Filter documents first...", key=f"search_docs_{doc_set['id']}")
-                                    
-                                    # Show filtered documents
-                                    display_docs = doc_set["documents"]
-                                    if search_docs:
-                                        display_docs = [doc for doc in doc_set["documents"] if search_docs.lower() in doc["name"].lower()]
-                                        st.write(f"Showing {len(display_docs)} filtered documents")
-                                    
-                                    # Only show checkboxes if reasonable number
-                                    if len(display_docs) <= 50:
-                                        selected_docs = []
-                                        for doc in display_docs:
-                                            if st.checkbox(f"{doc['name']} (currently: {doc['party']})", key=f"manual_doc_{doc_set['id']}_{doc['id']}"):
-                                                selected_docs.append(doc)
-                                        
-                                        if selected_docs:
-                                            st.write(f"Selected {len(selected_docs)} documents")
-                                            col1, col2, col3 = st.columns(3)
-                                            with col1:
-                                                if st.button("➡️ Set as Appellant", key=f"manual_appellant_{doc_set['id']}"):
-                                                    for doc in selected_docs:
-                                                        doc["party"] = "Appellant"
-                                                    st.success(f"Set {len(selected_docs)} documents as Appellant")
-                                                    st.rerun()
-                                            
-                                            with col2:
-                                                if st.button("➡️ Set as Respondent", key=f"manual_respondent_{doc_set['id']}"):
-                                                    for doc in selected_docs:
-                                                        doc["party"] = "Respondent"
-                                                    st.success(f"Set {len(selected_docs)} documents as Respondent")
-                                                    st.rerun()
-                                            
-                                            with col3:
-                                                if st.button("➡️ Set as Shared", key=f"manual_shared_{doc_set['id']}"):
-                                                    for doc in selected_docs:
-                                                        doc["party"] = "Shared"
-                                                    st.success(f"Set {len(selected_docs)} documents as Shared")
-                                                    st.rerun()
-                                    else:
-                                        st.warning(f"⚠️ Too many documents ({len(display_docs)}) for manual selection. Use pattern-based assignment or filter further.")
-                                
-                                # Show current party distribution
-                                st.markdown("---")
-                                st.markdown("**📊 Current Distribution:**")
+                                # Show current counts
                                 party_counts = {}
                                 for doc in doc_set["documents"]:
                                     party_counts[doc["party"]] = party_counts.get(doc["party"], 0) + 1
                                 
-                                cols = st.columns(len(party_counts))
-                                for i, (party, count) in enumerate(party_counts.items()):
-                                    cols[i].metric(party, count)
+                                col1, col2, col3 = st.columns(3)
+                                col1.metric("Mixed", party_counts.get("Mixed", 0))
+                                col2.metric("Appellant", party_counts.get("Appellant", 0))
+                                col3.metric("Respondent", party_counts.get("Respondent", 0))
+                                
+                                # Simple assignment options
+                                mixed_docs = [doc for doc in doc_set["documents"] if doc["party"] == "Mixed"]
+                                
+                                if mixed_docs:
+                                    st.markdown(f"**{len(mixed_docs)} documents need to be assigned:**")
+                                    
+                                    col1, col2 = st.columns(2)
+                                    with col1:
+                                        if st.button(f"📋 All → Appellant ({len(mixed_docs)} docs)", key=f"all_appellant_{doc_set['id']}", use_container_width=True):
+                                            for doc in mixed_docs:
+                                                doc["party"] = "Appellant"
+                                            st.success(f"✅ Assigned {len(mixed_docs)} documents to Appellant")
+                                            st.rerun()
+                                    
+                                    with col2:
+                                        if st.button(f"📋 All → Respondent ({len(mixed_docs)} docs)", key=f"all_respondent_{doc_set['id']}", use_container_width=True):
+                                            for doc in mixed_docs:
+                                                doc["party"] = "Respondent"
+                                            st.success(f"✅ Assigned {len(mixed_docs)} documents to Respondent")
+                                            st.rerun()
+                                    
+                                    # Option to assign by filename keywords
+                                    st.markdown("**Or assign by filename:**")
+                                    search_term = st.text_input("Documents containing:", placeholder="e.g., appellant, respondent, plaintiff", key=f"search_{doc_set['id']}")
+                                    
+                                    if search_term:
+                                        matching = [doc for doc in mixed_docs if search_term.lower() in doc["name"].lower()]
+                                        if matching:
+                                            st.write(f"Found {len(matching)} documents with '{search_term}'")
+                                            col1, col2 = st.columns(2)
+                                            with col1:
+                                                if st.button(f"→ Appellant ({len(matching)})", key=f"search_appellant_{doc_set['id']}"):
+                                                    for doc in matching:
+                                                        doc["party"] = "Appellant"
+                                                    st.success(f"✅ Assigned {len(matching)} documents to Appellant")
+                                                    st.rerun()
+                                            with col2:
+                                                if st.button(f"→ Respondent ({len(matching)})", key=f"search_respondent_{doc_set['id']}"):
+                                                    for doc in matching:
+                                                        doc["party"] = "Respondent" 
+                                                    st.success(f"✅ Assigned {len(matching)} documents to Respondent")
+                                                    st.rerun()
+                                        else:
+                                            st.write(f"No documents found with '{search_term}'")
+                                else:
+                                    st.success("✅ All documents have been assigned!")
+                                
+                                # Split into separate sets option
+                                appellant_docs = [d for d in doc_set["documents"] if d["party"] == "Appellant"]
+                                respondent_docs = [d for d in doc_set["documents"] if d["party"] == "Respondent"]
+                                
+                                if appellant_docs and respondent_docs:
+                                    st.markdown("---")
+                                    st.markdown("**🔄 Create Separate Document Sets**")
+                                    st.write(f"Appellant: {len(appellant_docs)} docs | Respondent: {len(respondent_docs)} docs")
+                                    
+                                    if st.button("🔄 Split into Separate Sets", key=f"split_{doc_set['id']}", use_container_width=True):
+                                        # Create appellant set
+                                        app_set_id = add_document_set(f"{doc_set['name']} - Appellant", "Appellant")
+                                        app_set = next((ds for ds in st.session_state.document_sets if ds["id"] == app_set_id), None)
+                                        if app_set:
+                                            app_set["documents"] = appellant_docs.copy()
+                                        
+                                        # Create respondent set  
+                                        resp_set_id = add_document_set(f"{doc_set['name']} - Respondent", "Respondent")
+                                        resp_set = next((ds for ds in st.session_state.document_sets if ds["id"] == resp_set_id), None)
+                                        if resp_set:
+                                            resp_set["documents"] = respondent_docs.copy()
+                                        
+                                        # Copy file references
+                                        for doc in appellant_docs + respondent_docs:
+                                            old_key = f"{doc_set['id']}-{doc['id']}"
+                                            if old_key in st.session_state.uploaded_files:
+                                                new_set_id = app_set_id if doc["party"] == "Appellant" else resp_set_id
+                                                new_key = f"{new_set_id}-{doc['id']}"
+                                                st.session_state.uploaded_files[new_key] = st.session_state.uploaded_files[old_key]
+                                        
+                                        # Keep only remaining docs in original set
+                                        remaining = [d for d in doc_set["documents"] if d["party"] not in ["Appellant", "Respondent"]]
+                                        doc_set["documents"] = remaining
+                                        doc_set["name"] = f"{doc_set['name']} - Remaining"
+                                        
+                                        st.success("✅ Created separate document sets!")
+                                        st.rerun()
                                 
                                 # Quick rename tool
                                 st.markdown("**Quick Document Rename:**")

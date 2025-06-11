@@ -869,89 +869,8 @@ def render_upload_page():
                             df = pd.DataFrame(doc_data)
                             st.dataframe(df, use_container_width=True, height=None)
                             
-                            # Show bulk actions for organizing documents
-                            if doc_set["party"] == "Mixed" and len(doc_set["documents"]) > 1:
-                                st.markdown("**📋 Bulk Organization Tools**")
-                                col1, col2 = st.columns(2)
-                                
-                                with col1:
-                                    if st.button(f"📋 Organize by Party", key=f"organize_{doc_set['id']}"):
-                                        st.session_state[f"organizing_{doc_set['id']}"] = True
-                                        st.rerun()
-                                
-                                with col2:
-                                    if st.button(f"✏️ Edit Document Names", key=f"edit_names_{doc_set['id']}"):
-                                        st.session_state[f"editing_names_{doc_set['id']}"] = True
-                                        st.rerun()
-                                
-                                # Show organization interface
-                                if st.session_state.get(f"organizing_{doc_set['id']}", False):
-                                    st.markdown("**Organize Documents by Party**")
-                                    st.markdown("Select documents and assign them to Appellant or Respondent:")
-                                    
-                                    # Create checkboxes for each document
-                                    selected_docs = []
-                                    for i, doc in enumerate(doc_set["documents"]):
-                                        if st.checkbox(f"{doc['name']}", key=f"org_doc_{doc_set['id']}_{doc['id']}"):
-                                            selected_docs.append(doc)
-                                    
-                                    if selected_docs:
-                                        col1, col2, col3 = st.columns(3)
-                                        with col1:
-                                            if st.button("➡️ Set as Appellant", key=f"set_appellant_{doc_set['id']}"):
-                                                for doc in selected_docs:
-                                                    doc["party"] = "Appellant"
-                                                st.success(f"Set {len(selected_docs)} documents as Appellant")
-                                                st.session_state[f"organizing_{doc_set['id']}"] = False
-                                                st.rerun()
-                                        
-                                        with col2:
-                                            if st.button("➡️ Set as Respondent", key=f"set_respondent_{doc_set['id']}"):
-                                                for doc in selected_docs:
-                                                    doc["party"] = "Respondent"
-                                                st.success(f"Set {len(selected_docs)} documents as Respondent")
-                                                st.session_state[f"organizing_{doc_set['id']}"] = False
-                                                st.rerun()
-                                        
-                                        with col3:
-                                            if st.button("❌ Cancel", key=f"cancel_org_{doc_set['id']}"):
-                                                st.session_state[f"organizing_{doc_set['id']}"] = False
-                                                st.rerun()
-                                
-                                # Show name editing interface
-                                if st.session_state.get(f"editing_names_{doc_set['id']}", False):
-                                    st.markdown("**Edit Document Names**")
-                                    
-                                    # Show editable fields for each document
-                                    edited_names = {}
-                                    for doc in doc_set["documents"]:
-                                        new_name = st.text_input(
-                                            f"Document {doc['id']}:", 
-                                            value=doc["name"],
-                                            key=f"edit_name_{doc_set['id']}_{doc['id']}"
-                                        )
-                                        if new_name != doc["name"]:
-                                            edited_names[doc["id"]] = new_name
-                                    
-                                    col1, col2 = st.columns(2)
-                                    with col1:
-                                        if st.button("💾 Save Changes", key=f"save_names_{doc_set['id']}"):
-                                            for doc in doc_set["documents"]:
-                                                if doc["id"] in edited_names:
-                                                    doc["name"] = edited_names[doc["id"]]
-                                            st.success(f"Updated {len(edited_names)} document names")
-                                            st.session_state[f"editing_names_{doc_set['id']}"] = False
-                                            st.rerun()
-                                    
-                                    with col2:
-                                        if st.button("❌ Cancel", key=f"cancel_edit_{doc_set['id']}"):
-                                            st.session_state[f"editing_names_{doc_set['id']}"] = False
-                                            st.rerun()
-                            
-                            st.markdown("---")
-                            
                             # Action buttons
-                            col1, col2, col3 = st.columns(3)
+                            col1, col2, col3, col4 = st.columns(4)
                             
                             with col1:
                                 # Button to add documents to this set
@@ -962,6 +881,12 @@ def render_upload_page():
                                     st.rerun()
                             
                             with col2:
+                                # Organize documents button
+                                if st.button(f"Organize Documents", key=f"organize_{doc_set['id']}"):
+                                    st.session_state[f"organizing_{doc_set['id']}"] = not st.session_state.get(f"organizing_{doc_set['id']}", False)
+                                    st.rerun()
+                            
+                            with col3:
                                 # Export to CSV button
                                 csv = df.to_csv(index=False).encode('utf-8')
                                 st.download_button(
@@ -972,7 +897,7 @@ def render_upload_page():
                                     key=f"export_{doc_set['id']}"
                                 )
                             
-                            with col3:
+                            with col4:
                                 # View details button
                                 if st.button(f"View Details", key=f"view_{doc_set['id']}"):
                                     if st.session_state.viewing_set == doc_set["id"]:
@@ -980,56 +905,107 @@ def render_upload_page():
                                     else:
                                         st.session_state.viewing_set = doc_set["id"]  # Toggle on
                             
-                            # Add split by party option for Mixed sets
-                            if doc_set["party"] == "Mixed":
-                                # Check if documents have been organized by party
-                                appellant_docs = [d for d in doc_set["documents"] if d["party"] == "Appellant"]
-                                respondent_docs = [d for d in doc_set["documents"] if d["party"] == "Respondent"]
+                            # Show organization interface if active
+                            if st.session_state.get(f"organizing_{doc_set['id']}", False):
+                                st.markdown("---")
+                                st.markdown("**📋 Organize Documents**")
                                 
-                                if appellant_docs or respondent_docs:
-                                    st.markdown("**🔄 Split Into Separate Sets**")
-                                    col1, col2 = st.columns(2)
+                                # Batch party assignment
+                                st.markdown("**Assign Party to Multiple Documents:**")
+                                
+                                # Create checkboxes for each document
+                                selected_docs = []
+                                for doc in doc_set["documents"]:
+                                    if st.checkbox(f"{doc['name']} (currently: {doc['party']})", key=f"org_doc_{doc_set['id']}_{doc['id']}"):
+                                        selected_docs.append(doc)
+                                
+                                if selected_docs:
+                                    st.write(f"Selected {len(selected_docs)} documents")
+                                    col1, col2, col3 = st.columns(3)
                                     with col1:
-                                        st.write(f"Appellant docs: {len(appellant_docs)}")
-                                    with col2:
-                                        st.write(f"Respondent docs: {len(respondent_docs)}")
+                                        if st.button("➡️ Set as Appellant", key=f"set_appellant_{doc_set['id']}"):
+                                            for doc in selected_docs:
+                                                doc["party"] = "Appellant"
+                                            st.success(f"Set {len(selected_docs)} documents as Appellant")
+                                            st.rerun()
                                     
-                                    if st.button(f"🔄 Create Separate Document Sets", key=f"split_{doc_set['id']}"):
-                                        # Create appellant set if there are appellant docs
-                                        if appellant_docs:
-                                            appellant_set_id = add_document_set(f"{doc_set['name']} - Appellant", "Appellant")
-                                            appellant_set = next((ds for ds in st.session_state.document_sets if ds["id"] == appellant_set_id), None)
-                                            if appellant_set:
-                                                appellant_set["documents"] = appellant_docs.copy()
-                                                # Copy file references
-                                                for doc in appellant_docs:
-                                                    old_key = f"{doc_set['id']}-{doc['id']}"
-                                                    new_key = f"{appellant_set_id}-{doc['id']}"
-                                                    if old_key in st.session_state.uploaded_files:
-                                                        st.session_state.uploaded_files[new_key] = st.session_state.uploaded_files[old_key]
+                                    with col2:
+                                        if st.button("➡️ Set as Respondent", key=f"set_respondent_{doc_set['id']}"):
+                                            for doc in selected_docs:
+                                                doc["party"] = "Respondent"
+                                            st.success(f"Set {len(selected_docs)} documents as Respondent")
+                                            st.rerun()
+                                    
+                                    with col3:
+                                        if st.button("➡️ Set as Shared", key=f"set_shared_{doc_set['id']}"):
+                                            for doc in selected_docs:
+                                                doc["party"] = "Shared"
+                                            st.success(f"Set {len(selected_docs)} documents as Shared")
+                                            st.rerun()
+                                
+                                # Quick rename tool
+                                st.markdown("**Quick Document Rename:**")
+                                doc_to_rename = st.selectbox(
+                                    "Select document to rename:", 
+                                    [f"{doc['name']} (ID: {doc['id']})" for doc in doc_set["documents"]],
+                                    key=f"rename_select_{doc_set['id']}"
+                                )
+                                
+                                if doc_to_rename:
+                                    # Extract doc ID from selection
+                                    doc_id = doc_to_rename.split("(ID: ")[-1].rstrip(")")
+                                    selected_doc = next((d for d in doc_set["documents"] if d["id"] == doc_id), None)
+                                    
+                                    if selected_doc:
+                                        col1, col2 = st.columns([3, 1])
+                                        with col1:
+                                            new_name = st.text_input(
+                                                "New name:", 
+                                                value=selected_doc["name"],
+                                                key=f"new_name_{doc_set['id']}_{doc_id}"
+                                            )
+                                        with col2:
+                                            if st.button("Rename", key=f"rename_btn_{doc_set['id']}_{doc_id}"):
+                                                if new_name and new_name != selected_doc["name"]:
+                                                    selected_doc["name"] = new_name
+                                                    st.success(f"Renamed to: {new_name}")
+                                                    st.rerun()
+                                
+                                # Split by party option
+                                if len(set(doc["party"] for doc in doc_set["documents"])) > 1:
+                                    st.markdown("**Split Document Set by Party:**")
+                                    party_counts = {}
+                                    for doc in doc_set["documents"]:
+                                        party_counts[doc["party"]] = party_counts.get(doc["party"], 0) + 1
+                                    
+                                    for party, count in party_counts.items():
+                                        st.write(f"• {party}: {count} documents")
+                                    
+                                    if st.button("🔄 Create Separate Sets by Party", key=f"split_{doc_set['id']}"):
+                                        # Group documents by party
+                                        party_groups = {}
+                                        for doc in doc_set["documents"]:
+                                            if doc["party"] not in party_groups:
+                                                party_groups[doc["party"]] = []
+                                            party_groups[doc["party"]].append(doc)
                                         
-                                        # Create respondent set if there are respondent docs
-                                        if respondent_docs:
-                                            respondent_set_id = add_document_set(f"{doc_set['name']} - Respondent", "Respondent")
-                                            respondent_set = next((ds for ds in st.session_state.document_sets if ds["id"] == respondent_set_id), None)
-                                            if respondent_set:
-                                                respondent_set["documents"] = respondent_docs.copy()
-                                                # Copy file references
-                                                for doc in respondent_docs:
-                                                    old_key = f"{doc_set['id']}-{doc['id']}"
-                                                    new_key = f"{respondent_set_id}-{doc['id']}"
-                                                    if old_key in st.session_state.uploaded_files:
-                                                        st.session_state.uploaded_files[new_key] = st.session_state.uploaded_files[old_key]
+                                        # Create new sets for each party (except Mixed)
+                                        for party, docs in party_groups.items():
+                                            if party != "Mixed" and len(docs) > 0:
+                                                new_set_id = add_document_set(f"{doc_set['name']} - {party}", party)
+                                                new_set = next((ds for ds in st.session_state.document_sets if ds["id"] == new_set_id), None)
+                                                if new_set:
+                                                    new_set["documents"] = docs.copy()
+                                                    # Copy file references
+                                                    for doc in docs:
+                                                        old_key = f"{doc_set['id']}-{doc['id']}"
+                                                        new_key = f"{new_set_id}-{doc['id']}"
+                                                        if old_key in st.session_state.uploaded_files:
+                                                            st.session_state.uploaded_files[new_key] = st.session_state.uploaded_files[old_key]
                                         
-                                        # Remove organized documents from original set
-                                        remaining_docs = [d for d in doc_set["documents"] if d["party"] == "Mixed" or d["party"] == "Shared"]
+                                        # Keep only Mixed documents in original set
+                                        remaining_docs = party_groups.get("Mixed", [])
                                         doc_set["documents"] = remaining_docs
-                                        
-                                        # Update the original set name if it's now empty or much smaller
-                                        if not remaining_docs:
-                                            doc_set["name"] = f"{doc_set['name']} - Empty"
-                                        elif remaining_docs:
-                                            doc_set["name"] = f"{doc_set['name']} - Shared/Mixed"
                                         
                                         st.success("✅ Created separate document sets by party!")
                                         st.rerun()

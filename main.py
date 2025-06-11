@@ -454,527 +454,6 @@ def get_timeline_data():
     
     return timeline_events
 
-# Function to render the upload page
-def render_upload_page():
-    st.title("Document Management")
-    
-    # Create tabs for upload functionality - simplified to 3 essential tabs
-    tab1, tab2, tab3 = st.tabs(["Quick Upload", "Advanced Upload", "Manage Document Sets"])
-    
-    with tab1:
-        # Super simple bulk upload - just drag and drop
-        st.subheader("Quick Upload - Just Drag & Drop")
-        st.markdown("Upload hundreds of documents instantly. Names and organization are handled automatically.")
-        
-        # Show what will happen
-        if not st.session_state.document_sets:
-            st.info("A new document set will be created automatically when you upload files")
-        else:
-            st.info("Files will be added to a new document set (or you can use Advanced Upload to choose an existing one)")
-        
-        # Single large file uploader
-        uploaded_files = st.file_uploader(
-            "Drop all your files here",
-            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
-            accept_multiple_files=True,
-            help="Select all files at once - everything else is automatic"
-        )
-        
-        if uploaded_files:
-            # Show what will be created
-            auto_set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-            
-            # Show count and what will happen
-            st.success(f"{len(uploaded_files)} files ready to upload")
-            st.markdown(f"**Will be saved to:** `{auto_set_name}` (auto-created)")
-            
-            if st.button("Upload All Files", type="primary", use_container_width=True):
-                # Auto-create document set with timestamp
-                set_id = add_document_set(auto_set_name, "Mixed")
-                
-                # Progress bar
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                success_count = 0
-                
-                # Process all files
-                for i, file in enumerate(uploaded_files):
-                    try:
-                        # Auto-generate name from filename
-                        doc_name = file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
-                        
-                        # Add document
-                        doc_id = add_document_to_set(doc_name, "Mixed", set_id)
-                        if doc_id and save_uploaded_file(file, set_id, doc_id):
-                            success_count += 1
-                        
-                        # Update progress
-                        progress_bar.progress((i + 1) / len(uploaded_files))
-                        status_text.text(f"Uploaded {i + 1}/{len(uploaded_files)}")
-                        
-                    except:
-                        pass  # Skip errors, continue with rest
-                
-                # Done
-                progress_bar.empty()
-                status_text.empty()
-                st.success(f"Done! Uploaded {success_count} documents to '{auto_set_name}'")
-                
-                if success_count < len(uploaded_files):
-                    st.warning(f"{len(uploaded_files) - success_count} files skipped (duplicates or errors)")
-                
-                # Show next steps
-                st.markdown("**Next steps:**")
-                st.markdown("- View your documents in the **Manage Document Sets** tab")
-                st.markdown("- Use **Advanced Upload** if you need to organize by party (Appellant/Respondent)")
-    
-    with tab2:
-        # Advanced upload for users who want control
-        st.subheader("Advanced Upload")
-        st.markdown("For when you need specific organization or metadata")
-        
-        # Document set selection
-        if not st.session_state.document_sets:
-            st.warning("No document sets exist. Use Quick Upload to create one automatically.")
-        else:
-            set_options = [ds["name"] for ds in st.session_state.document_sets]
-            selected_set_name = st.selectbox("Select Document Set", set_options)
-            
-            # Find the selected set
-            selected_set = next((ds for ds in st.session_state.document_sets if ds["name"] == selected_set_name), None)
-            
-            if selected_set:
-                # Show selected set info
-                party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
-                                    "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
-                
-                st.markdown(f"""
-                <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #4D68F9;">
-                    <p style="margin: 0; font-size: 13px; color: #64748b;">Selected Document Set</p>
-                    <p style="margin: 5px 0 0 0; font-weight: 600; color: #0f172a;">{selected_set['name']}</p>
-                    <div style="margin-top: 8px;">
-                        <span class="badge {party_badge_class}">{selected_set["party"]}</span>
-                        <span class="badge shared-badge">{len(selected_set["documents"])} documents</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Simplified upload form
-                uploaded_file = st.file_uploader(
-                    "Choose file",
-                    type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
-                    help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
-                )
-                
-                if uploaded_file:
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        # Auto-generate name but allow editing
-                        auto_name = uploaded_file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
-                        doc_name = st.text_input("Document Name", value=auto_name)
-                    
-                    with col2:
-                        # Default to set's party
-                        party_options = ["Appellant", "Respondent", "Shared"]
-                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else "Appellant"
-                        default_index = party_options.index(default_party) if default_party in party_options else 0
-                        doc_party = st.selectbox("Party", party_options, index=default_index)
-                    
-                    if st.button("Upload Document", type="primary"):
-                        if doc_name:
-                            doc_id = add_document_to_set(doc_name, doc_party, selected_set["id"])
-                            if doc_id:
-                                if save_uploaded_file(uploaded_file, selected_set["id"], doc_id):
-                                    st.success(f"Uploaded: {doc_name}")
-                                else:
-                                    st.error("Error saving file")
-                            else:
-                                st.error("Error adding document")
-                        else:
-                            st.error("Please provide a document name")
-    
-    with tab3:
-        # COMPLETELY NEW Enhanced document set management using ONLY native Streamlit components
-        st.header("📋 Document Sets Manager")
-        st.write("Manage all your document collections with advanced filtering and multiple view modes")
-        
-        if not st.session_state.document_sets:
-            # Empty state
-            st.info("🆕 No document sets exist yet. Use Quick Upload to create document sets automatically.")
-        else:
-            # TOP CONTROLS ROW
-            st.subheader("🔧 Controls & Filters")
-            
-            control_col1, control_col2, control_col3, control_col4 = st.columns([3, 1, 1, 1])
-            
-            with control_col1:
-                search_query = st.text_input(
-                    "🔍 Search Everything", 
-                    placeholder="Search document sets, document names, categories...", 
-                    help="Search across all document set names, document names, and metadata"
-                )
-            
-            with control_col2:
-                display_mode = st.selectbox("👁️ View Mode", ["📋 List", "🗃️ Cards", "📊 Table"], index=0)
-            
-            with control_col3:
-                party_filter = st.selectbox("⚖️ Filter Party", ["All Parties", "Appellant", "Respondent", "Mixed", "Shared"])
-            
-            with control_col4:
-                sort_option = st.selectbox("🔢 Sort By", ["Name A-Z", "Document Count", "Upload Progress", "Recently Modified"])
-            
-            # ADVANCED FILTERS
-            with st.expander("🎛️ Advanced Filters & Options"):
-                adv_col1, adv_col2, adv_col3 = st.columns(3)
-                with adv_col1:
-                    completion_filter = st.selectbox("📈 Completion Status", ["Any Status", "Fully Complete", "Partially Complete", "Not Started"])
-                with adv_col2:
-                    size_filter = st.selectbox("📏 Collection Size", ["Any Size", "Small (1-10 docs)", "Medium (11-50 docs)", "Large (50+ docs)"])
-                with adv_col3:
-                    date_filter = st.selectbox("📅 Created", ["Any Time", "Today", "This Week", "This Month"])
-            
-            # CALCULATE ALL STATISTICS
-            total_sets = len(st.session_state.document_sets)
-            total_documents = sum(len(ds["documents"]) for ds in st.session_state.document_sets)
-            total_uploaded_files = 0
-            total_file_size = 0
-            
-            try:
-                for doc_set in st.session_state.document_sets:
-                    for document in doc_set["documents"]:
-                        file_key = f"{doc_set['id']}-{document['id']}"
-                        if file_key in st.session_state.uploaded_files:
-                            total_uploaded_files += 1
-                            total_file_size += st.session_state.uploaded_files[file_key].get('size', 0)
-            except Exception:
-                pass
-            
-            # DASHBOARD METRICS
-            st.subheader("📊 Dashboard Overview")
-            
-            metric_col1, metric_col2, metric_col3, metric_col4, metric_col5 = st.columns(5)
-            metric_col1.metric("📁 Document Sets", total_sets)
-            metric_col2.metric("📄 Total Documents", total_documents) 
-            metric_col3.metric("✅ Files Uploaded", f"{total_uploaded_files}/{total_documents}")
-            metric_col4.metric("💾 Total Storage", f"{total_file_size/1024/1024:.1f} MB" if total_file_size > 1024*1024 else f"{total_file_size/1024:.1f} KB")
-            metric_col5.metric("📈 Overall Progress", f"{int(total_uploaded_files/total_documents*100) if total_documents > 0 else 0}%")
-            
-            st.divider()
-            
-            # APPLY ALL FILTERS
-            filtered_document_sets = st.session_state.document_sets
-            
-            # Search filter
-            if search_query:
-                search_results = []
-                for doc_set in st.session_state.document_sets:
-                    # Search in set name, category, and all document names
-                    if (search_query.lower() in doc_set['name'].lower() or 
-                        search_query.lower() in doc_set['category'].lower() or
-                        any(search_query.lower() in doc['name'].lower() for doc in doc_set['documents'])):
-                        search_results.append(doc_set)
-                filtered_document_sets = search_results
-            
-            # Party filter
-            if party_filter != "All Parties":
-                party_value = party_filter
-                filtered_document_sets = [ds for ds in filtered_document_sets if ds['party'] == party_value]
-            
-            # Completion filter
-            if completion_filter != "Any Status":
-                completion_results = []
-                for doc_set in filtered_document_sets:
-                    uploaded_count = sum(1 for doc in doc_set['documents'] 
-                                       if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                    total_count = len(doc_set['documents'])
-                    
-                    if completion_filter == "Fully Complete" and uploaded_count == total_count and total_count > 0:
-                        completion_results.append(doc_set)
-                    elif completion_filter == "Partially Complete" and 0 < uploaded_count < total_count:
-                        completion_results.append(doc_set)
-                    elif completion_filter == "Not Started" and uploaded_count == 0 and total_count > 0:
-                        completion_results.append(doc_set)
-                
-                filtered_document_sets = completion_results
-            
-            # Size filter
-            if size_filter != "Any Size":
-                if size_filter == "Small (1-10 docs)":
-                    filtered_document_sets = [ds for ds in filtered_document_sets if len(ds['documents']) <= 10]
-                elif size_filter == "Medium (11-50 docs)":
-                    filtered_document_sets = [ds for ds in filtered_document_sets if 11 <= len(ds['documents']) <= 50]
-                elif size_filter == "Large (50+ docs)":
-                    filtered_document_sets = [ds for ds in filtered_document_sets if len(ds['documents']) > 50]
-            
-            # Sort the results
-            if sort_option == "Name A-Z":
-                filtered_document_sets = sorted(filtered_document_sets, key=lambda x: x['name'].lower())
-            elif sort_option == "Document Count":
-                filtered_document_sets = sorted(filtered_document_sets, key=lambda x: len(x['documents']), reverse=True)
-            elif sort_option == "Upload Progress":
-                def calculate_progress(doc_set):
-                    if not doc_set['documents']:
-                        return 0
-                    uploaded = sum(1 for doc in doc_set['documents'] 
-                                 if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                    return uploaded / len(doc_set['documents'])
-                filtered_document_sets = sorted(filtered_document_sets, key=calculate_progress, reverse=True)
-            
-            # Show filtered results info
-            if len(filtered_document_sets) != len(st.session_state.document_sets):
-                st.info(f"📋 Showing {len(filtered_document_sets)} of {len(st.session_state.document_sets)} document sets")
-            
-            # BULK ACTIONS
-            if filtered_document_sets:
-                st.subheader("⚡ Bulk Actions")
-                bulk_col1, bulk_col2, bulk_col3, bulk_col4 = st.columns(4)
-                
-                with bulk_col1:
-                    if st.button("📤 Export All Visible", help="Export all visible document sets to CSV"):
-                        st.success("✅ Export feature will be implemented")
-                        
-                with bulk_col2:
-                    if st.button("📦 Download All Files", help="Download all files from visible sets"):
-                        st.success("✅ Bulk download feature will be implemented")
-                        
-                with bulk_col3:
-                    if st.button("✏️ Batch Edit", help="Edit multiple document sets at once"):
-                        st.success("✅ Batch editing feature will be implemented")
-                        
-                with bulk_col4:
-                    if st.button("🗄️ Archive Sets", help="Archive selected document sets"):
-                        st.success("✅ Archive feature will be implemented")
-                
-                st.divider()
-            
-            # DISPLAY RESULTS BASED ON VIEW MODE
-            if display_mode == "🗃️ Cards":
-                # CARDS VIEW
-                st.subheader("🗃️ Document Sets - Card View")
-                
-                # Create cards in two columns
-                card_cols = st.columns(2)
-                for index, doc_set in enumerate(filtered_document_sets):
-                    with card_cols[index % 2]:
-                        # Calculate progress for this set
-                        uploaded_count = sum(1 for doc in doc_set['documents'] 
-                                           if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                        total_count = len(doc_set['documents'])
-                        progress_ratio = uploaded_count / total_count if total_count > 0 else 0
-                        
-                        # Create card container
-                        with st.container():
-                            st.markdown(f"### 📁 {doc_set['name']}")
-                            st.write(f"**Party:** {doc_set['party']} | **Category:** {doc_set['category']}")
-                            
-                            # Progress bar
-                            if total_count > 0:
-                                st.progress(progress_ratio, text=f"Progress: {uploaded_count}/{total_count} documents ({int(progress_ratio*100)}%)")
-                            else:
-                                st.progress(0, text="📝 No documents yet")
-                            
-                            # Action buttons
-                            action_col1, action_col2, action_col3 = st.columns(3)
-                            
-                            with action_col1:
-                                if st.button("👀 View", key=f"card_view_{doc_set['id']}", use_container_width=True):
-                                    st.session_state.viewing_set = doc_set["id"]
-                            
-                            with action_col2:
-                                if st.button("➕ Add Files", key=f"card_add_{doc_set['id']}", use_container_width=True):
-                                    st.session_state.selected_set = doc_set["id"]
-                                    st.session_state.view = "Upload"
-                                    st.rerun()
-                            
-                            with action_col3:
-                                if doc_set["documents"]:
-                                    # Export button for this specific set
-                                    document_data = []
-                                    for doc in doc_set["documents"]:
-                                        file_key = f"{doc_set['id']}-{doc['id']}"
-                                        status = "✅ Uploaded" if file_key in st.session_state.uploaded_files else "❌ Missing"
-                                        document_data.append({
-                                            "ID": doc["id"],
-                                            "Name": doc["name"],
-                                            "Party": doc["party"],
-                                            "Status": status
-                                        })
-                                    df = pd.DataFrame(document_data)
-                                    csv_data = df.to_csv(index=False).encode('utf-8')
-                                    st.download_button(
-                                        label="📥 Export",
-                                        data=csv_data,
-                                        file_name=f"{doc_set['name']}_documents.csv",
-                                        mime='text/csv',
-                                        key=f"card_export_{doc_set['id']}",
-                                        use_container_width=True
-                                    )
-                            
-                            st.divider()
-            
-            elif display_mode == "📊 Table":
-                # TABLE VIEW
-                st.subheader("📊 Document Sets - Table View")
-                
-                if filtered_document_sets:
-                    table_rows = []
-                    for doc_set in filtered_document_sets:
-                        uploaded_count = sum(1 for doc in doc_set['documents'] 
-                                           if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                        total_count = len(doc_set['documents'])
-                        completion_percentage = int(uploaded_count/total_count*100) if total_count > 0 else 0
-                        
-                        table_rows.append({
-                            "📁 Set Name": doc_set['name'],
-                            "⚖️ Party": doc_set['party'],
-                            "📄 Documents": total_count,
-                            "✅ Uploaded": uploaded_count,
-                            "📈 Progress": f"{completion_percentage}%",
-                            "🏷️ Category": doc_set['category'],
-                            "🆔 ID": doc_set['id']
-                        })
-                    
-                    table_df = pd.DataFrame(table_rows)
-                    
-                    # Display the enhanced table
-                    st.dataframe(
-                        table_df,
-                        use_container_width=True,
-                        hide_index=True,
-                        column_config={
-                            "📁 Set Name": st.column_config.TextColumn("Document Set Name", width="large"),
-                            "⚖️ Party": st.column_config.TextColumn("Party", width="small"),
-                            "📄 Documents": st.column_config.NumberColumn("Total Docs", width="small"),
-                            "✅ Uploaded": st.column_config.NumberColumn("Uploaded", width="small"),
-                            "📈 Progress": st.column_config.TextColumn("Progress", width="small"),
-                            "🏷️ Category": st.column_config.TextColumn("Category", width="medium"),
-                            "🆔 ID": st.column_config.TextColumn("ID", width="small")
-                        }
-                    )
-                    
-                    # Export the current table
-                    csv_data = table_df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="📥 Export Current Table",
-                        data=csv_data,
-                        file_name="document_sets_table_view.csv",
-                        mime='text/csv'
-                    )
-            
-            else:  # LIST VIEW (Default)
-                # ENHANCED LIST VIEW
-                st.subheader("📋 Document Sets - List View")
-                
-                for doc_set in filtered_document_sets:
-                    # Calculate statistics
-                    uploaded_count = sum(1 for doc in doc_set['documents'] 
-                                       if f"{doc_set['id']}-{doc['id']}" in st.session_state.uploaded_files)
-                    total_count = len(doc_set['documents'])
-                    completion_percentage = int(uploaded_count / total_count * 100) if total_count > 0 else 0
-                    
-                    # Enhanced expander title
-                    expander_title = f"📁 {doc_set['name']} • {total_count} docs • {completion_percentage}% complete"
-                    
-                    with st.expander(expander_title):
-                        # Set information and quick actions
-                        info_col, actions_col = st.columns([2, 1])
-                        
-                        with info_col:
-                            st.write(f"**⚖️ Party:** {doc_set['party']}")
-                            st.write(f"**🏷️ Category:** {doc_set['category']}")
-                            st.write(f"**🆔 ID:** {doc_set['id']}")
-                            
-                            # Progress visualization
-                            if total_count > 0:
-                                progress_ratio = uploaded_count / total_count
-                                st.progress(progress_ratio, text=f"📈 Upload Progress: {uploaded_count} of {total_count} documents")
-                            else:
-                                st.progress(0, text="📝 No documents in this set yet")
-                        
-                        with actions_col:
-                            st.write("**⚡ Quick Actions:**")
-                            
-                            if st.button("✏️ Rename Set", key=f"rename_{doc_set['id']}", use_container_width=True):
-                                st.info("🔧 Rename functionality will be implemented")
-                                
-                            if st.button("🔄 Change Party", key=f"change_party_{doc_set['id']}", use_container_width=True):
-                                st.info("🔧 Party change functionality will be implemented")
-                        
-                        # Document listing
-                        if doc_set["documents"]:
-                            st.write(f"**📄 Documents in this set ({len(doc_set['documents'])}):**")
-                            
-                            # Build document table
-                            document_rows = []
-                            for doc in doc_set["documents"]:
-                                file_key = f"{doc_set['id']}-{doc['id']}"
-                                is_uploaded = file_key in st.session_state.uploaded_files
-                                
-                                file_size = ""
-                                file_type = ""
-                                upload_date = ""
-                                
-                                if is_uploaded:
-                                    try:
-                                        file_info = st.session_state.uploaded_files[file_key]
-                                        file_size = f"{file_info.get('size', 0)/1024:.1f} KB"
-                                        file_type = file_info.get('type', 'Unknown')
-                                        upload_date = file_info.get('upload_time', '').split()[0] if file_info.get('upload_time') else ""
-                                    except:
-                                        pass
-                                
-                                document_rows.append({
-                                    "✅ Status": "✅" if is_uploaded else "❌",
-                                    "📄 Document Name": doc["name"],
-                                    "⚖️ Party": doc["party"],
-                                    "📁 File Type": file_type,
-                                    "💾 Size": file_size,
-                                    "📅 Uploaded": upload_date
-                                })
-                            
-                            documents_df = pd.DataFrame(document_rows)
-                            st.dataframe(documents_df, use_container_width=True, hide_index=True)
-                            
-                            # Action buttons for this document set
-                            action_col1, action_col2, action_col3, action_col4 = st.columns(4)
-                            
-                            with action_col1:
-                                if st.button("➕ Add Documents", key=f"add_docs_{doc_set['id']}", use_container_width=True):
-                                    st.session_state.selected_set = doc_set["id"]
-                                    st.session_state.view = "Upload"
-                                    st.rerun()
-                            
-                            with action_col2:
-                                csv_data = documents_df.to_csv(index=False).encode('utf-8')
-                                st.download_button(
-                                    label="📥 Export CSV",
-                                    data=csv_data,
-                                    file_name=f"{doc_set['name']}_documents.csv",
-                                    mime='text/csv',
-                                    key=f"export_docs_{doc_set['id']}",
-                                    use_container_width=True
-                                )
-                            
-                            with action_col3:
-                                if st.button("✏️ Batch Edit", key=f"batch_edit_{doc_set['id']}", use_container_width=True):
-                                    st.info("🔧 Batch edit functionality will be implemented")
-                            
-                            with action_col4:
-                                if st.button("🗄️ Archive Set", key=f"archive_{doc_set['id']}", use_container_width=True):
-                                    st.info("🔧 Archive functionality will be implemented")
-                        
-                        else:
-                            st.info("📝 No documents in this set yet")
-                            if st.button(f"➕ Add First Document", key=f"add_first_{doc_set['id']}", use_container_width=True):
-                                st.session_state.selected_set = doc_set["id"]
-                                st.session_state.view = "Upload"
-                                st.rerun()
-            
-            # Message when no results
-            if not filtered_document_sets:
-                st.warning("🔍 No document sets match your current filters. Try adjusting your search criteria or filters.")
-
 # Main application
 def main():
     # Get data for JavaScript in facts view
@@ -1172,6 +651,167 @@ def main():
         # Placeholder for other views
         st.title(f"{st.session_state.view} View")
         st.info(f"This is a placeholder for the {st.session_state.view} view.")
+
+# Function to render the upload page
+def render_upload_page():
+    st.title("Document Management")
+    
+    # Create tabs for upload functionality - simplified to 3 essential tabs
+    tab1, tab2, tab3 = st.tabs(["Quick Upload", "Advanced Upload", "Manage Document Sets"])
+    
+    with tab1:
+        # Super simple bulk upload - just drag and drop
+        st.subheader("Quick Upload - Just Drag & Drop")
+        st.markdown("Upload hundreds of documents instantly. Names and organization are handled automatically.")
+        
+        # Show what will happen
+        if not st.session_state.document_sets:
+            st.info("A new document set will be created automatically when you upload files")
+        else:
+            st.info("Files will be added to a new document set (or you can use Advanced Upload to choose an existing one)")
+        
+        # Single large file uploader
+        uploaded_files = st.file_uploader(
+            "Drop all your files here",
+            type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
+            accept_multiple_files=True,
+            help="Select all files at once - everything else is automatic"
+        )
+        
+        if uploaded_files:
+            # Show what will be created
+            auto_set_name = f"Upload {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            
+            # Show count and what will happen
+            st.success(f"{len(uploaded_files)} files ready to upload")
+            st.markdown(f"**Will be saved to:** `{auto_set_name}` (auto-created)")
+            
+            if st.button("Upload All Files", type="primary", use_container_width=True):
+                # Auto-create document set with timestamp
+                set_id = add_document_set(auto_set_name, "Mixed")
+                
+                # Progress bar
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                success_count = 0
+                
+                # Process all files
+                for i, file in enumerate(uploaded_files):
+                    try:
+                        # Auto-generate name from filename
+                        doc_name = file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
+                        
+                        # Add document
+                        doc_id = add_document_to_set(doc_name, "Mixed", set_id)
+                        if doc_id and save_uploaded_file(file, set_id, doc_id):
+                            success_count += 1
+                        
+                        # Update progress
+                        progress_bar.progress((i + 1) / len(uploaded_files))
+                        status_text.text(f"Uploaded {i + 1}/{len(uploaded_files)}")
+                        
+                    except:
+                        pass  # Skip errors, continue with rest
+                
+                # Done
+                progress_bar.empty()
+                status_text.empty()
+                st.success(f"Done! Uploaded {success_count} documents to '{auto_set_name}'")
+                
+                if success_count < len(uploaded_files):
+                    st.warning(f"{len(uploaded_files) - success_count} files skipped (duplicates or errors)")
+                
+                # Show next steps
+                st.markdown("**Next steps:**")
+                st.markdown("- View your documents in the **Manage Document Sets** tab")
+                st.markdown("- Use **Advanced Upload** if you need to organize by party (Appellant/Respondent)")
+    
+    with tab2:
+        # Advanced upload for users who want control
+        st.subheader("Advanced Upload")
+        st.markdown("For when you need specific organization or metadata")
+        
+        # Document set selection
+        if not st.session_state.document_sets:
+            st.warning("No document sets exist. Use Quick Upload to create one automatically.")
+        else:
+            set_options = [ds["name"] for ds in st.session_state.document_sets]
+            selected_set_name = st.selectbox("Select Document Set", set_options)
+            
+            # Find the selected set
+            selected_set = next((ds for ds in st.session_state.document_sets if ds["name"] == selected_set_name), None)
+            
+            if selected_set:
+                # Show selected set info
+                party_badge_class = "appellant-badge" if selected_set["party"] == "Appellant" else \
+                                    "respondent-badge" if selected_set["party"] == "Respondent" else "shared-badge"
+                
+                st.markdown(f"""
+                <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #4D68F9;">
+                    <p style="margin: 0; font-size: 13px; color: #64748b;">Selected Document Set</p>
+                    <p style="margin: 5px 0 0 0; font-weight: 600; color: #0f172a;">{selected_set['name']}</p>
+                    <div style="margin-top: 8px;">
+                        <span class="badge {party_badge_class}">{selected_set["party"]}</span>
+                        <span class="badge shared-badge">{len(selected_set["documents"])} documents</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Simplified upload form
+                uploaded_file = st.file_uploader(
+                    "Choose file",
+                    type=["pdf", "docx", "txt", "jpg", "png", "xlsx", "csv"],
+                    help="Supported formats: PDF, Word, Text, Images, Excel and CSV"
+                )
+                
+                if uploaded_file:
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        # Auto-generate name but allow editing
+                        auto_name = uploaded_file.name.rsplit('.', 1)[0].replace('_', ' ').replace('-', ' ').title()
+                        doc_name = st.text_input("Document Name", value=auto_name)
+                    
+                    with col2:
+                        # Default to set's party
+                        party_options = ["Appellant", "Respondent", "Shared"]
+                        default_party = selected_set["party"] if selected_set["party"] != "Mixed" else "Appellant"
+                        default_index = party_options.index(default_party) if default_party in party_options else 0
+                        doc_party = st.selectbox("Party", party_options, index=default_index)
+                    
+                    if st.button("Upload Document", type="primary"):
+                        if doc_name:
+                            doc_id = add_document_to_set(doc_name, doc_party, selected_set["id"])
+                            if doc_id:
+                                if save_uploaded_file(uploaded_file, selected_set["id"], doc_id):
+                                    st.success(f"Uploaded: {doc_name}")
+                                else:
+                                    st.error("Error saving file")
+                            else:
+                                st.error("Error adding document")
+                        else:
+                            st.error("Please provide a document name")
+    
+    with tab3:
+        # Simple document set management - MVP version
+        st.subheader("Manage Document Sets")
+        
+        if not st.session_state.document_sets:
+            st.info("No document sets exist yet. Use Quick Upload to create one.")
+        else:
+            st.markdown(f"**{len(st.session_state.document_sets)} document sets found**")
+            
+            # Simple list of document sets
+            for doc_set in st.session_state.document_sets:
+                with st.expander(f"{doc_set['name']} ({len(doc_set['documents'])} documents)"):
+                    if doc_set["documents"]:
+                        # Simple table of documents
+                        for doc in doc_set["documents"]:
+                            file_key = f"{doc_set['id']}-{doc['id']}"
+                            status = "✓" if file_key in st.session_state.uploaded_files else "✗"
+                            st.write(f"{status} {doc['name']} ({doc['party']})")
+                    else:
+                        st.write("No documents in this set")
 
 # Function to render the facts page
 def render_facts_page(facts_data, document_sets, timeline_data, args_data):

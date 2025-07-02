@@ -151,7 +151,7 @@ if page == "🔍 Search":
         value="just cause", 
         placeholder="Enter your search query", 
         label_visibility="collapsed",
-        key="search_input_main"
+        key="search_input_updated"
     )
     
     if search_query:
@@ -162,12 +162,12 @@ if page == "🔍 Search":
         st.success(f"Found {len(results)} results")
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display search results with essential info only
+        # Display search results with clean formatting
         for case_index, case in enumerate(results):
-            # Essential info format with emphasized descriptors
-            case_header = f"**{case['title']}** | **Date:** {case['date']} | **Parties:** {case['appellants']} v. {case['respondents']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}"
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | **Date:** {case['date']} | **Parties:** {case['appellants']} v. {case['respondents']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}"
             
-            with st.expander(case_header, expanded=(case_index == 0)):
+            with st.expander(case_title, expanded=(case_index == 0)):
                 
                 # Summary
                 st.markdown("**Summary:**")
@@ -195,8 +195,8 @@ if page == "🔍 Search":
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")
                 for passage_index, passage in enumerate(case['relevant_passages']):
-                    unique_key = f"context_toggle_{case['id']}_{passage_index}_{case_index}"
-                    show_full_context = st.checkbox(f"Show full context", key=unique_key)
+                    passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
+                    show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
                     
                     if show_full_context:
                         st.success(passage['full_context'])
@@ -206,25 +206,25 @@ if page == "🔍 Search":
                 # AI Question Interface
                 st.markdown("---")
                 st.markdown("**Ask a Question About This Case**")
-                question_key = f"question_input_{case['id']}_{case_index}"
-                question = st.text_area(
+                question_unique_key = f"ai_question_{case['id']}_{case_index}"
+                user_question = st.text_area(
                     "",
                     placeholder="e.g., What was the main legal issue?",
-                    key=question_key,
+                    key=question_unique_key,
                     label_visibility="collapsed"
                 )
                 
-                button_key = f"ask_button_{case['id']}_{case_index}"
-                if st.button("Ask Question", key=button_key):
-                    if question:
+                button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+                if st.button("Ask Question", key=button_unique_key):
+                    if user_question:
                         with st.spinner("Analyzing case..."):
                             time.sleep(2)
-                            answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
                             
                             st.markdown(f"""
                             <div class="question-box">
                                 <strong>AI Answer:</strong><br>
-                                {answer}
+                                {ai_answer}
                             </div>
                             """, unsafe_allow_html=True)
 

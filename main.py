@@ -458,11 +458,11 @@ if page == "🔍 Search":
                 
                 # Summary
                 st.markdown("**Summary:**")
-                st.info(case['summary'], icon="📋")
+                st.info(case['summary'])
                 
                 # Court Reasoning
                 st.markdown("**Court Reasoning:**")
-                st.warning(case['court_reasoning'], icon="⚖️")
+                st.warning(case['court_reasoning'])
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
@@ -477,7 +477,7 @@ if page == "🔍 Search":
                         font-size: 14px;
                         line-height: 1.6;
                     ">
-                        🔨 {case['case_outcome']}
+                        {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -487,15 +487,15 @@ if page == "🔍 Search":
                     passage_key = f"passage_{case['id']}_{idx}"
                     
                     # Show excerpt using native component
-                    st.success(passage['excerpt'], icon="📖")
+                    st.success(passage['excerpt'])
                     
                     # Toggle for full context
-                    show_context = st.checkbox(f"📖 Show full context", key=f"context_{passage_key}")
+                    show_context = st.checkbox(f"Show full context", key=f"context_{passage_key}")
                     
                     if show_context:
                         st.markdown("**Full Context:**")
                         # Use info component for full context - clean and readable
-                        st.info(passage['full_context'], icon="📄")
+                        st.info(passage['full_context'])
                 
                 # Similarity Score
                 if show_similarity:
@@ -659,4 +659,3 @@ elif page == "👤 Admin":
         st.checkbox("Email Notifications", value=False)
         st.checkbox("Advanced Analytics", value=True)
         st.selectbox("Session Timeout (minutes)", [30, 60, 120, 240], index=2)
-

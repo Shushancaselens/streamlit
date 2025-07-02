@@ -308,8 +308,25 @@ def highlight_text(text, query):
     return text
 
 def render_case_tags(case):
-    """This function is no longer used - keeping for reference only"""
-    return ""  # Return empty string to disable tags
+    """Render colored tags for case metadata"""
+    tags_html = f"""
+    <div style="margin-bottom: 8px;">
+        <span class="tag tag-date">Date: {case['date']}</span>
+        <span class="tag">Type: {case['procedure']}</span>
+        <span class="tag">Matter: {case['matter']}</span>
+        <span class="tag">Category: {case['category']}</span>
+        <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+        <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+        <span class="tag">Appellants: {case['appellants']}</span>
+        <span class="tag">Respondents: {case['respondents']}</span>
+        <span class="tag">President: {case['president']}</span>
+        <span class="tag">Arbitrator 1: {case['arbitrator1']}</span>
+        <span class="tag">Arbitrator 2: {case['arbitrator2']}</span>
+    </div>
+    """
+    return tags_html
 
 # Sidebar Navigation
 with st.sidebar:
@@ -413,59 +430,9 @@ if page == "🔍 Search":
         
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display results - SIMPLE TITLE WITH INFO
+        # Display results - OPTION D LAYOUT
         for i, case in enumerate(results):
-            with st.expander(f"**{case['title']}** | {case['date'][:4]} • {case['matter']} • {case['outcome']} • {case['sport']} • {case['procedure']}", expanded=(i == 0)):
-                # Tags as first content inside dropdown
-                st.markdown(f"""
-                <div style="margin-bottom: 12px;">
-                    <span style="
-                        background-color: #eff6ff; 
-                        color: #1d4ed8; 
-                        padding: 3px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 6px;
-                        border: 1px solid #dbeafe;
-                    ">Date: {case['date'][:4]}</span>
-                    <span style="
-                        background-color: #e2e8f0; 
-                        color: #475569; 
-                        padding: 3px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 6px;
-                        border: 1px solid #d1d5db;
-                    ">{case['matter']}</span>
-                    <span style="
-                        background-color: {'#fef2f2' if case['outcome'] == 'Dismissed' else '#f0fdf4' if case['outcome'] == 'Upheld' else '#fefce8'}; 
-                        color: {'#991b1b' if case['outcome'] == 'Dismissed' else '#166534' if case['outcome'] == 'Upheld' else '#a16207'}; 
-                        padding: 3px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 6px;
-                        border: 1px solid {'#fecaca' if case['outcome'] == 'Dismissed' else '#bbf7d0' if case['outcome'] == 'Upheld' else '#fde047'};
-                    ">{case['outcome']}</span>
-                    <span style="
-                        background-color: #f0fdf4; 
-                        color: #166534; 
-                        padding: 3px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 6px;
-                        border: 1px solid #bbf7d0;
-                    ">{case['sport']}</span>
-                    <span style="
-                        background-color: #e2e8f0; 
-                        color: #475569; 
-                        padding: 3px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 6px;
-                        border: 1px solid #d1d5db;
-                    ">{case['procedure']}</span>
-                </div>
-                """, unsafe_allow_html=True)
+            with st.expander(f"**{case['title']}** [Date: {case['date'][:4]}, {case['matter']}, {case['outcome']}, {case['sport']}, {case['procedure']}]", expanded=(i == 0)):
                 # Clean case info
                 st.markdown(f"""
                 **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
@@ -519,11 +486,11 @@ if page == "🔍 Search":
                 question = st.text_area(
                     "",
                     placeholder="e.g., What was the main legal issue? What was the outcome? What were the key arguments?",
-                    key=f"question_{case['id']}_{i}",  # Added case index for uniqueness
+                    key=f"question_{case['id']}",
                     label_visibility="collapsed"
                 )
                 
-                if st.button("Ask Question", key=f"ask_{case['id']}_{i}"):  # Added case index here too
+                if st.button("Ask Question", key=f"ask_{case['id']}"):
                     if question:
                         with st.spinner("Analyzing case and generating answer..."):
                             time.sleep(2)  # Simulate AI processing
@@ -703,6 +670,7 @@ elif page == "🔖 Bookmarks":
             case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
             if case:
                 with st.expander(f"**{case['title']}**"):
+                    st.markdown(render_case_tags(case), unsafe_allow_html=True)
                     st.markdown(f"**Summary:** {case['summary'][:200]}...")
                     
                     if st.button("Remove Bookmark", key=f"remove_{case_id}"):

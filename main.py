@@ -480,8 +480,10 @@ if page == "🔍 Search":
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Expandable context
-                    with st.expander("📖 See full context"):
+                    # Toggle for full context
+                    show_context = st.checkbox(f"📖 Show full context", key=f"context_{passage_key}")
+                    
+                    if show_context:
                         st.markdown(f"""
                         <div class="passage-context">
                             {highlight_text(passage['full_context'], search_query)}

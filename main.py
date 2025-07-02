@@ -432,7 +432,7 @@ if page == "🔍 Search":
         
         # Display results - TAGS INSIDE DROPDOWN
         for i, case in enumerate(results):
-            with st.expander(f"**{case['title']}**", expanded=(i == 0)):
+            with st.expander(f"**{case['title']}** | {case['date'][:4]} • {case['matter']} • {case['outcome']} • {case['sport']} • {case['procedure']}", expanded=(i == 0)):
                 # Tags as first content inside dropdown
                 st.markdown(f"""
                 <div style="margin-bottom: 12px;">

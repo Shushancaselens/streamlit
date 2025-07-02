@@ -433,28 +433,17 @@ if page == "🔍 Search":
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
             with st.expander(f"**{case['title']}**", expanded=(i == 0)):
-                # Key tags first - essential info
+                # Key info as plain text
                 st.markdown(f"""
-                <div style="margin-bottom: 8px;">
-                    <span class="tag tag-date">Date: {case['date']}</span>
-                    <span class="tag">Type: {case['procedure']}</span>
-                    <span class="tag">Matter: {case['matter']}</span>
-                    <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
-                    <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
-                </div>
-                """, unsafe_allow_html=True)
+                **Date:** {case['date']} | **Type:** {case['procedure']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}
+                """)
                 
-                # Additional tags for parties and officials
+                # Additional info as plain text
                 st.markdown(f"""
-                <div style="margin-bottom: 12px;">
-                    <span class="tag">Category: {case['category']}</span>
-                    <span class="tag">Appellants: {case['appellants']}</span>
-                    <span class="tag">Respondents: {case['respondents']}</span>
-                    <span class="tag">President: {case['president']}</span>
-                    <span class="tag">Arbitrator 1: {case['arbitrator1']}</span>
-                    <span class="tag">Arbitrator 2: {case['arbitrator2']}</span>
-                </div>
-                """, unsafe_allow_html=True)
+                **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
+                """)
+                
+                st.markdown("---")
                 
                 # Summary
                 st.markdown("**Summary:**")

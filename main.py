@@ -308,25 +308,8 @@ def highlight_text(text, query):
     return text
 
 def render_case_tags(case):
-    """Render colored tags for case metadata"""
-    tags_html = f"""
-    <div style="margin-bottom: 8px;">
-        <span class="tag tag-date">Date: {case['date']}</span>
-        <span class="tag">Type: {case['procedure']}</span>
-        <span class="tag">Matter: {case['matter']}</span>
-        <span class="tag">Category: {case['category']}</span>
-        <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
-        <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
-    </div>
-    <div style="margin-bottom: 12px;">
-        <span class="tag">Appellants: {case['appellants']}</span>
-        <span class="tag">Respondents: {case['respondents']}</span>
-        <span class="tag">President: {case['president']}</span>
-        <span class="tag">Arbitrator 1: {case['arbitrator1']}</span>
-        <span class="tag">Arbitrator 2: {case['arbitrator2']}</span>
-    </div>
-    """
-    return tags_html
+    """This function is no longer used - keeping for reference only"""
+    return ""  # Return empty string to disable tags
 
 # Sidebar Navigation
 with st.sidebar:
@@ -720,7 +703,6 @@ elif page == "🔖 Bookmarks":
             case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
             if case:
                 with st.expander(f"**{case['title']}**"):
-                    st.markdown(render_case_tags(case), unsafe_allow_html=True)
                     st.markdown(f"**Summary:** {case['summary'][:200]}...")
                     
                     if st.button("Remove Bookmark", key=f"remove_{case_id}"):

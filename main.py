@@ -164,7 +164,7 @@ if page == "🔍 Search":
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
             # Clean case header with bold descriptors
-            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | ⚖️ **Parties:** {case['appellants']} v. {case['respondents']} | 📋 **Matter:** {case['matter']} | 🏛️ **Outcome:** {case['outcome']} | 🏆 **Sport:** {case['sport']}"
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | ✅ **Outcome:** {case['outcome']} | ⚽ **Sport:** {case['sport']}"
             
             with st.expander(case_title, expanded=(case_index == 0)):
                 

@@ -443,14 +443,7 @@ if page == "🔍 Search":
                 st.markdown("<br>", unsafe_allow_html=True)
                 
 
-                # Case metadata
-                st.markdown(f"""
-                <div class="case-meta">
-                    <strong>Appellants:</strong> {case['appellants']} | <strong>Respondents:</strong> {case['respondents']} | 
-                    <strong>President:</strong> {case['president']} | <strong>Arbitrator 1:</strong> {case['arbitrator1']} | 
-                    <strong>Arbitrator 2:</strong> {case['arbitrator2']}
-                </div>
-                """, unsafe_allow_html=True)
+
                 
                 # Summary
                 st.markdown("**Summary:**")

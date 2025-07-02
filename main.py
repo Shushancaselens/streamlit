@@ -430,7 +430,7 @@ if page == "🔍 Search":
         
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display results - OPTION 2 LAYOUT
+        # Display results - FIXED LAYOUT
         for i, case in enumerate(results):
             # Create dynamic one-line summary based on case type
             if case['matter'] == 'Contract':
@@ -442,51 +442,56 @@ if page == "🔍 Search":
             else:
                 summary_line = f"{case['matter']} dispute between parties"
             
-            # Create inline tags for the expander title
-            tags_html = f"""
-            <span style="
-                background-color: #eff6ff; 
-                color: #1d4ed8; 
-                padding: 2px 8px; 
-                border-radius: 12px; 
-                font-size: 11px; 
-                margin-left: 8px;
-            ">{case['date'][:4]}</span>
-            <span style="
-                background-color: #e2e8f0; 
-                color: #475569; 
-                padding: 2px 8px; 
-                border-radius: 12px; 
-                font-size: 11px; 
-                margin-left: 4px;
-            ">{case['matter']}</span>
-            <span style="
-                background-color: {'#fef2f2' if case['outcome'] == 'Dismissed' else '#f0fdf4' if case['outcome'] == 'Upheld' else '#fefce8'}; 
-                color: {'#991b1b' if case['outcome'] == 'Dismissed' else '#166534' if case['outcome'] == 'Upheld' else '#a16207'}; 
-                padding: 2px 8px; 
-                border-radius: 12px; 
-                font-size: 11px; 
-                margin-left: 4px;
-            ">{case['outcome']}</span>
-            <span style="
-                background-color: #f0fdf4; 
-                color: #166534; 
-                padding: 2px 8px; 
-                border-radius: 12px; 
-                font-size: 11px; 
-                margin-left: 4px;
-            ">{case['sport']}</span>
-            <span style="
-                background-color: #e2e8f0; 
-                color: #475569; 
-                padding: 2px 8px; 
-                border-radius: 12px; 
-                font-size: 11px; 
-                margin-left: 4px;
-            ">{case['procedure']}</span>
-            """
-            
-            with st.expander(f"**{case['title']} - {summary_line}** {tags_html}", expanded=(i == 0)):
+            # Create a container for the whole case
+            with st.container():
+                # Tags positioned above the expander
+                st.markdown(f"""
+                <div style="margin-bottom: 4px;">
+                    <span style="
+                        background-color: #eff6ff; 
+                        color: #1d4ed8; 
+                        padding: 2px 8px; 
+                        border-radius: 12px; 
+                        font-size: 11px; 
+                        margin-right: 4px;
+                    ">{case['date'][:4]}</span>
+                    <span style="
+                        background-color: #e2e8f0; 
+                        color: #475569; 
+                        padding: 2px 8px; 
+                        border-radius: 12px; 
+                        font-size: 11px; 
+                        margin-right: 4px;
+                    ">{case['matter']}</span>
+                    <span style="
+                        background-color: {'#fef2f2' if case['outcome'] == 'Dismissed' else '#f0fdf4' if case['outcome'] == 'Upheld' else '#fefce8'}; 
+                        color: {'#991b1b' if case['outcome'] == 'Dismissed' else '#166534' if case['outcome'] == 'Upheld' else '#a16207'}; 
+                        padding: 2px 8px; 
+                        border-radius: 12px; 
+                        font-size: 11px; 
+                        margin-right: 4px;
+                    ">{case['outcome']}</span>
+                    <span style="
+                        background-color: #f0fdf4; 
+                        color: #166534; 
+                        padding: 2px 8px; 
+                        border-radius: 12px; 
+                        font-size: 11px; 
+                        margin-right: 4px;
+                    ">{case['sport']}</span>
+                    <span style="
+                        background-color: #e2e8f0; 
+                        color: #475569; 
+                        padding: 2px 8px; 
+                        border-radius: 12px; 
+                        font-size: 11px; 
+                        margin-right: 4px;
+                    ">{case['procedure']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Expander with clean title
+                with st.expander(f"**{case['title']} - {summary_line}**", expanded=(i == 0)):
                 # Important info in professional tag format (like email example)
                 st.markdown(f"""
                 <div style="

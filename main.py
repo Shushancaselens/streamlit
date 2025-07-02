@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, date
 import time
+import random
 
 # Page configuration
 st.set_page_config(
@@ -16,6 +17,8 @@ if 'search_history' not in st.session_state:
     st.session_state.search_history = []
 if 'bookmarked_cases' not in st.session_state:
     st.session_state.bookmarked_cases = []
+if 'current_case' not in st.session_state:
+    st.session_state.current_case = None
 
 # Sample case database
 CASES_DATABASE = [
@@ -73,6 +76,10 @@ CASES_DATABASE = [
             {
                 "excerpt": "Page 8 - 45. The solidarity mechanism ensures fair compensation for clubs investing in youth development.",
                 "full_context": "Page 8 - 44. FIFA's solidarity mechanism is designed to reward clubs that contribute to the training and education of players throughout their career development.\n\nPage 8 - 45. The solidarity mechanism ensures fair compensation for clubs investing in youth development. When a player is transferred during the course of a contract, 5% of any compensation paid to the former club shall be distributed to the club(s) involved in the training and education of the player.\n\nPage 8 - 46. This system recognizes the financial investment made by clubs in developing young talent and ensures they receive appropriate compensation even when players move to other clubs."
+            },
+            {
+                "excerpt": "Page 12 - 67. Training compensation is due when a player signs their first professional contract.",
+                "full_context": "Page 12 - 66. The training compensation system operates independently from the solidarity mechanism and serves to compensate clubs for their investment in player development from age 12 to 21.\n\nPage 12 - 67. Training compensation is due when a player signs their first professional contract. The amount is calculated based on the training costs of the country where the player was trained, with different categories applying to different levels of clubs.\n\nPage 12 - 68. Training compensation shall also be payable when a professional player is transferred during the protected period, ensuring clubs are compensated for their development efforts throughout the player's formative years."
             }
         ],
         "similarity_score": 0.72
@@ -98,130 +105,309 @@ CASES_DATABASE = [
             {
                 "excerpt": "Page 5 - 23. Strict liability applies regardless of intent in anti-doping cases.",
                 "full_context": "Page 5 - 22. The World Anti-Doping Code establishes a comprehensive framework for anti-doping rule violations, with strict liability being a cornerstone principle of the system.\n\nPage 5 - 23. Strict liability applies regardless of intent in anti-doping cases. Athletes are responsible for any prohibited substance found in their samples, irrespective of how the substance entered their system or whether they intended to enhance their performance.\n\nPage 5 - 24. This principle ensures the integrity of sport by placing the burden of responsibility on athletes to ensure they do not consume prohibited substances, while also providing exceptions for cases involving no fault or negligence."
+            },
+            {
+                "excerpt": "Page 9 - 34. Mitigating circumstances may reduce the standard sanction period.",
+                "full_context": "Page 9 - 33. While strict liability forms the basis of anti-doping violations, the Code recognizes that the level of fault or negligence may vary significantly between cases.\n\nPage 9 - 34. Mitigating circumstances may reduce the standard sanction period. These include cases where the athlete can establish no significant fault or negligence, or where the violation resulted from a contaminated product or other exceptional circumstances beyond the athlete's control.\n\nPage 9 - 35. The reduction in sanction must be proportionate to the athlete's degree of fault, with the possibility of elimination of the sanction period in cases where the athlete bears no fault or negligence for the violation."
             }
         ],
         "similarity_score": 0.45
     }
 ]
 
+# Custom CSS
+st.markdown("""
+<style>
+    .main-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .logo-icon {
+        background-color: #4f46e5;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .case-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    
+    .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        margin: 2px 4px 2px 0;
+        border-radius: 12px;
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .tag-date {
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        border-color: #dbeafe;
+    }
+    
+    .tag-outcome-dismissed {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+    
+    .tag-outcome-upheld {
+        background-color: #f0fdf4;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+    
+    .tag-outcome-partially-upheld {
+        background-color: #fefce8;
+        color: #a16207;
+        border-color: #fde047;
+    }
+    
+    .tag-sport-football {
+        background-color: #f0fdf4;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+    
+    .tag-sport-athletics {
+        background-color: #fdf2f8;
+        color: #9d174d;
+        border-color: #fbcfe8;
+    }
+    
+    .case-meta {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    .section-content {
+        background-color: #f8fafc;
+        padding: 12px;
+        border-radius: 6px;
+        border-left: 3px solid #4f46e5;
+        margin: 8px 0;
+    }
+    
+    .results-summary {
+        background-color: #d1fae5;
+        border: 1px solid #a7f3d0;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin: 16px 0;
+        color: #065f46;
+    }
+    
+    .relevant-passage {
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 6px;
+        padding: 10px;
+        margin: 8px 0;
+        font-size: 14px;
+        position: relative;
+    }
+    
+    .passage-context {
+        background-color: #f8fafc;
+        border-left: 4px solid #4f46e5;
+        padding: 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 8px;
+        white-space: pre-line;
+    }
+    
+    .highlighted-text {
+        background-color: #dcfce7;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 500;
+    }
+    
+    .question-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .stats-card {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        text-align: center;
+        margin: 8px 0;
+    }
+    
+    .stats-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #4f46e5;
+    }
+    
+    .stats-label {
+        font-size: 14px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+    
+    .sidebar-section {
+        margin-bottom: 25px;
+    }
+    
+    .bookmark-btn {
+        background-color: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fbbf24;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def search_cases(query, max_results=20, similarity_threshold=0.5):
     """Simulate case search with relevant results"""
+    # Simple search simulation - in real app, this would query a database
     relevant_cases = []
     for case in CASES_DATABASE:
         if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
             if case['similarity_score'] >= similarity_threshold:
                 relevant_cases.append(case)
+    
     return relevant_cases[:max_results]
 
-def display_case_tags(case):
-    """Display case metadata as badges using columns"""
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
-    
-    with col1:
-        st.info(f"📅 {case['date']}")
-    with col2:
-        st.info(f"⚖️ {case['procedure']}")
-    with col3:
-        st.info(f"📋 {case['matter']}")
-    with col4:
-        st.info(f"🏆 {case['category']}")
-    with col5:
-        if case['outcome'] == 'Dismissed':
-            st.error(f"⚡ {case['outcome']}")
-        elif case['outcome'] == 'Upheld':
-            st.success(f"⚡ {case['outcome']}")
-        else:
-            st.warning(f"⚡ {case['outcome']}")
-    with col6:
-        st.success(f"⚽ {case['sport']}")
+def highlight_text(text, query):
+    """Highlight search terms in text"""
+    if query.lower() in text.lower():
+        # Handle line breaks properly
+        highlighted = text.replace(query, f'<span class="highlighted-text">{query}</span>')
+        highlighted = highlighted.replace(query.lower(), f'<span class="highlighted-text">{query.lower()}</span>')
+        highlighted = highlighted.replace(query.upper(), f'<span class="highlighted-text">{query.upper()}</span>')
+        highlighted = highlighted.replace(query.capitalize(), f'<span class="highlighted-text">{query.capitalize()}</span>')
+        return highlighted
+    return text
 
-# Sidebar with Caselens branding
+def render_case_tags(case):
+    """Render colored tags for case metadata"""
+    tags_html = f"""
+    <div>
+        <span class="tag tag-date">Date: {case['date']}</span>
+        <span class="tag">Type: {case['procedure']}</span>
+        <span class="tag">Matter: {case['matter']}</span>
+        <span class="tag">Category: {case['category']}</span>
+        <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+        <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+    </div>
+    """
+    return tags_html
+
+# Sidebar Navigation
 with st.sidebar:
-    # Logo using columns for better alignment
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.markdown("## ⚖️")
-    with col2:
-        st.markdown("## caselens")
+    # Logo
+    st.markdown("""
+    <div class="main-header">
+        <span class="logo-icon">C</span>
+        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.divider()
+    st.markdown("---")
     
-    # Navigation using radio buttons
+    # Navigation
     st.markdown("### Navigation")
     page = st.radio(
-        "Select page:",
+        "",
         ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
         index=0,
         label_visibility="collapsed"
     )
     
-    st.divider()
+    st.markdown("---")
     
     if page == "🔍 Search":
         # Search Options
         st.markdown("### Search Options")
         
-        st.markdown("**Max Results**")
-        max_results = st.number_input(
-            "Maximum number of results",
-            min_value=1, 
-            max_value=100, 
-            value=20,
-            label_visibility="collapsed"
-        )
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Max Results**")
+            max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown("**Similarity Threshold**")
-        similarity = st.slider(
-            "Minimum similarity score",
-            min_value=0.0, 
-            max_value=1.0, 
-            value=0.55, 
-            step=0.01,
-            label_visibility="collapsed"
-        )
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Similarity Threshold**")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            st.write(f"Current value: {similarity}")
+            st.markdown('</div>', unsafe_allow_html=True)
         
         show_similarity = st.checkbox("Show Similarity Scores ⓘ")
         
-        st.divider()
+        st.markdown("---")
         
-        # Advanced Filters in expander
+        # Advanced Filters
         with st.expander("🔧 Advanced Filters"):
             date_range = st.date_input(
                 "Date Range",
-                value=[date(2010, 1, 1), date(2024, 12, 31)]
+                value=[date(2010, 1, 1), date(2024, 12, 31)],
+                key="date_filter"
             )
             
             sport_filter = st.multiselect(
                 "Sport",
-                ["Football", "Basketball", "Tennis", "Swimming", "Athletics", "Hockey"]
+                ["Football", "Basketball", "Tennis", "Swimming", "Athletics", "Hockey"],
+                key="sport_filter"
             )
             
             outcome_filter = st.multiselect(
                 "Outcome",
-                ["Dismissed", "Upheld", "Partially Upheld", "Settled"]
+                ["Dismissed", "Upheld", "Partially Upheld", "Settled"],
+                key="outcome_filter"
             )
             
             procedure_filter = st.selectbox(
                 "Procedure Type",
-                ["All", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"]
+                ["All", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"],
+                key="procedure_filter"
             )
         
         # Search History
         if st.session_state.search_history:
             st.markdown("### Recent Searches")
-            for search in st.session_state.search_history[-5:]:
-                if st.button(f"🔍 {search}", use_container_width=True):
+            for i, search in enumerate(st.session_state.search_history[-5:]):
+                if st.button(f"🔍 {search}", key=f"history_{i}"):
                     st.session_state.current_search = search
 
 # Main Content Area
 if page == "🔍 Search":
     # Search Interface
-    st.title("🔍 Legal Case Search")
-    
+    st.markdown("### Enter your search query")
     search_query = st.text_input(
-        "Enter your search query:",
-        value="just cause",
-        placeholder="Enter your search query (e.g., contract termination, doping violation, transfer dispute)"
+        "", 
+        value="just cause", 
+        placeholder="Enter your search query (e.g., contract termination, doping violation, transfer dispute)", 
+        label_visibility="collapsed",
+        key="main_search"
     )
     
     # Add to search history
@@ -233,76 +419,95 @@ if page == "🔍 Search":
         results = search_cases(search_query, max_results, similarity)
         
         # Search results summary
-        st.success(f"✓ Found {len(results)} results")
-        st.info(f"Found {len(results)} relevant passages in {len(results)} decisions")
+        st.markdown(f"""
+        <div class="results-summary">
+            <strong>✓ Found {len(results)} results</strong>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
         # Display results
         for i, case in enumerate(results):
             with st.expander(f"**{case['title']}**", expanded=(i == 0)):
+                # Tags
+                st.markdown(render_case_tags(case), unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True)
                 
-                # Case tags using native components
-                display_case_tags(case)
-                
-                st.markdown("---")
-                
+
                 # Case metadata
-                st.markdown("**Case Details:**")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown(f"**Appellants:** {case['appellants']}")
-                    st.markdown(f"**Respondents:** {case['respondents']}")
-                with col2:
-                    st.markdown(f"**President:** {case['president']}")
-                    st.markdown(f"**Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}")
+                st.markdown(f"""
+                <div class="case-meta">
+                    <strong>Appellants:</strong> {case['appellants']} | <strong>Respondents:</strong> {case['respondents']} | 
+                    <strong>President:</strong> {case['president']} | <strong>Arbitrator 1:</strong> {case['arbitrator1']} | 
+                    <strong>Arbitrator 2:</strong> {case['arbitrator2']}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Tabbed content for better organization
-                tab1, tab2, tab3, tab4 = st.tabs(["📋 Summary", "⚖️ Court Reasoning", "📊 Case Outcome", "📖 Relevant Passages"])
+                # Summary
+                st.markdown("**Summary:**")
+                st.markdown(f"""
+                <div class="section-content">
+                    {highlight_text(case['summary'], search_query)}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                with tab1:
-                    st.write(case['summary'])
+                # Court Reasoning
+                st.markdown("**Court Reasoning:**")
+                st.markdown(f"""
+                <div class="section-content">
+                    {highlight_text(case['court_reasoning'], search_query)}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                with tab2:
-                    st.write(case['court_reasoning'])
+                # Case Outcome
+                st.markdown("**Case Outcome:**")
+                st.markdown(f"""
+                <div class="section-content">
+                    {highlight_text(case['case_outcome'], search_query)}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                with tab3:
-                    st.write(case['case_outcome'])
-                
-                with tab4:
-                    st.markdown("**Relevant Passages:**")
-                    for idx, passage in enumerate(case['relevant_passages']):
-                        # Show excerpt in info box
-                        st.info(passage['excerpt'])
-                        
-                        # Toggle for full context
-                        show_context = st.checkbox(
-                            "📖 Show full context", 
-                            key=f"context_{case['id']}_{idx}"
-                        )
-                        
-                        if show_context:
-                            with st.container(border=True):
-                                st.markdown("**Full Context:**")
-                                st.text(passage['full_context'])
+                # Relevant Passages
+                st.markdown("**Relevant Passages:**")
+                for idx, passage in enumerate(case['relevant_passages']):
+                    passage_key = f"passage_{case['id']}_{idx}"
+                    
+                    # Show excerpt by default
+                    st.markdown(f"""
+                    <div class="relevant-passage">
+                        {highlight_text(passage['excerpt'], search_query)}
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Toggle for full context
+                    show_context = st.checkbox(f"📖 Show full context", key=f"context_{passage_key}")
+                    
+                    if show_context:
+                        st.markdown(f"""
+                        <div class="passage-context">
+                            {highlight_text(passage['full_context'], search_query)}
+                        </div>
+                        """, unsafe_allow_html=True)
                 
                 # Similarity Score
                 if show_similarity:
-                    st.metric("Similarity Score", f"{case['similarity_score']:.2f}")
-                
-                st.markdown("---")
+                    st.markdown(f"**Similarity Score:** {case['similarity_score']:.2f}")
                 
                 # AI Question Interface
-                st.markdown("**💬 Ask a Question About This Case**")
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
                 question = st.text_area(
-                    "Your question:",
+                    "",
                     placeholder="e.g., What was the main legal issue? What was the outcome? What were the key arguments?",
-                    key=f"question_{case['id']}"
+                    key=f"question_{case['id']}",
+                    label_visibility="collapsed"
                 )
                 
-                if st.button("Ask Question", key=f"ask_{case['id']}", type="primary"):
+                if st.button("Ask Question", key=f"ask_{case['id']}"):
                     if question:
                         with st.spinner("Analyzing case and generating answer..."):
                             time.sleep(2)  # Simulate AI processing
-                            
                             # Simulate AI response
                             if "legal issue" in question.lower():
                                 answer = f"The main legal issue in this case was {case['matter'].lower()} dispute, specifically focusing on contract termination and just cause provisions."
@@ -313,30 +518,61 @@ if page == "🔍 Search":
                             else:
                                 answer = "Based on the case details, this relates to the core legal principles and procedural aspects discussed in the reasoning section."
                             
-                            st.success("**AI Answer:**")
-                            st.write(answer)
+                            st.markdown(f"""
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {answer}
+                            </div>
+                            """, unsafe_allow_html=True)
 
 elif page == "📊 Analytics":
     st.title("📊 Legal Analytics Dashboard")
     
-    # Summary statistics using metrics
+    # Summary statistics
     col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Total Cases", "15,847", "↗ 234")
-    with col2:
-        st.metric("Sports Covered", "23", "→ 0")
-    with col3:
-        st.metric("Cases Resolved", "89%", "↗ 2%")
-    with col4:
-        st.metric("Countries", "156", "↗ 3")
     
-    # Charts using native streamlit charts
+    with col1:
+        st.markdown("""
+        <div class="stats-card">
+            <div class="stats-number">15,847</div>
+            <div class="stats-label">Total Cases</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <div class="stats-card">
+            <div class="stats-number">23</div>
+            <div class="stats-label">Sports Covered</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+        <div class="stats-card">
+            <div class="stats-number">89%</div>
+            <div class="stats-label">Cases Resolved</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div class="stats-card">
+            <div class="stats-number">156</div>
+            <div class="stats-label">Countries</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Charts
     st.markdown("### Case Trends")
+    
+    # Sample data for charts
     chart_data = pd.DataFrame({
         'Year': [2019, 2020, 2021, 2022, 2023, 2024],
         'Cases Filed': [1245, 1189, 1567, 1834, 2156, 2234],
         'Cases Resolved': [1198, 1167, 1456, 1723, 2001, 2089]
     })
+    
     st.line_chart(chart_data.set_index('Year'))
     
     # Outcome distribution
@@ -351,14 +587,14 @@ elif page == "🔖 Bookmarks":
     st.title("🔖 Bookmarked Cases")
     
     if st.session_state.bookmarked_cases:
-        st.success(f"You have {len(st.session_state.bookmarked_cases)} bookmarked cases.")
+        st.markdown(f"You have {len(st.session_state.bookmarked_cases)} bookmarked cases.")
         
         for case_id in st.session_state.bookmarked_cases:
             case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
             if case:
                 with st.expander(f"**{case['title']}**"):
-                    display_case_tags(case)
-                    st.write(f"**Summary:** {case['summary'][:200]}...")
+                    st.markdown(render_case_tags(case), unsafe_allow_html=True)
+                    st.markdown(f"**Summary:** {case['summary'][:200]}...")
                     
                     if st.button("Remove Bookmark", key=f"remove_{case_id}"):
                         st.session_state.bookmarked_cases.remove(case_id)
@@ -369,22 +605,19 @@ elif page == "🔖 Bookmarks":
 elif page == "📄 Documents":
     st.title("📄 Document Library")
     
-    uploaded_files = st.file_uploader(
+    uploaded_file = st.file_uploader(
         "Upload legal documents for analysis",
         type=['pdf', 'docx', 'txt'],
         accept_multiple_files=True
     )
     
-    if uploaded_files:
-        st.success(f"Uploaded {len(uploaded_files)} files successfully!")
+    if uploaded_file:
+        st.success(f"Uploaded {len(uploaded_file)} files successfully!")
         
-        for file in uploaded_files:
+        for file in uploaded_file:
             with st.expander(f"📄 {file.name}"):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("File Size", f"{file.size} bytes")
-                with col2:
-                    st.metric("File Type", file.type)
+                st.markdown(f"**File Size:** {file.size} bytes")
+                st.markdown(f"**File Type:** {file.type}")
                 
                 if st.button(f"Analyze {file.name}", key=f"analyze_{file.name}"):
                     with st.spinner("Analyzing document..."):
@@ -396,21 +629,25 @@ elif page == "👤 Admin":
     
     # User management
     st.markdown("### User Management")
+    
     user_data = pd.DataFrame({
         'User': ['john.doe@law.com', 'jane.smith@legal.org', 'admin@caselens.com'],
         'Role': ['Researcher', 'Senior Associate', 'Administrator'],
         'Last Login': ['2024-07-01', '2024-07-02', '2024-07-02'],
         'Cases Accessed': [145, 289, 1024]
     })
+    
     st.dataframe(user_data, use_container_width=True)
     
     # System settings
     st.markdown("### System Settings")
+    
     col1, col2 = st.columns(2)
     with col1:
         st.checkbox("Enable AI Question Answering", value=True)
         st.checkbox("Auto-backup Database", value=True)
         st.selectbox("Default Search Results", [10, 20, 50, 100], index=1)
+    
     with col2:
         st.checkbox("Email Notifications", value=False)
         st.checkbox("Advanced Analytics", value=True)
@@ -418,5 +655,7 @@ elif page == "👤 Admin":
 
 # Footer
 st.markdown("---")
-st.markdown("*Caselens Legal Research Platform - Powered by AI*")
-st.markdown("© 2024 Caselens. All rights reserved.")
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.markdown("*Caselens Legal Research Platform - Powered by AI*")
+    st.markdown("© 2024 Caselens. All rights reserved.")

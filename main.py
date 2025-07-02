@@ -454,11 +454,7 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                st.markdown(f"""
-                <div class="section-content">
-                    {highlight_text(case['case_outcome'], search_query)}
-                </div>
-                """, unsafe_allow_html=True)
+                st.error(case['case_outcome'], icon="🔨")
                 
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")

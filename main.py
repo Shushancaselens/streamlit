@@ -113,7 +113,7 @@ with st.sidebar:
     st.markdown("---")
     
     # Navigation
-    st.markdown("### 🧭 Navigation")
+    st.markdown("### Navigation")
     page = st.radio(
         "",
         ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
@@ -130,31 +130,31 @@ with st.sidebar:
     
     if page == "🔍 Search":
         # Search Options
-        st.markdown("### 🔧 Search Options")
+        st.markdown("### Search Options")
         
         with st.container():
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown("**📊 Max Results**")
+            st.markdown("**Max Results**")
             max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
         
         with st.container():
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-            st.markdown("**🎯 Similarity Threshold**")
+            st.markdown("**Similarity Threshold**")
             similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
             st.write(f"Current value: {similarity}")
             st.markdown('</div>', unsafe_allow_html=True)
         
-        show_similarity = st.checkbox("📈 Show Similarity Scores ⓘ")
+        show_similarity = st.checkbox("Show Similarity Scores ⓘ")
 
 # Main Content Area
 if page == "🔍 Search":
     # Search Interface
-    st.markdown("### 🔍 Enter your search query")
+    st.markdown("### Enter your search query")
     search_query = st.text_input(
         "", 
         value="just cause", 
-        placeholder="🔎 Enter your search query (e.g., 'just cause', 'contract breach', 'salary dispute')", 
+        placeholder="Enter your search query", 
         label_visibility="collapsed",
         key="search_input_updated"
     )
@@ -163,9 +163,9 @@ if page == "🔍 Search":
         # Perform search
         results = search_cases(search_query, max_results, similarity)
         
-        # Search results summary with emojis
-        st.success(f"✅ Found {len(results)} results")
-        st.markdown(f"🔍 Found {len(results)} relevant passages in {len(results)} decisions")
+        # Search results summary
+        st.success(f"Found {len(results)} results")
+        st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
@@ -191,30 +191,29 @@ if page == "🔍 Search":
                 if show_similarity:
                     st.metric("🎯 Similarity", f"{case['similarity_score']:.0%}")
             
-            # Enhanced colored text descriptors with more emojis
+            # Colored text descriptors
             st.markdown(f"""
-            **📊 Case Overview:**
-            - 📅 **Date:** {case['date']} | 🗓️ **Procedure:** {case['procedure']}
-            - 👥 **Appellants:** {case['appellants']} 🆚 **Respondents:** {case['respondents']}
-            - 📋 **Matter:** {case['matter']} | 🏆 **Category:** {case['category']}
-            - 🏛️ **Outcome:** {case['outcome']} | ⚽ **Sport:** {case['sport']}
-            - 👨‍⚖️ **President:** {case['president']}
-            - ⚖️ **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
-            {f"- 🎯 **Similarity Score:** {case['similarity_score']:.0%}" if show_similarity else ""}
+            **Case Details:**
+            - :green[**Date:**] {case['date']}
+            - :orange[**Parties:**] {case['appellants']} v. {case['respondents']}
+            - :violet[**Matter:**] {case['matter']}
+            - :red[**Outcome:**] {case['outcome']}
+            - :blue[**Sport:**] {case['sport']}
+            {f"- :rainbow[**Similarity:**] {case['similarity_score']:.0%}" if show_similarity else ""}
             """)
             
             with st.expander("📖 View Full Case Details", expanded=(case_index == 0)):
                 
                 # Summary
-                st.markdown("**📝 Summary:**")
+                st.markdown("**Summary:**")
                 st.info(case['summary'])
                 
                 # Court Reasoning
-                st.markdown("**🧠 Court Reasoning:**")
+                st.markdown("**Court Reasoning:**")
                 st.warning(case['court_reasoning'])
                 
                 # Case Outcome
-                st.markdown("**⚖️ Case Outcome:**")
+                st.markdown("**Case Outcome:**")
                 with st.container():
                     st.markdown(f"""
                     <div style="
@@ -224,58 +223,58 @@ if page == "🔍 Search":
                         margin: 0.5rem 0 1rem 0;
                         line-height: 1.6;
                     ">
-                        🏛️ {case['case_outcome']}
+                        {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
                 
                 # Relevant Passages
-                st.markdown("**📚 Relevant Passages:**")
+                st.markdown("**Relevant Passages:**")
                 for passage_index, passage in enumerate(case['relevant_passages']):
                     passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
-                    show_full_context = st.checkbox(f"📖 Show full context", key=passage_unique_key)
+                    show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
                     
                     if show_full_context:
-                        st.success(f"📄 {passage['full_context']}")
+                        st.success(passage['full_context'])
                     else:
-                        st.success(f"📝 {passage['excerpt']}")
+                        st.success(passage['excerpt'])
                 
                 # AI Question Interface
                 st.markdown("---")
-                st.markdown("**🤖 Ask a Question About This Case**")
+                st.markdown("**Ask a Question About This Case**")
                 question_unique_key = f"ai_question_{case['id']}_{case_index}"
                 user_question = st.text_area(
                     "",
-                    placeholder="e.g., What was the main legal issue? 🤔",
+                    placeholder="e.g., What was the main legal issue?",
                     key=question_unique_key,
                     label_visibility="collapsed"
                 )
                 
                 button_unique_key = f"ask_ai_{case['id']}_{case_index}"
-                if st.button("❓ Ask Question", key=button_unique_key):
+                if st.button("Ask Question", key=button_unique_key):
                     if user_question:
-                        with st.spinner("🔍 Analyzing case..."):
+                        with st.spinner("Analyzing case..."):
                             time.sleep(2)
-                            ai_answer = f"🎯 Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
                             
                             st.markdown(f"""
                             <div class="question-box">
-                                <strong>🤖 AI Answer:</strong><br>
+                                <strong>AI Answer:</strong><br>
                                 {ai_answer}
                             </div>
                             """, unsafe_allow_html=True)
 
 elif page == "📊 Analytics":
     st.title("📊 Legal Analytics Dashboard")
-    st.info("📈 Analytics features coming soon. Track case trends, success rates, and legal patterns!")
+    st.info("Analytics features coming soon.")
 
 elif page == "🔖 Bookmarks":
     st.title("🔖 Bookmarked Cases")
-    st.info("📌 No bookmarked cases yet. Start searching and bookmark interesting cases!")
+    st.info("No bookmarked cases yet.")
 
 elif page == "📄 Documents":
     st.title("📄 Document Library")
-    st.info("📁 Upload legal documents for analysis. Supports PDF, DOCX, and TXT formats!")
+    st.info("Upload legal documents for analysis.")
 
 elif page == "👤 Admin":
     st.title("👤 Admin Dashboard")
-    st.info("🔧 Admin features coming soon. Manage users, cases, and system settings!")
+    st.info("Admin features coming soon.")

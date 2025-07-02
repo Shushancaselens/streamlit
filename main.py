@@ -396,22 +396,7 @@ if page == "🔍 Search":
                 st.markdown(render_case_tags(case), unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
                 
-                # Action buttons
-                col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
-                with col1:
-                    if st.button("🔖 Bookmark", key=f"bookmark_{case['id']}"):
-                        if case['id'] not in st.session_state.bookmarked_cases:
-                            st.session_state.bookmarked_cases.append(case['id'])
-                            st.success("Bookmarked!")
-                
-                with col2:
-                    if st.button("📤 Share", key=f"share_{case['id']}"):
-                        st.info(f"Share link: https://caselens.com/case/{case['id']}")
-                
-                with col3:
-                    if st.button("📄 Full Text", key=f"fulltext_{case['id']}"):
-                        st.session_state.current_case = case['id']
-                
+
                 # Case metadata
                 st.markdown(f"""
                 <div class="case-meta">

@@ -432,20 +432,30 @@ if page == "🔍 Search":
         
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
-            with st.expander(f"**{case['title']}**", expanded=(i == 0)):
-                # Key tags right after title - always visible at top when opened
+            # Case title and key tags outside expander - always visible
+            st.markdown(f"**{case['title']}**")
+            st.markdown(f"""
+            <div style="margin-bottom: 8px;">
+                <span class="tag tag-date">Date: {case['date']}</span>
+                <span class="tag">Type: {case['procedure']}</span>
+                <span class="tag">Matter: {case['matter']}</span>
+                <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+                <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.expander("📋 Show More Details", expanded=(i == 0)):
+                # Additional tags for parties and officials (not duplicating the key ones above)
                 st.markdown(f"""
                 <div style="margin-bottom: 12px;">
-                    <span class="tag tag-date">Date: {case['date']}</span>
-                    <span class="tag">Type: {case['procedure']}</span>
-                    <span class="tag">Matter: {case['matter']}</span>
-                    <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
-                    <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+                    <span class="tag">Category: {case['category']}</span>
+                    <span class="tag">Appellants: {case['appellants']}</span>
+                    <span class="tag">Respondents: {case['respondents']}</span>
+                    <span class="tag">President: {case['president']}</span>
+                    <span class="tag">Arbitrator 1: {case['arbitrator1']}</span>
+                    <span class="tag">Arbitrator 2: {case['arbitrator2']}</span>
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Full tags for complete info
-                st.markdown(render_case_tags(case), unsafe_allow_html=True)
                 
                 # Summary
                 st.markdown("**Summary:**")

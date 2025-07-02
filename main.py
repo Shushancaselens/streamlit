@@ -430,16 +430,13 @@ if page == "🔍 Search":
         
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display results - FIXED LAYOUT
+        # Display results - CORRECTED LAYOUT  
         for i, case in enumerate(results):
-            # Title outside expander
-            st.markdown(f"### {case['title']}")
-            
-            # Tags right under title
+            # Title and tags always visible
+            st.markdown(f"**{case['title']}**")
             st.markdown(render_case_tags(case), unsafe_allow_html=True)
             
-            # Expander for case details
-            with st.expander("📋 Show Case Details", expanded=(i == 0)):
+            with st.expander("Show Case Details", expanded=(i == 0)):
                 # Summary
                 st.markdown("**Summary:**")
                 st.info(case['summary'], icon="📋")

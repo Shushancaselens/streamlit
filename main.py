@@ -273,12 +273,12 @@ def render_case_tags(case):
     """Render colored tags for case metadata"""
     tags_html = f"""
     <div>
-        <span class="tag tag-date">{case['date']}</span>
-        <span class="tag">{case['procedure']}</span>
-        <span class="tag">{case['matter']}</span>
-        <span class="tag">{case['category']}</span>
-        <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">{case['outcome']}</span>
-        <span class="tag tag-sport-{case['sport'].lower()}">{case['sport']}</span>
+        <span class="tag tag-date">Date: {case['date']}</span>
+        <span class="tag">Type: {case['procedure']}</span>
+        <span class="tag">Matter: {case['matter']}</span>
+        <span class="tag">Category: {case['category']}</span>
+        <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+        <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
     </div>
     """
     return tags_html

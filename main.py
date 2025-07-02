@@ -430,9 +430,60 @@ if page == "🔍 Search":
         
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display results - OPTION D LAYOUT
+        # Display results - OPTION D WITH STYLED TAGS
         for i, case in enumerate(results):
-            with st.expander(f"**{case['title']}** [Date: {case['date'][:4]}, {case['matter']}, {case['outcome']}, {case['sport']}, {case['procedure']}]", expanded=(i == 0)):
+            # Styled tags above expander
+            st.markdown(f"""
+            <div style="margin-bottom: 4px;">
+                <span style="
+                    background-color: #eff6ff; 
+                    color: #1d4ed8; 
+                    padding: 3px 8px; 
+                    border-radius: 12px; 
+                    font-size: 11px; 
+                    margin-right: 6px;
+                    border: 1px solid #dbeafe;
+                ">Date: {case['date'][:4]}</span>
+                <span style="
+                    background-color: #e2e8f0; 
+                    color: #475569; 
+                    padding: 3px 8px; 
+                    border-radius: 12px; 
+                    font-size: 11px; 
+                    margin-right: 6px;
+                    border: 1px solid #d1d5db;
+                ">{case['matter']}</span>
+                <span style="
+                    background-color: {'#fef2f2' if case['outcome'] == 'Dismissed' else '#f0fdf4' if case['outcome'] == 'Upheld' else '#fefce8'}; 
+                    color: {'#991b1b' if case['outcome'] == 'Dismissed' else '#166534' if case['outcome'] == 'Upheld' else '#a16207'}; 
+                    padding: 3px 8px; 
+                    border-radius: 12px; 
+                    font-size: 11px; 
+                    margin-right: 6px;
+                    border: 1px solid {'#fecaca' if case['outcome'] == 'Dismissed' else '#bbf7d0' if case['outcome'] == 'Upheld' else '#fde047'};
+                ">{case['outcome']}</span>
+                <span style="
+                    background-color: #f0fdf4; 
+                    color: #166534; 
+                    padding: 3px 8px; 
+                    border-radius: 12px; 
+                    font-size: 11px; 
+                    margin-right: 6px;
+                    border: 1px solid #bbf7d0;
+                ">{case['sport']}</span>
+                <span style="
+                    background-color: #e2e8f0; 
+                    color: #475569; 
+                    padding: 3px 8px; 
+                    border-radius: 12px; 
+                    font-size: 11px; 
+                    margin-right: 6px;
+                    border: 1px solid #d1d5db;
+                ">{case['procedure']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.expander(f"**{case['title']}**", expanded=(i == 0)):
                 # Clean case info
                 st.markdown(f"""
                 **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}

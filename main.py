@@ -432,12 +432,39 @@ if page == "🔍 Search":
                 
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")
-                for passage in case['relevant_passages']:
+                for idx, passage in enumerate(case['relevant_passages']):
+                    passage_key = f"passage_{case['id']}_{idx}"
+                    
+                    # Check if passage is expanded
+                    if f"expanded_{passage_key}" not in st.session_state:
+                        st.session_state[f"expanded_{passage_key}"] = False
+                    
+                    # Truncate long passages
+                    if len(passage) > 200 and not st.session_state[f"expanded_{passage_key}"]:
+                        truncated_passage = passage[:200] + "..."
+                        display_passage = highlight_text(truncated_passage, search_query)
+                        show_more = True
+                    else:
+                        display_passage = highlight_text(passage, search_query)
+                        show_more = False
+                    
                     st.markdown(f"""
                     <div class="relevant-passage">
-                        {highlight_text(passage, search_query)}
+                        {display_passage}
                     </div>
                     """, unsafe_allow_html=True)
+                    
+                    # See more/less buttons
+                    col1, col2 = st.columns([1, 6])
+                    with col1:
+                        if show_more:
+                            if st.button("See more", key=f"more_{passage_key}"):
+                                st.session_state[f"expanded_{passage_key}"] = True
+                                st.rerun()
+                        elif len(passage) > 200:
+                            if st.button("See less", key=f"less_{passage_key}"):
+                                st.session_state[f"expanded_{passage_key}"] = False
+                                st.rerun()
                 
                 # Similarity Score
                 if show_similarity:

@@ -486,16 +486,14 @@ if page == "🔍 Search":
                 for idx, passage in enumerate(case['relevant_passages']):
                     passage_key = f"passage_{case['id']}_{idx}"
                     
-                    # Show excerpt using native component
-                    st.success(passage['excerpt'])
-                    
                     # Toggle for full context
                     show_context = st.checkbox(f"Show full context", key=f"context_{passage_key}")
                     
+                    # Show either excerpt or full context in the same container
                     if show_context:
-                        st.markdown("**Full Context:**")
-                        # Use info component for full context - clean and readable
-                        st.info(passage['full_context'])
+                        st.success(passage['full_context'])
+                    else:
+                        st.success(passage['excerpt'])
                 
                 # Similarity Score
                 if show_similarity:

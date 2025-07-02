@@ -454,17 +454,19 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                # Using a container with subtle styling instead of error
+                # Using container to mimic native component styling
                 with st.container():
-                    st.markdown(f"""
+                    st.markdown("""
                     <div style="
-                        background-color: #f8f9fa; 
-                        border-left: 4px solid #6c757d; 
-                        padding: 12px; 
-                        border-radius: 6px; 
-                        margin: 8px 0;
+                        background-color: #f0f2f6; 
+                        border: 1px solid #d4dae5; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0;
+                        font-size: 14px;
+                        line-height: 1.6;
                     ">
-                        🔨 {case['case_outcome']}
+                        🔨 """ + case['case_outcome'] + """
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -480,13 +482,8 @@ if page == "🔍 Search":
                     show_context = st.checkbox(f"📖 Show full context", key=f"context_{passage_key}")
                     
                     if show_context:
-                        st.text_area(
-                            "Full Context:",
-                            value=passage['full_context'],
-                            height=150,
-                            key=f"context_text_{passage_key}",
-                            disabled=True
-                        )
+                        st.markdown("**Full Context:**")
+                        st.code(passage['full_context'], language=None)
                 
                 # Similarity Score
                 if show_similarity:

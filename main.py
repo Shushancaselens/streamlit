@@ -164,8 +164,8 @@ if page == "🔍 Search":
         
         # Display search results with essential info only
         for case_index, case in enumerate(results):
-            # Essential info format: CAS Number | Date | Parties | Matter | Outcome | Sport
-            case_header = f"**{case['title']}** | **Date:** {case['date']} | **Parties:** {case['appellants']} v. {case['respondents']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}"
+            # Essential info format with colored descriptors
+            case_header = f"""**{case['title']}** | <span style="color: #4f46e5; font-weight: bold;">Date:</span> {case['date']} | <span style="color: #4f46e5; font-weight: bold;">Parties:</span> {case['appellants']} v. {case['respondents']} | <span style="color: #4f46e5; font-weight: bold;">Matter:</span> {case['matter']} | <span style="color: #4f46e5; font-weight: bold;">Outcome:</span> {case['outcome']} | <span style="color: #4f46e5; font-weight: bold;">Sport:</span> {case['sport']}"""
             
             with st.expander(case_header, expanded=(case_index == 0)):
                 

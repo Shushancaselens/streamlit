@@ -185,7 +185,7 @@ if page == "🔍 Search":
         
         # Display results - CLEAN VERSION
         for i, case in enumerate(results):
-            with st.expander(f"**{case['title']}** | {case['date']} | {case['matter']} | {case['outcome']} | {case['sport']} | {case['procedure']}", expanded=(i == 0)):
+            with st.expander(f"**{case['title']}** | {case['date']} | {case['appellants']} v. {case['respondents']} | {case['matter']} | {case['outcome']} | {case['sport']}", expanded=(i == 0)):
                 
                 # Detailed metadata when expanded
                 st.markdown(f"""

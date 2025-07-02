@@ -318,6 +318,14 @@ def render_case_tags(case):
         <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
         <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
     </div>
+    <br>
+    <div>
+        <span class="tag">Appellants: {case['appellants']}</span>
+        <span class="tag">Respondents: {case['respondents']}</span>
+        <span class="tag">President: {case['president']}</span>
+        <span class="tag">Arbitrator 1: {case['arbitrator1']}</span>
+        <span class="tag">Arbitrator 2: {case['arbitrator2']}</span>
+    </div>
     """
     return tags_html
 

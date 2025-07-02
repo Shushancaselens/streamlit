@@ -87,6 +87,91 @@ st.markdown("""
     .sidebar-section {
         margin-bottom: 25px;
     }
+    
+    .case-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .case-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .descriptor-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    
+    .badge-date {
+        background-color: #10b981;
+        color: white;
+    }
+    
+    .badge-parties {
+        background-color: #f59e0b;
+        color: white;
+    }
+    
+    .badge-matter {
+        background-color: #8b5cf6;
+        color: white;
+    }
+    
+    .badge-outcome {
+        background-color: #ef4444;
+        color: white;
+    }
+    
+    .badge-outcome.dismissed {
+        background-color: #ef4444;
+    }
+    
+    .badge-outcome.upheld {
+        background-color: #10b981;
+    }
+    
+    .badge-outcome.partially {
+        background-color: #f59e0b;
+    }
+    
+    .badge-sport {
+        background-color: #06b6d4;
+        color: white;
+    }
+    
+    .badge-similarity {
+        background-color: #ec4899;
+        color: white;
+    }
+    
+    .case-separator {
+        height: 2px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        margin: 8px 0;
+        border-radius: 1px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -122,6 +207,11 @@ with st.sidebar:
     )
     
     st.markdown("---")
+    
+    # Initialize default values
+    max_results = 20
+    similarity = 0.55
+    show_similarity = False
     
     if page == "🔍 Search":
         # Search Options
@@ -164,10 +254,30 @@ if page == "🔍 Search":
         
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
-            # Clean case header with bold descriptors
-            case_title = f"**{case['title']}** | **Date:** {case['date']} | **Parties:** {case['appellants']} v. {case['respondents']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}"
+            # Create colorful case header
+            outcome_class = case['outcome'].lower().replace(' ', '')
+            similarity_display = f"{case['similarity_score']:.0%}" if show_similarity else ""
             
-            with st.expander(case_title, expanded=(case_index == 0)):
+            case_header_html = f"""
+            <div class="case-header">
+                <div class="case-title">
+                    ⚖️ {case['title']}
+                </div>
+                <div class="case-separator"></div>
+                <div class="descriptor-container">
+                    <span class="badge badge-date">📅 {case['date']}</span>
+                    <span class="badge badge-parties">👥 {case['appellants']} v. {case['respondents']}</span>
+                    <span class="badge badge-matter">📋 {case['matter']}</span>
+                    <span class="badge badge-outcome {outcome_class}">🏛️ {case['outcome']}</span>
+                    <span class="badge badge-sport">⚽ {case['sport']}</span>
+                    {f'<span class="badge badge-similarity">🎯 {similarity_display}</span>' if show_similarity else ''}
+                </div>
+            </div>
+            """
+            
+            st.markdown(case_header_html, unsafe_allow_html=True)
+            
+            with st.expander("View Case Details", expanded=(case_index == 0)):
                 
                 # Summary
                 st.markdown("**Summary:**")

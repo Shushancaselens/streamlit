@@ -454,7 +454,19 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                st.error(case['case_outcome'], icon="🔨")
+                # Using a container with subtle styling instead of error
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f8f9fa; 
+                        border-left: 4px solid #6c757d; 
+                        padding: 12px; 
+                        border-radius: 6px; 
+                        margin: 8px 0;
+                    ">
+                        🔨 {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")

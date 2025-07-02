@@ -310,7 +310,7 @@ def highlight_text(text, query):
 def render_case_tags(case):
     """Render colored tags for case metadata"""
     tags_html = f"""
-    <div>
+    <div style="margin-bottom: 8px;">
         <span class="tag tag-date">Date: {case['date']}</span>
         <span class="tag">Type: {case['procedure']}</span>
         <span class="tag">Matter: {case['matter']}</span>
@@ -318,8 +318,7 @@ def render_case_tags(case):
         <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
         <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
     </div>
-    <br>
-    <div>
+    <div style="margin-bottom: 12px;">
         <span class="tag">Appellants: {case['appellants']}</span>
         <span class="tag">Respondents: {case['respondents']}</span>
         <span class="tag">President: {case['president']}</span>

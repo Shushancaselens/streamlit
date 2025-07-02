@@ -466,7 +466,7 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                # Use native container with background but no conflicting borders
+                # Use native container to match other sections
                 with st.container():
                     st.markdown(f"""
                     <div style="
@@ -474,7 +474,6 @@ if page == "🔍 Search":
                         border-radius: 0.5rem; 
                         padding: 0.75rem 1rem;
                         margin: 0.5rem 0 1rem 0;
-                        font-size: 14px;
                         line-height: 1.6;
                     ">
                         {case['case_outcome']}

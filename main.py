@@ -168,7 +168,6 @@ if page == "🔍 Search":
             
             with st.expander(case_title, expanded=(case_index == 0)):
                 
-                # Additional case details
                 st.markdown(f"""
                 **Procedure:** {case['procedure']} | **Category:** {case['category']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
                 """)
@@ -248,4 +247,3 @@ elif page == "📄 Documents":
 elif page == "👤 Admin":
     st.title("👤 Admin Dashboard")
     st.info("Admin features coming soon.")
-

@@ -486,11 +486,11 @@ if page == "🔍 Search":
                 question = st.text_area(
                     "",
                     placeholder="e.g., What was the main legal issue? What was the outcome? What were the key arguments?",
-                    key=f"question_{case['id']}",
+                    key=f"question_{case['id']}_{i}",  # Added case index for uniqueness
                     label_visibility="collapsed"
                 )
                 
-                if st.button("Ask Question", key=f"ask_{case['id']}"):
+                if st.button("Ask Question", key=f"ask_{case['id']}_{i}"):  # Added case index here too
                     if question:
                         with st.spinner("Analyzing case and generating answer..."):
                             time.sleep(2)  # Simulate AI processing

@@ -40,9 +40,18 @@ CASES_DATABASE = [
         "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Ndoye's salary for over three months was a substantial breach, constituting just cause for contract termination. Alleged late returns by Ndoye did not nullify this breach, and there was no evidence he agreed to delay payment. Counterclaims by respondents were inadmissible per CAS procedural rules. The compensation set by the FIFA DRC was appropriate.",
         "case_outcome": "The appeal by FC Volyn was dismissed and the FIFA DRC's decision was upheld: FC Volyn must pay Ndoye USD 299,200 in outstanding remuneration and USD 495,000 as compensation. Ndoye's counterclaim for additional damages was ruled inadmissible, and all other requests were dismissed. The panel confirmed that the time limit for appeal had been respected and that FIFA regulations (with Swiss law supplementary) applied.",
         "relevant_passages": [
-            "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
-            "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
-            "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship."
+            {
+                "excerpt": "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
+                "full_context": "Page 15 - 77. The concept of just cause has been extensively developed through CAS jurisprudence and FIFA regulations. The FIFA Regulations on the Status and Transfer of Players (RSTP) provide the foundational framework for determining when a party may terminate a contract.\n\nPage 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case. Behaviour that is in violation of the terms of an employment contract cannot justify unilateral termination by the other party if such behaviour is of minor importance.'\n\nPage 15 - 79. Furthermore, the Commentary emphasizes that just cause must be of such gravity that the injured party cannot reasonably be expected to continue the employment relationship. This standard has been consistently applied by CAS panels in determining whether contract termination was justified."
+            },
+            {
+                "excerpt": "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
+                "full_context": "Page 22 - 88. The obligation to pay salary is a fundamental contractual duty in employment relationships. When an employer fails to meet this basic obligation, it strikes at the heart of the employment contract.\n\nPage 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract. The CAS has consistently held that when salary payments are delayed for a period exceeding two to three months, this constitutes a substantial breach sufficient to justify termination.\n\nPage 22 - 90. However, the employee must demonstrate that they have given the employer reasonable opportunity to remedy the breach and that the non-payment was not justified by any countervailing circumstances or legitimate disputes over the amount owed."
+            },
+            {
+                "excerpt": "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship.",
+                "full_context": "Page 31 - 104. In assessing whether just cause exists, CAS panels must weigh all relevant circumstances, including the nature and severity of the breach, the conduct of both parties, and the overall context of the contractual relationship.\n\nPage 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship. This objective test requires careful analysis of whether a reasonable person in the same position would consider the breach sufficiently serious to warrant termination.\n\nPage 31 - 106. The Panel notes that minor infractions, isolated incidents, or breaches that can be readily remedied do not typically constitute just cause. The breach must fundamentally undermine the basis of the contractual relationship and make continued performance unreasonable or impossible."
+            }
         ],
         "similarity_score": 0.87
     },
@@ -64,8 +73,14 @@ CASES_DATABASE = [
         "court_reasoning": "The panel found that FIFA's solidarity mechanism provisions were properly applied and the requesting club was entitled to compensation.",
         "case_outcome": "Appeal upheld. Real Madrid must pay additional compensation of EUR 2,500,000 to Manchester United for the player transfer.",
         "relevant_passages": [
-            "Page 8 - 45. The solidarity mechanism ensures fair compensation for clubs investing in youth development.",
-            "Page 12 - 67. Training compensation is due when a player signs their first professional contract."
+            {
+                "excerpt": "Page 8 - 45. The solidarity mechanism ensures fair compensation for clubs investing in youth development.",
+                "full_context": "Page 8 - 44. FIFA's solidarity mechanism is designed to reward clubs that contribute to the training and education of players throughout their career development.\n\nPage 8 - 45. The solidarity mechanism ensures fair compensation for clubs investing in youth development. When a player is transferred during the course of a contract, 5% of any compensation paid to the former club shall be distributed to the club(s) involved in the training and education of the player.\n\nPage 8 - 46. This system recognizes the financial investment made by clubs in developing young talent and ensures they receive appropriate compensation even when players move to other clubs."
+            },
+            {
+                "excerpt": "Page 12 - 67. Training compensation is due when a player signs their first professional contract.",
+                "full_context": "Page 12 - 66. The training compensation system operates independently from the solidarity mechanism and serves to compensate clubs for their investment in player development from age 12 to 21.\n\nPage 12 - 67. Training compensation is due when a player signs their first professional contract. The amount is calculated based on the training costs of the country where the player was trained, with different categories applying to different levels of clubs.\n\nPage 12 - 68. Training compensation shall also be payable when a professional player is transferred during the protected period, ensuring clubs are compensated for their development efforts throughout the player's formative years."
+            }
         ],
         "similarity_score": 0.72
     },
@@ -87,8 +102,14 @@ CASES_DATABASE = [
         "court_reasoning": "The panel found evidence of rule violation but considered mitigating circumstances regarding the athlete's lack of intent.",
         "case_outcome": "Partially upheld. Athlete sanctioned with 18-month suspension instead of 4 years due to mitigating circumstances.",
         "relevant_passages": [
-            "Page 5 - 23. Strict liability applies regardless of intent in anti-doping cases.",
-            "Page 9 - 34. Mitigating circumstances may reduce the standard sanction period."
+            {
+                "excerpt": "Page 5 - 23. Strict liability applies regardless of intent in anti-doping cases.",
+                "full_context": "Page 5 - 22. The World Anti-Doping Code establishes a comprehensive framework for anti-doping rule violations, with strict liability being a cornerstone principle of the system.\n\nPage 5 - 23. Strict liability applies regardless of intent in anti-doping cases. Athletes are responsible for any prohibited substance found in their samples, irrespective of how the substance entered their system or whether they intended to enhance their performance.\n\nPage 5 - 24. This principle ensures the integrity of sport by placing the burden of responsibility on athletes to ensure they do not consume prohibited substances, while also providing exceptions for cases involving no fault or negligence."
+            },
+            {
+                "excerpt": "Page 9 - 34. Mitigating circumstances may reduce the standard sanction period.",
+                "full_context": "Page 9 - 33. While strict liability forms the basis of anti-doping violations, the Code recognizes that the level of fault or negligence may vary significantly between cases.\n\nPage 9 - 34. Mitigating circumstances may reduce the standard sanction period. These include cases where the athlete can establish no significant fault or negligence, or where the violation resulted from a contaminated product or other exceptional circumstances beyond the athlete's control.\n\nPage 9 - 35. The reduction in sanction must be proportionate to the athlete's degree of fault, with the possibility of elimination of the sanction period in cases where the athlete bears no fault or negligence for the violation."
+            }
         ],
         "similarity_score": 0.45
     }
@@ -198,6 +219,18 @@ st.markdown("""
         padding: 10px;
         margin: 8px 0;
         font-size: 14px;
+        position: relative;
+    }
+    
+    .passage-context {
+        background-color: #f8fafc;
+        border-left: 4px solid #4f46e5;
+        padding: 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 8px;
+        white-space: pre-line;
     }
     
     .highlighted-text {
@@ -266,7 +299,12 @@ def search_cases(query, max_results=20, similarity_threshold=0.5):
 def highlight_text(text, query):
     """Highlight search terms in text"""
     if query.lower() in text.lower():
-        return text.replace(query, f'<span class="highlighted-text">{query}</span>')
+        # Handle line breaks properly
+        highlighted = text.replace(query, f'<span class="highlighted-text">{query}</span>')
+        highlighted = highlighted.replace(query.lower(), f'<span class="highlighted-text">{query.lower()}</span>')
+        highlighted = highlighted.replace(query.upper(), f'<span class="highlighted-text">{query.upper()}</span>')
+        highlighted = highlighted.replace(query.capitalize(), f'<span class="highlighted-text">{query.capitalize()}</span>')
+        return highlighted
     return text
 
 def render_case_tags(case):
@@ -435,36 +473,20 @@ if page == "🔍 Search":
                 for idx, passage in enumerate(case['relevant_passages']):
                     passage_key = f"passage_{case['id']}_{idx}"
                     
-                    # Check if passage is expanded
-                    if f"expanded_{passage_key}" not in st.session_state:
-                        st.session_state[f"expanded_{passage_key}"] = False
-                    
-                    # Truncate long passages
-                    if len(passage) > 200 and not st.session_state[f"expanded_{passage_key}"]:
-                        truncated_passage = passage[:200] + "..."
-                        display_passage = highlight_text(truncated_passage, search_query)
-                        show_more = True
-                    else:
-                        display_passage = highlight_text(passage, search_query)
-                        show_more = False
-                    
+                    # Show excerpt by default
                     st.markdown(f"""
                     <div class="relevant-passage">
-                        {display_passage}
+                        {highlight_text(passage['excerpt'], search_query)}
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # See more/less buttons
-                    col1, col2 = st.columns([1, 6])
-                    with col1:
-                        if show_more:
-                            if st.button("See more", key=f"more_{passage_key}"):
-                                st.session_state[f"expanded_{passage_key}"] = True
-                                st.rerun()
-                        elif len(passage) > 200:
-                            if st.button("See less", key=f"less_{passage_key}"):
-                                st.session_state[f"expanded_{passage_key}"] = False
-                                st.rerun()
+                    # Expandable context
+                    with st.expander("📖 See full context"):
+                        st.markdown(f"""
+                        <div class="passage-context">
+                            {highlight_text(passage['full_context'], search_query)}
+                        </div>
+                        """, unsafe_allow_html=True)
                 
                 # Similarity Score
                 if show_similarity:

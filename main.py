@@ -187,6 +187,15 @@ if page == "🔍 Search":
         for i, case in enumerate(results):
             with st.expander(f"**{case['title']}** | {case['date']} | {case['matter']} | {case['outcome']} | {case['sport']} | {case['procedure']}", expanded=(i == 0)):
                 
+                # Detailed metadata when expanded
+                st.markdown(f"""
+                **Date:** {case['date']} | **Procedure:** {case['procedure']} | **Matter:** {case['matter']} | **Category:** {case['category']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}
+                """)
+                
+                st.markdown(f"""
+                **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
+                """)
+                
                 # Summary
                 st.markdown("**Summary:**")
                 st.info(case['summary'])

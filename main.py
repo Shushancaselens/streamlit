@@ -405,7 +405,6 @@ with st.sidebar:
                 if st.button(f"🔍 {search}", key=f"history_{i}"):
                     st.session_state.current_search = search
 
-# Main Content Area
 if page == "🔍 Search":
     # Search Interface
     st.markdown("### Enter your search query")
@@ -448,7 +447,6 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                # Use native container with background but no conflicting borders
                 with st.container():
                     st.markdown(f"""
                     <div style="
@@ -465,12 +463,10 @@ if page == "🔍 Search":
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")
                 for idx, passage in enumerate(case['relevant_passages']):
-                    passage_key = f"passage_{case['id']}_{idx}_{i}"  # Added case index for uniqueness
+                    passage_key = f"passage_{case['id']}_{idx}_{i}"
                     
-                    # Toggle for full context
                     show_context = st.checkbox(f"Show full context", key=f"context_{passage_key}")
                     
-                    # Show either excerpt or full context in the same container
                     if show_context:
                         st.success(passage['full_context'])
                     else:
@@ -486,15 +482,14 @@ if page == "🔍 Search":
                 question = st.text_area(
                     "",
                     placeholder="e.g., What was the main legal issue? What was the outcome? What were the key arguments?",
-                    key=f"question_{case['id']}_{i}",  # Added case index for uniqueness
+                    key=f"question_{case['id']}_{i}",
                     label_visibility="collapsed"
                 )
                 
-                if st.button("Ask Question", key=f"ask_{case['id']}_{i}"):  # Added case index here too
+                if st.button("Ask Question", key=f"ask_{case['id']}_{i}"):
                     if question:
                         with st.spinner("Analyzing case and generating answer..."):
-                            time.sleep(2)  # Simulate AI processing
-                            # Simulate AI response
+                            time.sleep(2)
                             if "legal issue" in question.lower():
                                 answer = f"The main legal issue in this case was {case['matter'].lower()} dispute, specifically focusing on contract termination and just cause provisions."
                             elif "outcome" in question.lower():

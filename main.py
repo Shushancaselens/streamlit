@@ -24,7 +24,7 @@ if 'current_case' not in st.session_state:
 CASES_DATABASE = [
     {
         "id": "CAS_2013_A_3165",
-        "title": "CAS 2013/A/3165 - CAS 2013/A/3165",
+        "title": "CAS 2013/A/3165",
         "date": "2014-01-14",
         "procedure": "Appeal Arbitration",
         "matter": "Contract",

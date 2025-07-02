@@ -450,11 +450,7 @@ if page == "🔍 Search":
                 
                 # Court Reasoning
                 st.markdown("**Court Reasoning:**")
-                st.markdown(f"""
-                <div class="section-content">
-                    {highlight_text(case['court_reasoning'], search_query)}
-                </div>
-                """, unsafe_allow_html=True)
+                st.warning(case['court_reasoning'], icon="⚖️")
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")

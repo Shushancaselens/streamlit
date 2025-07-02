@@ -433,10 +433,19 @@ if page == "🔍 Search":
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
             with st.expander(f"**{case['title']}**", expanded=(i == 0)):
-                # Key info as plain text
+                # Important info in professional tag format (like email example)
                 st.markdown(f"""
-                **Date:** {case['date']} | **Type:** {case['procedure']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}
-                """)
+                <div style="
+                    background-color: #e8e9f3; 
+                    border-radius: 6px; 
+                    padding: 12px; 
+                    margin: 8px 0;
+                    font-size: 14px;
+                    color: #4a5568;
+                ">
+                    <strong>Date:</strong> {case['date']} | <strong>Type:</strong> {case['procedure']} | <strong>Matter:</strong> {case['matter']} | <strong>Outcome:</strong> {case['outcome']} | <strong>Sport:</strong> {case['sport']}
+                </div>
+                """, unsafe_allow_html=True)
                 
                 # Additional info as plain text
                 st.markdown(f"""

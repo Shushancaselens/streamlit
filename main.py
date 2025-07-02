@@ -432,8 +432,19 @@ if page == "🔍 Search":
         
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
+            # Key tags always visible (outside expander)
+            st.markdown(f"""
+            <div style="margin-bottom: 8px;">
+                <span class="tag tag-date">Date: {case['date']}</span>
+                <span class="tag">Type: {case['procedure']}</span>
+                <span class="tag">Matter: {case['matter']}</span>
+                <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+                <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
             with st.expander(f"**{case['title']}**", expanded=(i == 0)):
-                # Tags at the top - first thing visible
+                # Full tags inside expander for complete info
                 st.markdown(render_case_tags(case), unsafe_allow_html=True)
                 
                 # Summary

@@ -443,8 +443,6 @@ if page == "🔍 Search":
                 **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
                 """)
                 
-                st.markdown("---")
-                
                 # Summary
                 st.markdown("**Summary:**")
                 st.info(case['summary'])

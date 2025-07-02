@@ -433,6 +433,9 @@ if page == "🔍 Search":
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
             with st.expander(f"**{case['title']}**", expanded=(i == 0)):
+                # Tags at the top - first thing visible
+                st.markdown(render_case_tags(case), unsafe_allow_html=True)
+                
                 # Summary
                 st.markdown("**Summary:**")
                 st.info(case['summary'], icon="📋")
@@ -508,9 +511,6 @@ if page == "🔍 Search":
                                 {answer}
                             </div>
                             """, unsafe_allow_html=True)
-            
-            # Tags right after expander - always visible
-            st.markdown(render_case_tags(case), unsafe_allow_html=True)
 
 elif page == "📊 Analytics":
     st.title("📊 Legal Analytics Dashboard")

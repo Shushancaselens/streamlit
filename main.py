@@ -465,7 +465,7 @@ if page == "🔍 Search":
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")
                 for idx, passage in enumerate(case['relevant_passages']):
-                    passage_key = f"passage_{case['id']}_{idx}"
+                    passage_key = f"passage_{case['id']}_{idx}_{i}"  # Added case index for uniqueness
                     
                     # Toggle for full context
                     show_context = st.checkbox(f"Show full context", key=f"context_{passage_key}")

@@ -446,11 +446,7 @@ if page == "🔍 Search":
                 
                 # Summary
                 st.markdown("**Summary:**")
-                st.markdown(f"""
-                <div class="section-content">
-                    {highlight_text(case['summary'], search_query)}
-                </div>
-                """, unsafe_allow_html=True)
+                st.info(case['summary'], icon="📋")
                 
                 # Court Reasoning
                 st.markdown("**Court Reasoning:**")
@@ -473,22 +469,20 @@ if page == "🔍 Search":
                 for idx, passage in enumerate(case['relevant_passages']):
                     passage_key = f"passage_{case['id']}_{idx}"
                     
-                    # Show excerpt by default
-                    st.markdown(f"""
-                    <div class="relevant-passage">
-                        {highlight_text(passage['excerpt'], search_query)}
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Show excerpt using native component
+                    st.success(passage['excerpt'], icon="📖")
                     
                     # Toggle for full context
                     show_context = st.checkbox(f"📖 Show full context", key=f"context_{passage_key}")
                     
                     if show_context:
-                        st.markdown(f"""
-                        <div class="passage-context">
-                            {highlight_text(passage['full_context'], search_query)}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.text_area(
+                            "Full Context:",
+                            value=passage['full_context'],
+                            height=150,
+                            key=f"context_text_{passage_key}",
+                            disabled=True
+                        )
                 
                 # Similarity Score
                 if show_similarity:

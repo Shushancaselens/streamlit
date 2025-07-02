@@ -430,86 +430,86 @@ if page == "🔍 Search":
         
         st.markdown(f"Found {len(results)} relevant passages in {len(results)} decisions")
         
-        # Display results - FIXED LAYOUT
+        # Display results - OPTION D LAYOUT
         for i, case in enumerate(results):
-            # Create dynamic one-line summary based on case type
-            if case['matter'] == 'Contract':
-                summary_line = f"Employment contract termination due to unpaid salary"
-            elif case['matter'] == 'Transfer':
-                summary_line = f"Player transfer compensation and solidarity mechanism dispute"
-            elif case['matter'] == 'Anti-Doping':
-                summary_line = f"Anti-doping rule violation and sanctioning case"
-            else:
-                summary_line = f"{case['matter']} dispute between parties"
-            
-            # Create a container for the whole case
-            with st.container():
-                # Tags positioned above the expander
+            with st.expander(f"**{case['title']}** [Date: {case['date'][:4]}, {case['matter']}, {case['outcome']}, {case['sport']}, {case['procedure']}]", expanded=(i == 0)):
+                # Clean case info
                 st.markdown(f"""
-                <div style="margin-bottom: 4px;">
-                    <span style="
-                        background-color: #eff6ff; 
-                        color: #1d4ed8; 
-                        padding: 2px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 4px;
-                    ">{case['date'][:4]}</span>
-                    <span style="
-                        background-color: #e2e8f0; 
-                        color: #475569; 
-                        padding: 2px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 4px;
-                    ">{case['matter']}</span>
-                    <span style="
-                        background-color: {'#fef2f2' if case['outcome'] == 'Dismissed' else '#f0fdf4' if case['outcome'] == 'Upheld' else '#fefce8'}; 
-                        color: {'#991b1b' if case['outcome'] == 'Dismissed' else '#166534' if case['outcome'] == 'Upheld' else '#a16207'}; 
-                        padding: 2px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 4px;
-                    ">{case['outcome']}</span>
-                    <span style="
-                        background-color: #f0fdf4; 
-                        color: #166534; 
-                        padding: 2px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 4px;
-                    ">{case['sport']}</span>
-                    <span style="
-                        background-color: #e2e8f0; 
-                        color: #475569; 
-                        padding: 2px 8px; 
-                        border-radius: 12px; 
-                        font-size: 11px; 
-                        margin-right: 4px;
-                    ">{case['procedure']}</span>
-                </div>
-                """, unsafe_allow_html=True)
+                **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
+                """)
                 
-                # Expander with clean title
-                with st.expander(f"**{case['title']} - {summary_line}**", expanded=(i == 0)):
-                    # Important info in professional tag format (like email example)
+                # Summary
+                st.markdown("**Summary:**")
+                st.info(case['summary'])
+                
+                # Court Reasoning
+                st.markdown("**Court Reasoning:**")
+                st.warning(case['court_reasoning'])
+                
+                # Case Outcome
+                st.markdown("**Case Outcome:**")
+                # Use native container with background but no conflicting borders
+                with st.container():
                     st.markdown(f"""
                     <div style="
-                        background-color: #e8e9f3; 
-                        border-radius: 6px; 
-                        padding: 12px; 
-                        margin: 8px 0;
-                        font-size: 14px;
-                        color: #4a5568;
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
                     ">
-                        <strong>Date:</strong> {case['date']} | <strong>Type:</strong> {case['procedure']} | <strong>Matter:</strong> {case['matter']} | <strong>Outcome:</strong> {case['outcome']} | <strong>Sport:</strong> {case['sport']}
+                        {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
+                
+                # Relevant Passages
+                st.markdown("**Relevant Passages:**")
+                for idx, passage in enumerate(case['relevant_passages']):
+                    passage_key = f"passage_{case['id']}_{idx}"
                     
-                    # Additional info as plain text
-                    st.markdown(f"""
-                    **Category:** {case['category']} | **Appellants:** {case['appellants']} | **Respondents:** {case['respondents']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
-                    """)
+                    # Toggle for full context
+                    show_context = st.checkbox(f"Show full context", key=f"context_{passage_key}")
+                    
+                    # Show either excerpt or full context in the same container
+                    if show_context:
+                        st.success(passage['full_context'])
+                    else:
+                        st.success(passage['excerpt'])
+                
+                # Similarity Score
+                if show_similarity:
+                    st.markdown(f"**Similarity Score:** {case['similarity_score']:.2f}")
+                
+                # AI Question Interface
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
+                question = st.text_area(
+                    "",
+                    placeholder="e.g., What was the main legal issue? What was the outcome? What were the key arguments?",
+                    key=f"question_{case['id']}",
+                    label_visibility="collapsed"
+                )
+                
+                if st.button("Ask Question", key=f"ask_{case['id']}"):
+                    if question:
+                        with st.spinner("Analyzing case and generating answer..."):
+                            time.sleep(2)  # Simulate AI processing
+                            # Simulate AI response
+                            if "legal issue" in question.lower():
+                                answer = f"The main legal issue in this case was {case['matter'].lower()} dispute, specifically focusing on contract termination and just cause provisions."
+                            elif "outcome" in question.lower():
+                                answer = f"The case outcome was '{case['outcome']}'. {case['case_outcome'][:100]}..."
+                            elif "arguments" in question.lower():
+                                answer = f"Key arguments included: {case['court_reasoning'][:150]}..."
+                            else:
+                                answer = "Based on the case details, this relates to the core legal principles and procedural aspects discussed in the reasoning section."
+                            
+                            st.markdown(f"""
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {answer}
+                            </div>
+                            """, unsafe_allow_html=True)
                 # Important info in professional tag format (like email example)
                 st.markdown(f"""
                 <div style="

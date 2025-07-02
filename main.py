@@ -454,10 +454,20 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                # Use a simple container that matches Streamlit's style better
-                outcome_container = st.container()
-                with outcome_container:
-                    st.markdown(f"🔨 {case['case_outcome']}")
+                # Use native container with background but no conflicting borders
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        font-size: 14px;
+                        line-height: 1.6;
+                    ">
+                        🔨 {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")

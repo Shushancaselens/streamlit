@@ -432,20 +432,19 @@ if page == "🔍 Search":
         
         # Display results - CORRECT LAYOUT
         for i, case in enumerate(results):
-            # Case title and key tags outside expander - always visible
-            st.markdown(f"**{case['title']}**")
-            st.markdown(f"""
-            <div style="margin-bottom: 8px;">
-                <span class="tag tag-date">Date: {case['date']}</span>
-                <span class="tag">Type: {case['procedure']}</span>
-                <span class="tag">Matter: {case['matter']}</span>
-                <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
-                <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            with st.expander("📋 Show More Details", expanded=(i == 0)):
-                # Additional tags for parties and officials (not duplicating the key ones above)
+            with st.expander(f"**{case['title']}**", expanded=(i == 0)):
+                # Key tags first - essential info
+                st.markdown(f"""
+                <div style="margin-bottom: 8px;">
+                    <span class="tag tag-date">Date: {case['date']}</span>
+                    <span class="tag">Type: {case['procedure']}</span>
+                    <span class="tag">Matter: {case['matter']}</span>
+                    <span class="tag tag-outcome-{case['outcome'].lower().replace(' ', '-')}">Outcome: {case['outcome']}</span>
+                    <span class="tag tag-sport-{case['sport'].lower()}">Sport: {case['sport']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Additional tags for parties and officials
                 st.markdown(f"""
                 <div style="margin-bottom: 12px;">
                     <span class="tag">Category: {case['category']}</span>

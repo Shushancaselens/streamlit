@@ -123,11 +123,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Set default values
-    max_results = 20
-    similarity = 0.55
-    show_similarity = False
-    
     if page == "🔍 Search":
         # Search Options
         st.markdown("### Search Options")
@@ -169,40 +164,10 @@ if page == "🔍 Search":
         
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
-            # Create colorful case descriptors using native Streamlit components
-            st.markdown("---")
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | **Date:** {case['date']} | **Parties:** {case['appellants']} v. {case['respondents']} | **Matter:** {case['matter']} | **Outcome:** {case['outcome']} | **Sport:** {case['sport']}"
             
-            # Case title with emoji
-            st.markdown(f"### ⚖️ {case['title']}")
-            
-            # Create columns for descriptors
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.metric("📅 Date", case['date'])
-                st.metric("🏛️ Outcome", case['outcome'])
-            
-            with col2:
-                st.metric("📋 Matter", case['matter'])
-                st.metric("⚽ Sport", case['sport'])
-            
-            with col3:
-                st.metric("👥 Parties", f"{case['appellants']} v. {case['respondents']}")
-                if show_similarity:
-                    st.metric("🎯 Similarity", f"{case['similarity_score']:.0%}")
-            
-            # Colored text descriptors
-            st.markdown(f"""
-            **Case Details:**
-            - :green[**Date:**] {case['date']}
-            - :orange[**Parties:**] {case['appellants']} v. {case['respondents']}
-            - :violet[**Matter:**] {case['matter']}
-            - :red[**Outcome:**] {case['outcome']}
-            - :blue[**Sport:**] {case['sport']}
-            {f"- :rainbow[**Similarity:**] {case['similarity_score']:.0%}" if show_similarity else ""}
-            """)
-            
-            with st.expander("📖 View Full Case Details", expanded=(case_index == 0)):
+            with st.expander(case_title, expanded=(case_index == 0)):
                 
                 # Summary
                 st.markdown("**Summary:**")

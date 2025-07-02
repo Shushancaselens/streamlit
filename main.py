@@ -454,21 +454,10 @@ if page == "🔍 Search":
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
-                # Using container to mimic native component styling
-                with st.container():
-                    st.markdown("""
-                    <div style="
-                        background-color: #f0f2f6; 
-                        border: 1px solid #d4dae5; 
-                        border-radius: 0.5rem; 
-                        padding: 0.75rem 1rem;
-                        margin: 0.5rem 0;
-                        font-size: 14px;
-                        line-height: 1.6;
-                    ">
-                        🔨 """ + case['case_outcome'] + """
-                    </div>
-                    """, unsafe_allow_html=True)
+                # Use a simple container that matches Streamlit's style better
+                outcome_container = st.container()
+                with outcome_container:
+                    st.markdown(f"🔨 {case['case_outcome']}")
                 
                 # Relevant Passages
                 st.markdown("**Relevant Passages:**")
@@ -483,7 +472,8 @@ if page == "🔍 Search":
                     
                     if show_context:
                         st.markdown("**Full Context:**")
-                        st.code(passage['full_context'], language=None)
+                        # Use info component for full context - clean and readable
+                        st.info(passage['full_context'], icon="📄")
                 
                 # Similarity Score
                 if show_similarity:

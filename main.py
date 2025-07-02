@@ -639,10 +639,3 @@ elif page == "👤 Admin":
         st.checkbox("Email Notifications", value=False)
         st.checkbox("Advanced Analytics", value=True)
         st.selectbox("Session Timeout (minutes)", [30, 60, 120, 240], index=2)
-
-# Footer
-st.markdown("---")
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    st.markdown("*Caselens Legal Research Platform - Powered by AI*")
-    st.markdown("© 2024 Caselens. All rights reserved.")

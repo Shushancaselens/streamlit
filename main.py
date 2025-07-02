@@ -168,6 +168,13 @@ if page == "🔍 Search":
             
             with st.expander(case_title, expanded=(case_index == 0)):
                 
+                # Additional case details
+                st.markdown("**Case Details:**")
+                st.markdown(f"""
+                **Procedure:** {case['procedure']} | **Category:** {case['category']} | **President:** {case['president']} | **Arbitrator 1:** {case['arbitrator1']} | **Arbitrator 2:** {case['arbitrator2']}
+                """)
+                st.markdown("---")
+                
                 # Summary
                 st.markdown("**Summary:**")
                 st.info(case['summary'])

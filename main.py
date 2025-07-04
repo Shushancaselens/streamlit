@@ -178,17 +178,17 @@ if page == "🔍 Search":
                 # Summary
                 st.markdown("**Summary:**")
                 with st.container():
-                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["summary"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 0.25rem; padding: 0.5rem; font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["summary"]}</div>', unsafe_allow_html=True)
                 
                 # Court Reasoning
                 st.markdown("**Court Reasoning:**")
                 with st.container():
-                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["court_reasoning"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 0.25rem; padding: 0.5rem; font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["court_reasoning"]}</div>', unsafe_allow_html=True)
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
                 with st.container():
-                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 15px;">{case["case_outcome"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; font-size: 14px; line-height: 1.4; margin-bottom: 15px;">{case["case_outcome"]}</div>', unsafe_allow_html=True)
                 
                 # Relevant Passages - More prominent
                 st.markdown("---")

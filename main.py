@@ -177,34 +177,31 @@ if page == "🔍 Search":
                 # Relevant Passages - Most important, moved to top
                 st.markdown("### **Relevant Passages**")
                 for passage_index, passage in enumerate(case['relevant_passages']):
-                    passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
-                    show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
+                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
                     
-                    if show_full_context:
-                        # Extract page reference and content
-                        full_text = passage['full_context']
-                        if full_text.startswith('Page'):
-                            lines = full_text.split('\n', 1)
-                            if len(lines) > 1:
-                                page_ref = lines[0].split(' - ')[0]
-                                content = lines[0].split('.', 1)[1] + '\n' + lines[1] if '.' in lines[0] else full_text
-                                st.markdown(f'<small><strong>{page_ref}</strong></small>', unsafe_allow_html=True)
-                                st.success(content.strip())
+                    # Extract page reference and content for excerpt (first page)
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
+                            
+                            col1, col2 = st.columns([1, 6])
+                            with col1:
+                                st.markdown(f"**{page_ref}**")
+                            with col2:
+                                show_more = st.checkbox("more", key=passage_unique_key)
+                            
+                            if show_more:
+                                st.success(passage['full_context'])
                             else:
-                                st.success(full_text)
+                                st.success(content.strip())
                         else:
-                            st.success(full_text)
+                            st.success(excerpt_text)
                     else:
-                        # Extract page reference and content for excerpt
-                        excerpt_text = passage['excerpt']
-                        if excerpt_text.startswith('Page'):
-                            if '.' in excerpt_text:
-                                page_ref = excerpt_text.split(' - ')[0]
-                                content = excerpt_text.split('.', 1)[1]
-                                st.markdown(f'<small><strong>{page_ref}</strong></small>', unsafe_allow_html=True)
-                                st.success(content.strip())
-                            else:
-                                st.success(excerpt_text)
+                        show_more = st.checkbox("more", key=passage_unique_key)
+                        if show_more:
+                            st.success(passage['full_context'])
                         else:
                             st.success(excerpt_text)
                 

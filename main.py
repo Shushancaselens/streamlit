@@ -175,15 +175,12 @@ if page == "🔍 Search":
                 """)
                 
                 # Summary
-                st.markdown("**Summary:**")
-                st.info(case['summary'])
+                st.info(f"**Summary:** {case['summary']}")
                 
                 # Court Reasoning
-                st.markdown("**Court Reasoning:**")
-                st.warning(case['court_reasoning'])
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
                 
                 # Case Outcome
-                st.markdown("**Case Outcome:**")
                 with st.container():
                     st.markdown(f"""
                     <div style="
@@ -193,7 +190,7 @@ if page == "🔍 Search":
                         margin: 0.5rem 0 1rem 0;
                         line-height: 1.6;
                     ">
-                        {case['case_outcome']}
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
                 

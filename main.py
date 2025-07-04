@@ -249,36 +249,12 @@ if page == "🔍 Search":
                                 st.session_state[reasoning_key] = True
                                 st.rerun()
                 
-                # Case Outcome - compact
-                outcome_key = f"show_full_outcome_{case['id']}_{case_index}"
-                if outcome_key not in st.session_state:
-                    st.session_state[outcome_key] = False
-                
-                if st.session_state[outcome_key]:
-                    with st.container():
-                        st.markdown(f"""
-                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
-                            <strong>Outcome:</strong> {case['case_outcome']}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if st.button("Less", key=f"less_outcome_{case['id']}_{case_index}"):
-                        st.session_state[outcome_key] = False
-                        st.rerun()
-                else:
-                    outcome_preview = case['case_outcome'][:100] + "..." if len(case['case_outcome']) > 100 else case['case_outcome']
-                    with st.container():
-                        st.markdown(f"""
-                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
-                            <strong>Outcome:</strong> {outcome_preview}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if len(case['case_outcome']) > 100:
-                        if st.button("More", key=f"more_outcome_{case['id']}_{case_index}"):
-                            st.session_state[outcome_key] = True
-                            st.rerun()
+                # Case Outcome - completely collapsible
+                with st.expander("▶️ Case Outcome Details", expanded=False):
+                    st.markdown(case['case_outcome'])
                 
                 # AI Question Interface
-                st.markdown("---")
+                st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
                 st.markdown("**Ask a Question About This Case**")
                 question_unique_key = f"ai_question_{case['id']}_{case_index}"
                 user_question = st.text_area(

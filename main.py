@@ -187,9 +187,9 @@ if page == "🔍 Search":
                             content = excerpt_text.split('.', 1)[1]
                             
                             # Put page and checkbox on same line
-                            col1, col2 = st.columns([1, 2])
+                            col1, col2 = st.columns([1, 3], gap="small")
                             with col1:
-                                st.markdown(f"**{page_ref}** |", unsafe_allow_html=True)
+                                st.markdown(f"**{page_ref}** |")
                             with col2:
                                 show_more = st.checkbox("show more", key=passage_unique_key)
                             

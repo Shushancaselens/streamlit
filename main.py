@@ -174,6 +174,19 @@ if page == "🔍 Search":
                 **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
                 """)
                 
+                # Relevant Passages - Most important, moved to top
+                st.markdown("## **📄 Relevant Passages**")
+                for passage_index, passage in enumerate(case['relevant_passages']):
+                    passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
+                    show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
+                    
+                    if show_full_context:
+                        st.success(passage['full_context'])
+                    else:
+                        st.success(passage['excerpt'])
+                
+                st.markdown("---")
+                
                 # Summary
                 st.info(f"**Summary:** {case['summary']}")
                 
@@ -193,18 +206,6 @@ if page == "🔍 Search":
                         <strong>Case Outcome:</strong> {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
-                
-                # Relevant Passages - More prominent
-                st.markdown("---")
-                st.markdown("## **📄 Relevant Passages**")
-                for passage_index, passage in enumerate(case['relevant_passages']):
-                    passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
-                    show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
-                    
-                    if show_full_context:
-                        st.success(passage['full_context'])
-                    else:
-                        st.success(passage['excerpt'])
                 
                 # AI Question Interface
                 st.markdown("---")

@@ -208,36 +208,18 @@ if page == "🔍 Search":
                         else:
                             st.success(excerpt_text)
                 
-                # Progressive disclosure sections
-                summary_key = f"show_summary_{case['id']}_{case_index}"
-                reasoning_key = f"show_reasoning_{case['id']}_{case_index}"
-                outcome_key = f"show_outcome_{case['id']}_{case_index}"
+                # Compact sections - always visible
+                # Summary - compact
+                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Summary:</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 8px;">{case["summary"]}</div>', unsafe_allow_html=True)
                 
-                # Summary with progressive disclosure
-                show_summary = st.checkbox("📖 Show Summary", key=summary_key)
-                if show_summary:
-                    st.info(case['summary'])
+                # Court Reasoning - compact
+                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Court Reasoning:</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 8px;">{case["court_reasoning"]}</div>', unsafe_allow_html=True)
                 
-                # Court Reasoning with progressive disclosure  
-                show_reasoning = st.checkbox("⚖️ Show Court Reasoning", key=reasoning_key)
-                if show_reasoning:
-                    st.warning(case['court_reasoning'])
-                
-                # Case Outcome with progressive disclosure
-                show_outcome = st.checkbox("📋 Show Case Outcome", key=outcome_key)
-                if show_outcome:
-                    with st.container():
-                        st.markdown(f"""
-                        <div style="
-                            background-color: #f0f2f6; 
-                            border-radius: 0.5rem; 
-                            padding: 0.75rem 1rem;
-                            margin: 0.5rem 0 1rem 0;
-                            line-height: 1.6;
-                        ">
-                            {case['case_outcome']}
-                        </div>
-                        """, unsafe_allow_html=True)
+                # Case Outcome - compact
+                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Case Outcome:</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 10px;">{case["case_outcome"]}</div>', unsafe_allow_html=True)
                 
                 # AI Question Interface
                 st.markdown("---")

@@ -186,9 +186,9 @@ if page == "🔍 Search":
                         if full_text.startswith('Page'):
                             lines = full_text.split('\n', 1)
                             if len(lines) > 1:
-                                page_ref = lines[0].split(' - ')[0] + '.'
+                                page_ref = lines[0].split(' - ')[0]
                                 content = lines[0].split('.', 1)[1] + '\n' + lines[1] if '.' in lines[0] else full_text
-                                st.markdown(f"**{page_ref}**")
+                                st.markdown(f'<small><strong>{page_ref}</strong></small>', unsafe_allow_html=True)
                                 st.success(content.strip())
                             else:
                                 st.success(full_text)
@@ -199,27 +199,34 @@ if page == "🔍 Search":
                         excerpt_text = passage['excerpt']
                         if excerpt_text.startswith('Page'):
                             if '.' in excerpt_text:
-                                page_ref = excerpt_text.split(' - ')[0] + '.'
+                                page_ref = excerpt_text.split(' - ')[0]
                                 content = excerpt_text.split('.', 1)[1]
-                                st.markdown(f"**{page_ref}**")
+                                st.markdown(f'<small><strong>{page_ref}</strong></small>', unsafe_allow_html=True)
                                 st.success(content.strip())
                             else:
                                 st.success(excerpt_text)
                         else:
                             st.success(excerpt_text)
                 
-                # Compact sections - always visible
-                # Summary - compact
-                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Summary:</div>', unsafe_allow_html=True)
-                st.markdown(f'<div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 8px;">{case["summary"]}</div>', unsafe_allow_html=True)
+                # Summary
+                st.info(f"**Summary:** {case['summary']}")
                 
-                # Court Reasoning - compact
-                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Court Reasoning:</div>', unsafe_allow_html=True)
-                st.markdown(f'<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 8px;">{case["court_reasoning"]}</div>', unsafe_allow_html=True)
+                # Court Reasoning
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
                 
-                # Case Outcome - compact
-                st.markdown('<div style="font-size: 13px; font-weight: bold; margin-bottom: 3px;">Case Outcome:</div>', unsafe_allow_html=True)
-                st.markdown(f'<div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 10px;">{case["case_outcome"]}</div>', unsafe_allow_html=True)
+                # Case Outcome
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 # AI Question Interface
                 st.markdown("---")

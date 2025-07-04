@@ -181,9 +181,32 @@ if page == "🔍 Search":
                     show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
                     
                     if show_full_context:
-                        st.success(passage['full_context'])
+                        # Extract page reference and content
+                        full_text = passage['full_context']
+                        if full_text.startswith('Page'):
+                            lines = full_text.split('\n', 1)
+                            if len(lines) > 1:
+                                page_ref = lines[0].split('.', 1)[0] + '.'
+                                content = lines[0].split('.', 1)[1] + '\n' + lines[1] if '.' in lines[0] else full_text
+                                st.markdown(f"**{page_ref}**")
+                                st.success(content.strip())
+                            else:
+                                st.success(full_text)
+                        else:
+                            st.success(full_text)
                     else:
-                        st.success(passage['excerpt'])
+                        # Extract page reference and content for excerpt
+                        excerpt_text = passage['excerpt']
+                        if excerpt_text.startswith('Page'):
+                            if '.' in excerpt_text:
+                                page_ref = excerpt_text.split('.', 1)[0] + '.'
+                                content = excerpt_text.split('.', 1)[1]
+                                st.markdown(f"**{page_ref}**")
+                                st.success(content.strip())
+                            else:
+                                st.success(excerpt_text)
+                        else:
+                            st.success(excerpt_text)
                 
                 # Summary
                 st.info(f"**Summary:** {case['summary']}")

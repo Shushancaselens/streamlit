@@ -171,8 +171,7 @@ if page == "🔍 Search":
                 st.markdown(f"""
                 **Procedure:** {case['procedure']}  
                 **Category:** {case['category']}  
-                **President:** {case['president']}  
-                **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
                 """)
                 st.markdown("---")
                 

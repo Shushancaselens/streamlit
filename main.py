@@ -208,43 +208,48 @@ if page == "🔍 Search":
                         else:
                             st.success(excerpt_text)
                 
-                # Summary
-                summary_key = f"show_full_summary_{case['id']}_{case_index}"
-                if summary_key not in st.session_state:
-                    st.session_state[summary_key] = False
+                # Summary and Court Reasoning in columns to save space
+                col1, col2 = st.columns(2)
                 
-                if st.session_state[summary_key]:
-                    st.info(f"**Summary:** {case['summary']}")
-                    if st.button("Show less", key=f"less_summary_{case['id']}_{case_index}"):
+                with col1:
+                    # Summary
+                    summary_key = f"show_full_summary_{case['id']}_{case_index}"
+                    if summary_key not in st.session_state:
                         st.session_state[summary_key] = False
-                        st.rerun()
-                else:
-                    summary_preview = case['summary'][:200] + "..." if len(case['summary']) > 200 else case['summary']
-                    st.info(f"**Summary:** {summary_preview}")
-                    if len(case['summary']) > 200:
-                        if st.button("Read more", key=f"more_summary_{case['id']}_{case_index}"):
-                            st.session_state[summary_key] = True
+                    
+                    if st.session_state[summary_key]:
+                        st.info(f"**Summary:** {case['summary']}")
+                        if st.button("Less", key=f"less_summary_{case['id']}_{case_index}"):
+                            st.session_state[summary_key] = False
                             st.rerun()
+                    else:
+                        summary_preview = case['summary'][:80] + "..." if len(case['summary']) > 80 else case['summary']
+                        st.info(f"**Summary:** {summary_preview}")
+                        if len(case['summary']) > 80:
+                            if st.button("More", key=f"more_summary_{case['id']}_{case_index}"):
+                                st.session_state[summary_key] = True
+                                st.rerun()
                 
-                # Court Reasoning
-                reasoning_key = f"show_full_reasoning_{case['id']}_{case_index}"
-                if reasoning_key not in st.session_state:
-                    st.session_state[reasoning_key] = False
-                
-                if st.session_state[reasoning_key]:
-                    st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
-                    if st.button("Show less", key=f"less_reasoning_{case['id']}_{case_index}"):
+                with col2:
+                    # Court Reasoning
+                    reasoning_key = f"show_full_reasoning_{case['id']}_{case_index}"
+                    if reasoning_key not in st.session_state:
                         st.session_state[reasoning_key] = False
-                        st.rerun()
-                else:
-                    reasoning_preview = case['court_reasoning'][:200] + "..." if len(case['court_reasoning']) > 200 else case['court_reasoning']
-                    st.warning(f"**Court Reasoning:** {reasoning_preview}")
-                    if len(case['court_reasoning']) > 200:
-                        if st.button("Read more", key=f"more_reasoning_{case['id']}_{case_index}"):
-                            st.session_state[reasoning_key] = True
+                    
+                    if st.session_state[reasoning_key]:
+                        st.warning(f"**Reasoning:** {case['court_reasoning']}")
+                        if st.button("Less", key=f"less_reasoning_{case['id']}_{case_index}"):
+                            st.session_state[reasoning_key] = False
                             st.rerun()
+                    else:
+                        reasoning_preview = case['court_reasoning'][:80] + "..." if len(case['court_reasoning']) > 80 else case['court_reasoning']
+                        st.warning(f"**Reasoning:** {reasoning_preview}")
+                        if len(case['court_reasoning']) > 80:
+                            if st.button("More", key=f"more_reasoning_{case['id']}_{case_index}"):
+                                st.session_state[reasoning_key] = True
+                                st.rerun()
                 
-                # Case Outcome
+                # Case Outcome - compact
                 outcome_key = f"show_full_outcome_{case['id']}_{case_index}"
                 if outcome_key not in st.session_state:
                     st.session_state[outcome_key] = False
@@ -252,35 +257,23 @@ if page == "🔍 Search":
                 if st.session_state[outcome_key]:
                     with st.container():
                         st.markdown(f"""
-                        <div style="
-                            background-color: #f0f2f6; 
-                            border-radius: 0.5rem; 
-                            padding: 0.75rem 1rem;
-                            margin: 0.5rem 0 1rem 0;
-                            line-height: 1.6;
-                        ">
-                            <strong>Case Outcome:</strong> {case['case_outcome']}
+                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
+                            <strong>Outcome:</strong> {case['case_outcome']}
                         </div>
                         """, unsafe_allow_html=True)
-                    if st.button("Show less", key=f"less_outcome_{case['id']}_{case_index}"):
+                    if st.button("Less", key=f"less_outcome_{case['id']}_{case_index}"):
                         st.session_state[outcome_key] = False
                         st.rerun()
                 else:
-                    outcome_preview = case['case_outcome'][:200] + "..." if len(case['case_outcome']) > 200 else case['case_outcome']
+                    outcome_preview = case['case_outcome'][:100] + "..." if len(case['case_outcome']) > 100 else case['case_outcome']
                     with st.container():
                         st.markdown(f"""
-                        <div style="
-                            background-color: #f0f2f6; 
-                            border-radius: 0.5rem; 
-                            padding: 0.75rem 1rem;
-                            margin: 0.5rem 0 1rem 0;
-                            line-height: 1.6;
-                        ">
-                            <strong>Case Outcome:</strong> {outcome_preview}
+                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
+                            <strong>Outcome:</strong> {outcome_preview}
                         </div>
                         """, unsafe_allow_html=True)
-                    if len(case['case_outcome']) > 200:
-                        if st.button("Read more", key=f"more_outcome_{case['id']}_{case_index}"):
+                    if len(case['case_outcome']) > 100:
+                        if st.button("More", key=f"more_outcome_{case['id']}_{case_index}"):
                             st.session_state[outcome_key] = True
                             st.rerun()
                 

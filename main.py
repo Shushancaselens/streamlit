@@ -175,7 +175,7 @@ if page == "🔍 Search":
                 """)
                 
                 # Relevant Passages - Most important, moved to top
-                st.markdown("# **📄 Relevant Passages**")
+                st.markdown("### **📄 Relevant Passages**")
                 for passage_index, passage in enumerate(case['relevant_passages']):
                     passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
                     show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)

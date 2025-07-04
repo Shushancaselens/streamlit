@@ -203,7 +203,7 @@ if page == "🔍 Search":
                             st.success(excerpt_text)
                 
                 # Summary
-                st.info(f"**Summary:** {case['summary']}")
+                st.markdown(f'<div style="background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 0.25rem; padding: 0.75rem; font-size: 13px; line-height: 1.4;"><strong>Summary:</strong> {case["summary"]}</div>', unsafe_allow_html=True)
                 
                 # Court Reasoning
                 st.warning(f"**Court Reasoning:** {case['court_reasoning']}")

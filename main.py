@@ -249,40 +249,9 @@ if page == "🔍 Search":
                                 st.session_state[reasoning_key] = True
                                 st.rerun()
                 
-                # Case Outcome - badge style
-                st.markdown("""
-                <div style="
-                    display: flex; 
-                    gap: 8px; 
-                    margin: 10px 0; 
-                    flex-wrap: wrap;
-                ">
-                    <span style="
-                        background-color: #dc3545; 
-                        color: white; 
-                        padding: 4px 8px; 
-                        border-radius: 12px; 
-                        font-size: 12px; 
-                        font-weight: bold;
-                    ">🏛️ Appeal Dismissed</span>
-                    <span style="
-                        background-color: #28a745; 
-                        color: white; 
-                        padding: 4px 8px; 
-                        border-radius: 12px; 
-                        font-size: 12px; 
-                        font-weight: bold;
-                    ">💰 USD 794,200 Total</span>
-                    <span style="
-                        background-color: #6c757d; 
-                        color: white; 
-                        padding: 4px 8px; 
-                        border-radius: 12px; 
-                        font-size: 12px; 
-                        font-weight: bold;
-                    ">📋 Counterclaim Dismissed</span>
-                </div>
-                """, unsafe_allow_html=True)
+                # Case Outcome - completely collapsible
+                with st.expander("▶️ Case Outcome Details", expanded=False):
+                    st.markdown(case['case_outcome'])
                 
                 # AI Question Interface
                 st.markdown("---")

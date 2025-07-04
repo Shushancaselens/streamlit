@@ -173,7 +173,6 @@ if page == "🔍 Search":
                 **Category:** {case['category']}  
                 **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
                 """)
-                st.markdown("---")
                 
                 # Summary
                 st.markdown("**Summary:**")

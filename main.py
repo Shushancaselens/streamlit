@@ -181,31 +181,9 @@ if page == "🔍 Search":
                     show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)
                     
                     if show_full_context:
-                        st.markdown(f"""
-                        <div style="
-                            background-color: #ffffff; 
-                            border-left: 4px solid #4f46e5;
-                            padding: 1rem;
-                            margin: 0.5rem 0;
-                            border-radius: 0 0.5rem 0.5rem 0;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        ">
-                            {passage['full_context']}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.success(passage['full_context'])
                     else:
-                        st.markdown(f"""
-                        <div style="
-                            background-color: #ffffff; 
-                            border-left: 4px solid #4f46e5;
-                            padding: 1rem;
-                            margin: 0.5rem 0;
-                            border-radius: 0 0.5rem 0.5rem 0;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        ">
-                            {passage['excerpt']}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.success(passage['excerpt'])
                 
                 # Summary
                 st.info(f"**Summary:** {case['summary']}")

@@ -249,33 +249,40 @@ if page == "🔍 Search":
                                 st.session_state[reasoning_key] = True
                                 st.rerun()
                 
-                # Case Outcome - compact
-                outcome_key = f"show_full_outcome_{case['id']}_{case_index}"
-                if outcome_key not in st.session_state:
-                    st.session_state[outcome_key] = False
-                
-                if st.session_state[outcome_key]:
-                    with st.container():
-                        st.markdown(f"""
-                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
-                            <strong>Outcome:</strong> {case['case_outcome']}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if st.button("Less", key=f"less_outcome_{case['id']}_{case_index}"):
-                        st.session_state[outcome_key] = False
-                        st.rerun()
-                else:
-                    outcome_preview = case['case_outcome'][:100] + "..." if len(case['case_outcome']) > 100 else case['case_outcome']
-                    with st.container():
-                        st.markdown(f"""
-                        <div style="background-color: #f0f2f6; border-radius: 0.25rem; padding: 0.5rem; margin: 0.25rem 0; line-height: 1.4;">
-                            <strong>Outcome:</strong> {outcome_preview}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    if len(case['case_outcome']) > 100:
-                        if st.button("More", key=f"more_outcome_{case['id']}_{case_index}"):
-                            st.session_state[outcome_key] = True
-                            st.rerun()
+                # Case Outcome - badge style
+                st.markdown("""
+                <div style="
+                    display: flex; 
+                    gap: 8px; 
+                    margin: 10px 0; 
+                    flex-wrap: wrap;
+                ">
+                    <span style="
+                        background-color: #dc3545; 
+                        color: white; 
+                        padding: 4px 8px; 
+                        border-radius: 12px; 
+                        font-size: 12px; 
+                        font-weight: bold;
+                    ">🏛️ Appeal Dismissed</span>
+                    <span style="
+                        background-color: #28a745; 
+                        color: white; 
+                        padding: 4px 8px; 
+                        border-radius: 12px; 
+                        font-size: 12px; 
+                        font-weight: bold;
+                    ">💰 USD 794,200 Total</span>
+                    <span style="
+                        background-color: #6c757d; 
+                        color: white; 
+                        padding: 4px 8px; 
+                        border-radius: 12px; 
+                        font-size: 12px; 
+                        font-weight: bold;
+                    ">📋 Counterclaim Dismissed</span>
+                </div>
+                """, unsafe_allow_html=True)
                 
                 # AI Question Interface
                 st.markdown("---")

@@ -169,7 +169,8 @@ if page == "🔍 Search":
             with st.expander(case_title, expanded=(case_index == 0)):
                 
                 st.markdown(f"""
-                **Procedure:** {case['procedure']} | **Category:** {case['category']}  
+                **Procedure:** {case['procedure']}  
+                **Category:** {case['category']}  
                 **President:** {case['president']}  
                 **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
                 """)

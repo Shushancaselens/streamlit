@@ -187,11 +187,7 @@ if page == "🔍 Search":
                             content = excerpt_text.split('.', 1)[1]
                             
                             # Put page and checkbox on same line
-                            col1, col2 = st.columns([1, 3], gap="small")
-                            with col1:
-                                st.markdown(f"**{page_ref}** |")
-                            with col2:
-                                show_more = st.checkbox("show more", key=passage_unique_key)
+                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
                             
                             if show_more:
                                 st.success(passage['full_context'])

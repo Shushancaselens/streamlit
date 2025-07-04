@@ -177,29 +177,22 @@ if page == "🔍 Search":
                 
                 # Summary
                 st.markdown("**Summary:**")
-                st.info(case['summary'])
+                with st.container():
+                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["summary"]}</div>', unsafe_allow_html=True)
                 
                 # Court Reasoning
                 st.markdown("**Court Reasoning:**")
-                st.warning(case['court_reasoning'])
+                with st.container():
+                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 10px;">{case["court_reasoning"]}</div>', unsafe_allow_html=True)
                 
                 # Case Outcome
                 st.markdown("**Case Outcome:**")
                 with st.container():
-                    st.markdown(f"""
-                    <div style="
-                        background-color: #f0f2f6; 
-                        border-radius: 0.5rem; 
-                        padding: 0.75rem 1rem;
-                        margin: 0.5rem 0 1rem 0;
-                        line-height: 1.6;
-                    ">
-                        {case['case_outcome']}
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.markdown(f'<div style="font-size: 14px; line-height: 1.4; margin-bottom: 15px;">{case["case_outcome"]}</div>', unsafe_allow_html=True)
                 
-                # Relevant Passages
-                st.markdown("**Relevant Passages:**")
+                # Relevant Passages - More prominent
+                st.markdown("---")
+                st.markdown("## **📄 Relevant Passages**")
                 for passage_index, passage in enumerate(case['relevant_passages']):
                     passage_unique_key = f"show_context_{case['id']}_{passage_index}_{case_index}"
                     show_full_context = st.checkbox(f"Show full context", key=passage_unique_key)

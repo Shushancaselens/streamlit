@@ -208,25 +208,50 @@ if page == "🔍 Search":
                         else:
                             st.success(excerpt_text)
                 
-                # Summary
-                st.info(f"**Summary:** {case['summary']}")
+                # Summary - Compact card
+                st.markdown(f"""
+                <div style="
+                    background-color: #d1ecf1; 
+                    border: 1px solid #bee5eb; 
+                    border-radius: 0.5rem; 
+                    padding: 0.5rem 0.75rem;
+                    margin: 0.5rem 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                ">
+                    <strong>Summary:</strong> {case['summary']}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Court Reasoning
-                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                # Court Reasoning - Compact card
+                st.markdown(f"""
+                <div style="
+                    background-color: #fff3cd; 
+                    border: 1px solid #ffeaa7; 
+                    border-radius: 0.5rem; 
+                    padding: 0.5rem 0.75rem;
+                    margin: 0.5rem 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                ">
+                    <strong>Court Reasoning:</strong> {case['court_reasoning']}
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Case Outcome
-                with st.container():
-                    st.markdown(f"""
-                    <div style="
-                        background-color: #f0f2f6; 
-                        border-radius: 0.5rem; 
-                        padding: 0.75rem 1rem;
-                        margin: 0.5rem 0 1rem 0;
-                        line-height: 1.6;
-                    ">
-                        <strong>Case Outcome:</strong> {case['case_outcome']}
-                    </div>
-                    """, unsafe_allow_html=True)
+                # Case Outcome - Compact card
+                st.markdown(f"""
+                <div style="
+                    background-color: #f0f2f6; 
+                    border: 1px solid #e2e8f0;
+                    border-radius: 0.5rem; 
+                    padding: 0.5rem 0.75rem;
+                    margin: 0.5rem 0;
+                    font-size: 14px;
+                    line-height: 1.4;
+                ">
+                    <strong>Case Outcome:</strong> {case['case_outcome']}
+                </div>
+                """, unsafe_allow_html=True)
                 
                 # AI Question Interface
                 st.markdown("---")

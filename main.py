@@ -214,17 +214,17 @@ if page == "🔍 Search":
                 outcome_key = f"show_outcome_{case['id']}_{case_index}"
                 
                 # Summary with progressive disclosure
-                show_summary = st.checkbox("**Summary...**", key=summary_key)
+                show_summary = st.checkbox("📖 Show Summary", key=summary_key)
                 if show_summary:
                     st.info(case['summary'])
                 
                 # Court Reasoning with progressive disclosure  
-                show_reasoning = st.checkbox("**Court Reasoning...**", key=reasoning_key)
+                show_reasoning = st.checkbox("⚖️ Show Court Reasoning", key=reasoning_key)
                 if show_reasoning:
                     st.warning(case['court_reasoning'])
                 
                 # Case Outcome with progressive disclosure
-                show_outcome = st.checkbox("**Case Outcome...**", key=outcome_key)
+                show_outcome = st.checkbox("📋 Show Case Outcome", key=outcome_key)
                 if show_outcome:
                     with st.container():
                         st.markdown(f"""

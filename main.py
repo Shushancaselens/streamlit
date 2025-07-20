@@ -604,7 +604,6 @@ with col1:
     )
 
 with col2:
-    st.markdown("<br>", unsafe_allow_html=True)  # Add some spacing to align with input
     if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
         with st.form("save_search_form"):
             st.markdown("**Save Current Search**")

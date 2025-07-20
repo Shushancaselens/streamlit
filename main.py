@@ -560,32 +560,6 @@ else:
     else:
         default_query = "just cause"
 
-# Show reset button if we're in a special mode (loaded search or viewing case)
-if st.session_state.get('search_mode') in ['loaded_search', 'viewing_case'] or target_case_id:
-    search_mode = st.session_state.get('search_mode', '')
-    if search_mode == 'loaded_search':
-        reset_text = "🔄 Reset from Saved Search"
-        reset_help = "Clear loaded search and return to normal search"
-    elif search_mode == 'viewing_case' or target_case_id:
-        reset_text = "🔄 Reset from Case View"
-        reset_help = "Clear case view and return to normal search"
-    else:
-        reset_text = "🔄 Reset Search"
-        reset_help = "Return to normal search"
-    
-    if st.button(reset_text, help=reset_help):
-        # Clear search mode
-        if 'search_mode' in st.session_state:
-            del st.session_state.search_mode
-        # Clear any loaded search data
-        if 'loaded_search' in st.session_state:
-            del st.session_state.loaded_search
-        # Clear any case view data
-        if 'view_case_search' in st.session_state:
-            del st.session_state.view_case_search
-        # Reset to normal search
-        st.rerun()
-
 # Search Interface
 col1, col2 = st.columns([5, 1])
 
@@ -694,8 +668,9 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
     
     # Show message if loaded search is active
-    if st.session_state.get('search_mode') == 'loaded_search':
-        st.info(f"📋 Showing results from saved search with applied filters")
+    if st.session_state.get('search_mode') == 'loaded_search' and st.session_state.get('loaded_search_name'):
+        search_name = st.session_state.get('loaded_search_name')
+        st.info(f"📋 Showing results from saved search: '{search_name}'")
     
     # Display search results with original format
     for case_index, case in enumerate(results):

@@ -647,8 +647,8 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         else:
             should_expand = False
         
-        # Create case title with tag-like appearance using markdown
-        case_title = f"`{case['title']}` | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
+        # Create case title with prominent tag using bold and brackets
+        case_title = f"**【{case['title']}】** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
             

@@ -122,15 +122,26 @@ def save_search(query, max_results, similarity_threshold, search_name=None):
 
 def delete_saved_search(search_id):
     """Delete a saved search by ID"""
+    original_count = len(st.session_state.saved_searches)
     st.session_state.saved_searches = [
         search for search in st.session_state.saved_searches 
-        if search['id'] != search_id
+        if search.get('id', '') != search_id
     ]
+    # If no ID match found, try to remove by index as fallback
+    if len(st.session_state.saved_searches) == original_count and st.session_state.saved_searches:
+        try:
+            # Remove the first search that doesn't have a proper ID
+            for i, search in enumerate(st.session_state.saved_searches):
+                if not search.get('id'):
+                    st.session_state.saved_searches.pop(i)
+                    break
+        except:
+            pass
 
 def load_saved_search(search_id):
     """Load and execute a saved search"""
     for search in st.session_state.saved_searches:
-        if search['id'] == search_id:
+        if search.get('id') == search_id:
             search['last_run'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             return search
     return None
@@ -182,8 +193,14 @@ with st.sidebar:
         st.markdown("### Quick Access")
         if st.session_state.saved_searches:
             st.markdown("**Recent Saved Searches**")
-            for search in st.session_state.saved_searches[-3:]:  # Show last 3
-                if st.button(f"🔍 {search['name'][:25]}...", key=f"quick_{search['id']}", help=f"Query: {search['query']}\nCreated: {search['created_date']}"):
+            for i, search in enumerate(st.session_state.saved_searches[-3:]):  # Show last 3
+                # Ensure search has all required fields
+                search_id = search.get('id', f"search_{i}_{int(time.time())}")
+                search_name = search.get('name', 'Unnamed Search')
+                search_query = search.get('query', '')
+                search_date = search.get('created_date', 'Unknown')
+                
+                if st.button(f"🔍 {search_name[:25]}...", key=f"quick_{search_id}", help=f"Query: {search_query}\nCreated: {search_date}"):
                     # Load the saved search parameters
                     st.session_state.loaded_search = search
                     st.rerun()
@@ -361,21 +378,30 @@ elif page == "💾 Saved Searches":
                     st.rerun()
         
         # Display saved searches
-        for search in reversed(st.session_state.saved_searches):  # Most recent first
-            with st.expander(f"🔍 {search['name']}", expanded=False):
+        for i, search in enumerate(reversed(st.session_state.saved_searches)):  # Most recent first
+            # Ensure search has all required fields with safe defaults
+            search_id = search.get('id', f"search_{i}_{int(time.time())}")
+            search_name = search.get('name', 'Unnamed Search')
+            search_query = search.get('query', '')
+            search_max_results = search.get('max_results', 20)
+            search_similarity = search.get('similarity_threshold', 0.5)
+            search_created = search.get('created_date', 'Unknown')
+            search_last_run = search.get('last_run', 'Never')
+            
+            with st.expander(f"🔍 {search_name}", expanded=False):
                 
                 col1, col2 = st.columns([3, 1])
                 
                 with col1:
                     st.markdown(f"""
-                    **Query:** `{search['query']}`  
-                    **Max Results:** {search['max_results']} | **Similarity Threshold:** {search['similarity_threshold']}  
-                    **Created:** {search['created_date']}  
-                    **Last Run:** {search['last_run'] if search['last_run'] else 'Never'}
+                    **Query:** `{search_query}`  
+                    **Max Results:** {search_max_results} | **Similarity Threshold:** {search_similarity}  
+                    **Created:** {search_created}  
+                    **Last Run:** {search_last_run}
                     """)
                 
                 with col2:
-                    if st.button("▶️ Run", key=f"run_{search['id']}", help="Execute this search"):
+                    if st.button("▶️ Run", key=f"run_{search_id}", help="Execute this search"):
                         # Load search and redirect to search page
                         st.session_state.loaded_search = search
                         # Update last run time
@@ -385,18 +411,18 @@ elif page == "💾 Saved Searches":
                         # This would ideally navigate to search page, but we'll show results here
                         st.rerun()
                     
-                    if st.button("🗑️", key=f"delete_{search['id']}", help="Delete this search"):
-                        delete_saved_search(search['id'])
+                    if st.button("🗑️", key=f"delete_{search_id}", help="Delete this search"):
+                        delete_saved_search(search_id)
                         st.success("Search deleted!")
                         st.rerun()
                 
                 # Show preview of results
-                if st.checkbox("Preview Results", key=f"preview_{search['id']}"):
+                if st.checkbox("Preview Results", key=f"preview_{search_id}"):
                     with st.spinner("Running search..."):
                         preview_results = search_cases(
-                            search['query'], 
-                            min(search['max_results'], 3),  # Limit preview to 3 results
-                            search['similarity_threshold']
+                            search_query, 
+                            min(search_max_results, 3),  # Limit preview to 3 results
+                            search_similarity
                         )
                         
                         if preview_results:

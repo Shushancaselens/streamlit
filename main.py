@@ -204,7 +204,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def search_cases(query, max_results=20, similarity_threshold=0.5, filters=None):
-    """Search cases with filters"""
+    """Search cases with comprehensive filters"""
     relevant_cases = []
     for case in CASES_DATABASE:
         # Text matching
@@ -217,6 +217,11 @@ def search_cases(query, max_results=20, similarity_threshold=0.5, filters=None):
                     continue
                 if filters.get('outcome') and filters['outcome'] != 'Any' and case['outcome'] != filters['outcome']:
                     continue
+                if filters.get('procedural') and filters['procedural'] != 'Any' and case['procedure'] != filters['procedural']:
+                    continue
+                if filters.get('category') and filters['category'] != 'Any' and case['category'] != filters['category']:
+                    continue
+                # Add more filter logic as needed
             
             if case['similarity_score'] >= similarity_threshold:
                 relevant_cases.append(case)
@@ -265,20 +270,30 @@ with st.sidebar:
     # Logo
     st.markdown("""
     <div class="main-header">
-        <span class="logo-icon">⚖️</span>
+        <span class="logo-icon">C</span>
         <h2 style="margin: 0; color: #1f2937;">caselens</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("---")
-    
     # Navigation Tabs
-    st.markdown("🔍 Search   📚 My Library")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔍 Search", use_container_width=True, type="primary"):
+            pass
+    with col2:
+        if st.button("📄 Documents", use_container_width=True):
+            pass
     
     st.markdown("---")
     
-    # Saved Searches Section - Collapsible
-    with st.expander(f"🔍 Saved Searches ({len(st.session_state.saved_searches)})", expanded=False):
+    # Search Options - Collapsible
+    with st.expander("Search Options", expanded=False):
+        max_results = st.number_input("Max Results", min_value=1, max_value=100, value=20)
+        similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
+        show_similarity = st.checkbox("Show Similarity Scores")
+    
+    # Saved Searches - Collapsible
+    with st.expander("Saved Searches", expanded=False):
         if len(st.session_state.saved_searches) == 0:
             st.write("No saved searches yet")
         else:
@@ -295,46 +310,113 @@ with st.sidebar:
                     if st.button("✕", key=f"delete_{search['id']}", help="Delete search"):
                         st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
                         st.rerun()
-                st.divider()
+                if search != st.session_state.saved_searches[-1]:
+                    st.divider()
     
-    # Saved Cases Section - Collapsible
-    with st.expander(f"⭐ Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
-        if len(st.session_state.saved_cases) == 0:
-            st.write("No saved cases yet")
-        else:
-            for case in st.session_state.saved_cases:
-                col1, col2, col3 = st.columns([4, 1, 1])
-                with col1:
-                    st.write(f"**{case['title']}**")
-                    st.caption(f"{case['case_ref']} • {case['saved_date']}")
-                with col2:
-                    if st.button("View", key=f"view_{case['id']}", help="View case details"):
-                        st.info("Case viewing feature coming soon!")
-                with col3:
-                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
-                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
-                        st.rerun()
-                st.divider()
-
+    # Search Filters Header
     st.markdown("---")
     
-    # Search Options
-    st.markdown("### Search Options")
+    # Count active filters
+    active_filter_count = 0
+    if 'language_filter' in st.session_state and st.session_state.get('language_filter') != 'Any':
+        active_filter_count += 1
+    if 'matter_filter' in st.session_state and st.session_state.get('matter_filter') != 'Any':
+        active_filter_count += 1
+    if 'outcome_filter' in st.session_state and st.session_state.get('outcome_filter') != 'Any':
+        active_filter_count += 1
+    if 'sport_filter' in st.session_state and st.session_state.get('sport_filter') != 'Any':
+        active_filter_count += 1
+    if 'procedural_filter' in st.session_state and st.session_state.get('procedural_filter') != 'Any':
+        active_filter_count += 1
     
-    with st.container():
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown("**Max Results**")
-        max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
-        st.markdown('</div>', unsafe_allow_html=True)
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.markdown("**Search Filters**")
+    with col2:
+        if active_filter_count > 0:
+            st.markdown(f"<span style='color: #3b82f6; font-size: 12px;'>{active_filter_count} active filters</span>", unsafe_allow_html=True)
+        else:
+            st.markdown("<span style='color: #6b7280; font-size: 12px;'>0 active filters</span>", unsafe_allow_html=True)
     
-    with st.container():
-        st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
-        st.markdown("**Similarity Threshold**")
-        similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
-        st.write(f"Current value: {similarity}")
-        st.markdown('</div>', unsafe_allow_html=True)
+    # Language Filter
+    language_filter = st.selectbox(
+        "Language",
+        ["Any", "English", "French", "German", "Spanish", "Italian"],
+        key="language_filter"
+    )
     
-    show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+    # Decision Date Filter
+    date_filter = st.selectbox(
+        "Decision Date",
+        ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years", "Custom range"],
+        key="date_filter"
+    )
+    
+    # Matter Filter
+    matter_filter = st.selectbox(
+        "Matter",
+        ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility", "Financial"],
+        key="matter_filter"
+    )
+    
+    # Outcome Filter
+    outcome_filter = st.selectbox(
+        "Outcome",
+        ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"],
+        key="outcome_filter"
+    )
+    
+    # Procedural Types Filter
+    procedural_filter = st.selectbox(
+        "Procedural Types",
+        ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track", "Advisory Opinion"],
+        key="procedural_filter"
+    )
+    
+    # Sport Filter
+    sport_filter = st.selectbox(
+        "Sport",
+        ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics", "Cycling", "Hockey"],
+        key="sport_filter"
+    )
+    
+    # Arbitrators Filter
+    arbitrators_filter = st.selectbox(
+        "Arbitrators",
+        ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters", "Lisa Chen", "Hans Mueller"],
+        key="arbitrators_filter"
+    )
+    
+    # Category Filter
+    category_filter = st.selectbox(
+        "Category",
+        ["Any", "Award", "Order", "Interim Award", "Procedural Order"],
+        key="category_filter"
+    )
+    
+    # Appellants Filter
+    appellants_filter = st.selectbox(
+        "Appellants",
+        ["Any", "Player", "Club", "National Association", "FIFA", "UEFA"],
+        key="appellants_filter"
+    )
+    
+    # Respondents Filter
+    respondents_filter = st.selectbox(
+        "Respondents", 
+        ["Any", "Player", "Club", "National Association", "FIFA", "UEFA"],
+        key="respondents_filter"
+    )
+    
+    # Reset All Filters
+    if st.button("Reset All Filters", use_container_width=True):
+        # Reset all filter session state
+        for key in ['language_filter', 'date_filter', 'matter_filter', 'outcome_filter', 
+                   'procedural_filter', 'sport_filter', 'arbitrators_filter', 'category_filter',
+                   'appellants_filter', 'respondents_filter']:
+            if key in st.session_state:
+                st.session_state[key] = 'Any'
+        st.rerun()
 
 # Main Content Area
 st.markdown("### CAS Case Law Research")
@@ -343,11 +425,14 @@ st.markdown("### CAS Case Law Research")
 loaded_search = getattr(st.session_state, 'loaded_search', None)
 if loaded_search:
     default_query = loaded_search['query']
-    default_filters = loaded_search['filters']
+    # Load filters into session state
+    if 'filters' in loaded_search:
+        for filter_key, filter_value in loaded_search['filters'].items():
+            st.session_state[f'{filter_key}_filter'] = filter_value
     st.session_state.loaded_search = None  # Clear after loading
+    st.rerun()  # Rerun to update the selectboxes
 else:
     default_query = "just cause"
-    default_filters = {"sport": "Any", "matter": "Any", "outcome": "Any"}
 
 # Search Interface
 search_query = st.text_input(
@@ -358,43 +443,42 @@ search_query = st.text_input(
     key="main_search_input"
 )
 
-# Filters
-col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
-
-with col1:
-    sport_filter = st.selectbox(
-        "Sport",
-        ["Any", "Football", "Basketball", "Tennis", "Swimming"],
-        index=0 if default_filters.get('sport') == 'Any' else ["Any", "Football", "Basketball", "Tennis", "Swimming"].index(default_filters.get('sport', 'Any'))
-    )
-
+# Save Search Button
+col1, col2 = st.columns([6, 1])
 with col2:
-    matter_filter = st.selectbox(
-        "Matter",
-        ["Any", "Contract", "Transfer", "Doping", "Disciplinary"],
-        index=0 if default_filters.get('matter') == 'Any' else ["Any", "Contract", "Transfer", "Doping", "Disciplinary"].index(default_filters.get('matter', 'Any'))
-    )
-
-with col3:
-    outcome_filter = st.selectbox(
-        "Outcome",
-        ["Any", "Dismissed", "Upheld", "Partially Upheld"],
-        index=0 if default_filters.get('outcome') == 'Any' else ["Any", "Dismissed", "Upheld", "Partially Upheld"].index(default_filters.get('outcome', 'Any'))
-    )
-
-with col4:
-    # Save Search Button
     if st.button("💾 Save Search", help="Save current search and filters"):
         with st.form("save_search_form"):
             st.markdown("**Save Current Search**")
-            search_name = st.text_input("Search Name", value=f'"{search_query}" + filters')
+            
+            # Count active filters for name suggestion
+            active_filters = []
+            if st.session_state.get('language_filter', 'Any') != 'Any':
+                active_filters.append('Language')
+            if st.session_state.get('matter_filter', 'Any') != 'Any':
+                active_filters.append('Matter')
+            if st.session_state.get('outcome_filter', 'Any') != 'Any':
+                active_filters.append('Outcome')
+            if st.session_state.get('sport_filter', 'Any') != 'Any':
+                active_filters.append('Sport')
+            if st.session_state.get('procedural_filter', 'Any') != 'Any':
+                active_filters.append('Procedural')
+            
+            filter_count = len(active_filters)
+            search_name = st.text_input("Search Name", value=f'"{search_query}" + {filter_count} filters')
             search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
             
             if st.form_submit_button("Save"):
                 filters = {
-                    "sport": sport_filter,
-                    "matter": matter_filter, 
-                    "outcome": outcome_filter
+                    "language": st.session_state.get('language_filter', 'Any'),
+                    "matter": st.session_state.get('matter_filter', 'Any'),
+                    "outcome": st.session_state.get('outcome_filter', 'Any'),
+                    "sport": st.session_state.get('sport_filter', 'Any'),
+                    "procedural": st.session_state.get('procedural_filter', 'Any'),
+                    "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+                    "category": st.session_state.get('category_filter', 'Any'),
+                    "appellants": st.session_state.get('appellants_filter', 'Any'),
+                    "respondents": st.session_state.get('respondents_filter', 'Any'),
+                    "date": st.session_state.get('date_filter', 'Any')
                 }
                 save_current_search(search_name, search_query, filters, search_description)
                 st.success("Search saved!")
@@ -403,12 +487,18 @@ with col4:
 if search_query:
     # Current search header
     active_filters = []
-    if sport_filter != "Any":
-        active_filters.append(f"Sport: {sport_filter}")
-    if matter_filter != "Any":
-        active_filters.append(f"Matter: {matter_filter}")
-    if outcome_filter != "Any":
-        active_filters.append(f"Outcome: {outcome_filter}")
+    if st.session_state.get('language_filter', 'Any') != 'Any':
+        active_filters.append(f"Language: {st.session_state.get('language_filter')}")
+    if st.session_state.get('matter_filter', 'Any') != 'Any':
+        active_filters.append(f"Matter: {st.session_state.get('matter_filter')}")
+    if st.session_state.get('outcome_filter', 'Any') != 'Any':
+        active_filters.append(f"Outcome: {st.session_state.get('outcome_filter')}")
+    if st.session_state.get('sport_filter', 'Any') != 'Any':
+        active_filters.append(f"Sport: {st.session_state.get('sport_filter')}")
+    if st.session_state.get('procedural_filter', 'Any') != 'Any':
+        active_filters.append(f"Procedural: {st.session_state.get('procedural_filter')}")
+    if st.session_state.get('date_filter', 'Any') != 'Any':
+        active_filters.append(f"Date: {st.session_state.get('date_filter')}")
     
     filter_text = f" + {len(active_filters)} filters" if active_filters else ""
     
@@ -420,9 +510,16 @@ if search_query:
     
     # Perform search
     filters = {
-        "sport": sport_filter,
-        "matter": matter_filter,
-        "outcome": outcome_filter
+        "language": st.session_state.get('language_filter', 'Any'),
+        "matter": st.session_state.get('matter_filter', 'Any'),
+        "outcome": st.session_state.get('outcome_filter', 'Any'),
+        "sport": st.session_state.get('sport_filter', 'Any'),
+        "procedural": st.session_state.get('procedural_filter', 'Any'),
+        "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+        "category": st.session_state.get('category_filter', 'Any'),
+        "appellants": st.session_state.get('appellants_filter', 'Any'),
+        "respondents": st.session_state.get('respondents_filter', 'Any'),
+        "date": st.session_state.get('date_filter', 'Any')
     }
     results = search_cases(search_query, max_results, similarity, filters)
     

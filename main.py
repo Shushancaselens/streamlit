@@ -355,11 +355,12 @@ with st.sidebar:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
         else:
             for search in st.session_state.saved_searches:
-                # Modern card design
+                # Modern card design with description
                 st.markdown(f"""
                 <div class="search-item">
                     <div class="search-name">{search['name']}</div>
                     <div class="search-meta">Last run: {search['last_run']}</div>
+                    <div style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 4px;">{search.get('description', '')}</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -465,9 +466,6 @@ loaded_search = getattr(st.session_state, 'loaded_search', None)
 if loaded_search:
     default_query = loaded_search['query']
     st.session_state.loaded_search = None  # Clear after loading
-    
-    # Simple, clean notification
-    st.success(f"✓ Loaded: {loaded_search['name']}")
 else:
     default_query = "just cause"
 
@@ -524,29 +522,6 @@ with col2:
                 st.rerun()
 
 if search_query:
-    # Current search header
-    active_filters = []
-    if st.session_state.get('language_filter', 'Any') != 'Any':
-        active_filters.append(f"Language: {st.session_state.get('language_filter')}")
-    if st.session_state.get('matter_filter', 'Any') != 'Any':
-        active_filters.append(f"Matter: {st.session_state.get('matter_filter')}")
-    if st.session_state.get('outcome_filter', 'Any') != 'Any':
-        active_filters.append(f"Outcome: {st.session_state.get('outcome_filter')}")
-    if st.session_state.get('sport_filter', 'Any') != 'Any':
-        active_filters.append(f"Sport: {st.session_state.get('sport_filter')}")
-    if st.session_state.get('procedural_filter', 'Any') != 'Any':
-        active_filters.append(f"Procedural: {st.session_state.get('procedural_filter')}")
-    if st.session_state.get('date_filter', 'Any') != 'Any':
-        active_filters.append(f"Date: {st.session_state.get('date_filter')}")
-    
-    filter_text = f" + {len(active_filters)} filters" if active_filters else ""
-    
-    st.markdown(f"""
-    <div class="current-search-header">
-        <strong>Current search: "{search_query}"{filter_text}</strong>
-    </div>
-    """, unsafe_allow_html=True)
-    
     # Perform search
     filters = {
         "language": st.session_state.get('language_filter', 'Any'),

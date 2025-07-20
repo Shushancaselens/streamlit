@@ -525,22 +525,20 @@ else:
         default_query = loaded_search['query']
         st.session_state.loaded_search = None  # Clear after loading
     else:
-        default_query = "just cause"
+        default_query = ""  # Empty by default to save space
 
 # Search Interface
-col1, col2 = st.columns([5, 1])
+search_query = st.text_input(
+    "", 
+    value=default_query,
+    placeholder="Enter your search query", 
+    label_visibility="collapsed",
+    key="main_search_input"
+)
 
-with col1:
-    search_query = st.text_input(
-        "", 
-        value=default_query,
-        placeholder="Enter your search query", 
-        label_visibility="collapsed",
-        key="main_search_input"
-    )
-
-with col2:
-    if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
+# Only show save button if there's a search query
+if search_query and search_query.strip():
+    if st.button("💾 Save Search", help="Save current search and filters"):
         with st.form("save_search_form"):
             st.markdown("**Save Current Search**")
             

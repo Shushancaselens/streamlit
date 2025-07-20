@@ -647,8 +647,9 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         else:
             should_expand = False
         
-        # Clean case header with tag-like format (no emojis)
-        case_title = f"**{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
+        # Clean case header with blue tag for case name
+        case_name_tag = f'<span style="background-color: #3b82f6; color: white; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;">{case["title"]}</span>'
+        case_title = f'{case_name_tag} | Date: {case["date"]} | Parties: {case["appellants"]} v. {case["respondents"]} | Matter: {case["matter"]} | Outcome: {case["outcome"]} | Sport: {case["sport"]}'
         
         with st.expander(case_title, expanded=should_expand):
             

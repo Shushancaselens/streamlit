@@ -647,15 +647,10 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         else:
             should_expand = False
         
-        # Create styled header with blue tag for case name
-        case_name_tag = f'<span style="background-color: #3b82f6; color: white; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px; margin-right: 8px;">{case["title"]}</span>'
-        case_header = f'{case_name_tag}Date: {case["date"]} | Parties: {case["appellants"]} v. {case["respondents"]} | Matter: {case["matter"]} | Outcome: {case["outcome"]} | Sport: {case["sport"]}'
+        # Create case title with tag-like appearance using markdown
+        case_title = f"`{case['title']}` | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
-        # Display the styled header
-        st.markdown(case_header, unsafe_allow_html=True)
-        
-        # Use expander for content without the HTML in title
-        with st.expander("View Case Details", expanded=should_expand):
+        with st.expander(case_title, expanded=should_expand):
             
             st.markdown(f"""
             **Procedure:** {case['procedure']}  

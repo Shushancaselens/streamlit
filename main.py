@@ -19,6 +19,8 @@ if 'bookmarked_cases' not in st.session_state:
     st.session_state.bookmarked_cases = []
 if 'current_case' not in st.session_state:
     st.session_state.current_case = None
+if 'saved_searches' not in st.session_state:
+    st.session_state.saved_searches = []
 
 # Sample case database
 CASES_DATABASE = [
@@ -100,6 +102,39 @@ def search_cases(query, max_results=20, similarity_threshold=0.5):
     
     return relevant_cases[:max_results]
 
+def save_search(query, max_results, similarity_threshold, search_name=None):
+    """Save a search query with its filters"""
+    if not search_name:
+        search_name = f"Search: {query[:30]}..." if len(query) > 30 else f"Search: {query}"
+    
+    saved_search = {
+        "id": f"search_{len(st.session_state.saved_searches)}_{int(time.time())}",
+        "name": search_name,
+        "query": query,
+        "max_results": max_results,
+        "similarity_threshold": similarity_threshold,
+        "created_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "last_run": None
+    }
+    
+    st.session_state.saved_searches.append(saved_search)
+    return saved_search
+
+def delete_saved_search(search_id):
+    """Delete a saved search by ID"""
+    st.session_state.saved_searches = [
+        search for search in st.session_state.saved_searches 
+        if search['id'] != search_id
+    ]
+
+def load_saved_search(search_id):
+    """Load and execute a saved search"""
+    for search in st.session_state.saved_searches:
+        if search['id'] == search_id:
+            search['last_run'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            return search
+    return None
+
 # Sidebar Navigation
 with st.sidebar:
     # Logo
@@ -116,7 +151,7 @@ with st.sidebar:
     st.markdown("### Navigation")
     page = st.radio(
         "",
-        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
+        ["🔍 Search", "💾 Saved Searches", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
         index=0,
         label_visibility="collapsed"
     )
@@ -141,25 +176,79 @@ with st.sidebar:
             st.markdown('</div>', unsafe_allow_html=True)
         
         show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+        
+        # Saved Searches Section
+        st.markdown("---")
+        st.markdown("### Quick Access")
+        if st.session_state.saved_searches:
+            st.markdown("**Recent Saved Searches**")
+            for search in st.session_state.saved_searches[-3:]:  # Show last 3
+                if st.button(f"🔍 {search['name'][:25]}...", key=f"quick_{search['id']}", help=f"Query: {search['query']}\nCreated: {search['created_date']}"):
+                    # Load the saved search parameters
+                    st.session_state.loaded_search = search
+                    st.rerun()
+        else:
+            st.info("No saved searches yet")
 
 # Main Content Area
 if page == "🔍 Search":
+    # Initialize default values
+    default_search_query = "just cause"
+    
+    # Check if a saved search was loaded
+    if 'loaded_search' in st.session_state:
+        loaded = st.session_state.loaded_search
+        # Update the sidebar values
+        max_results = loaded['max_results']
+        similarity = loaded['similarity_threshold']
+        default_search_query = loaded['query']
+        st.success(f"✅ Loaded saved search: {loaded['name']}")
+        del st.session_state.loaded_search
+    
     # Search Interface
     st.markdown("### Enter your search query")
-    search_query = st.text_input(
-        "", 
-        value="just cause", 
-        placeholder="Enter your search query", 
-        label_visibility="collapsed",
-        key="search_input_updated"
-    )
+    
+    col1, col2 = st.columns([4, 1])
+    
+    with col1:
+        search_query = st.text_input(
+            "", 
+            value=default_search_query, 
+            placeholder="Enter your search query", 
+            label_visibility="collapsed",
+            key="search_input_updated"
+        )
+    
+    with col2:
+        if st.button("💾 Save Search", help="Save current search with filters"):
+            if search_query:
+                with st.popover("Save Search"):
+                    search_name = st.text_input(
+                        "Search Name (optional)", 
+                        value=f"Search: {search_query[:20]}..." if len(search_query) > 20 else f"Search: {search_query}",
+                        key="save_search_name"
+                    )
+                    
+                    if st.button("Save", key="confirm_save"):
+                        saved = save_search(search_query, max_results, similarity, search_name)
+                        st.success(f"✅ Search saved as: {saved['name']}")
+                        time.sleep(1)
+                        st.rerun()
     
     if search_query:
         # Perform search
         results = search_cases(search_query, max_results, similarity)
         
         # Search results summary
-        st.success(f"Found {len(results)} results")
+        col1, col2, col3 = st.columns([2, 2, 1])
+        with col1:
+            st.success(f"Found {len(results)} results")
+        with col2:
+            if show_similarity and results:
+                st.info(f"Similarity: {results[0]['similarity_score']:.2f}")
+        with col3:
+            if st.button("🔄 Refresh"):
+                st.rerun()
         
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
@@ -246,6 +335,76 @@ if page == "🔍 Search":
                                 {ai_answer}
                             </div>
                             """, unsafe_allow_html=True)
+
+elif page == "💾 Saved Searches":
+    st.title("💾 Saved Searches")
+    
+    if not st.session_state.saved_searches:
+        st.info("No saved searches yet. Go to the Search page and save some searches!")
+    else:
+        st.markdown(f"**Total Saved Searches:** {len(st.session_state.saved_searches)}")
+        st.markdown("---")
+        
+        # Search management options
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            search_filter = st.selectbox(
+                "Filter searches", 
+                ["All Searches", "Recent (Last 7 days)", "Older"],
+                key="search_filter"
+            )
+        with col2:
+            if st.button("🗑️ Clear All", help="Delete all saved searches"):
+                if st.session_state.saved_searches:
+                    st.session_state.saved_searches = []
+                    st.success("All saved searches deleted!")
+                    st.rerun()
+        
+        # Display saved searches
+        for search in reversed(st.session_state.saved_searches):  # Most recent first
+            with st.expander(f"🔍 {search['name']}", expanded=False):
+                
+                col1, col2 = st.columns([3, 1])
+                
+                with col1:
+                    st.markdown(f"""
+                    **Query:** `{search['query']}`  
+                    **Max Results:** {search['max_results']} | **Similarity Threshold:** {search['similarity_threshold']}  
+                    **Created:** {search['created_date']}  
+                    **Last Run:** {search['last_run'] if search['last_run'] else 'Never'}
+                    """)
+                
+                with col2:
+                    if st.button("▶️ Run", key=f"run_{search['id']}", help="Execute this search"):
+                        # Load search and redirect to search page
+                        st.session_state.loaded_search = search
+                        # Update last run time
+                        search['last_run'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        st.success("Loading search...")
+                        time.sleep(1)
+                        # This would ideally navigate to search page, but we'll show results here
+                        st.rerun()
+                    
+                    if st.button("🗑️", key=f"delete_{search['id']}", help="Delete this search"):
+                        delete_saved_search(search['id'])
+                        st.success("Search deleted!")
+                        st.rerun()
+                
+                # Show preview of results
+                if st.checkbox("Preview Results", key=f"preview_{search['id']}"):
+                    with st.spinner("Running search..."):
+                        preview_results = search_cases(
+                            search['query'], 
+                            min(search['max_results'], 3),  # Limit preview to 3 results
+                            search['similarity_threshold']
+                        )
+                        
+                        if preview_results:
+                            st.markdown(f"**Preview - Found {len(preview_results)} results:**")
+                            for i, case in enumerate(preview_results):
+                                st.markdown(f"• **{case['title']}** - {case['date']} - {case['matter']}")
+                        else:
+                            st.warning("No results found for this search")
 
 elif page == "📊 Analytics":
     st.title("📊 Legal Analytics Dashboard")

@@ -257,6 +257,22 @@ st.markdown("""
         padding-top: 8px !important;
         padding-bottom: 8px !important;
     }
+    
+    /* Style for case name tags in expander titles */
+    .stExpander summary p {
+        display: inline-block !important;
+    }
+    
+    .case-tag {
+        background-color: #3b82f6 !important;
+        color: white !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        display: inline-block !important;
+        margin-right: 8px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -647,8 +663,8 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         else:
             should_expand = False
         
-        # Create case title with prominent tag using bold and brackets
-        case_title = f"**【{case['title']}】** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
+        # Create case title with blue square and tag-like formatting
+        case_title = f"🔷 **{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
             

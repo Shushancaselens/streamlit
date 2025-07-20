@@ -583,12 +583,6 @@ if search_query:
             **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
             """)
             
-            # Save Case Button (keep new functionality)
-            col1, col2 = st.columns([6, 1])
-            with col2:
-                if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}"):
-                    save_case(case)
-            
             # Relevant Passages - Most important, moved to top (original format)
             st.markdown("### **Relevant Passages**")
             for passage_index, passage in enumerate(case['relevant_passages']):
@@ -637,8 +631,19 @@ if search_query:
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Case Notes Section (keep new functionality)
-            st.markdown("### 📝 Your Case Notes")
+            # Save Case + Notes Section (grouped together at the bottom)
+            st.markdown("---")
+            
+            # Save Case Button and Notes side by side
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown("### 📝 Your Case Notes")
+            with col2:
+                st.markdown("<br>", unsafe_allow_html=True)  # Add spacing to align with header
+                if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
+                    save_case(case)
+            
+            # Notes text area
             case_notes_key = f"notes_{case['id']}_{case_index}"
             
             # Get existing notes for this case

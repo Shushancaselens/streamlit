@@ -453,10 +453,37 @@ with st.sidebar:
     # Filter dropdowns with default values
     language_filter = st.selectbox("Language", ["Any", "English", "French", "German", "Spanish", "Italian"], key="language_filter", index=0)
     date_filter = st.selectbox("Decision Date", ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years"], key="date_filter", index=0)
-    matter_filter = st.selectbox("Matter", ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"], key="matter_filter", index=0)
-    outcome_filter = st.selectbox("Outcome", ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"], key="outcome_filter", index=0)
+    
+    # Handle temporary filter values for case viewing
+    matter_options = ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"]
+    if 'temp_matter_filter' in st.session_state:
+        temp_matter = st.session_state.temp_matter_filter
+        matter_index = matter_options.index(temp_matter) if temp_matter in matter_options else 0
+        del st.session_state.temp_matter_filter
+    else:
+        matter_index = 0
+    matter_filter = st.selectbox("Matter", matter_options, key="matter_filter", index=matter_index)
+    
+    outcome_options = ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"]
+    if 'temp_outcome_filter' in st.session_state:
+        temp_outcome = st.session_state.temp_outcome_filter
+        outcome_index = outcome_options.index(temp_outcome) if temp_outcome in outcome_options else 0
+        del st.session_state.temp_outcome_filter
+    else:
+        outcome_index = 0
+    outcome_filter = st.selectbox("Outcome", outcome_options, key="outcome_filter", index=outcome_index)
+    
     procedural_filter = st.selectbox("Procedural Types", ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"], key="procedural_filter", index=0)
-    sport_filter = st.selectbox("Sport", ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"], key="sport_filter", index=0)
+    
+    sport_options = ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"]
+    if 'temp_sport_filter' in st.session_state:
+        temp_sport = st.session_state.temp_sport_filter
+        sport_index = sport_options.index(temp_sport) if temp_sport in sport_options else 0
+        del st.session_state.temp_sport_filter
+    else:
+        sport_index = 0
+    sport_filter = st.selectbox("Sport", sport_options, key="sport_filter", index=sport_index)
+    
     arbitrators_filter = st.selectbox("Arbitrators", ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters"], key="arbitrators_filter", index=0)
     category_filter = st.selectbox("Category", ["Any", "Award", "Order", "Interim Award"], key="category_filter", index=0)
     appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter", index=0)
@@ -483,10 +510,10 @@ if 'view_case_search' in st.session_state:
     default_query = case_search_params['query']
     target_case_id = case_search_params['target_case_id']
     
-    # Set the filters to match the case
-    st.session_state.sport_filter = case_search_params.get('sport_filter', 'Any')
-    st.session_state.matter_filter = case_search_params.get('matter_filter', 'Any') 
-    st.session_state.outcome_filter = case_search_params.get('outcome_filter', 'Any')
+    # Store desired filter values temporarily
+    st.session_state.temp_sport_filter = case_search_params.get('sport_filter', 'Any')
+    st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
+    st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
     
     # Clear the search trigger
     del st.session_state.view_case_search

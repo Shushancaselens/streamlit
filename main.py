@@ -410,7 +410,22 @@ with st.sidebar:
                 col1, col2 = st.columns([4, 1]) 
                 with col1:
                     if st.button("View", key=f"view_{case['id']}", help="View case details", use_container_width=True):
-                        st.session_state.viewing_case = case['id']
+                        # Find the full case details from database
+                        full_case = None
+                        for db_case in CASES_DATABASE:
+                            if db_case['id'] == case['id']:
+                                full_case = db_case
+                                break
+                        
+                        if full_case:
+                            # Set up search to show this case
+                            st.session_state.view_case_search = {
+                                'query': 'just cause',  # Use a query that would match this case
+                                'target_case_id': case['id'],
+                                'sport_filter': full_case['sport'],
+                                'matter_filter': full_case['matter'],
+                                'outcome_filter': full_case['outcome']
+                            }
                         st.rerun()
                 with col2:
                     if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
@@ -462,129 +477,113 @@ with st.sidebar:
 # Main Content Area
 st.markdown("### CAS Case Law Research")
 
-# Check if viewing a saved case
-if 'viewing_case' in st.session_state and st.session_state.viewing_case:
-    viewing_case_id = st.session_state.viewing_case
+# Check if we need to show a specific case via search
+if 'view_case_search' in st.session_state:
+    case_search_params = st.session_state.view_case_search
+    default_query = case_search_params['query']
+    target_case_id = case_search_params['target_case_id']
     
-    # Find the case in the database
-    case_to_view = None
-    for case in CASES_DATABASE:
-        if case['id'] == viewing_case_id:
-            case_to_view = case
-            break
+    # Set the filters to match the case
+    st.session_state.sport_filter = case_search_params.get('sport_filter', 'Any')
+    st.session_state.matter_filter = case_search_params.get('matter_filter', 'Any') 
+    st.session_state.outcome_filter = case_search_params.get('outcome_filter', 'Any')
     
-    if case_to_view:
-        # Header with close button
-        col1, col2 = st.columns([6, 1])
-        with col1:
-            st.markdown("### 📄 Viewing Saved Case")
-        with col2:
-            if st.button("✕ Close", help="Close case view"):
-                del st.session_state.viewing_case
-                st.rerun()
-        
-        # Case details using Streamlit native components
-        with st.container():
-            st.markdown(f"## {case_to_view['title']}")
-            
-            # Case metadata in columns
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Date", case_to_view['date'])
-                st.metric("Procedure", case_to_view['procedure'])
-            with col2:
-                st.metric("Matter", case_to_view['matter'])
-                st.metric("Category", case_to_view['category'])
-            with col3:
-                st.metric("Outcome", case_to_view['outcome'])
-                st.metric("Sport", case_to_view['sport'])
-            
-            # Parties information
-            st.markdown("#### Parties")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Appellants:** {case_to_view['appellants']}")
-            with col2:
-                st.write(f"**Respondents:** {case_to_view['respondents']}")
-            
-            # Tribunal information
-            st.markdown("#### Tribunal")
-            st.write(f"**President:** {case_to_view['president']}")
-            st.write(f"**Arbitrators:** {case_to_view['arbitrator1']}, {case_to_view['arbitrator2']}")
-            
-            # Relevant Passages
-            with st.expander("📋 Relevant Passages", expanded=True):
-                for i, passage in enumerate(case_to_view['relevant_passages']):
-                    st.markdown(f"**Passage {i+1}:**")
-                    
-                    # Extract page reference if available
-                    excerpt_text = passage['excerpt']
-                    if excerpt_text.startswith('Page'):
-                        if '.' in excerpt_text:
-                            page_ref = excerpt_text.split(' - ')[0]
-                            content = excerpt_text.split('.', 1)[1]
-                            st.write(f"**{page_ref}**")
-                            st.success(content.strip())
-                        else:
-                            st.success(excerpt_text)
-                    else:
-                        st.success(excerpt_text)
-                    
-                    # Show full context option
-                    if st.button(f"Show Full Context", key=f"context_{i}"):
-                        st.info(passage['full_context'])
-                    
-                    if i < len(case_to_view['relevant_passages']) - 1:
-                        st.divider()
-            
-            # Case Summary
-            with st.expander("📖 Case Summary", expanded=False):
-                st.write(case_to_view['summary'])
-            
-            # Court Reasoning
-            with st.expander("⚖️ Court Reasoning", expanded=False):
-                st.write(case_to_view['court_reasoning'])
-            
-            # Case Outcome
-            with st.expander("🏁 Case Outcome", expanded=False):
-                st.write(case_to_view['case_outcome'])
-            
-            # Notes section for this case
-            st.markdown("#### 📝 Your Notes")
-            
-            # Get existing notes
-            existing_notes = ""
-            for saved_case in st.session_state.saved_cases:
-                if saved_case['id'] == viewing_case_id:
-                    existing_notes = saved_case.get('notes', '')
-                    break
-            
-            # Notes editor
-            notes = st.text_area(
-                "Edit your notes:",
-                value=existing_notes,
-                height=120,
-                placeholder="Add your case analysis, key insights, or references..."
-            )
-            
-            # Save notes button
-            if st.button("💾 Save Notes"):
-                # Update notes in saved cases
-                for saved_case in st.session_state.saved_cases:
-                    if saved_case['id'] == viewing_case_id:
-                        saved_case['notes'] = notes
-                        break
-                st.success("Notes saved!")
-        
-        st.markdown("---")
+    # Clear the search trigger
+    del st.session_state.view_case_search
+else:
+    target_case_id = None
+    # Check if a saved search was loaded
+    loaded_search = getattr(st.session_state, 'loaded_search', None)
+    if loaded_search:
+        default_query = loaded_search['query']
+        st.session_state.loaded_search = None  # Clear after loading
     else:
-        st.error("Case not found in database.")
-        if st.button("Go Back"):
-            del st.session_state.viewing_case
-            st.rerun()
+        default_query = "just cause"
 
-# Check if a saved search was loaded (only when not viewing a case)
-if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
+# Search Interface
+col1, col2 = st.columns([5, 1])
+
+with col1:
+    search_query = st.text_input(
+        "", 
+        value=default_query,
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="main_search_input"
+    )
+
+with col2:
+    if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
+        with st.form("save_search_form"):
+            st.markdown("**Save Current Search**")
+            
+            # Count active filters for name suggestion
+            active_filters = []
+            if st.session_state.get('language_filter', 'Any') != 'Any':
+                active_filters.append('Language')
+            if st.session_state.get('matter_filter', 'Any') != 'Any':
+                active_filters.append('Matter')
+            if st.session_state.get('outcome_filter', 'Any') != 'Any':
+                active_filters.append('Outcome')
+            if st.session_state.get('sport_filter', 'Any') != 'Any':
+                active_filters.append('Sport')
+            if st.session_state.get('procedural_filter', 'Any') != 'Any':
+                active_filters.append('Procedural')
+            
+            filter_count = len(active_filters)
+            search_name = st.text_input("Search Name", value=f'{search_query}')
+            search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
+            
+            if st.form_submit_button("Save"):
+                filters = {
+                    "language": st.session_state.get('language_filter', 'Any'),
+                    "matter": st.session_state.get('matter_filter', 'Any'),
+                    "outcome": st.session_state.get('outcome_filter', 'Any'),
+                    "sport": st.session_state.get('sport_filter', 'Any'),
+                    "procedural": st.session_state.get('procedural_filter', 'Any'),
+                    "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+                    "category": st.session_state.get('category_filter', 'Any'),
+                    "appellants": st.session_state.get('appellants_filter', 'Any'),
+                    "respondents": st.session_state.get('respondents_filter', 'Any'),
+                    "date": st.session_state.get('date_filter', 'Any')
+                }
+                save_current_search(search_name, search_query, filters, search_description)
+                st.success("Search saved!")
+                st.rerun()
+
+if search_query:
+    # Perform search
+    filters = {
+        "language": st.session_state.get('language_filter', 'Any'),
+        "matter": st.session_state.get('matter_filter', 'Any'),
+        "outcome": st.session_state.get('outcome_filter', 'Any'),
+        "sport": st.session_state.get('sport_filter', 'Any'),
+        "procedural": st.session_state.get('procedural_filter', 'Any'),
+        "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+        "category": st.session_state.get('category_filter', 'Any'),
+        "appellants": st.session_state.get('appellants_filter', 'Any'),
+        "respondents": st.session_state.get('respondents_filter', 'Any'),
+        "date": st.session_state.get('date_filter', 'Any')
+    }
+    results = search_cases(search_query, max_results, similarity, filters)
+    
+    # Search results summary
+    total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
+    st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
+    
+    # Show message if viewing a specific case
+    if target_case_id:
+        st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+    
+    # Display search results with original format
+    for case_index, case in enumerate(results):
+        # Auto-expand the target case if we're viewing a specific saved case
+        should_expand = (case_index == 0) or (target_case_id and case['id'] == target_case_id)
+        
+        # Clean case header with bold descriptors (original format)
+        case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+        
+        with st.expander(case_title, expanded=should_expand):
     loaded_search = getattr(st.session_state, 'loaded_search', None)
     if loaded_search:
         default_query = loaded_search['query']

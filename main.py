@@ -363,19 +363,16 @@ with st.sidebar:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Compact functional buttons
-                col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
-                with col3:
-                    if st.button("Load", key=f"load_{search['id']}", help="Load this search"):
+                # Functional buttons only (clean design)
+                col1, col2, col3 = st.columns([1, 2, 1])
+                with col2:
+                    if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
                         st.session_state.loaded_search = search
                         st.rerun()
-                with col4:
-                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search"):
+                with col3:
+                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
                         st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
                         st.rerun()
-                
-                # Add spacing between items
-                st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
     
     # Saved Cases - Modern Design
     with st.expander(f"Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):

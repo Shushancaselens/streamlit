@@ -476,18 +476,20 @@ else:
     default_query = "just cause"
 
 # Search Interface
-search_query = st.text_input(
-    "", 
-    value=default_query,
-    placeholder="Enter your search query", 
-    label_visibility="collapsed",
-    key="main_search_input"
-)
+col1, col2 = st.columns([5, 1])
 
-# Save Search Button
-col1, col2 = st.columns([6, 1])
+with col1:
+    search_query = st.text_input(
+        "", 
+        value=default_query,
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="main_search_input"
+    )
+
 with col2:
-    if st.button("💾 Save Search", help="Save current search and filters"):
+    st.markdown("<br>", unsafe_allow_html=True)  # Add some spacing to align with input
+    if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
         with st.form("save_search_form"):
             st.markdown("**Save Current Search**")
             

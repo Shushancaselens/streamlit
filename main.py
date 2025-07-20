@@ -313,6 +313,47 @@ with st.sidebar:
                 if search != st.session_state.saved_searches[-1]:
                     st.divider()
     
+    # Saved Cases - Collapsible
+    with st.expander(f"Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
+        if len(st.session_state.saved_cases) == 0:
+            st.write("No saved cases yet")
+        else:
+            for case in st.session_state.saved_cases:
+                col1, col2, col3 = st.columns([4, 1, 1])
+                with col1:
+                    st.write(f"**{case['title']}**")
+                    st.caption(f"{case['case_ref']} • {case['saved_date']}")
+                    # Show notes preview if they exist
+                    if case.get('notes') and case['notes'].strip():
+                        notes_preview = case['notes'][:50] + "..." if len(case['notes']) > 50 else case['notes']
+                        st.caption(f"📝 {notes_preview}")
+                with col2:
+                    if st.button("View", key=f"view_{case['id']}", help="View case details"):
+                        st.info("Case viewing feature coming soon!")
+                with col3:
+                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
+                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
+                        st.rerun()
+                
+                # Notes section for each saved case
+                notes_key = f"sidebar_notes_{case['id']}"
+                current_notes = case.get('notes', '')
+                
+                notes = st.text_area(
+                    "Notes:",
+                    value=current_notes,
+                    key=notes_key,
+                    height=60,
+                    placeholder="Add your case notes..."
+                )
+                
+                # Update notes if changed
+                if notes != current_notes:
+                    case['notes'] = notes
+                
+                if case != st.session_state.saved_cases[-1]:
+                    st.divider()
+    
     # Search Filters Header
     st.markdown("---")
     

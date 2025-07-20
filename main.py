@@ -195,7 +195,6 @@ st.markdown("""
         padding: 16px;
         margin: 12px 0;
         border: 1px solid #e2e8f0;
-        position: relative;
     }
     
     .search-name {
@@ -209,37 +208,7 @@ st.markdown("""
     .search-meta {
         font-size: 12px;
         color: #64748b;
-        margin-bottom: 12px;
-    }
-    
-    .search-actions {
-        display: flex;
-        gap: 8px;
-        justify-content: flex-end;
-    }
-    
-    .load-btn {
-        background-color: white;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-size: 12px;
-        color: #374151;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    
-    .delete-btn {
-        background-color: white;
-        border: 1px solid #fca5a5;
-        color: #dc2626;
-        border-radius: 8px;
-        padding: 6px 8px;
-        font-size: 12px;
-        font-weight: 500;
-        cursor: pointer;
-        width: 32px;
-        text-align: center;
+        margin-bottom: 8px;
     }
     
     .case-item {
@@ -380,7 +349,7 @@ with st.sidebar:
         similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
     
-    # Saved Searches - Modern Design
+    # Saved Searches - Modern Design (Fixed)
     with st.expander("Saved Searches", expanded=True):
         if len(st.session_state.saved_searches) == 0:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
@@ -391,21 +360,17 @@ with st.sidebar:
                 <div class="search-item">
                     <div class="search-name">{search['name']}</div>
                     <div class="search-meta">Last run: {search['last_run']}</div>
-                    <div class="search-actions">
-                        <div class="load-btn">Load</div>
-                        <div class="delete-btn">×</div>
-                    </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Functional buttons (hidden but working)
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    if st.button("🔄 Load", key=f"load_{search['id']}", help="Load this search"):
+                # Functional buttons only (clean design)
+                col1, col2, col3 = st.columns([2, 1, 1])
+                with col2:
+                    if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
                         st.session_state.loaded_search = search
                         st.rerun()
-                with col2:
-                    if st.button("🗑️", key=f"delete_{search['id']}", help="Delete search"):
+                with col3:
+                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
                         st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
                         st.rerun()
     
@@ -455,7 +420,8 @@ with st.sidebar:
     
     # Filter counter
     active_filter_count = 0
-    filter_keys = ['language_filter', 'matter_filter', 'outcome_filter', 'sport_filter', 'procedural_filter']
+    filter_keys = ['language_filter', 'matter_filter', 'outcome_filter', 'sport_filter', 'procedural_filter', 
+                   'date_filter', 'arbitrators_filter', 'category_filter', 'appellants_filter', 'respondents_filter']
     for key in filter_keys:
         if st.session_state.get(key, 'Any') != 'Any':
             active_filter_count += 1
@@ -467,24 +433,28 @@ with st.sidebar:
     else:
         st.markdown('<div class="filter-counter no-filters">0 active filters</div>', unsafe_allow_html=True)
     
-    # Filter dropdowns
-    language_filter = st.selectbox("Language", ["Any", "English", "French", "German", "Spanish", "Italian"], key="language_filter")
-    date_filter = st.selectbox("Decision Date", ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years"], key="date_filter")
-    matter_filter = st.selectbox("Matter", ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"], key="matter_filter")
-    outcome_filter = st.selectbox("Outcome", ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"], key="outcome_filter")
-    procedural_filter = st.selectbox("Procedural Types", ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"], key="procedural_filter")
-    sport_filter = st.selectbox("Sport", ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"], key="sport_filter")
-    arbitrators_filter = st.selectbox("Arbitrators", ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters"], key="arbitrators_filter")
-    category_filter = st.selectbox("Category", ["Any", "Award", "Order", "Interim Award"], key="category_filter")
-    appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter")
-    respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter")
+    # Filter dropdowns with default values
+    language_filter = st.selectbox("Language", ["Any", "English", "French", "German", "Spanish", "Italian"], key="language_filter", index=0)
+    date_filter = st.selectbox("Decision Date", ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years"], key="date_filter", index=0)
+    matter_filter = st.selectbox("Matter", ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"], key="matter_filter", index=0)
+    outcome_filter = st.selectbox("Outcome", ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"], key="outcome_filter", index=0)
+    procedural_filter = st.selectbox("Procedural Types", ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"], key="procedural_filter", index=0)
+    sport_filter = st.selectbox("Sport", ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"], key="sport_filter", index=0)
+    arbitrators_filter = st.selectbox("Arbitrators", ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters"], key="arbitrators_filter", index=0)
+    category_filter = st.selectbox("Category", ["Any", "Award", "Order", "Interim Award"], key="category_filter", index=0)
+    appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter", index=0)
+    respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter", index=0)
     
     # Reset button
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Reset All Filters", use_container_width=True, type="secondary"):
-        for key in filter_keys + ['date_filter', 'arbitrators_filter', 'category_filter', 'appellants_filter', 'respondents_filter']:
+        # Clear all filter session state
+        all_filter_keys = ['language_filter', 'date_filter', 'matter_filter', 'outcome_filter', 
+                          'procedural_filter', 'sport_filter', 'arbitrators_filter', 'category_filter',
+                          'appellants_filter', 'respondents_filter']
+        for key in all_filter_keys:
             if key in st.session_state:
-                st.session_state[key] = 'Any'
+                del st.session_state[key]
         st.rerun()
 
 # Main Content Area
@@ -494,12 +464,19 @@ st.markdown("### CAS Case Law Research")
 loaded_search = getattr(st.session_state, 'loaded_search', None)
 if loaded_search:
     default_query = loaded_search['query']
-    # Load filters into session state
-    if 'filters' in loaded_search:
-        for filter_key, filter_value in loaded_search['filters'].items():
-            st.session_state[f'{filter_key}_filter'] = filter_value
     st.session_state.loaded_search = None  # Clear after loading
-    st.rerun()  # Rerun to update the selectboxes
+    
+    # Show success message when search is loaded
+    st.success(f"Loaded search: {loaded_search['name']}")
+    
+    # Note: Filters will need to be manually set by user since we can't override widget values
+    if 'filters' in loaded_search and loaded_search['filters']:
+        filter_info = []
+        for key, value in loaded_search['filters'].items():
+            if value != 'Any':
+                filter_info.append(f"{key.title()}: {value}")
+        if filter_info:
+            st.info(f"Previously saved filters: {', '.join(filter_info)}. Please set these manually in the sidebar.")
 else:
     default_query = "just cause"
 

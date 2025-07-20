@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime, date
 import time
 import random
+import re
 
 # Page configuration
 st.set_page_config(
@@ -20,7 +21,7 @@ if 'bookmarked_cases' not in st.session_state:
 if 'current_case' not in st.session_state:
     st.session_state.current_case = None
 
-# Sample case database
+# Sample case database (expanded for better search demonstration)
 CASES_DATABASE = [
     {
         "id": "CAS_2013_A_3165",
@@ -54,6 +55,56 @@ CASES_DATABASE = [
             }
         ],
         "similarity_score": 0.87
+    },
+    {
+        "id": "CAS_2012_A_2794",
+        "title": "CAS 2012/A/2794",
+        "date": "2013-03-15",
+        "procedure": "Appeal Arbitration",
+        "matter": "Doping",
+        "category": "Award",
+        "outcome": "Upheld",
+        "sport": "Cycling",
+        "appellants": "Alberto Contador",
+        "respondents": "UCI & WADA",
+        "president": "John Coates",
+        "arbitrator1": "Romano Subiotto",
+        "arbitrator2": "Quentin Byrnes-Studer",
+        "summary": "Alberto Contador appealed his two-year suspension for testing positive for clenbuterol during the 2010 Tour de France. He claimed the positive test resulted from contaminated meat consumed in Spain. The UCI and WADA argued that regardless of the source, he was strictly liable for the presence of the prohibited substance in his system.",
+        "court_reasoning": "The panel applied the principle of strict liability under the World Anti-Doping Code. While they accepted that contaminated meat could explain the presence of clenbuterol, this did not eliminate the athlete's responsibility. The panel found no significant fault or negligence that would reduce the standard two-year sanction for a first-time offense involving a specified substance.",
+        "case_outcome": "The appeal was dismissed and the two-year period of ineligibility was confirmed. Contador was stripped of his 2010 Tour de France victory and all results from July 21, 2010, onwards were disqualified. The strict liability principle was upheld as fundamental to maintaining integrity in sport.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 45 - 156. The principle of strict liability is fundamental to the anti-doping system and serves to ensure that athletes are responsible for what is in their bodies.",
+                "full_context": "Page 45 - 155. The World Anti-Doping Code establishes a comprehensive framework for anti-doping violations and sanctions. Central to this framework is the principle of strict liability.\n\nPage 45 - 156. The principle of strict liability is fundamental to the anti-doping system and serves to ensure that athletes are responsible for what is in their bodies. This principle does not require proof of intent, fault, or knowledge on the part of the athlete.\n\nPage 45 - 157. While strict liability may seem harsh, it is necessary to maintain the integrity of sport and provide a level playing field for all competitors. Athletes must take all necessary precautions to ensure prohibited substances do not enter their systems."
+            }
+        ],
+        "similarity_score": 0.92
+    },
+    {
+        "id": "CAS_2015_A_4298",
+        "title": "CAS 2015/A/4298",
+        "date": "2016-06-21",
+        "procedure": "Appeal Arbitration",
+        "matter": "Transfer",
+        "category": "Award",
+        "outcome": "Partially Upheld",
+        "sport": "Football",
+        "appellants": "Real Madrid CF",
+        "respondents": "FIFA",
+        "president": "Luigi Fumagalli",
+        "arbitrator1": "Goetz Eilers",
+        "arbitrator2": "Manfred Nan",
+        "summary": "Real Madrid challenged FIFA's decision imposing a transfer ban for irregularities in the international transfer and registration of minors. FIFA found that Real Madrid had breached regulations regarding the protection of minors by signing players under 18 from outside Spain without meeting the limited exceptions provided in the regulations.",
+        "court_reasoning": "The panel confirmed that protecting minors in football is a legitimate and important objective. However, they found that some of FIFA's findings were not sufficiently substantiated by evidence. The panel reduced the sanction while maintaining the principle that clubs must strictly comply with regulations protecting minor players.",
+        "case_outcome": "The appeal was partially successful. The transfer ban was reduced from two registration periods to one registration period. Real Madrid was also required to pay a reduced fine and implement enhanced compliance procedures for future minor transfers.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 67 - 203. The protection of minors in international football transfers is a fundamental principle that must be strictly enforced.",
+                "full_context": "Page 67 - 202. FIFA's regulations on the status and transfer of players include specific provisions designed to protect minor players from exploitation and ensure their welfare and education are prioritized.\n\nPage 67 - 203. The protection of minors in international football transfers is a fundamental principle that must be strictly enforced. Clubs have a responsibility to ensure full compliance with these regulations before engaging in any transfer involving players under the age of 18.\n\nPage 67 - 204. The limited exceptions to the general prohibition on international transfers of minors are narrowly construed and clubs must demonstrate clear compliance with all applicable criteria."
+            }
+        ],
+        "similarity_score": 0.78
     }
 ]
 
@@ -87,16 +138,107 @@ st.markdown("""
     .sidebar-section {
         margin-bottom: 25px;
     }
+    
+    .search-highlight {
+        background-color: #fef3c7;
+        padding: 1px 2px;
+        border-radius: 2px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-def search_cases(query, max_results=20, similarity_threshold=0.5):
-    """Simulate case search with relevant results"""
+def calculate_relevance_score(case, query_terms):
+    """Calculate relevance score based on multiple factors"""
+    score = 0
+    query_lower = [term.lower() for term in query_terms]
+    
+    # Weight different fields differently
+    field_weights = {
+        'title': 3.0,
+        'summary': 2.0,
+        'court_reasoning': 2.0,
+        'case_outcome': 1.5,
+        'matter': 2.5,
+        'sport': 1.0,
+        'appellants': 1.5,
+        'respondents': 1.5,
+        'relevant_passages': 2.5
+    }
+    
+    for field, weight in field_weights.items():
+        if field == 'relevant_passages':
+            # Search in all passages
+            passage_text = ' '.join([p['excerpt'] + ' ' + p['full_context'] for p in case[field]])
+            field_content = passage_text.lower()
+        else:
+            field_content = str(case[field]).lower()
+        
+        # Count exact phrase matches (higher weight)
+        full_query = ' '.join(query_lower)
+        if full_query in field_content:
+            score += weight * 3
+        
+        # Count individual term matches
+        for term in query_lower:
+            if term in field_content:
+                # Bonus for exact word matches
+                if re.search(r'\b' + re.escape(term) + r'\b', field_content):
+                    score += weight * 2
+                else:
+                    score += weight
+    
+    return score
+
+def highlight_search_terms(text, query_terms):
+    """Highlight search terms in text"""
+    if not query_terms:
+        return text
+    
+    highlighted_text = text
+    for term in query_terms:
+        if len(term) > 2:  # Only highlight terms longer than 2 characters
+            pattern = re.compile(re.escape(term), re.IGNORECASE)
+            highlighted_text = pattern.sub(f'<span class="search-highlight">{term}</span>', highlighted_text)
+    
+    return highlighted_text
+
+def search_cases(query, max_results=20, similarity_threshold=0.5, sport_filter=None, matter_filter=None, date_range=None):
+    """Enhanced case search with improved relevance scoring and filtering"""
+    if not query.strip():
+        return []
+    
+    # Parse query into terms
+    query_terms = [term.strip() for term in query.split() if term.strip()]
+    
     relevant_cases = []
+    
     for case in CASES_DATABASE:
-        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
-            if case['similarity_score'] >= similarity_threshold:
-                relevant_cases.append(case)
+        # Apply filters first
+        if sport_filter and sport_filter != "All" and case['sport'] != sport_filter:
+            continue
+        
+        if matter_filter and matter_filter != "All" and case['matter'] != matter_filter:
+            continue
+        
+        if date_range:
+            case_date = datetime.strptime(case['date'], '%Y-%m-%d').date()
+            if not (date_range[0] <= case_date <= date_range[1]):
+                continue
+        
+        # Calculate relevance score
+        relevance_score = calculate_relevance_score(case, query_terms)
+        
+        if relevance_score > 0:
+            case_copy = case.copy()
+            case_copy['relevance_score'] = relevance_score
+            case_copy['similarity_score'] = min(relevance_score / 10, 1.0)  # Normalize to 0-1
+            relevant_cases.append(case_copy)
+    
+    # Sort by relevance score (highest first)
+    relevant_cases.sort(key=lambda x: x['relevance_score'], reverse=True)
+    
+    # Filter by similarity threshold
+    relevant_cases = [case for case in relevant_cases if case['similarity_score'] >= similarity_threshold]
     
     return relevant_cases[:max_results]
 
@@ -136,11 +278,41 @@ with st.sidebar:
         with st.container():
             st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
             st.markdown("**Similarity Threshold**")
-            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.25, step=0.01, label_visibility="collapsed")
             st.write(f"Current value: {similarity}")
             st.markdown('</div>', unsafe_allow_html=True)
         
+        # Advanced Filters
+        st.markdown("### Filters")
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Sport**")
+            sport_options = ["All"] + list(set([case['sport'] for case in CASES_DATABASE]))
+            sport_filter = st.selectbox("", sport_options, label_visibility="collapsed", key="sport_filter")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Matter Type**")
+            matter_options = ["All"] + list(set([case['matter'] for case in CASES_DATABASE]))
+            matter_filter = st.selectbox("", matter_options, label_visibility="collapsed", key="matter_filter")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Date Range**")
+            use_date_filter = st.checkbox("Enable date filter")
+            if use_date_filter:
+                start_date = st.date_input("From", date(2010, 1, 1))
+                end_date = st.date_input("To", date.today())
+                date_range = (start_date, end_date)
+            else:
+                date_range = None
+            st.markdown('</div>', unsafe_allow_html=True)
+        
         show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+        highlight_terms = st.checkbox("Highlight Search Terms", value=True)
 
 # Main Content Area
 if page == "🔍 Search":
@@ -149,22 +321,60 @@ if page == "🔍 Search":
     search_query = st.text_input(
         "", 
         value="just cause", 
-        placeholder="Enter your search query", 
+        placeholder="Enter your search query (e.g., 'contract breach', 'doping violation', 'transfer ban')", 
         label_visibility="collapsed",
         key="search_input_updated"
     )
     
+    # Add search history
+    if search_query and search_query not in st.session_state.search_history:
+        st.session_state.search_history.insert(0, search_query)
+        st.session_state.search_history = st.session_state.search_history[:10]  # Keep last 10 searches
+    
+    # Quick search suggestions
+    if st.session_state.search_history:
+        st.markdown("**Recent searches:**")
+        cols = st.columns(min(len(st.session_state.search_history), 3))
+        for i, recent_query in enumerate(st.session_state.search_history[:3]):
+            if cols[i % 3].button(f"🔍 {recent_query}", key=f"recent_{i}"):
+                st.session_state.search_input_updated = recent_query
+                st.rerun()
+    
     if search_query:
-        # Perform search
-        results = search_cases(search_query, max_results, similarity)
+        # Perform search with filters
+        sport_filter_val = sport_filter if 'sport_filter' in locals() else None
+        matter_filter_val = matter_filter if 'matter_filter' in locals() else None
+        date_range_val = date_range if 'date_range' in locals() else None
+        
+        results = search_cases(
+            search_query, 
+            max_results, 
+            similarity,
+            sport_filter_val,
+            matter_filter_val,
+            date_range_val
+        )
         
         # Search results summary
-        st.success(f"Found {len(results)} results")
+        if results:
+            st.success(f"Found {len(results)} results")
+            
+            # Display search statistics
+            if show_similarity:
+                avg_score = sum(case['similarity_score'] for case in results) / len(results)
+                st.info(f"Average relevance score: {avg_score:.2f}")
+        else:
+            st.warning("No results found. Try adjusting your search terms or filters.")
         
         # Display search results with clean formatting
+        query_terms = search_query.split() if highlight_terms else []
+        
         for case_index, case in enumerate(results):
             # Clean case header with bold descriptors
             case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+            
+            if show_similarity:
+                case_title += f" | 🎯 **Score:** {case['similarity_score']:.2f}"
             
             with st.expander(case_title, expanded=(case_index == 0)):
                 
@@ -181,6 +391,9 @@ if page == "🔍 Search":
                     
                     # Extract page reference and content for excerpt (first page)
                     excerpt_text = passage['excerpt']
+                    if highlight_terms:
+                        excerpt_text = highlight_search_terms(excerpt_text, query_terms)
+                    
                     if excerpt_text.startswith('Page'):
                         if '.' in excerpt_text:
                             page_ref = excerpt_text.split(' - ')[0]
@@ -190,25 +403,41 @@ if page == "🔍 Search":
                             show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
                             
                             if show_more:
-                                st.success(passage['full_context'])
+                                full_context = passage['full_context']
+                                if highlight_terms:
+                                    full_context = highlight_search_terms(full_context, query_terms)
+                                st.success(full_context, unsafe_allow_html=True)
                             else:
-                                st.success(content.strip())
+                                st.success(content.strip(), unsafe_allow_html=True)
                         else:
-                            st.success(excerpt_text)
+                            st.success(excerpt_text, unsafe_allow_html=True)
                     else:
                         show_more = st.checkbox("show more", key=passage_unique_key)
                         if show_more:
-                            st.success(passage['full_context'])
+                            full_context = passage['full_context']
+                            if highlight_terms:
+                                full_context = highlight_search_terms(full_context, query_terms)
+                            st.success(full_context, unsafe_allow_html=True)
                         else:
-                            st.success(excerpt_text)
+                            st.success(excerpt_text, unsafe_allow_html=True)
                 
                 # Summary
-                st.info(f"**Summary:** {case['summary']}")
+                summary_text = case['summary']
+                if highlight_terms:
+                    summary_text = highlight_search_terms(summary_text, query_terms)
+                st.info(f"**Summary:** {summary_text}", unsafe_allow_html=True)
                 
                 # Court Reasoning
-                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                reasoning_text = case['court_reasoning']
+                if highlight_terms:
+                    reasoning_text = highlight_search_terms(reasoning_text, query_terms)
+                st.warning(f"**Court Reasoning:** {reasoning_text}", unsafe_allow_html=True)
                 
                 # Case Outcome
+                outcome_text = case['case_outcome']
+                if highlight_terms:
+                    outcome_text = highlight_search_terms(outcome_text, query_terms)
+                
                 with st.container():
                     st.markdown(f"""
                     <div style="
@@ -218,9 +447,23 @@ if page == "🔍 Search":
                         margin: 0.5rem 0 1rem 0;
                         line-height: 1.6;
                     ">
-                        <strong>Case Outcome:</strong> {case['case_outcome']}
+                        <strong>Case Outcome:</strong> {outcome_text}
                     </div>
                     """, unsafe_allow_html=True)
+                
+                # Bookmark functionality
+                bookmark_key = f"bookmark_{case['id']}"
+                is_bookmarked = case['id'] in st.session_state.bookmarked_cases
+                bookmark_text = "🔖 Bookmarked" if is_bookmarked else "📌 Bookmark"
+                
+                if st.button(bookmark_text, key=bookmark_key):
+                    if is_bookmarked:
+                        st.session_state.bookmarked_cases.remove(case['id'])
+                        st.success("Removed from bookmarks")
+                    else:
+                        st.session_state.bookmarked_cases.append(case['id'])
+                        st.success("Added to bookmarks")
+                    st.rerun()
                 
                 # AI Question Interface
                 st.markdown("---")
@@ -238,7 +481,16 @@ if page == "🔍 Search":
                     if user_question:
                         with st.spinner("Analyzing case..."):
                             time.sleep(2)
-                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            
+                            # Enhanced AI responses based on case content
+                            if "legal issue" in user_question.lower():
+                                ai_answer = f"The main legal issue in this case was {case['matter'].lower()}-related, specifically involving {case['summary'][:100]}..."
+                            elif "outcome" in user_question.lower():
+                                ai_answer = f"The case outcome was: {case['outcome']}. {case['case_outcome'][:150]}..."
+                            elif "reasoning" in user_question.lower():
+                                ai_answer = f"The court's reasoning focused on: {case['court_reasoning'][:200]}..."
+                            else:
+                                ai_answer = f"Based on the case details, this {case['matter'].lower()} dispute in {case['sport']} involved {case['appellants']} and {case['respondents']}, with the panel ultimately ruling that the appeal was {case['outcome'].lower()}."
                             
                             st.markdown(f"""
                             <div class="question-box">
@@ -249,16 +501,64 @@ if page == "🔍 Search":
 
 elif page == "📊 Analytics":
     st.title("📊 Legal Analytics Dashboard")
-    st.info("Analytics features coming soon.")
+    
+    # Sample analytics data
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Total Cases", len(CASES_DATABASE), "2 new")
+    
+    with col2:
+        st.metric("Contract Disputes", len([c for c in CASES_DATABASE if c['matter'] == 'Contract']), "1 new")
+    
+    with col3:
+        st.metric("Success Rate", "67%", "5%")
+    
+    # Case distribution by sport
+    sports_data = {}
+    for case in CASES_DATABASE:
+        sport = case['sport']
+        sports_data[sport] = sports_data.get(sport, 0) + 1
+    
+    if sports_data:
+        st.subheader("Cases by Sport")
+        st.bar_chart(sports_data)
 
 elif page == "🔖 Bookmarks":
     st.title("🔖 Bookmarked Cases")
-    st.info("No bookmarked cases yet.")
+    
+    if st.session_state.bookmarked_cases:
+        bookmarked_data = [case for case in CASES_DATABASE if case['id'] in st.session_state.bookmarked_cases]
+        
+        for case in bookmarked_data:
+            with st.expander(f"**{case['title']}** | {case['date']} | {case['appellants']} v. {case['respondents']}"):
+                st.write(f"**Matter:** {case['matter']} | **Outcome:** {case['outcome']}")
+                st.write(f"**Summary:** {case['summary'][:200]}...")
+                
+                if st.button(f"Remove from bookmarks", key=f"remove_bookmark_{case['id']}"):
+                    st.session_state.bookmarked_cases.remove(case['id'])
+                    st.rerun()
+    else:
+        st.info("No bookmarked cases yet. Use the bookmark button when viewing search results.")
 
 elif page == "📄 Documents":
     st.title("📄 Document Library")
     st.info("Upload legal documents for analysis.")
+    
+    uploaded_file = st.file_uploader("Choose a file", type=['pdf', 'docx', 'txt'])
+    if uploaded_file is not None:
+        st.success(f"File '{uploaded_file.name}' uploaded successfully!")
 
 elif page == "👤 Admin":
     st.title("👤 Admin Dashboard")
-    st.info("Admin features coming soon.")
+    
+    st.subheader("Search Statistics")
+    if st.session_state.search_history:
+        st.write("Recent search queries:")
+        for i, query in enumerate(st.session_state.search_history[:5], 1):
+            st.write(f"{i}. {query}")
+    
+    st.subheader("System Status")
+    st.success("✅ Search engine operational")
+    st.success("✅ Database connected")
+    st.success(f"✅ {len(CASES_DATABASE)} cases indexed")

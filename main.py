@@ -534,15 +534,8 @@ with st.sidebar:
 # Main Content Area
 st.markdown("### CAS Case Law Research")
 
-# Show reset button if we're in a special mode (viewing case or loaded search)
-if target_case_id or st.session_state.get('loaded_search'):
-    if st.button("🔄 Reset to Normal Search", help="Clear current view and return to normal search"):
-        # Clear any special search states
-        if 'loaded_search' in st.session_state:
-            del st.session_state.loaded_search
-        # Reset search input
-        st.session_state.main_search_input = ""
-        st.rerun()
+# Initialize target_case_id
+target_case_id = None
 
 # Check if we need to show a specific case via search
 if 'view_case_search' in st.session_state:
@@ -561,7 +554,6 @@ if 'view_case_search' in st.session_state:
     # Clear the search trigger
     del st.session_state.view_case_search
 else:
-    target_case_id = None
     # Check if a saved search was loaded
     loaded_search = getattr(st.session_state, 'loaded_search', None)
     if loaded_search:
@@ -569,6 +561,12 @@ else:
         st.session_state.loaded_search = None  # Clear after loading
     else:
         default_query = "just cause"
+
+# Show reset button if we're in a special mode (viewing case)
+if target_case_id:
+    if st.button("🔄 Reset to Normal Search", help="Clear current view and return to normal search"):
+        # Clear search input by updating session state
+        st.rerun()
 
 # Search Interface
 col1, col2 = st.columns([5, 1])

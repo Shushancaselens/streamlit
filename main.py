@@ -277,52 +277,44 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Saved Searches Section
-    st.markdown(f"### 🔍 Saved Searches `{len(st.session_state.saved_searches)}`")
+    # Saved Searches Section - Collapsible
+    with st.expander(f"🔍 Saved Searches ({len(st.session_state.saved_searches)})", expanded=False):
+        if len(st.session_state.saved_searches) == 0:
+            st.write("No saved searches yet")
+        else:
+            for search in st.session_state.saved_searches:
+                col1, col2, col3 = st.columns([4, 1, 1])
+                with col1:
+                    st.write(f"**{search['name']}**")
+                    st.caption(f"Last run: {search['last_run']}")
+                with col2:
+                    if st.button("Load", key=f"load_{search['id']}", help="Load this search"):
+                        st.session_state.loaded_search = search
+                        st.rerun()
+                with col3:
+                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search"):
+                        st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
+                        st.rerun()
+                st.divider()
     
-    for search in st.session_state.saved_searches:
-        with st.container():
-            st.markdown(f"""
-            <div class="saved-search-item">
-                <strong>{search['name']}</strong><br>
-                <small>Saved {search['saved_date']} • Last run: {search['last_run']}</small><br>
-                <em>{search['description']}</em>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                if st.button(f"Load", key=f"load_{search['id']}", help="Load this search"):
-                    st.session_state.loaded_search = search
-                    st.rerun()
-            with col2:
-                if st.button("✕", key=f"delete_{search['id']}", help="Delete search"):
-                    st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
-                    st.rerun()
-    
-    st.markdown("---")
-    
-    # Saved Cases Section  
-    st.markdown(f"### ⭐ Saved Cases `{len(st.session_state.saved_cases)}`")
-    
-    for case in st.session_state.saved_cases:
-        with st.container():
-            st.markdown(f"""
-            <div class="saved-case-item">
-                <strong>{case['title']}</strong><br>
-                <small>{case['case_ref']} • Saved {case['saved_date']}</small><br>
-                <em>{case['description']}</em>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                if st.button(f"View", key=f"view_{case['id']}", help="View case details"):
-                    st.info("Case viewing feature coming soon!")
-            with col2:
-                if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
-                    st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
-                    st.rerun()
+    # Saved Cases Section - Collapsible
+    with st.expander(f"⭐ Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
+        if len(st.session_state.saved_cases) == 0:
+            st.write("No saved cases yet")
+        else:
+            for case in st.session_state.saved_cases:
+                col1, col2, col3 = st.columns([4, 1, 1])
+                with col1:
+                    st.write(f"**{case['title']}**")
+                    st.caption(f"{case['case_ref']} • {case['saved_date']}")
+                with col2:
+                    if st.button("View", key=f"view_{case['id']}", help="View case details"):
+                        st.info("Case viewing feature coming soon!")
+                with col3:
+                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
+                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
+                        st.rerun()
+                st.divider()
 
     st.markdown("---")
     

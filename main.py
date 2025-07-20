@@ -578,7 +578,12 @@ if search_query:
     # Display search results with original format
     for case_index, case in enumerate(results):
         # Auto-expand the target case if we're viewing a specific saved case
-        should_expand = (case_index == 0) or (target_case_id and case['id'] == target_case_id)
+        if target_case_id is not None and case['id'] == target_case_id:
+            should_expand = True
+        elif case_index == 0:
+            should_expand = True
+        else:
+            should_expand = False
         
         # Clean case header with bold descriptors (original format)
         case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"

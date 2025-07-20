@@ -790,5 +790,3 @@ if search_query:
                             {ai_answer}
                         </div>
                         """, unsafe_allow_html=True)
-        
-        st.markdown("---")

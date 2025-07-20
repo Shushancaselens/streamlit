@@ -515,6 +515,9 @@ if 'view_case_search' in st.session_state:
     st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
     st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
     
+    # Force search execution flag
+    st.session_state.force_search = True
+    
     # Clear the search trigger
     del st.session_state.view_case_search
 else:
@@ -531,13 +534,23 @@ else:
 col1, col2 = st.columns([5, 1])
 
 with col1:
-    search_query = st.text_input(
-        "", 
-        value=default_query,
-        placeholder="Enter your search query", 
-        label_visibility="collapsed",
-        key="main_search_input"
-    )
+    # Force update search input when viewing a case
+    if target_case_id and default_query:
+        search_query = st.text_input(
+            "", 
+            value=default_query,
+            placeholder="Enter your search query", 
+            label_visibility="collapsed",
+            key=f"main_search_input_{target_case_id}"  # Use unique key to force update
+        )
+    else:
+        search_query = st.text_input(
+            "", 
+            value=default_query,
+            placeholder="Enter your search query", 
+            label_visibility="collapsed",
+            key="main_search_input"
+        )
 
 with col2:
     if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
@@ -590,8 +603,17 @@ if st.session_state.get('show_save_dialog', False):
     
     save_search_dialog()
 
-if search_query or target_case_id:
-    # Perform search
+if search_query or target_case_id or st.session_state.get('force_search', False):
+    # Clear force search flag
+    if 'force_search' in st.session_state:
+        del st.session_state.force_search
+        
+    # Perform search - ensure we always have a query when viewing a case
+    if target_case_id and not search_query:
+        query_to_use = "just cause"  # Force default query for case viewing
+    else:
+        query_to_use = search_query or "just cause"
+        
     filters = {
         "language": st.session_state.get('language_filter', 'Any'),
         "matter": st.session_state.get('matter_filter', 'Any'),
@@ -605,8 +627,6 @@ if search_query or target_case_id:
         "date": st.session_state.get('date_filter', 'Any')
     }
     
-    # Use default query if viewing a specific case but no query entered
-    query_to_use = search_query if search_query else default_query
     results = search_cases(query_to_use, max_results, similarity, filters)
     
     # Search results summary
@@ -627,8 +647,8 @@ if search_query or target_case_id:
         else:
             should_expand = False
         
-        # Clean case header with bold descriptors (original format)
-        case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+        # Clean case header with tag-like format (no emojis)
+        case_title = f"**{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
             

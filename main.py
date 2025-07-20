@@ -409,10 +409,11 @@ with st.sidebar:
                 # Action buttons
                 col1, col2 = st.columns([4, 1]) 
                 with col1:
-                    if st.button("View", key=f"view_{case['id']}", use_container_width=True):
-                        st.info("Case viewing feature coming soon!")
+                    if st.button("View", key=f"view_{case['id']}", help="View case details", use_container_width=True):
+                        st.session_state.viewing_case = case['id']
+                        st.rerun()
                 with col2:
-                    if st.button("✕", key=f"remove_{case['id']}"):
+                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
                         st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
                         st.rerun()
 
@@ -460,6 +461,127 @@ with st.sidebar:
 
 # Main Content Area
 st.markdown("### CAS Case Law Research")
+
+# Check if viewing a saved case
+if 'viewing_case' in st.session_state and st.session_state.viewing_case:
+    viewing_case_id = st.session_state.viewing_case
+    
+    # Find the case in the database
+    case_to_view = None
+    for case in CASES_DATABASE:
+        if case['id'] == viewing_case_id:
+            case_to_view = case
+            break
+    
+    if case_to_view:
+        # Header with close button
+        col1, col2 = st.columns([6, 1])
+        with col1:
+            st.markdown("### 📄 Viewing Saved Case")
+        with col2:
+            if st.button("✕ Close", help="Close case view"):
+                del st.session_state.viewing_case
+                st.rerun()
+        
+        # Case details using Streamlit native components
+        with st.container():
+            st.markdown(f"## {case_to_view['title']}")
+            
+            # Case metadata in columns
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Date", case_to_view['date'])
+                st.metric("Procedure", case_to_view['procedure'])
+            with col2:
+                st.metric("Matter", case_to_view['matter'])
+                st.metric("Category", case_to_view['category'])
+            with col3:
+                st.metric("Outcome", case_to_view['outcome'])
+                st.metric("Sport", case_to_view['sport'])
+            
+            # Parties information
+            st.markdown("#### Parties")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write(f"**Appellants:** {case_to_view['appellants']}")
+            with col2:
+                st.write(f"**Respondents:** {case_to_view['respondents']}")
+            
+            # Tribunal information
+            st.markdown("#### Tribunal")
+            st.write(f"**President:** {case_to_view['president']}")
+            st.write(f"**Arbitrators:** {case_to_view['arbitrator1']}, {case_to_view['arbitrator2']}")
+            
+            # Relevant Passages
+            with st.expander("📋 Relevant Passages", expanded=True):
+                for i, passage in enumerate(case_to_view['relevant_passages']):
+                    st.markdown(f"**Passage {i+1}:**")
+                    
+                    # Extract page reference if available
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
+                            st.write(f"**{page_ref}**")
+                            st.success(content.strip())
+                        else:
+                            st.success(excerpt_text)
+                    else:
+                        st.success(excerpt_text)
+                    
+                    # Show full context option
+                    if st.button(f"Show Full Context", key=f"context_{i}"):
+                        st.info(passage['full_context'])
+                    
+                    if i < len(case_to_view['relevant_passages']) - 1:
+                        st.divider()
+            
+            # Case Summary
+            with st.expander("📖 Case Summary", expanded=False):
+                st.write(case_to_view['summary'])
+            
+            # Court Reasoning
+            with st.expander("⚖️ Court Reasoning", expanded=False):
+                st.write(case_to_view['court_reasoning'])
+            
+            # Case Outcome
+            with st.expander("🏁 Case Outcome", expanded=False):
+                st.write(case_to_view['case_outcome'])
+            
+            # Notes section for this case
+            st.markdown("#### 📝 Your Notes")
+            
+            # Get existing notes
+            existing_notes = ""
+            for saved_case in st.session_state.saved_cases:
+                if saved_case['id'] == viewing_case_id:
+                    existing_notes = saved_case.get('notes', '')
+                    break
+            
+            # Notes editor
+            notes = st.text_area(
+                "Edit your notes:",
+                value=existing_notes,
+                height=120,
+                placeholder="Add your case analysis, key insights, or references..."
+            )
+            
+            # Save notes button
+            if st.button("💾 Save Notes"):
+                # Update notes in saved cases
+                for saved_case in st.session_state.saved_cases:
+                    if saved_case['id'] == viewing_case_id:
+                        saved_case['notes'] = notes
+                        break
+                st.success("Notes saved!")
+        
+        st.markdown("---")
+    else:
+        st.error("Case not found in database.")
+        if st.button("Go Back"):
+            del st.session_state.viewing_case
+            st.rerun()
 
 # Check if a saved search was loaded
 loaded_search = getattr(st.session_state, 'loaded_search', None)

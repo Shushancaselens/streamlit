@@ -1,535 +1,580 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date
-import time
-import random
 
-# Page configuration
+# Page config
 st.set_page_config(
-    page_title="Caselens - Legal Research Platform",
+    page_title="CaseLength - Improved UX",
     page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# Initialize session state
-if 'search_history' not in st.session_state:
-    st.session_state.search_history = []
-if 'bookmarked_cases' not in st.session_state:
-    st.session_state.bookmarked_cases = []
-if 'current_case' not in st.session_state:
-    st.session_state.current_case = None
-if 'saved_searches' not in st.session_state:
-    st.session_state.saved_searches = []
-if 'case_notes' not in st.session_state:
-    st.session_state.case_notes = {}
-
-# Sample case database (expanded)
-CASES_DATABASE = [
-    {
-        "id": "CAS_2020_A_7242",
-        "title": "CAS 2020/A/7242",
-        "date": "2021-11-23",
-        "procedure": "Appeal Arbitration Procedure",
-        "matter": "Contract",
-        "category": "Award", 
-        "outcome": "Partially upheld",
-        "sport": "Football",
-        "appellants": "Al Wahda FSC Company",
-        "respondents": "Mourad Batna, Al Jazira FSC",
-        "president": "Mr Mark Hovell",
-        "arbitrator1": "Prof. Luigi Fumagalli",
-        "arbitrator2": "Mr Manfred Nan",
-        "summary": "This case involves Al Wahda FSC Company (UAE club), Mr. Mourad Batna (Moroccan footballer), and Al Jazira FSC (UAE club) regarding the termination of Batna's employment contract. Batna terminated his contract citing overdue wages and abusive conduct by Al Wahda, thereafter signing with Al Jazira. Al Wahda claimed Batna left without just cause, seeking compensation and sanctions, while Batna and Al Jazira contended the termination was justified due to unpaid salaries and improper conduct by Al Wahda.",
-        "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Batna's salary for over three months was a substantial breach, constituting just cause for contract termination.",
-        "case_outcome": "The appeal was partially upheld with mixed results for both parties regarding compensation and sanctions.",
-        "relevant_passages": [
-            {
-                "excerpt": "Page 21 - i. The existence of just cause",
-                "full_context": "The existence of just cause must be determined based on the merits and particular circumstances of each case, considering the severity of the breach and whether continued employment is reasonable in good faith."
-            }
-        ],
-        "similarity_score": 0.92
-    },
-    {
-        "id": "CAS_2022_A_8836", 
-        "title": "CAS 2022/A/8836",
-        "date": "2023-05-08",
-        "procedure": "Appeal Arbitration Procedure",
-        "matter": "Contract",
-        "category": "Award",
-        "outcome": "Dismissed", 
-        "sport": "Football",
-        "appellants": "Samsunspor",
-        "respondents": "Brice Dja...",
-        "president": "Mr John Smith",
-        "arbitrator1": "Prof. Maria Santos",
-        "arbitrator2": "Dr. Ahmed Hassan",
-        "summary": "Contract dispute involving termination for just cause between Samsunspor and player Brice Dja regarding salary payments and breach of contract terms.",
-        "court_reasoning": "The panel determined that the club's failure to pay salary constituted a fundamental breach sufficient for just cause termination.",
-        "case_outcome": "The appeal was dismissed and the original decision was upheld.",
-        "relevant_passages": [
-            {
-                "excerpt": "Page 15 - Salary payment obligations are fundamental to employment contracts",
-                "full_context": "Non-payment of salary for extended periods constitutes a substantial breach that may justify termination for just cause under FIFA regulations."
-            }
-        ],
-        "similarity_score": 0.85
-    }
-]
-
-# Custom CSS
+# Custom CSS for better styling
 st.markdown("""
 <style>
-    .main-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
+    .filter-chip {
+        background-color: #dbeafe;
+        color: #1e40af;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        margin: 3px;
+        display: inline-block;
+        border: 1px solid #93c5fd;
+        font-weight: 500;
     }
     
-    .logo-icon {
-        background-color: #4f46e5;
-        color: white;
-        padding: 8px;
-        border-radius: 6px;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    
-    .question-box {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 16px;
-        margin: 16px 0;
-    }
-    
-    .sidebar-section {
-        margin-bottom: 25px;
-    }
-    
-    .save-search-card {
-        background-color: #f0f9ff;
-        border: 1px solid #0ea5e9;
-        border-radius: 8px;
-        padding: 16px;
-        margin: 16px 0;
-    }
-    
-    .save-case-card {
+    .filter-chip-removable {
         background-color: #fef3c7;
+        color: #92400e;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        margin: 3px;
+        display: inline-block;
         border: 1px solid #f59e0b;
+        font-weight: 500;
+    }
+    
+    .case-card {
+        background: white;
+        border: 1px solid #e5e7eb;
         border-radius: 8px;
-        padding: 12px;
-        margin: 8px 0;
+        padding: 20px;
+        margin: 12px 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .case-card-saved {
+        background: #f0fdf4;
+        border: 2px solid #22c55e;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 12px 0;
+        box-shadow: 0 2px 8px rgba(34,197,94,0.2);
+    }
+    
+    .save-preview {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 12px 0;
     }
     
     .success-message {
-        background-color: #dcfce7;
-        border: 1px solid #16a34a;
-        border-radius: 8px;
+        background: #d1fae5;
+        border: 1px solid #10b981;
+        color: #065f46;
         padding: 12px;
+        border-radius: 6px;
         margin: 8px 0;
-        color: #15803d;
+        font-weight: 600;
+    }
+    
+    .warning-message {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        color: #92400e;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 4px 0;
+    }
+    
+    .active-filters-bar {
+        background: #f1f5f9;
+        border: 2px solid #3b82f6;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .search-bar {
+        background: #ffffff;
+        border: 2px solid #3b82f6;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .saved-indicator {
+        background: #22c55e;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+        margin: 8px 0;
+    }
+    
+    .search-results-header {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 16px 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-def search_cases(query, filters, max_results=20, similarity_threshold=0.5):
-    """Search cases with filters applied"""
-    relevant_cases = []
-    for case in CASES_DATABASE:
-        # Apply text search
-        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
-            # Apply filters
-            if filters.get('sport') and case['sport'] != filters['sport']:
-                continue
-            if filters.get('matter') and case['matter'] != filters['matter']:
-                continue
-            if filters.get('outcome') and case['outcome'] != filters['outcome']:
-                continue
-            
-            if case['similarity_score'] >= similarity_threshold:
-                relevant_cases.append(case)
-    
-    return relevant_cases[:max_results]
+# Initialize session state
+if 'saved_searches' not in st.session_state:
+    st.session_state.saved_searches = []
+if 'saved_cases' not in st.session_state:
+    st.session_state.saved_cases = []
+if 'case_notes' not in st.session_state:
+    st.session_state.case_notes = {}
+if 'show_save_modal' not in st.session_state:
+    st.session_state.show_save_modal = False
+if 'search_query' not in st.session_state:
+    st.session_state.search_query = "just cause"
+if 'last_action' not in st.session_state:
+    st.session_state.last_action = None
 
-def save_search_dialog():
-    """Enhanced save search dialog"""
-    st.markdown("""
-    <div class="save-search-card">
-        <h4>💾 Save This Search</h4>
-        <p>Save your search query and all applied filters for quick access later.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    with st.form("save_search_form"):
-        search_name = st.text_input("Search Name", placeholder="e.g., Just Cause in Football Contracts")
-        search_notes = st.text_area("Notes about this search (optional)", placeholder="Add any notes about why you saved this search...")
-        
-        col1, col2 = st.columns([1, 3])
-        with col1:
-            save_button = st.form_submit_button("💾 Save Search", use_container_width=True)
-        with col2:
-            if st.form_submit_button("❌ Cancel", use_container_width=True):
-                st.rerun()
-        
-        if save_button and search_name:
-            # Create search object with current state
-            search_object = {
-                'id': f"search_{int(time.time())}",
-                'name': search_name,
-                'query': st.session_state.get('search_query', ''),
-                'notes': search_notes,
-                'filters': st.session_state.get('current_filters', {}),
-                'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
-                'results_count': len(st.session_state.get('current_results', []))
-            }
-            
-            st.session_state.saved_searches.append(search_object)
-            
-            st.markdown("""
-            <div class="success-message">
-                ✅ Search saved successfully! You can find it in the "Saved Searches" section.
-            </div>
-            """, unsafe_allow_html=True)
-            time.sleep(1)
-            st.rerun()
+# Sample case data
+sample_cases = [
+    {
+        "case_id": "CAS 2020/A/7242",
+        "parties": "Al Wahda F... v. Mourad Bat...",
+        "date": "2021-11-23",
+        "matter": "Contract",
+        "outcome": "Partially upheld",
+        "sport": "Football"
+    },
+    {
+        "case_id": "CAS 2022/A/8836",
+        "parties": "Samsunspor... v. Brice Dja...",
+        "date": "2023-05-08",
+        "matter": "Contract",
+        "outcome": "Dismissed",
+        "sport": "Football"
+    },
+    {
+        "case_id": "CAS 2023/A/9444",
+        "parties": "U Craiova... v. Marko Gaji...",
+        "date": "2023-10-27",
+        "matter": "Contract",
+        "outcome": "Dismissed",
+        "sport": "Football"
+    }
+]
 
-def save_case_dialog(case):
-    """Enhanced save case dialog with notes"""
-    st.markdown(f"""
-    <div class="save-case-card">
-        <h4>⭐ Save Case: {case['title']}</h4>
-        <p>Add this case to your saved cases with optional notes.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    with st.form(f"save_case_form_{case['id']}"):
-        case_notes = st.text_area(
-            "Case Notes", 
-            value=st.session_state.case_notes.get(case['id'], ''),
-            placeholder="Add your analysis, thoughts, or reminders about this case...",
-            height=100
-        )
-        
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            save_button = st.form_submit_button("⭐ Save Case", use_container_width=True)
-        with col2:
-            remove_button = st.form_submit_button("🗑️ Remove", use_container_width=True)
-        
-        if save_button:
-            if case['id'] not in st.session_state.bookmarked_cases:
-                st.session_state.bookmarked_cases.append(case['id'])
-            st.session_state.case_notes[case['id']] = case_notes
-            
-            st.markdown("""
-            <div class="success-message">
-                ✅ Case saved with notes!
-            </div>
-            """, unsafe_allow_html=True)
-            time.sleep(1)
-            st.rerun()
-            
-        if remove_button:
-            if case['id'] in st.session_state.bookmarked_cases:
-                st.session_state.bookmarked_cases.remove(case['id'])
-            if case['id'] in st.session_state.case_notes:
-                del st.session_state.case_notes[case['id']]
-            
-            st.markdown("""
-            <div class="success-message">
-                ✅ Case removed from saved cases!
-            </div>
-            """, unsafe_allow_html=True)
-            time.sleep(1)
-            st.rerun()
+# Header
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.markdown("**🏛️ caselens**")
 
-# Sidebar Navigation
+st.title("CAS Case Law Research")
+
+# Sidebar filters - IMPROVED CLARITY
 with st.sidebar:
-    # Logo
-    st.markdown("""
-    <div class="main-header">
-        <span class="logo-icon">C</span>
-        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
-    </div>
-    """, unsafe_allow_html=True)
+    st.header("🔍 Search & Filters")
     
-    st.markdown("---")
-    
-    # Navigation
-    st.markdown("### Navigation")
-    page = st.radio(
-        "",
-        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
-        index=0,
-        label_visibility="collapsed"
-    )
-    
-    st.markdown("---")
-    
-    if page == "🔍 Search":
-        # Search Options
-        st.markdown("### Search Filters")
-        
-        # Initialize current filters in session state
-        if 'current_filters' not in st.session_state:
-            st.session_state.current_filters = {}
-        
-        with st.container():
-            st.markdown("**Sport**")
-            sport_filter = st.selectbox("", ["All Sports", "Football", "Basketball", "Tennis"], index=0, label_visibility="collapsed")
-            if sport_filter != "All Sports":
-                st.session_state.current_filters['sport'] = sport_filter
-            elif 'sport' in st.session_state.current_filters:
-                del st.session_state.current_filters['sport']
-        
-        with st.container():
-            st.markdown("**Matter**")
-            matter_filter = st.selectbox("", ["All Matters", "Contract", "Transfer", "Disciplinary"], index=0, label_visibility="collapsed")
-            if matter_filter != "All Matters":
-                st.session_state.current_filters['matter'] = matter_filter
-            elif 'matter' in st.session_state.current_filters:
-                del st.session_state.current_filters['matter']
-        
-        with st.container():
-            st.markdown("**Outcome**")
-            outcome_filter = st.selectbox("", ["All Outcomes", "Dismissed", "Partially upheld", "Upheld"], index=0, label_visibility="collapsed")
-            if outcome_filter != "All Outcomes":
-                st.session_state.current_filters['outcome'] = outcome_filter
-            elif 'outcome' in st.session_state.current_filters:
-                del st.session_state.current_filters['outcome']
-        
-        # Display active filters
-        if st.session_state.current_filters:
-            st.markdown("**Active Filters:**")
-            for filter_type, value in st.session_state.current_filters.items():
-                st.markdown(f"• {filter_type.title()}: {value}")
-        
-        # Saved Searches Section
-        st.markdown("---")
-        st.markdown("### Saved Searches")
-        
-        if st.session_state.saved_searches:
-            st.write(f"📁 Found {len(st.session_state.saved_searches)} saved searches")
-            
-            search_options = ["Select a saved search..."] + [f"{s['name']} ({s['saved_date']})" for s in st.session_state.saved_searches]
-            selected_search = st.selectbox("Load saved search", search_options, index=0)
-            
-            if selected_search != "Select a saved search...":
-                # Find the selected search
-                search_index = search_options.index(selected_search) - 1
-                selected_search_obj = st.session_state.saved_searches[search_index]
-                
-                if st.button("🔄 Load Search"):
-                    st.session_state.search_query = selected_search_obj['query']
-                    st.session_state.current_filters = selected_search_obj['filters']
-                    st.success(f"Loaded search: {selected_search_obj['name']}")
-                    st.rerun()
-        else:
-            st.info("No saved searches yet. Save a search to see it here!")
-
-# Main Content Area
-if page == "🔍 Search":
-    # Search Interface
-    st.markdown("### CAS Case Law Research")
-    
-    # Search query input
-    search_query = st.text_input(
-        "", 
-        value=st.session_state.get('search_query', 'just cause'),
-        placeholder="Enter your search query", 
-        label_visibility="collapsed",
-        key="search_input_main"
-    )
-    
-    # Update session state
-    st.session_state.search_query = search_query
-    
-    # Search and Save buttons
-    col1, col2, col3 = st.columns([2, 1, 1])
+    # Clear current filters section
+    st.subheader("🗑️ Quick Actions")
+    col1, col2 = st.columns(2)
     with col1:
-        search_button = st.button("🔍 Search", use_container_width=True)
+        if st.button("🗑️ Clear All", help="Remove all active filters"):
+            # Reset all filter values
+            for key in st.session_state.keys():
+                if key.startswith('filter_'):
+                    del st.session_state[key]
+            st.rerun()
     with col2:
-        save_search_button = st.button("💾 Save Search", use_container_width=True)
-    with col3:
-        clear_button = st.button("🗑️ Clear", use_container_width=True)
+        if st.button("🔄 Reset", help="Reset search and filters"):
+            st.session_state.search_query = ""
+            for key in st.session_state.keys():
+                if key.startswith('filter_'):
+                    del st.session_state[key]
+            st.rerun()
     
-    if clear_button:
-        st.session_state.search_query = ""
-        st.session_state.current_filters = {}
-        st.rerun()
+    # Search Options
+    with st.expander("⚙️ Search Options", expanded=False):
+        search_type = st.selectbox("Search Type", ["Full Text", "Title Only", "Parties Only"])
     
-    # Save Search Dialog
-    if save_search_button:
-        save_search_dialog()
-    
-    if search_query:
-        # Perform search
-        results = search_cases(search_query, st.session_state.current_filters)
-        st.session_state.current_results = results
-        
-        # Search results summary
-        filter_summary = ""
-        if st.session_state.current_filters:
-            filter_list = [f"{k}: {v}" for k, v in st.session_state.current_filters.items()]
-            filter_summary = f" (Filters: {', '.join(filter_list)})"
-        
-        st.success(f"Found {len(results)} results for '{search_query}'{filter_summary}")
-        
-        # General Answer Section (if results found)
-        if results:
-            with st.expander("📋 General Answer: Definition of Just Cause in Football Employment Contracts", expanded=True):
-                st.markdown("""
-                **1. General Principle:**
-                "Just cause" (or "good cause") is a substantive legal standard under Article 14 of the FIFA Regulations on the Status and Transfer of Players (RSTP) and Article 337(2) of the Swiss Code of Obligations (CO). It permits a party to lawfully terminate an employment contract when its fundamental terms and conditions are no longer respected by the other party.
-                
-                **2. Requirements for Just Cause:**
-                Two main requirements must always be met:
-                
-                • **Substantive requirement:** There must be a pattern of conduct or an event that renders the continuation of the employment relationship in good faith unreasonable or unconscionable for the party giving notice.
-                
-                • The breach must be sufficiently serious ("exceptional measure") and supported by objective circumstances, such as a serious breach of trust, which make continued employment unreasonable.
-                
-                **3. Case-by-case Assessment:**
-                The existence and definition of just cause are determined based on the merits and particular circumstances of each case, considering the severity of the breach. Swiss law may be applied subsidiarily if necessary.
-                
-                **4. Practical Implication:**
-                Immediate contract termination for just cause is only accepted under narrow, exceptional circumstances; minor breaches generally do not qualify.
-                
-                **Summary:**
-                Just cause exists only where a party's conduct fundamentally undermines the contractual relationship and makes its continuation unconscionable in good faith. Whether just cause exists is always assessed on a case-by-case basis with reference to FIFA and Swiss legal principles.
-                """)
-        
-        # Display search results
-        for case_index, case in enumerate(results):
-            # Check if case is saved
-            is_saved = case['id'] in st.session_state.bookmarked_cases
-            save_icon = "⭐" if is_saved else "☆"
-            
-            # Case header with save indicator
-            case_title = f"{save_icon} **{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
-            
-            with st.expander(case_title, expanded=(case_index == 0)):
-                
-                st.markdown(f"""
-                **Procedure:** {case['procedure']}  
-                **Category:** {case['category']}  
-                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
-                """)
-                
-                # Save Case Section (prominent placement)
+    # Saved Searches - IMPROVED
+    with st.expander("💾 My Saved Searches", expanded=False):
+        if st.session_state.saved_searches:
+            st.success(f"✅ {len(st.session_state.saved_searches)} saved searches")
+            for i, search in enumerate(st.session_state.saved_searches):
                 col1, col2 = st.columns([3, 1])
+                with col1:
+                    if st.button(f"📁 {search['name']}", key=f"load_{i}"):
+                        st.session_state.search_query = search['query']
+                        st.session_state.last_action = f"Loaded search: {search['name']}"
+                        st.rerun()
                 with col2:
-                    save_case_key = f"save_case_{case['id']}_{case_index}"
-                    if st.button(f"{save_icon} {'Saved' if is_saved else 'Save Case'}", key=save_case_key, use_container_width=True):
-                        st.session_state[f"show_save_dialog_{case['id']}"] = True
+                    if st.button("🗑️", key=f"delete_{i}", help="Delete this search"):
+                        st.session_state.saved_searches.pop(i)
                         st.rerun()
-                
-                # Show save dialog if triggered
-                if st.session_state.get(f"show_save_dialog_{case['id']}", False):
-                    save_case_dialog(case)
-                    # Reset dialog state
-                    st.session_state[f"show_save_dialog_{case['id']}"] = False
-                
-                # Show saved notes if case is saved
-                if is_saved and case['id'] in st.session_state.case_notes:
-                    notes = st.session_state.case_notes[case['id']]
-                    if notes:
-                        st.markdown(f"""
-                        **📝 Your Notes:**
-                        > {notes}
-                        """)
-                
-                # Relevant Passages
-                st.markdown("### **Relevant Passages**")
-                for passage_index, passage in enumerate(case['relevant_passages']):
-                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
-                    
-                    excerpt_text = passage['excerpt']
-                    if excerpt_text.startswith('Page'):
-                        if '.' in excerpt_text:
-                            page_ref = excerpt_text.split(' - ')[0]
-                            content = excerpt_text.split('.', 1)[1] if '.' in excerpt_text else excerpt_text.split(' - ', 1)[1]
-                            
-                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
-                            
-                            if show_more:
-                                st.success(passage['full_context'])
-                            else:
-                                st.success(content.strip())
-                        else:
-                            st.success(excerpt_text)
-                    else:
-                        show_more = st.checkbox("show more", key=passage_unique_key)
-                        if show_more:
-                            st.success(passage['full_context'])
-                        else:
-                            st.success(excerpt_text)
-                
-                # Summary
-                st.info(f"**Summary:** {case['summary']}")
-                
-                # Court Reasoning
-                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
-                
-                # Case Outcome
-                with st.container():
-                    st.markdown(f"""
-                    <div style="
-                        background-color: #f0f2f6; 
-                        border-radius: 0.5rem; 
-                        padding: 0.75rem 1rem;
-                        margin: 0.5rem 0 1rem 0;
-                        line-height: 1.6;
-                    ">
-                        <strong>Case Outcome:</strong> {case['case_outcome']}
-                    </div>
-                    """, unsafe_allow_html=True)
-
-elif page == "🔖 Bookmarks":
-    st.title("🔖 Saved Cases")
+        else:
+            st.info("No saved searches yet")
     
-    if st.session_state.bookmarked_cases:
-        st.success(f"You have {len(st.session_state.bookmarked_cases)} saved cases")
+    st.markdown("---")
+    st.subheader("🎯 Search Filters")
+    
+    # Language filter
+    language = st.selectbox(
+        "🌐 Language", 
+        ["All Languages", "English", "French", "Spanish"],
+        key="filter_language"
+    )
+    
+    # Decision Date filter
+    date_range = st.date_input(
+        "📅 Decision Date Range",
+        value=(date(2020, 1, 1), date(2025, 12, 31)),
+        format="YYYY-MM-DD",
+        key="filter_date"
+    )
+    
+    # Matter filter
+    matter = st.multiselect(
+        "📋 Matter Type",
+        ["Contract", "Transfer", "Disciplinary", "Doping"],
+        default=["Contract"],
+        key="filter_matter"
+    )
+    
+    # Outcome filter
+    outcome = st.multiselect(
+        "🏆 Case Outcome",
+        ["Dismissed", "Partially upheld", "Upheld"],
+        default=["Partially upheld", "Dismissed"],
+        key="filter_outcome"
+    )
+    
+    # Sport filter
+    sport = st.multiselect(
+        "⚽ Sport",
+        ["Football", "Basketball", "Tennis", "Swimming"],
+        default=["Football"],
+        key="filter_sport"
+    )
+    
+    # Procedural Types
+    procedural_types = st.multiselect(
+        "⚖️ Procedural Types",
+        ["Appeal", "Ordinary", "Expedited"],
+        key="filter_procedural"
+    )
+    
+    # Arbitrators
+    arbitrators = st.multiselect(
+        "👨‍⚖️ Arbitrators",
+        ["Prof. Luigi Fumagalli", "Mr Manfred Nan", "Mr Mark Hovell"],
+        key="filter_arbitrators"
+    )
+
+# Main content area - IMPROVED SEARCH BAR
+st.markdown('<div class="search-bar">', unsafe_allow_html=True)
+col1, col2 = st.columns([4, 1])
+with col1:
+    new_search = st.text_input(
+        "🔍 **Search Legal Cases**", 
+        value=st.session_state.search_query,
+        placeholder="Enter search terms (e.g., 'just cause', 'contract termination', 'transfer fees')",
+        help="Search across case content, party names, and legal principles"
+    )
+    if new_search != st.session_state.search_query:
+        st.session_state.search_query = new_search
+
+with col2:
+    if st.button("🔍 Search", type="primary", use_container_width=True):
+        st.session_state.last_action = "Search executed"
+        st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
+
+# IMPROVED Active Filters Display
+active_filters = []
+if matter: active_filters.extend([f"Matter: {m}" for m in matter])
+if outcome: active_filters.extend([f"Outcome: {o}" for o in outcome])
+if sport: active_filters.extend([f"Sport: {s}" for s in sport])
+if procedural_types: active_filters.extend([f"Procedure: {p}" for p in procedural_types])
+if arbitrators: active_filters.extend([f"Arbitrator: {a.split()[-1]}" for a in arbitrators])
+if language != "All Languages": active_filters.append(f"Language: {language}")
+
+if active_filters:
+    st.markdown('<div class="active-filters-bar">', unsafe_allow_html=True)
+    st.markdown(f"### 🎯 Active Search Filters ({len(active_filters)})")
+    
+    # Display filter chips in a more organized way
+    filter_html = "<div style='margin: 8px 0;'>"
+    for filter_item in active_filters:
+        filter_html += f'<span class="filter-chip-removable">{filter_item} ❌</span> '
+    filter_html += "</div>"
+    
+    st.markdown(filter_html, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([2, 2, 4])
+    with col1:
+        if st.button("🗑️ Clear All Filters", type="secondary"):
+            # Clear all multiselect filters
+            for key in ['filter_matter', 'filter_outcome', 'filter_sport', 'filter_procedural', 'filter_arbitrators']:
+                if key in st.session_state:
+                    st.session_state[key] = []
+            st.session_state.filter_language = "All Languages"
+            st.rerun()
+    
+    with col2:
+        if st.button("💾 Save These Filters", type="secondary"):
+            st.session_state.show_save_modal = True
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+else:
+    st.info("🎯 **No filters applied** - Showing all cases. Use the sidebar to filter results.")
+
+# Show last action feedback
+if st.session_state.last_action:
+    st.markdown(f'<div class="success-message">✅ {st.session_state.last_action}</div>', unsafe_allow_html=True)
+    # Clear the message after showing it
+    st.session_state.last_action = None
+
+# Action buttons row - IMPROVED
+col1, col2, col3, col4 = st.columns([2, 2, 2, 4])
+
+with col1:
+    if st.button("💾 Save Search", type="secondary", help="Save current search and filters"):
+        st.session_state.show_save_modal = True
+
+with col2:
+    if st.button("🔄 New Search", help="Clear search and start fresh"):
+        st.session_state.search_query = ""
+        st.session_state.last_action = "Started new search"
+        st.rerun()
+
+with col3:
+    # Show saved items count
+    saved_count = len(st.session_state.saved_cases)
+    if saved_count > 0:
+        st.markdown(f"**📌 {saved_count} Saved Cases**")
+
+# Save Search Modal - IMPROVED
+if st.session_state.show_save_modal:
+    st.markdown("---")
+    st.markdown("## 💾 Save Your Search")
+    
+    # Preview what will be saved - MORE DETAILED
+    with st.container():
+        st.markdown('<div class="save-preview">', unsafe_allow_html=True)
+        st.markdown("### 📋 Search Preview")
         
-        for case_id in st.session_state.bookmarked_cases:
-            # Find the case in database
-            case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
-            if case:
-                with st.expander(f"⭐ {case['title']} - {case['appellants']} v. {case['respondents']}", expanded=False):
-                    # Show case notes if available
-                    if case_id in st.session_state.case_notes and st.session_state.case_notes[case_id]:
-                        st.markdown(f"""
-                        **📝 Your Notes:**
-                        > {st.session_state.case_notes[case_id]}
-                        """)
-                        st.markdown("---")
-                    
-                    st.markdown(f"**Date:** {case['date']}")
-                    st.markdown(f"**Matter:** {case['matter']}")
-                    st.markdown(f"**Outcome:** {case['outcome']}")
-                    st.markdown(f"**Summary:** {case['summary']}")
-                    
-                    if st.button(f"🗑️ Remove from saved", key=f"remove_{case_id}"):
-                        st.session_state.bookmarked_cases.remove(case_id)
-                        if case_id in st.session_state.case_notes:
-                            del st.session_state.case_notes[case_id]
-                        st.success("Case removed from saved cases!")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**🔍 Search Query:** `{st.session_state.search_query or 'No search terms'}`")
+            st.write(f"**📊 Active Filters:** {len(active_filters)} filters applied")
+        
+        with col2:
+            if active_filters:
+                st.write("**Filter Details:**")
+                for filter_item in active_filters:
+                    st.write(f"  • {filter_item}")
+            else:
+                st.write("**No filters applied** - Will save search query only")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Save form
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        search_name = st.text_input(
+            "📝 Search Name:", 
+            value=f"Just Cause Research - {datetime.now().strftime('%Y-%m-%d')}",
+            help="Give your search a memorable name"
+        )
+    
+    email_alerts = st.checkbox("📧 Send me email alerts for new matching cases")
+    
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col1:
+        if st.button("✅ Save Search", type="primary"):
+            # Save the search
+            new_search = {
+                "name": search_name,
+                "query": st.session_state.search_query,
+                "filters": active_filters.copy(),
+                "created": datetime.now(),
+                "email_alerts": email_alerts
+            }
+            st.session_state.saved_searches.append(new_search)
+            st.session_state.show_save_modal = False
+            st.session_state.last_action = f"Search '{search_name}' saved successfully!"
+            st.rerun()
+    
+    with col2:
+        if st.button("❌ Cancel"):
+            st.session_state.show_save_modal = False
+            st.rerun()
+    
+    st.markdown("---")
+
+# Search results summary - IMPROVED
+if not st.session_state.show_save_modal:
+    st.markdown('<div class="search-results-header">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([2, 2, 2])
+    with col1:
+        st.metric("📄 Found Results", "15 passages")
+    with col2:
+        st.metric("⚖️ Total Cases", "13 decisions")
+    with col3:
+        st.metric("📌 Saved Cases", len(st.session_state.saved_cases))
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # General Answer section
+    with st.expander("📋 **General Answer: Definition of Just Cause in Football Employment Contracts**", expanded=True):
+        st.markdown("""
+        **1. General Principle:**
+        
+        "Just cause" (or "good cause") is a substantive legal standard under Article 14 of the FIFA Regulations on the Status and Transfer of Players (RSTP) and Article 337(2) of the Swiss Code of Obligations (CO). It permits a party to lawfully terminate an employment contract when its fundamental terms and conditions are no longer respected by the other party.
+        
+        **2. Requirements for Just Cause:**
+        
+        Two main requirements must always be met:
+        
+        • **Substantive requirement:** There must be a pattern of conduct or an event that renders the continuation of the employment relationship in good faith unreasonable or unconscionable for the party giving notice.
+        
+        • The breach must be sufficiently serious ("exceptional measure") and supported by objective circumstances, such as a serious breach of trust, which make continued employment unreasonable.
+        
+        **3. Case-by-case Assessment:**
+        
+        The existence and definition of just cause are determined based on the merits and particular circumstances of each case, considering the severity of the breach. Swiss law may be applied subsidiarily if necessary.
+        
+        **4. Practical Implication:**
+        
+        Immediate contract termination for just cause is only accepted under narrow, exceptional circumstances; minor breaches generally do not qualify.
+        """)
+
+    # Case results - MUCH IMPROVED SAVED STATUS
+    st.markdown("## 📁 Case Results")
+
+    for i, case in enumerate(sample_cases):
+        case_key = case['case_id']
+        is_saved = case_key in st.session_state.saved_cases
+        
+        # Use different styling for saved cases
+        if is_saved:
+            st.markdown('<div class="case-card-saved">', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="case-card">', unsafe_allow_html=True)
+        
+        # Case header with clear saved status
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(f"### {case['case_id']}")
+            st.write(f"**👥 Parties:** {case['parties']}")
+            st.write(f"**📅 Date:** {case['date']} | **📋 Matter:** {case['matter']} | **🏆 Outcome:** {case['outcome']} | **⚽ Sport:** {case['sport']}")
+        
+        with col2:
+            if is_saved:
+                # CLEAR saved indicator
+                st.markdown('<div class="saved-indicator">✅ SAVED TO MY CASES</div>', unsafe_allow_html=True)
+                if st.button(f"🗑️ Remove", key=f"remove_{case_key}", help="Remove from saved cases"):
+                    st.session_state.saved_cases.remove(case_key)
+                    st.session_state.last_action = f"Removed {case_key} from saved cases"
+                    st.rerun()
+            else:
+                if st.button(f"📌 Save to My Cases", key=f"save_{case_key}", type="primary"):
+                    st.session_state.saved_cases.append(case_key)
+                    st.session_state.last_action = f"✅ {case_key} saved to your cases!"
+                    st.rerun()
+        
+        # Additional case actions
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button(f"📤 Export", key=f"export_{case_key}"):
+                st.session_state.last_action = f"Exported {case_key}"
+        with col2:
+            if st.button(f"🔗 Copy Link", key=f"link_{case_key}"):
+                st.session_state.last_action = f"Copied link for {case_key}"
+        with col3:
+            if st.button(f"📧 Share", key=f"share_{case_key}"):
+                st.session_state.last_action = f"Shared {case_key}"
+        
+        # Case notes section - IMPROVED
+        with st.expander(f"📝 **Notes for {case['case_id']}**", expanded=False):
+            note_key = f"notes_{case_key}"
+            current_note = st.session_state.case_notes.get(note_key, "")
+            
+            new_note = st.text_area(
+                "Add your analysis, key points, or observations:",
+                value=current_note,
+                key=f"textarea_{note_key}",
+                placeholder="Example: This case establishes important precedent for salary disputes...",
+                height=100
+            )
+            
+            col1, col2, col3 = st.columns([1, 1, 2])
+            with col1:
+                if st.button(f"💾 Save Notes", key=f"save_notes_{case_key}", type="primary"):
+                    st.session_state.case_notes[note_key] = new_note
+                    st.session_state.last_action = f"Notes saved for {case_key}"
+                    st.rerun()
+            
+            with col2:
+                if current_note:
+                    if st.button(f"🗑️ Clear Notes", key=f"clear_notes_{case_key}"):
+                        st.session_state.case_notes[note_key] = ""
+                        st.session_state.last_action = f"Notes cleared for {case_key}"
                         st.rerun()
-    else:
-        st.info("No saved cases yet. Save cases from your search results to see them here!")
+            
+            with col3:
+                if new_note != current_note and new_note:
+                    st.warning("⚠️ You have unsaved changes")
+                elif current_note:
+                    st.success("✅ Notes saved")
+                else:
+                    st.info("💡 Add notes to save your analysis")
+        
+        # Case summary
+        if case['case_id'] == "CAS 2020/A/7242":
+            with st.expander("📖 **Case Summary & Key Findings**", expanded=False):
+                st.markdown("""
+                **Case Background:**
+                This case involves Al Wahda FSC Company (UAE club), Mr. Mourad Batna (Moroccan footballer), and Al Jazira FSC (UAE club) 
+                regarding the termination of Batna's employment contract.
+                
+                **Key Facts:**
+                - Batna terminated his contract citing overdue wages and abusive conduct by Al Wahda
+                - Subsequently signed with Al Jazira
+                - Al Wahda claimed Batna left without just cause, seeking compensation and sanctions
+                - Batna and Al Jazira contended the termination was justified due to unpaid salaries and improper conduct
+                
+                **Legal Significance:**
+                - Establishes precedent for just cause determination in football contracts
+                - Demonstrates importance of salary payment obligations
+                - Shows how club conduct can justify player termination
+                """)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("---")
 
-elif page == "📊 Analytics":
-    st.title("📊 Legal Analytics Dashboard")
-    st.info("Analytics features coming soon.")
-
-elif page == "📄 Documents":
-    st.title("📄 Document Library")
-    st.info("Upload legal documents for analysis.")
-
-elif page == "👤 Admin":
-    st.title("👤 Admin Dashboard")
-    st.info("Admin features coming soon.")
+    # IMPROVED Footer with comprehensive saved items summary
+    if st.session_state.saved_cases or st.session_state.saved_searches:
+        st.markdown("## 📊 My Legal Research Collection")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.session_state.saved_cases:
+                st.markdown(f"### 📌 My Saved Cases ({len(st.session_state.saved_cases)})")
+                for case_id in st.session_state.saved_cases:
+                    note_count = len(st.session_state.case_notes.get(f"notes_{case_id}", ""))
+                    note_indicator = f" (📝 {note_count} chars)" if note_count > 0 else ""
+                    st.write(f"  • **{case_id}**{note_indicator}")
+                
+                if st.button("📤 Export All Saved Cases"):
+                    st.session_state.last_action = "Exported all saved cases"
+                    st.rerun()
+        
+        with col2:
+            if st.session_state.saved_searches:
+                st.markdown(f"### 💾 My Saved Searches ({len(st.session_state.saved_searches)})")
+                for search in st.session_state.saved_searches:
+                    filter_count = len(search.get('filters', []))
+                    alert_indicator = " 📧" if search.get('email_alerts') else ""
+                    st.write(f"  • **{search['name']}** ({filter_count} filters){alert_indicator}")
+                
+                if st.button("📤 Export All Searches"):
+                    st.session_state.last_action = "Exported all saved searches"
+                    st.rerun()

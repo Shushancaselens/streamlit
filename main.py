@@ -525,41 +525,48 @@ else:
         default_query = loaded_search['query']
         st.session_state.loaded_search = None  # Clear after loading
     else:
-        default_query = ""  # Empty by default to save space
+        default_query = "just cause"
 
 # Search Interface
-search_query = st.text_input(
-    "", 
-    value=default_query,
-    placeholder="Enter your search query", 
-    label_visibility="collapsed",
-    key="main_search_input"
-)
+col1, col2 = st.columns([5, 1])
 
-# Only show save button if there's a search query
-if search_query and search_query.strip():
-    if st.button("💾 Save Search", help="Save current search and filters"):
-        with st.form("save_search_form"):
-            st.markdown("**Save Current Search**")
-            
-            # Count active filters for name suggestion
-            active_filters = []
-            if st.session_state.get('language_filter', 'Any') != 'Any':
-                active_filters.append('Language')
-            if st.session_state.get('matter_filter', 'Any') != 'Any':
-                active_filters.append('Matter')
-            if st.session_state.get('outcome_filter', 'Any') != 'Any':
-                active_filters.append('Outcome')
-            if st.session_state.get('sport_filter', 'Any') != 'Any':
-                active_filters.append('Sport')
-            if st.session_state.get('procedural_filter', 'Any') != 'Any':
-                active_filters.append('Procedural')
-            
-            filter_count = len(active_filters)
-            search_name = st.text_input("Search Name", value=f'{search_query}')
-            search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
-            
-            if st.form_submit_button("Save"):
+with col1:
+    search_query = st.text_input(
+        "", 
+        value=default_query,
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="main_search_input"
+    )
+
+with col2:
+    if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
+        st.session_state.show_save_dialog = True
+
+# Save Search Dialog
+if st.session_state.get('show_save_dialog', False):
+    @st.dialog("Save Current Search")
+    def save_search_dialog():
+        # Count active filters for name suggestion
+        active_filters = []
+        if st.session_state.get('language_filter', 'Any') != 'Any':
+            active_filters.append('Language')
+        if st.session_state.get('matter_filter', 'Any') != 'Any':
+            active_filters.append('Matter')
+        if st.session_state.get('outcome_filter', 'Any') != 'Any':
+            active_filters.append('Outcome')
+        if st.session_state.get('sport_filter', 'Any') != 'Any':
+            active_filters.append('Sport')
+        if st.session_state.get('procedural_filter', 'Any') != 'Any':
+            active_filters.append('Procedural')
+        
+        filter_count = len(active_filters)
+        search_name = st.text_input("Search Name", value=search_query if search_query else 'My Search')
+        search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Save", use_container_width=True):
                 filters = {
                     "language": st.session_state.get('language_filter', 'Any'),
                     "matter": st.session_state.get('matter_filter', 'Any'),
@@ -573,8 +580,15 @@ if search_query and search_query.strip():
                     "date": st.session_state.get('date_filter', 'Any')
                 }
                 save_current_search(search_name, search_query, filters, search_description)
+                st.session_state.show_save_dialog = False
                 st.success("Search saved!")
                 st.rerun()
+        with col2:
+            if st.button("Cancel", use_container_width=True):
+                st.session_state.show_save_dialog = False
+                st.rerun()
+    
+    save_search_dialog()
 
 if search_query:
     # Perform search

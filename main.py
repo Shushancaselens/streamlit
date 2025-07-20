@@ -154,6 +154,8 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 48px;
+        height: 48px;
     }
     
     .nav-buttons {
@@ -163,7 +165,7 @@ st.markdown("""
     }
     
     .nav-button-active {
-        background-color: #ef4444;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
         color: white;
         padding: 12px 20px;
         border-radius: 12px;
@@ -171,7 +173,8 @@ st.markdown("""
         font-weight: 500;
         flex: 1;
         text-align: center;
-        text-decoration: none;
+        font-size: 14px;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
     }
     
     .nav-button-inactive {
@@ -183,64 +186,68 @@ st.markdown("""
         font-weight: 500;
         flex: 1;
         text-align: center;
-        text-decoration: none;
+        font-size: 14px;
     }
     
-    .saved-search-item {
+    .search-item {
         background-color: #f8fafc;
-        border-radius: 8px;
-        padding: 12px;
-        margin: 8px 0;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 12px 0;
         border: 1px solid #e2e8f0;
+        position: relative;
     }
     
-    .saved-search-name {
+    .search-name {
         font-weight: 600;
         font-size: 14px;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         color: #1e293b;
+        line-height: 1.3;
     }
     
-    .saved-search-meta {
+    .search-meta {
         font-size: 12px;
         color: #64748b;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
     }
     
-    .saved-search-actions {
+    .search-actions {
         display: flex;
-        gap: 6px;
+        gap: 8px;
+        justify-content: flex-end;
     }
     
-    .action-button {
+    .load-btn {
         background-color: white;
         border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 4px 12px;
+        border-radius: 8px;
+        padding: 6px 12px;
         font-size: 12px;
         color: #374151;
-        cursor: pointer;
         font-weight: 500;
+        cursor: pointer;
     }
     
-    .action-button:hover {
-        background-color: #f9fafb;
-        border-color: #9ca3af;
-    }
-    
-    .delete-button {
+    .delete-btn {
         background-color: white;
         border: 1px solid #fca5a5;
         color: #dc2626;
-        border-radius: 6px;
-        padding: 4px 8px;
+        border-radius: 8px;
+        padding: 6px 8px;
         font-size: 12px;
-        cursor: pointer;
         font-weight: 500;
+        cursor: pointer;
+        width: 32px;
+        text-align: center;
     }
     
-    .delete-button:hover {
-        background-color: #fef2f2;
+    .case-item {
+        background-color: #fefce8;
+        border: 1px solid #fde047;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 12px 0;
     }
     
     .question-box {
@@ -251,10 +258,6 @@ st.markdown("""
         margin: 16px 0;
     }
     
-    .sidebar-section {
-        margin-bottom: 20px;
-    }
-    
     .current-search-header {
         background-color: #f1f5f9;
         padding: 16px;
@@ -262,17 +265,28 @@ st.markdown("""
         margin-bottom: 20px;
     }
     
-    .case-metadata {
-        display: flex;
-        gap: 15px;
-        margin: 10px 0;
+    .filter-counter {
+        font-size: 12px;
+        font-weight: 500;
+        text-align: right;
+        margin-bottom: 12px;
+    }
+    
+    .active-filters {
+        color: #3b82f6;
+    }
+    
+    .no-filters {
+        color: #6b7280;
+    }
+    
+    div[data-testid="stSelectbox"] > div > div {
         font-size: 14px;
     }
     
-    .metadata-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+    .stExpander > div > div > div > div {
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -341,24 +355,24 @@ def save_case(case):
 
 # Sidebar Navigation
 with st.sidebar:
-    # Logo
+    # Modern Logo Design
     st.markdown("""
     <div class="main-header">
-        <span class="logo-icon">C</span>
-        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+        <div class="logo-icon">C</div>
+        <h2 style="margin: 0; color: #1e293b; font-weight: 700; font-size: 24px;">caselens</h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation Tabs
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔍 Search", use_container_width=True, type="primary"):
-            pass
-    with col2:
-        if st.button("📄 Documents", use_container_width=True):
-            pass
+    # Modern Navigation Buttons
+    st.markdown("""
+    <div class="nav-buttons">
+        <div class="nav-button-active">🔍 Search</div>
+        <div class="nav-button-inactive">📄 Documents</div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown("---")
+    # Clean Divider
+    st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
     
     # Search Options - Collapsible
     with st.expander("Search Options", expanded=False):
@@ -366,169 +380,109 @@ with st.sidebar:
         similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
     
-    # Saved Searches - Collapsible
-    with st.expander("Saved Searches", expanded=False):
+    # Saved Searches - Modern Design
+    with st.expander("Saved Searches", expanded=True):
         if len(st.session_state.saved_searches) == 0:
-            st.write("No saved searches yet")
+            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
         else:
             for search in st.session_state.saved_searches:
-                col1, col2, col3 = st.columns([4, 1, 1])
+                # Modern card design
+                st.markdown(f"""
+                <div class="search-item">
+                    <div class="search-name">{search['name']}</div>
+                    <div class="search-meta">Last run: {search['last_run']}</div>
+                    <div class="search-actions">
+                        <div class="load-btn">Load</div>
+                        <div class="delete-btn">×</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Functional buttons (hidden but working)
+                col1, col2 = st.columns([4, 1])
                 with col1:
-                    st.write(f"**{search['name']}**")
-                    st.caption(f"Last run: {search['last_run']}")
-                with col2:
-                    if st.button("Load", key=f"load_{search['id']}", help="Load this search"):
+                    if st.button("🔄 Load", key=f"load_{search['id']}", help="Load this search"):
                         st.session_state.loaded_search = search
                         st.rerun()
-                with col3:
-                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search"):
+                with col2:
+                    if st.button("🗑️", key=f"delete_{search['id']}", help="Delete search"):
                         st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
                         st.rerun()
-                if search != st.session_state.saved_searches[-1]:
-                    st.divider()
     
-    # Saved Cases - Collapsible
+    # Saved Cases - Modern Design
     with st.expander(f"Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
         if len(st.session_state.saved_cases) == 0:
-            st.write("No saved cases yet")
+            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved cases yet</p>", unsafe_allow_html=True)
         else:
             for case in st.session_state.saved_cases:
-                col1, col2, col3 = st.columns([4, 1, 1])
-                with col1:
-                    st.write(f"**{case['title']}**")
-                    st.caption(f"{case['case_ref']} • {case['saved_date']}")
-                    # Show notes preview if they exist
-                    if case.get('notes') and case['notes'].strip():
-                        notes_preview = case['notes'][:50] + "..." if len(case['notes']) > 50 else case['notes']
-                        st.caption(f"📝 {notes_preview}")
-                with col2:
-                    if st.button("View", key=f"view_{case['id']}", help="View case details"):
-                        st.info("Case viewing feature coming soon!")
-                with col3:
-                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
-                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
-                        st.rerun()
+                # Modern case card
+                st.markdown(f"""
+                <div class="case-item">
+                    <div class="search-name">{case['title']}</div>
+                    <div class="search-meta">{case['case_ref']} • {case['saved_date']}</div>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Notes section for each saved case
+                # Compact notes
                 notes_key = f"sidebar_notes_{case['id']}"
                 current_notes = case.get('notes', '')
                 
                 notes = st.text_area(
-                    "Notes:",
+                    "",
                     value=current_notes,
                     key=notes_key,
-                    height=60,
-                    placeholder="Add your case notes..."
+                    height=50,
+                    placeholder="Quick notes...",
+                    label_visibility="collapsed"
                 )
                 
-                # Update notes if changed
+                # Update notes
                 if notes != current_notes:
                     case['notes'] = notes
                 
-                if case != st.session_state.saved_cases[-1]:
-                    st.divider()
+                # Action buttons
+                col1, col2 = st.columns([4, 1]) 
+                with col1:
+                    if st.button("View", key=f"view_{case['id']}", use_container_width=True):
+                        st.info("Case viewing feature coming soon!")
+                with col2:
+                    if st.button("✕", key=f"remove_{case['id']}"):
+                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
+                        st.rerun()
+
+    # Search Filters Section
+    st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
     
-    # Search Filters Header
-    st.markdown("---")
-    
-    # Count active filters
+    # Filter counter
     active_filter_count = 0
-    if 'language_filter' in st.session_state and st.session_state.get('language_filter') != 'Any':
-        active_filter_count += 1
-    if 'matter_filter' in st.session_state and st.session_state.get('matter_filter') != 'Any':
-        active_filter_count += 1
-    if 'outcome_filter' in st.session_state and st.session_state.get('outcome_filter') != 'Any':
-        active_filter_count += 1
-    if 'sport_filter' in st.session_state and st.session_state.get('sport_filter') != 'Any':
-        active_filter_count += 1
-    if 'procedural_filter' in st.session_state and st.session_state.get('procedural_filter') != 'Any':
-        active_filter_count += 1
+    filter_keys = ['language_filter', 'matter_filter', 'outcome_filter', 'sport_filter', 'procedural_filter']
+    for key in filter_keys:
+        if st.session_state.get(key, 'Any') != 'Any':
+            active_filter_count += 1
     
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.markdown("**Search Filters**")
-    with col2:
-        if active_filter_count > 0:
-            st.markdown(f"<span style='color: #3b82f6; font-size: 12px;'>{active_filter_count} active filters</span>", unsafe_allow_html=True)
-        else:
-            st.markdown("<span style='color: #6b7280; font-size: 12px;'>0 active filters</span>", unsafe_allow_html=True)
+    # Filters header with counter
+    st.markdown("**Search Filters**")
+    if active_filter_count > 0:
+        st.markdown(f'<div class="filter-counter active-filters">{active_filter_count} active filters</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="filter-counter no-filters">0 active filters</div>', unsafe_allow_html=True)
     
-    # Language Filter
-    language_filter = st.selectbox(
-        "Language",
-        ["Any", "English", "French", "German", "Spanish", "Italian"],
-        key="language_filter"
-    )
+    # Filter dropdowns
+    language_filter = st.selectbox("Language", ["Any", "English", "French", "German", "Spanish", "Italian"], key="language_filter")
+    date_filter = st.selectbox("Decision Date", ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years"], key="date_filter")
+    matter_filter = st.selectbox("Matter", ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"], key="matter_filter")
+    outcome_filter = st.selectbox("Outcome", ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"], key="outcome_filter")
+    procedural_filter = st.selectbox("Procedural Types", ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"], key="procedural_filter")
+    sport_filter = st.selectbox("Sport", ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"], key="sport_filter")
+    arbitrators_filter = st.selectbox("Arbitrators", ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters"], key="arbitrators_filter")
+    category_filter = st.selectbox("Category", ["Any", "Award", "Order", "Interim Award"], key="category_filter")
+    appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter")
+    respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter")
     
-    # Decision Date Filter
-    date_filter = st.selectbox(
-        "Decision Date",
-        ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years", "Custom range"],
-        key="date_filter"
-    )
-    
-    # Matter Filter
-    matter_filter = st.selectbox(
-        "Matter",
-        ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility", "Financial"],
-        key="matter_filter"
-    )
-    
-    # Outcome Filter
-    outcome_filter = st.selectbox(
-        "Outcome",
-        ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"],
-        key="outcome_filter"
-    )
-    
-    # Procedural Types Filter
-    procedural_filter = st.selectbox(
-        "Procedural Types",
-        ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track", "Advisory Opinion"],
-        key="procedural_filter"
-    )
-    
-    # Sport Filter
-    sport_filter = st.selectbox(
-        "Sport",
-        ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics", "Cycling", "Hockey"],
-        key="sport_filter"
-    )
-    
-    # Arbitrators Filter
-    arbitrators_filter = st.selectbox(
-        "Arbitrators",
-        ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters", "Lisa Chen", "Hans Mueller"],
-        key="arbitrators_filter"
-    )
-    
-    # Category Filter
-    category_filter = st.selectbox(
-        "Category",
-        ["Any", "Award", "Order", "Interim Award", "Procedural Order"],
-        key="category_filter"
-    )
-    
-    # Appellants Filter
-    appellants_filter = st.selectbox(
-        "Appellants",
-        ["Any", "Player", "Club", "National Association", "FIFA", "UEFA"],
-        key="appellants_filter"
-    )
-    
-    # Respondents Filter
-    respondents_filter = st.selectbox(
-        "Respondents", 
-        ["Any", "Player", "Club", "National Association", "FIFA", "UEFA"],
-        key="respondents_filter"
-    )
-    
-    # Reset All Filters
-    if st.button("Reset All Filters", use_container_width=True):
-        # Reset all filter session state
-        for key in ['language_filter', 'date_filter', 'matter_filter', 'outcome_filter', 
-                   'procedural_filter', 'sport_filter', 'arbitrators_filter', 'category_filter',
-                   'appellants_filter', 'respondents_filter']:
+    # Reset button
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("Reset All Filters", use_container_width=True, type="secondary"):
+        for key in filter_keys + ['date_filter', 'arbitrators_filter', 'category_filter', 'appellants_filter', 'respondents_filter']:
             if key in st.session_state:
                 st.session_state[key] = 'Any'
         st.rerun()

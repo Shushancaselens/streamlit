@@ -398,29 +398,32 @@ if page == "🔍 Search":
                         if '.' in excerpt_text:
                             page_ref = excerpt_text.split(' - ')[0] if ' - ' in excerpt_text else excerpt_text
                             content_parts = excerpt_text.split('.', 1)
-                            content = content_parts[1].strip() if len(content_parts) > 1 else excerpt_text
+                            if len(content_parts) > 1 and content_parts[1]:
+                                content = str(content_parts[1]).strip()
+                            else:
+                                content = str(excerpt_text)
                             
                             # Put page and checkbox on same line
                             show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
                             
                             if show_more:
-                                full_context = passage['full_context']
-                                if highlight_terms:
+                                full_context = str(passage.get('full_context', ''))
+                                if highlight_terms and full_context:
                                     full_context = highlight_search_terms(full_context, query_terms)
                                 st.success(full_context, unsafe_allow_html=True)
                             else:
                                 st.success(content, unsafe_allow_html=True)
                         else:
-                            st.success(excerpt_text, unsafe_allow_html=True)
+                            st.success(str(excerpt_text), unsafe_allow_html=True)
                     else:
                         show_more = st.checkbox("show more", key=passage_unique_key)
                         if show_more:
-                            full_context = passage['full_context']
-                            if highlight_terms:
+                            full_context = str(passage.get('full_context', ''))
+                            if highlight_terms and full_context:
                                 full_context = highlight_search_terms(full_context, query_terms)
                             st.success(full_context, unsafe_allow_html=True)
                         else:
-                            st.success(excerpt_text, unsafe_allow_html=True)
+                            st.success(str(excerpt_text), unsafe_allow_html=True)
                 
                 # Summary
                 summary_text = case['summary']

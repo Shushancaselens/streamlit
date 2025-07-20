@@ -1,377 +1,264 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date
+import time
+import random
 
-# Page config
+# Page configuration
 st.set_page_config(
-    page_title="CaseLength - Improved UX",
+    page_title="Caselens - Legal Research Platform",
     page_icon="⚖️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Initialize session state
+if 'search_history' not in st.session_state:
+    st.session_state.search_history = []
+if 'bookmarked_cases' not in st.session_state:
+    st.session_state.bookmarked_cases = []
+if 'current_case' not in st.session_state:
+    st.session_state.current_case = None
+
+# Sample case database
+CASES_DATABASE = [
+    {
+        "id": "CAS_2013_A_3165",
+        "title": "CAS 2013/A/3165",
+        "date": "2014-01-14",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "FC Volyn",
+        "respondents": "Issa Ndoye",
+        "president": "Petros Mavroidis",
+        "arbitrator1": "Geraint Jones",
+        "arbitrator2": "Raymond Hack",
+        "summary": "The case involves a contractual dispute between FC Volyn, a Ukrainian football club, and Issa Ndoye, a Senegalese footballer. Ndoye terminated his employment with FC Volyn in June 2011, claiming unpaid salary and contract breach, subsequently bringing a claim before FIFA's Dispute Resolution Chamber (DRC), which ruled in his favor, ordering the club to pay outstanding remuneration and compensation. FC Volyn appealed to the CAS, arguing that Ndoye had no just cause due to his alleged breaches (mainly late returns to training), while Ndoye countered that non-payment constituted just cause and sought increased compensation. Both parties debated applicable law and timing of appeals/counterclaims.",
+        "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Ndoye's salary for over three months was a substantial breach, constituting just cause for contract termination. Alleged late returns by Ndoye did not nullify this breach, and there was no evidence he agreed to delay payment. Counterclaims by respondents were inadmissible per CAS procedural rules. The compensation set by the FIFA DRC was appropriate.",
+        "case_outcome": "The appeal by FC Volyn was dismissed and the FIFA DRC's decision was upheld: FC Volyn must pay Ndoye USD 299,200 in outstanding remuneration and USD 495,000 as compensation. Ndoye's counterclaim for additional damages was ruled inadmissible, and all other requests were dismissed. The panel confirmed that the time limit for appeal had been respected and that FIFA regulations (with Swiss law supplementary) applied.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
+                "full_context": "Page 15 - 77. The concept of just cause has been extensively developed through CAS jurisprudence and FIFA regulations. The FIFA Regulations on the Status and Transfer of Players (RSTP) provide the foundational framework for determining when a party may terminate a contract.\n\nPage 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case. Behaviour that is in violation of the terms of an employment contract cannot justify unilateral termination by the other party if such behaviour is of minor importance.'\n\nPage 15 - 79. Furthermore, the Commentary emphasizes that just cause must be of such gravity that the injured party cannot reasonably be expected to continue the employment relationship. This standard has been consistently applied by CAS panels in determining whether contract termination was justified."
+            },
+            {
+                "excerpt": "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
+                "full_context": "Page 22 - 88. The obligation to pay salary is a fundamental contractual duty in employment relationships. When an employer fails to meet this basic obligation, it strikes at the heart of the employment contract.\n\nPage 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract. The CAS has consistently held that when salary payments are delayed for a period exceeding two to three months, this constitutes a substantial breach sufficient to justify termination.\n\nPage 22 - 90. However, the employee must demonstrate that they have given the employer reasonable opportunity to remedy the breach and that the non-payment was not justified by any countervailing circumstances or legitimate disputes over the amount owed."
+            },
+            {
+                "excerpt": "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship.",
+                "full_context": "Page 31 - 104. In assessing whether just cause exists, CAS panels must weigh all relevant circumstances, including the nature and severity of the breach, the conduct of both parties, and the overall context of the contractual relationship.\n\nPage 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship. This objective test requires careful analysis of whether a reasonable person in the same position would consider the breach sufficiently serious to warrant termination.\n\nPage 31 - 106. The Panel notes that minor infractions, isolated incidents, or breaches that can be readily remedied do not typically constitute just cause. The breach must fundamentally undermine the basis of the contractual relationship and make continued performance unreasonable or impossible."
+            }
+        ],
+        "similarity_score": 0.87
+    }
+]
+
+# Custom CSS
 st.markdown("""
 <style>
-    .filter-chip {
-        background-color: #dbeafe;
-        color: #1e40af;
-        padding: 4px 12px;
-        border-radius: 16px;
-        font-size: 12px;
-        margin: 2px;
-        display: inline-block;
-        border: 1px solid #93c5fd;
+    .main-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
     }
     
-    .case-card {
-        background: white;
-        border: 1px solid #e5e7eb;
+    .logo-icon {
+        background-color: #4f46e5;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .question-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
         padding: 16px;
-        margin: 8px 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin: 16px 0;
     }
     
-    .save-preview {
-        background: #f8fafc;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 12px;
-        margin: 8px 0;
-    }
-    
-    .success-message {
-        background: #d1fae5;
-        border: 1px solid #10b981;
-        color: #065f46;
-        padding: 8px 12px;
-        border-radius: 4px;
-        margin: 4px 0;
-    }
-    
-    .warning-message {
-        background: #fef3c7;
-        border: 1px solid #f59e0b;
-        color: #92400e;
-        padding: 8px 12px;
-        border-radius: 4px;
-        margin: 4px 0;
-    }
-    
-    .active-filters-bar {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 12px;
-        margin: 8px 0;
+    .sidebar-section {
+        margin-bottom: 25px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'saved_searches' not in st.session_state:
-    st.session_state.saved_searches = []
-if 'saved_cases' not in st.session_state:
-    st.session_state.saved_cases = []
-if 'case_notes' not in st.session_state:
-    st.session_state.case_notes = {}
-if 'show_save_modal' not in st.session_state:
-    st.session_state.show_save_modal = False
+def search_cases(query, max_results=20, similarity_threshold=0.5):
+    """Simulate case search with relevant results"""
+    relevant_cases = []
+    for case in CASES_DATABASE:
+        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
+            if case['similarity_score'] >= similarity_threshold:
+                relevant_cases.append(case)
+    
+    return relevant_cases[:max_results]
 
-# Sample case data
-sample_cases = [
-    {
-        "case_id": "CAS 2020/A/7242",
-        "parties": "Al Wahda F... v. Mourad Bat...",
-        "date": "2021-11-23",
-        "matter": "Contract",
-        "outcome": "Partially upheld",
-        "sport": "Football"
-    },
-    {
-        "case_id": "CAS 2022/A/8836",
-        "parties": "Samsunspor... v. Brice Dja...",
-        "date": "2023-05-08",
-        "matter": "Contract",
-        "outcome": "Dismissed",
-        "sport": "Football"
-    },
-    {
-        "case_id": "CAS 2023/A/9444",
-        "parties": "U Craiova... v. Marko Gaji...",
-        "date": "2023-10-27",
-        "matter": "Contract",
-        "outcome": "Dismissed",
-        "sport": "Football"
-    }
-]
-
-# Header
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.image("https://via.placeholder.com/120x40/4F46E5/FFFFFF?text=caselens", width=120)
-
-st.title("CAS Case Law Research")
-
-# Sidebar filters
+# Sidebar Navigation
 with st.sidebar:
-    st.header("🔍 Search")
+    # Logo
+    st.markdown("""
+    <div class="main-header">
+        <span class="logo-icon">C</span>
+        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Search Options
-    with st.expander("Search Options", expanded=False):
-        search_type = st.selectbox("Search Type", ["Full Text", "Title Only", "Parties Only"])
+    st.markdown("---")
     
-    # Saved Searches
-    with st.expander("Saved Searches", expanded=False):
-        if st.session_state.saved_searches:
-            st.write(f"Found {len(st.session_state.saved_searches)} saved searches")
-            for search in st.session_state.saved_searches:
-                if st.button(f"📁 {search['name']}", key=f"load_{search['name']}"):
-                    st.session_state.search_query = search['query']
-                    st.rerun()
-        else:
-            st.write("No saved searches")
-    
-    st.subheader("Search Filters")
-    
-    # Language filter
-    language = st.selectbox("Language", ["All Languages", "English", "French", "Spanish"])
-    
-    # Decision Date filter
-    date_range = st.date_input(
-        "Decision Date Range",
-        value=(date(2020, 1, 1), date(2025, 12, 31)),
-        format="YYYY-MM-DD"
+    # Navigation
+    st.markdown("### Navigation")
+    page = st.radio(
+        "",
+        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
+        index=0,
+        label_visibility="collapsed"
     )
     
-    # Matter filter
-    matter = st.multiselect(
-        "Matter",
-        ["Contract", "Transfer", "Disciplinary", "Doping"],
-        default=["Contract"]
-    )
+    st.markdown("---")
     
-    # Outcome filter
-    outcome = st.multiselect(
-        "Outcome",
-        ["Dismissed", "Partially upheld", "Upheld"],
-        default=["Partially upheld", "Dismissed"]
-    )
-    
-    # Sport filter
-    sport = st.multiselect(
-        "Sport",
-        ["Football", "Basketball", "Tennis", "Swimming"],
-        default=["Football"]
-    )
-    
-    # Procedural Types
-    procedural_types = st.multiselect(
-        "Procedural Types",
-        ["Appeal", "Ordinary", "Expedited"]
-    )
-    
-    # Arbitrators
-    arbitrators = st.multiselect(
-        "Arbitrators",
-        ["Prof. Luigi Fumagalli", "Mr Manfred Nan", "Mr Mark Hovell"]
-    )
-
-# Main content area
-search_query = st.text_input("🔍 Search Query", value="just cause", placeholder="Enter your search terms...")
-
-# Active Filters Display (IMPROVEMENT #1)
-active_filters = []
-if matter: active_filters.extend([f"Matter: {m}" for m in matter])
-if outcome: active_filters.extend([f"Outcome: {o}" for o in outcome])
-if sport: active_filters.extend([f"Sport: {s}" for s in sport])
-if procedural_types: active_filters.extend([f"Procedure: {p}" for p in procedural_types])
-if arbitrators: active_filters.extend([f"Arbitrator: {a}" for a in arbitrators])
-if language != "All Languages": active_filters.append(f"Language: {language}")
-
-if active_filters:
-    st.markdown('<div class="active-filters-bar">', unsafe_allow_html=True)
-    st.write(f"**🔍 Applied Filters ({len(active_filters)} active):**")
-    
-    # Display filter chips
-    filter_html = ""
-    for filter_item in active_filters:
-        filter_html += f'<span class="filter-chip">{filter_item} ✕</span> '
-    
-    st.markdown(filter_html, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns([1, 6])
-    with col1:
-        if st.button("🗑️ Clear All Filters"):
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Action buttons row
-col1, col2, col3, col4 = st.columns([2, 2, 2, 4])
-
-with col1:
-    # IMPROVED Save Search Button (IMPROVEMENT #2)
-    if st.button("💾 Save Search", type="secondary"):
-        st.session_state.show_save_modal = True
-
-with col2:
-    if st.button("🔄 New Search"):
-        st.session_state.search_query = ""
-        st.rerun()
-
-# Save Search Modal (IMPROVEMENT #3)
-if st.session_state.show_save_modal:
-    with st.container():
-        st.markdown("---")
-        st.subheader("💾 Save Your Search")
+    if page == "🔍 Search":
+        # Search Options
+        st.markdown("### Search Options")
         
-        # Preview what will be saved
         with st.container():
-            st.markdown('<div class="save-preview">', unsafe_allow_html=True)
-            st.write("**Preview of what will be saved:**")
-            st.write(f"• **Search Query:** '{search_query}'")
-            if active_filters:
-                st.write(f"• **Active Filters:** {len(active_filters)} filters")
-                for filter_item in active_filters[:3]:  # Show first 3
-                    st.write(f"  - {filter_item}")
-                if len(active_filters) > 3:
-                    st.write(f"  - ... and {len(active_filters)-3} more")
-            else:
-                st.write("• **Active Filters:** None")
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Max Results**")
+            max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # Save form
-        search_name = st.text_input("Search Name:", value="Just Cause Research")
-        
-        email_alerts = st.checkbox("📧 Send me email alerts for new matching cases")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("✅ Save Search", type="primary"):
-                # Save the search
-                new_search = {
-                    "name": search_name,
-                    "query": search_query,
-                    "filters": active_filters.copy(),
-                    "created": datetime.now(),
-                    "email_alerts": email_alerts
-                }
-                st.session_state.saved_searches.append(new_search)
-                st.session_state.show_save_modal = False
-                st.success(f"✅ Search '{search_name}' saved successfully!")
-                st.rerun()
-        
-        with col2:
-            if st.button("❌ Cancel"):
-                st.session_state.show_save_modal = False
-                st.rerun()
-        
-        st.markdown("---")
-
-# Search results summary
-if not st.session_state.show_save_modal:
-    st.write("**Found 15 relevant passages in 13 decisions**")
-
-    # General Answer section
-    with st.expander("📋 General Answer: Definition of Just Cause in Football Employment Contracts", expanded=True):
-        st.markdown("""
-        **1. General Principle:**
-        
-        "Just cause" (or "good cause") is a substantive legal standard under Article 14 of the FIFA Regulations on the Status and Transfer of Players (RSTP) and Article 337(2) of the Swiss Code of Obligations (CO). It permits a party to lawfully terminate an employment contract when its fundamental terms and conditions are no longer respected by the other party.
-        
-        **2. Requirements for Just Cause:**
-        
-        Two main requirements must always be met:
-        
-        • **Substantive requirement:** There must be a pattern of conduct or an event that renders the continuation of the employment relationship in good faith unreasonable or unconscionable for the party giving notice.
-        
-        • The breach must be sufficiently serious ("exceptional measure") and supported by objective circumstances, such as a serious breach of trust, which make continued employment unreasonable.
-        
-        **3. Case-by-case Assessment:**
-        
-        The existence and definition of just cause are determined based on the merits and particular circumstances of each case, considering the severity of the breach. Swiss law may be applied subsidiarily if necessary.
-        
-        **4. Practical Implication:**
-        
-        Immediate contract termination for just cause is only accepted under narrow, exceptional circumstances; minor breaches generally do not qualify.
-        """)
-
-    # Case results
-    st.subheader("📁 Case Results")
-
-    for i, case in enumerate(sample_cases):
-        # IMPROVED Case Display (IMPROVEMENT #4)
         with st.container():
-            st.markdown('<div class="case-card">', unsafe_allow_html=True)
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Similarity Threshold**")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            st.write(f"Current value: {similarity}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+
+# Main Content Area
+if page == "🔍 Search":
+    # Search Interface
+    st.markdown("### Enter your search query")
+    search_query = st.text_input(
+        "", 
+        value="just cause", 
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="search_input_updated"
+    )
+    
+    if search_query:
+        # Perform search
+        results = search_cases(search_query, max_results, similarity)
+        
+        # Search results summary
+        st.success(f"Found {len(results)} results")
+        
+        # Display search results with clean formatting
+        for case_index, case in enumerate(results):
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
             
-            # Case header
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.write(f"**{case['case_id']}** | 👥 Parties: {case['parties']} | 📅 Date: {case['date']}")
-                st.write(f"📋 Matter: {case['matter']} | 🏆 Outcome: {case['outcome']} | ⚽ Sport: {case['sport']}")
-            
-            with col2:
-                # IMPROVED Save Case Button (IMPROVEMENT #5)
-                case_key = case['case_id']
-                is_saved = case_key in st.session_state.saved_cases
+            with st.expander(case_title, expanded=(case_index == 0)):
                 
-                if is_saved:
-                    st.write("✅ **Saved to My Cases**")
-                else:
-                    if st.button(f"📌 Save to My Cases", key=f"save_{case_key}"):
-                        st.session_state.saved_cases.append(case_key)
-                        st.success("✅ Case saved to your collection!")
-                        st.rerun()
-            
-            # Case notes section (IMPROVEMENT #6)
-            with st.expander(f"📝 Notes for {case['case_id']}", expanded=False):
-                note_key = f"notes_{case_key}"
-                current_note = st.session_state.case_notes.get(note_key, "")
+                st.markdown(f"""
+                **Procedure:** {case['procedure']}  
+                **Category:** {case['category']}  
+                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+                """)
                 
-                new_note = st.text_area(
-                    "Add your notes about this case:",
-                    value=current_note,
-                    key=note_key,
-                    placeholder="Add analysis, key points, or personal observations..."
+                # Relevant Passages - Most important, moved to top
+                st.markdown("### **Relevant Passages**")
+                for passage_index, passage in enumerate(case['relevant_passages']):
+                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
+                    
+                    # Extract page reference and content for excerpt (first page)
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
+                            
+                            # Put page and checkbox on same line
+                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
+                            
+                            if show_more:
+                                st.success(passage['full_context'])
+                            else:
+                                st.success(content.strip())
+                        else:
+                            st.success(excerpt_text)
+                    else:
+                        show_more = st.checkbox("show more", key=passage_unique_key)
+                        if show_more:
+                            st.success(passage['full_context'])
+                        else:
+                            st.success(excerpt_text)
+                
+                # Summary
+                st.info(f"**Summary:** {case['summary']}")
+                
+                # Court Reasoning
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                
+                # Case Outcome
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # AI Question Interface
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
+                question_unique_key = f"ai_question_{case['id']}_{case_index}"
+                user_question = st.text_area(
+                    "",
+                    placeholder="e.g., What was the main legal issue?",
+                    key=question_unique_key,
+                    label_visibility="collapsed"
                 )
                 
-                col1, col2 = st.columns([1, 3])
-                with col1:
-                    if st.button(f"💾 Save Notes", key=f"save_notes_{case_key}"):
-                        st.session_state.case_notes[note_key] = new_note
-                        st.markdown('<div class="success-message">✅ Notes saved successfully!</div>', unsafe_allow_html=True)
-                
-                with col2:
-                    if new_note != current_note:
-                        st.markdown('<div class="warning-message">⚠️ You have unsaved changes</div>', unsafe_allow_html=True)
-                    else:
-                        st.write("💡 **Tip:** Notes are automatically saved when you click 'Save Notes'")
-            
-            # Case summary
-            if case['case_id'] == "CAS 2020/A/7242":
-                with st.expander("📖 Case Summary", expanded=False):
-                    st.write("""
-                    **Summary:** This case involves Al Wahda FSC Company (UAE club), Mr. Mourad Batna (Moroccan footballer), and Al Jazira FSC (UAE club) 
-                    regarding the termination of Batna's employment contract. Batna terminated his contract citing overdue wages and abusive conduct by 
-                    Al Wahda, thereafter signing with Al Jazira. Al Wahda claimed Batna left without just cause, seeking compensation and sanctions, while 
-                    Batna and Al Jazira contended the termination was justified due to unpaid salaries and improper conduct by Al Wahda.
-                    """)
-            
-            st.markdown('</div>', unsafe_allow_html=True)
+                button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+                if st.button("Ask Question", key=button_unique_key):
+                    if user_question:
+                        with st.spinner("Analyzing case..."):
+                            time.sleep(2)
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            
+                            st.markdown(f"""
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {ai_answer}
+                            </div>
+                            """, unsafe_allow_html=True)
 
-    # Footer with saved items summary
-    if st.session_state.saved_cases or st.session_state.saved_searches:
-        st.markdown("---")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.session_state.saved_cases:
-                st.write(f"📌 **My Saved Cases:** {len(st.session_state.saved_cases)} cases")
-                for case_id in st.session_state.saved_cases[-3:]:  # Show last 3
-                    st.write(f"  • {case_id}")
-        
-        with col2:
-            if st.session_state.saved_searches:
-                st.write(f"💾 **My Saved Searches:** {len(st.session_state.saved_searches)} searches")
-                for search in st.session_state.saved_searches[-3:]:  # Show last 3
-                    st.write(f"  • {search['name']}")
+elif page == "📊 Analytics":
+    st.title("📊 Legal Analytics Dashboard")
+    st.info("Analytics features coming soon.")
+
+elif page == "🔖 Bookmarks":
+    st.title("🔖 Bookmarked Cases")
+    st.info("No bookmarked cases yet.")
+
+elif page == "📄 Documents":
+    st.title("📄 Document Library")
+    st.info("Upload legal documents for analysis.")
+
+elif page == "👤 Admin":
+    st.title("👤 Admin Dashboard")
+    st.info("Admin features coming soon.")

@@ -131,6 +131,23 @@ if 'search_query' not in st.session_state:
     st.session_state.search_query = "just cause"
 if 'last_action' not in st.session_state:
     st.session_state.last_action = None
+if 'clear_filters' not in st.session_state:
+    st.session_state.clear_filters = False
+
+# Handle filter clearing
+if st.session_state.clear_filters:
+    # Reset filter defaults
+    filter_defaults = {
+        'filter_language': "All Languages",
+        'filter_matter': ["Contract"],
+        'filter_outcome': ["Partially upheld", "Dismissed"],
+        'filter_sport': ["Football"],
+        'filter_procedural': [],
+        'filter_arbitrators': []
+    }
+    for key, default_value in filter_defaults.items():
+        st.session_state[key] = default_value
+    st.session_state.clear_filters = False
 
 # Sample case data
 sample_cases = [
@@ -176,17 +193,13 @@ with st.sidebar:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🗑️ Clear All", help="Remove all active filters"):
-            # Reset all filter values
-            for key in st.session_state.keys():
-                if key.startswith('filter_'):
-                    del st.session_state[key]
+            # Use the callback approach for clearing
+            st.session_state.clear_filters = True
             st.rerun()
     with col2:
         if st.button("🔄 Reset", help="Reset search and filters"):
             st.session_state.search_query = ""
-            for key in st.session_state.keys():
-                if key.startswith('filter_'):
-                    del st.session_state[key]
+            st.session_state.clear_filters = True
             st.rerun()
     
     # Search Options
@@ -218,6 +231,8 @@ with st.sidebar:
     language = st.selectbox(
         "🌐 Language", 
         ["All Languages", "English", "French", "Spanish"],
+        index=0 if st.session_state.get('filter_language', "All Languages") == "All Languages" else 
+              ["All Languages", "English", "French", "Spanish"].index(st.session_state.get('filter_language', "All Languages")),
         key="filter_language"
     )
     
@@ -233,7 +248,7 @@ with st.sidebar:
     matter = st.multiselect(
         "📋 Matter Type",
         ["Contract", "Transfer", "Disciplinary", "Doping"],
-        default=["Contract"],
+        default=st.session_state.get('filter_matter', ["Contract"]),
         key="filter_matter"
     )
     
@@ -241,7 +256,7 @@ with st.sidebar:
     outcome = st.multiselect(
         "🏆 Case Outcome",
         ["Dismissed", "Partially upheld", "Upheld"],
-        default=["Partially upheld", "Dismissed"],
+        default=st.session_state.get('filter_outcome', ["Partially upheld", "Dismissed"]),
         key="filter_outcome"
     )
     
@@ -249,7 +264,7 @@ with st.sidebar:
     sport = st.multiselect(
         "⚽ Sport",
         ["Football", "Basketball", "Tennis", "Swimming"],
-        default=["Football"],
+        default=st.session_state.get('filter_sport', ["Football"]),
         key="filter_sport"
     )
     
@@ -257,6 +272,7 @@ with st.sidebar:
     procedural_types = st.multiselect(
         "⚖️ Procedural Types",
         ["Appeal", "Ordinary", "Expedited"],
+        default=st.session_state.get('filter_procedural', []),
         key="filter_procedural"
     )
     
@@ -264,6 +280,7 @@ with st.sidebar:
     arbitrators = st.multiselect(
         "👨‍⚖️ Arbitrators",
         ["Prof. Luigi Fumagalli", "Mr Manfred Nan", "Mr Mark Hovell"],
+        default=st.session_state.get('filter_arbitrators', []),
         key="filter_arbitrators"
     )
 
@@ -310,11 +327,8 @@ if active_filters:
     col1, col2, col3 = st.columns([2, 2, 4])
     with col1:
         if st.button("🗑️ Clear All Filters", type="secondary"):
-            # Clear all multiselect filters
-            for key in ['filter_matter', 'filter_outcome', 'filter_sport', 'filter_procedural', 'filter_arbitrators']:
-                if key in st.session_state:
-                    st.session_state[key] = []
-            st.session_state.filter_language = "All Languages"
+            # Use the callback approach for clearing
+            st.session_state.clear_filters = True
             st.rerun()
     
     with col2:

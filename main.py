@@ -605,42 +605,46 @@ with col1:
 
 with col2:
     if st.button("💾 Save Search", help="Save current search and filters", use_container_width=True):
-        with st.form("save_search_form"):
-            st.markdown("**Save Current Search**")
-            
-            # Count active filters for name suggestion
-            active_filters = []
-            if st.session_state.get('language_filter', 'Any') != 'Any':
-                active_filters.append('Language')
-            if st.session_state.get('matter_filter', 'Any') != 'Any':
-                active_filters.append('Matter')
-            if st.session_state.get('outcome_filter', 'Any') != 'Any':
-                active_filters.append('Outcome')
-            if st.session_state.get('sport_filter', 'Any') != 'Any':
-                active_filters.append('Sport')
-            if st.session_state.get('procedural_filter', 'Any') != 'Any':
-                active_filters.append('Procedural')
-            
-            filter_count = len(active_filters)
-            search_name = st.text_input("Search Name", value=f'"{search_query}" + {filter_count} filters')
-            search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
-            
-            if st.form_submit_button("Save"):
-                filters = {
-                    "language": st.session_state.get('language_filter', 'Any'),
-                    "matter": st.session_state.get('matter_filter', 'Any'),
-                    "outcome": st.session_state.get('outcome_filter', 'Any'),
-                    "sport": st.session_state.get('sport_filter', 'Any'),
-                    "procedural": st.session_state.get('procedural_filter', 'Any'),
-                    "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
-                    "category": st.session_state.get('category_filter', 'Any'),
-                    "appellants": st.session_state.get('appellants_filter', 'Any'),
-                    "respondents": st.session_state.get('respondents_filter', 'Any'),
-                    "date": st.session_state.get('date_filter', 'Any')
-                }
-                save_current_search(search_name, search_query, filters, search_description)
-                st.success("Search saved!")
-                st.rerun()
+        # Count active filters
+        active_filters = []
+        filter_values = {}
+        if st.session_state.get('language_filter', 'Any') != 'Any':
+            active_filters.append('Language')
+            filter_values['language'] = st.session_state.get('language_filter')
+        if st.session_state.get('matter_filter', 'Any') != 'Any':
+            active_filters.append('Matter')  
+            filter_values['matter'] = st.session_state.get('matter_filter')
+        if st.session_state.get('outcome_filter', 'Any') != 'Any':
+            active_filters.append('Outcome')
+            filter_values['outcome'] = st.session_state.get('outcome_filter')
+        if st.session_state.get('sport_filter', 'Any') != 'Any':
+            active_filters.append('Sport')
+            filter_values['sport'] = st.session_state.get('sport_filter')
+        if st.session_state.get('procedural_filter', 'Any') != 'Any':
+            active_filters.append('Procedural')
+            filter_values['procedural'] = st.session_state.get('procedural_filter')
+        
+        # Prepare all filters
+        filters = {
+            "language": st.session_state.get('language_filter', 'Any'),
+            "matter": st.session_state.get('matter_filter', 'Any'),
+            "outcome": st.session_state.get('outcome_filter', 'Any'),
+            "sport": st.session_state.get('sport_filter', 'Any'),
+            "procedural": st.session_state.get('procedural_filter', 'Any'),
+            "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+            "category": st.session_state.get('category_filter', 'Any'),
+            "appellants": st.session_state.get('appellants_filter', 'Any'),
+            "respondents": st.session_state.get('respondents_filter', 'Any'),
+            "date": st.session_state.get('date_filter', 'Any')
+        }
+        
+        # Simple save with just query name
+        search_name = search_query
+        description = f"Saved search with {len(active_filters)} filters" if active_filters else "Basic search"
+        
+        save_current_search(search_name, search_query, filters, description)
+        st.success(f"✅ Saved '{search_name}'")
+        st.rerun()
 
 if search_query:
     # Perform search

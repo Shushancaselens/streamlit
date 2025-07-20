@@ -370,6 +370,13 @@ with st.sidebar:
         if len(st.session_state.saved_searches) == 0:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
         else:
+            # Reset all saved searches button
+            if st.button("🗑️ Clear All Searches", help="Delete all saved searches", use_container_width=True, type="secondary"):
+                st.session_state.saved_searches = []
+                st.rerun()
+            
+            st.markdown("---")
+            
             for search in st.session_state.saved_searches:
                 # Modern card design with description
                 st.markdown(f"""
@@ -396,6 +403,13 @@ with st.sidebar:
         if len(st.session_state.saved_cases) == 0:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved cases yet</p>", unsafe_allow_html=True)
         else:
+            # Reset all saved cases button
+            if st.button("🗑️ Clear All Cases", help="Delete all saved cases", use_container_width=True, type="secondary"):
+                st.session_state.saved_cases = []
+                st.rerun()
+            
+            st.markdown("---")
+            
             for case in st.session_state.saved_cases:
                 # Modern case card
                 st.markdown(f"""
@@ -519,6 +533,16 @@ with st.sidebar:
 
 # Main Content Area
 st.markdown("### CAS Case Law Research")
+
+# Show reset button if we're in a special mode (viewing case or loaded search)
+if target_case_id or st.session_state.get('loaded_search'):
+    if st.button("🔄 Reset to Normal Search", help="Clear current view and return to normal search"):
+        # Clear any special search states
+        if 'loaded_search' in st.session_state:
+            del st.session_state.loaded_search
+        # Reset search input
+        st.session_state.main_search_input = ""
+        st.rerun()
 
 # Check if we need to show a specific case via search
 if 'view_case_search' in st.session_state:
@@ -664,7 +688,7 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
             should_expand = False
         
         # Create case title with blue square and tag-like formatting
-        case_title = f"🔷 **{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
+        case_title = f"🟦 **{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
             

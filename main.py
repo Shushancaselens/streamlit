@@ -176,7 +176,7 @@ def save_search_dialog():
                 st.rerun()
         
         if save_button and search_name:
-            # Create search object with current state
+            # Create search object with current state - using safe access
             search_object = {
                 'id': f"search_{int(time.time())}",
                 'name': search_name,
@@ -186,6 +186,10 @@ def save_search_dialog():
                 'saved_date': datetime.now().strftime("%Y-%m-%d %H:%M"),
                 'results_count': len(st.session_state.get('current_results', []))
             }
+            
+            # Initialize saved_searches if it doesn't exist
+            if 'saved_searches' not in st.session_state:
+                st.session_state.saved_searches = []
             
             st.session_state.saved_searches.append(search_object)
             
@@ -315,19 +319,26 @@ with st.sidebar:
         if st.session_state.saved_searches:
             st.write(f"📁 Found {len(st.session_state.saved_searches)} saved searches")
             
-            search_options = ["Select a saved search..."] + [f"{s['name']} ({s['saved_date']})" for s in st.session_state.saved_searches]
+            # Safely create search options with error handling
+            search_options = ["Select a saved search..."]
+            for s in st.session_state.saved_searches:
+                name = s.get('name', 'Unnamed Search')
+                saved_date = s.get('saved_date', 'Unknown Date')
+                search_options.append(f"{name} ({saved_date})")
+            
             selected_search = st.selectbox("Load saved search", search_options, index=0)
             
             if selected_search != "Select a saved search...":
                 # Find the selected search
                 search_index = search_options.index(selected_search) - 1
-                selected_search_obj = st.session_state.saved_searches[search_index]
-                
-                if st.button("🔄 Load Search"):
-                    st.session_state.search_query = selected_search_obj['query']
-                    st.session_state.current_filters = selected_search_obj['filters']
-                    st.success(f"Loaded search: {selected_search_obj['name']}")
-                    st.rerun()
+                if search_index < len(st.session_state.saved_searches):
+                    selected_search_obj = st.session_state.saved_searches[search_index]
+                    
+                    if st.button("🔄 Load Search"):
+                        st.session_state.search_query = selected_search_obj.get('query', '')
+                        st.session_state.current_filters = selected_search_obj.get('filters', {})
+                        st.success(f"Loaded search: {selected_search_obj.get('name', 'Unnamed Search')}")
+                        st.rerun()
         else:
             st.info("No saved searches yet. Save a search to see it here!")
 
@@ -336,10 +347,14 @@ if page == "🔍 Search":
     # Search Interface
     st.markdown("### CAS Case Law Research")
     
+    # Initialize search_query in session state if not exists
+    if 'search_query' not in st.session_state:
+        st.session_state.search_query = 'just cause'
+    
     # Search query input
     search_query = st.text_input(
         "", 
-        value=st.session_state.get('search_query', 'just cause'),
+        value=st.session_state.search_query,
         placeholder="Enter your search query", 
         label_visibility="collapsed",
         key="search_input_main"
@@ -496,29 +511,35 @@ elif page == "🔖 Bookmarks":
         st.success(f"You have {len(st.session_state.bookmarked_cases)} saved cases")
         
         for case_id in st.session_state.bookmarked_cases:
-            # Find the case in database
-            case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
-            if case:
-                with st.expander(f"⭐ {case['title']} - {case['appellants']} v. {case['respondents']}", expanded=False):
-                    # Show case notes if available
-                    if case_id in st.session_state.case_notes and st.session_state.case_notes[case_id]:
-                        st.markdown(f"""
-                        **📝 Your Notes:**
-                        > {st.session_state.case_notes[case_id]}
-                        """)
-                        st.markdown("---")
-                    
-                    st.markdown(f"**Date:** {case['date']}")
-                    st.markdown(f"**Matter:** {case['matter']}")
-                    st.markdown(f"**Outcome:** {case['outcome']}")
-                    st.markdown(f"**Summary:** {case['summary']}")
-                    
-                    if st.button(f"🗑️ Remove from saved", key=f"remove_{case_id}"):
-                        st.session_state.bookmarked_cases.remove(case_id)
-                        if case_id in st.session_state.case_notes:
-                            del st.session_state.case_notes[case_id]
-                        st.success("Case removed from saved cases!")
-                        st.rerun()
+            try:
+                # Find the case in database
+                case = next((c for c in CASES_DATABASE if c['id'] == case_id), None)
+                if case:
+                    case_title = f"⭐ {case.get('title', 'Unknown Case')} - {case.get('appellants', 'Unknown')} v. {case.get('respondents', 'Unknown')}"
+                    with st.expander(case_title, expanded=False):
+                        # Show case notes if available
+                        if case_id in st.session_state.case_notes and st.session_state.case_notes[case_id]:
+                            st.markdown(f"""
+                            **📝 Your Notes:**
+                            > {st.session_state.case_notes[case_id]}
+                            """)
+                            st.markdown("---")
+                        
+                        st.markdown(f"**Date:** {case.get('date', 'Unknown')}")
+                        st.markdown(f"**Matter:** {case.get('matter', 'Unknown')}")
+                        st.markdown(f"**Outcome:** {case.get('outcome', 'Unknown')}")
+                        st.markdown(f"**Summary:** {case.get('summary', 'No summary available')}")
+                        
+                        if st.button(f"🗑️ Remove from saved", key=f"remove_{case_id}"):
+                            st.session_state.bookmarked_cases.remove(case_id)
+                            if case_id in st.session_state.case_notes:
+                                del st.session_state.case_notes[case_id]
+                            st.success("Case removed from saved cases!")
+                            st.rerun()
+                else:
+                    st.warning(f"Case {case_id} not found in database")
+            except Exception as e:
+                st.error(f"Error loading case {case_id}: {str(e)}")
     else:
         st.info("No saved cases yet. Save cases from your search results to see them here!")
 

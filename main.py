@@ -590,7 +590,7 @@ if st.session_state.get('show_save_dialog', False):
     
     save_search_dialog()
 
-if search_query:
+if search_query or target_case_id:
     # Perform search
     filters = {
         "language": st.session_state.get('language_filter', 'Any'),
@@ -604,7 +604,10 @@ if search_query:
         "respondents": st.session_state.get('respondents_filter', 'Any'),
         "date": st.session_state.get('date_filter', 'Any')
     }
-    results = search_cases(search_query, max_results, similarity, filters)
+    
+    # Use default query if viewing a specific case but no query entered
+    query_to_use = search_query if search_query else default_query
+    results = search_cases(query_to_use, max_results, similarity, filters)
     
     # Search results summary
     total_passages = sum(len(case.get('relevant_passages', [])) for case in results)

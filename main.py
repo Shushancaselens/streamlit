@@ -466,17 +466,8 @@ if loaded_search:
     default_query = loaded_search['query']
     st.session_state.loaded_search = None  # Clear after loading
     
-    # Show success message when search is loaded
-    st.success(f"Loaded search: {loaded_search['name']}")
-    
-    # Note: Filters will need to be manually set by user since we can't override widget values
-    if 'filters' in loaded_search and loaded_search['filters']:
-        filter_info = []
-        for key, value in loaded_search['filters'].items():
-            if value != 'Any':
-                filter_info.append(f"{key.title()}: {value}")
-        if filter_info:
-            st.info(f"Previously saved filters: {', '.join(filter_info)}. Please set these manually in the sidebar.")
+    # Simple, clean notification
+    st.success(f"✓ Loaded: {loaded_search['name']}")
 else:
     default_query = "just cause"
 

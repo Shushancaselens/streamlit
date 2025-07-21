@@ -710,3 +710,123 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
         case_title = f"🟦 **{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
+            
+            st.markdown(f"""
+            **Procedure:** {case['procedure']}  
+            **Category:** {case['category']}  
+            **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+            """)
+            
+            # Relevant Passages - Most important, moved to top (original format)
+            st.markdown("### **Relevant Passages**")
+            for passage_index, passage in enumerate(case['relevant_passages']):
+                passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
+                
+                # Extract page reference and content for excerpt (original logic)
+                excerpt_text = passage['excerpt']
+                if excerpt_text.startswith('Page'):
+                    if '.' in excerpt_text:
+                        page_ref = excerpt_text.split(' - ')[0]
+                        content = excerpt_text.split('.', 1)[1]
+                        
+                        # Put page and checkbox on same line (original format)
+                        show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
+                        
+                        if show_more:
+                            st.success(passage['full_context'])
+                        else:
+                            st.success(content.strip())
+                    else:
+                        st.success(excerpt_text)
+                else:
+                    show_more = st.checkbox("show more", key=passage_unique_key)
+                    if show_more:
+                        st.success(passage['full_context'])
+                    else:
+                        st.success(excerpt_text)
+            
+            # Summary (original format)
+            st.info(f"**Summary:** {case['summary']}")
+            
+            # Court Reasoning (original format)
+            st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+            
+            # Case Outcome (original format)
+            with st.container():
+                st.markdown(f"""
+                <div style="
+                    background-color: #f0f2f6; 
+                    border-radius: 0.5rem; 
+                    padding: 0.75rem 1rem;
+                    margin: 0.5rem 0 1rem 0;
+                    line-height: 1.6;
+                ">
+                    <strong>Case Outcome:</strong> {case['case_outcome']}
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Save Case + Notes Section (grouped together at the bottom)
+            st.markdown("---")
+            
+            # Save Case Button and Notes side by side
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown("### 📝 Your Case Notes")
+            with col2:
+                st.markdown("<br>", unsafe_allow_html=True)  # Add spacing to align with header
+                if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
+                    save_case(case)
+            
+            # Notes text area
+            case_notes_key = f"notes_{case['id']}_{case_index}"
+            
+            # Get existing notes for this case
+            existing_notes = ""
+            for saved_case in st.session_state.saved_cases:
+                if saved_case['id'] == case['id']:
+                    existing_notes = saved_case.get('notes', '')
+                    break
+            
+            notes = st.text_area(
+                "",
+                value=existing_notes,
+                placeholder="e.g., Key precedent for wage disputes. Compare with similar cases. Player had valid just cause due to unpaid wages and hostile work environment.",
+                key=case_notes_key,
+                height=100,
+                label_visibility="collapsed"
+            )
+            
+            # Save notes when they change
+            if notes != existing_notes:
+                # Update notes in saved cases
+                for saved_case in st.session_state.saved_cases:
+                    if saved_case['id'] == case['id']:
+                        saved_case['notes'] = notes
+                        break
+            
+            # AI Question Interface (original format)
+            st.markdown("---")
+            st.markdown("**Ask a Question About This Case**")
+            question_unique_key = f"ai_question_{case['id']}_{case_index}"
+            user_question = st.text_area(
+                "",
+                placeholder="e.g., What was the main legal issue?",
+                key=question_unique_key,
+                label_visibility="collapsed"
+            )
+            
+            button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+            if st.button("Ask Question", key=button_unique_key):
+                if user_question:
+                    with st.spinner("Analyzing case..."):
+                        time.sleep(2)
+                        ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                        
+                        st.markdown(f"""
+                        <div class="question-box">
+                            <strong>AI Answer:</strong><br>
+                            {ai_answer}
+                        </div>
+                        """, unsafe_allow_html=True)
+else:
+    st.info("Enter a search query to begin searching cases.")

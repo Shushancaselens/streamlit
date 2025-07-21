@@ -257,22 +257,6 @@ st.markdown("""
         padding-top: 8px !important;
         padding-bottom: 8px !important;
     }
-    
-    /* Style for case name tags in expander titles */
-    .stExpander summary p {
-        display: inline-block !important;
-    }
-    
-    .case-tag {
-        background-color: #3b82f6 !important;
-        color: white !important;
-        padding: 4px 8px !important;
-        border-radius: 6px !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
-        display: inline-block !important;
-        margin-right: 8px !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -315,13 +299,6 @@ def save_current_search(search_name, query, filters, description=""):
     }
     st.session_state.saved_searches.append(new_search)
 
-def load_saved_search(search_id):
-    """Load a saved search"""
-    for search in st.session_state.saved_searches:
-        if search['id'] == search_id:
-            return search
-    return None
-
 def save_case(case):
     """Save a case to bookmarks"""
     if not any(saved['id'] == case['id'] for saved in st.session_state.saved_cases):
@@ -338,84 +315,53 @@ def save_case(case):
     else:
         st.info("Case already saved!")
 
-# Initialize target_case_id globally
+# ===== DETERMINE CURRENT MODE BEFORE SIDEBAR =====
+is_viewing_case = False
+is_loaded_search = False
 target_case_id = None
+loaded_search_name = ""
 
-# Check if we need to show a specific case via search
-if 'view_case_search' in st.session_state:
-    case_search_params = st.session_state.view_case_search
-    default_query = case_search_params['query']
-    target_case_id = case_search_params['target_case_id']
-    
-    # Store desired filter values temporarily
-    st.session_state.temp_sport_filter = case_search_params.get('sport_filter', 'Any')
-    st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
-    st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
-    
-    # Force search execution flag
-    st.session_state.force_search = True
-    
-    # Clear the search trigger
-    del st.session_state.view_case_search
-else:
-    # Check if a saved search was loaded
-    loaded_search = getattr(st.session_state, 'loaded_search', None)
-    if loaded_search:
-        default_query = loaded_search['query']
-        # Store saved search filters temporarily
-        saved_filters = loaded_search.get('filters', {})
-        if saved_filters.get('sport') != 'Any':
-            st.session_state.temp_sport_filter = saved_filters['sport']
-        if saved_filters.get('matter') != 'Any':
-            st.session_state.temp_matter_filter = saved_filters['matter']
-        if saved_filters.get('outcome') != 'Any':
-            st.session_state.temp_outcome_filter = saved_filters['outcome']
-        # Store search name for display
-        st.session_state.loaded_search_name = loaded_search['name']
-        st.session_state.loaded_search = None  # Clear after loading
-    else:
-        default_query = "just cause"
+# Check for case viewing
+if 'viewing_case_id' in st.session_state:
+    is_viewing_case = True
+    target_case_id = st.session_state.viewing_case_id
 
-# Initialize target_case_id and check modes BEFORE sidebar
-target_case_id = None
-current_search_mode = None
+# Check for loaded search
+if 'active_search_name' in st.session_state:
+    is_loaded_search = True
+    loaded_search_name = st.session_state.active_search_name
 
-# Check if we need to show a specific case via search
-if 'view_case_search' in st.session_state:
-    case_search_params = st.session_state.view_case_search
-    default_query = case_search_params['query']
-    target_case_id = case_search_params['target_case_id']
-    current_search_mode = 'viewing_case'
+# Process view case setup
+if 'view_case_setup' in st.session_state:
+    setup = st.session_state.view_case_setup
+    target_case_id = setup['case_id']
+    is_viewing_case = True
+    st.session_state.viewing_case_id = target_case_id
     
-    # Store desired filter values temporarily
-    st.session_state.temp_sport_filter = case_search_params.get('sport_filter', 'Any')
-    st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
-    st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
+    # Set filters
+    st.session_state.temp_sport = setup.get('sport', 'Any')
+    st.session_state.temp_matter = setup.get('matter', 'Any')
+    st.session_state.temp_outcome = setup.get('outcome', 'Any')
     
-    # Force search execution flag
-    st.session_state.force_search = True
+    del st.session_state.view_case_setup
+
+# Process loaded search setup
+if 'loaded_search_setup' in st.session_state:
+    setup = st.session_state.loaded_search_setup
+    is_loaded_search = True
+    loaded_search_name = setup['name']
+    st.session_state.active_search_name = loaded_search_name
     
-    # Clear the search trigger
-    del st.session_state.view_case_search
-else:
-    # Check if a saved search was loaded
-    loaded_search = getattr(st.session_state, 'loaded_search', None)
-    if loaded_search:
-        default_query = loaded_search['query']
-        current_search_mode = 'loaded_search'
-        # Store saved search filters temporarily
-        saved_filters = loaded_search.get('filters', {})
-        if saved_filters.get('sport') != 'Any':
-            st.session_state.temp_sport_filter = saved_filters['sport']
-        if saved_filters.get('matter') != 'Any':
-            st.session_state.temp_matter_filter = saved_filters['matter']
-        if saved_filters.get('outcome') != 'Any':
-            st.session_state.temp_outcome_filter = saved_filters['outcome']
-        # Store search name for display
-        st.session_state.loaded_search_name = loaded_search['name']
-        st.session_state.loaded_search = None  # Clear after loading
-    else:
-        default_query = "just cause"
+    # Set filters
+    filters = setup.get('filters', {})
+    if filters.get('sport', 'Any') != 'Any':
+        st.session_state.temp_sport = filters['sport']
+    if filters.get('matter', 'Any') != 'Any':
+        st.session_state.temp_matter = filters['matter']
+    if filters.get('outcome', 'Any') != 'Any':
+        st.session_state.temp_outcome = filters['outcome']
+    
+    del st.session_state.loaded_search_setup
 
 # Sidebar Navigation
 with st.sidebar:
@@ -444,7 +390,7 @@ with st.sidebar:
         similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
     
-    # Saved Searches - Modern Design (Fixed)
+    # Saved Searches - Modern Design
     with st.expander("Saved Searches", expanded=True):
         if len(st.session_state.saved_searches) == 0:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
@@ -463,7 +409,11 @@ with st.sidebar:
                 col1, col2, col3 = st.columns([1, 2, 1])
                 with col2:
                     if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
-                        st.session_state.loaded_search = search
+                        st.session_state.loaded_search_setup = {
+                            'name': search['name'],
+                            'query': search['query'],
+                            'filters': search.get('filters', {})
+                        }
                         st.rerun()
                 with col3:
                     if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
@@ -513,13 +463,11 @@ with st.sidebar:
                                 break
                         
                         if full_case:
-                            # Set up search to show this case
-                            st.session_state.view_case_search = {
-                                'query': 'just cause',  # Use a query that would match this case
-                                'target_case_id': case['id'],
-                                'sport_filter': full_case['sport'],
-                                'matter_filter': full_case['matter'],
-                                'outcome_filter': full_case['outcome']
+                            st.session_state.view_case_setup = {
+                                'case_id': case['id'],
+                                'sport': full_case['sport'],
+                                'matter': full_case['matter'],
+                                'outcome': full_case['outcome']
                             }
                         st.rerun()
                 with col2:
@@ -545,38 +493,40 @@ with st.sidebar:
     else:
         st.markdown('<div class="filter-counter no-filters">0 active filters</div>', unsafe_allow_html=True)
     
-    # Filter dropdowns with default values
+    # Filter dropdowns with temp value handling
     language_filter = st.selectbox("Language", ["Any", "English", "French", "German", "Spanish", "Italian"], key="language_filter", index=0)
     date_filter = st.selectbox("Decision Date", ["Any", "Last 6 months", "Last year", "Last 2 years", "Last 5 years"], key="date_filter", index=0)
     
-    # Handle temporary filter values for case viewing
+    # Matter filter with temp value
     matter_options = ["Any", "Contract", "Transfer", "Doping", "Disciplinary", "Eligibility"]
-    if 'temp_matter_filter' in st.session_state:
-        temp_matter = st.session_state.temp_matter_filter
-        matter_index = matter_options.index(temp_matter) if temp_matter in matter_options else 0
-        del st.session_state.temp_matter_filter
-    else:
-        matter_index = 0
+    matter_index = 0
+    if 'temp_matter' in st.session_state:
+        temp_matter = st.session_state.temp_matter
+        if temp_matter in matter_options:
+            matter_index = matter_options.index(temp_matter)
+        del st.session_state.temp_matter
     matter_filter = st.selectbox("Matter", matter_options, key="matter_filter", index=matter_index)
     
+    # Outcome filter with temp value
     outcome_options = ["Any", "Dismissed", "Upheld", "Partially Upheld", "Rejected", "Accepted"]
-    if 'temp_outcome_filter' in st.session_state:
-        temp_outcome = st.session_state.temp_outcome_filter
-        outcome_index = outcome_options.index(temp_outcome) if temp_outcome in outcome_options else 0
-        del st.session_state.temp_outcome_filter
-    else:
-        outcome_index = 0
+    outcome_index = 0
+    if 'temp_outcome' in st.session_state:
+        temp_outcome = st.session_state.temp_outcome
+        if temp_outcome in outcome_options:
+            outcome_index = outcome_options.index(temp_outcome)
+        del st.session_state.temp_outcome
     outcome_filter = st.selectbox("Outcome", outcome_options, key="outcome_filter", index=outcome_index)
     
     procedural_filter = st.selectbox("Procedural Types", ["Any", "Appeal Arbitration", "Ordinary Arbitration", "Fast-Track"], key="procedural_filter", index=0)
     
+    # Sport filter with temp value
     sport_options = ["Any", "Football", "Basketball", "Tennis", "Swimming", "Athletics"]
-    if 'temp_sport_filter' in st.session_state:
-        temp_sport = st.session_state.temp_sport_filter
-        sport_index = sport_options.index(temp_sport) if temp_sport in sport_options else 0
-        del st.session_state.temp_sport_filter
-    else:
-        sport_index = 0
+    sport_index = 0
+    if 'temp_sport' in st.session_state:
+        temp_sport = st.session_state.temp_sport
+        if temp_sport in sport_options:
+            sport_index = sport_options.index(temp_sport)
+        del st.session_state.temp_sport
     sport_filter = st.selectbox("Sport", sport_options, key="sport_filter", index=sport_index)
     
     arbitrators_filter = st.selectbox("Arbitrators", ["Any", "Petros Mavroidis", "Sarah Johnson", "Michael Peters"], key="arbitrators_filter", index=0)
@@ -584,37 +534,31 @@ with st.sidebar:
     appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter", index=0)
     respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter", index=0)
     
-    # Reset button
+    # Reset buttons section
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Show reset button if in special mode
-    if current_search_mode in ['loaded_search', 'viewing_case'] or target_case_id:
-        if current_search_mode == 'loaded_search':
-            reset_text = "🔄 Reset Search"
-            reset_help = "Clear loaded search and return to normal"
-        elif current_search_mode == 'viewing_case' or target_case_id:
+    # RESET BUTTON - APPEARS WHEN IN SPECIAL MODE
+    if is_viewing_case or is_loaded_search:
+        if is_viewing_case:
             reset_text = "🔄 Reset Case View"
-            reset_help = "Clear case view and return to normal"
+            reset_help = "Clear case view and return to normal search"
         else:
-            reset_text = "🔄 Reset"
-            reset_help = "Return to normal search"
+            reset_text = "🔄 Reset Search"
+            reset_help = "Clear loaded search and return to normal search"
         
         if st.button(reset_text, help=reset_help, use_container_width=True, type="secondary"):
-            # Clear any loaded search data
-            if 'loaded_search' in st.session_state:
-                del st.session_state.loaded_search
-            if 'loaded_search_name' in st.session_state:
-                del st.session_state.loaded_search_name
-            # Clear any case view data
-            if 'view_case_search' in st.session_state:
-                del st.session_state.view_case_search
-            # Clear temp filters
-            temp_keys = ['temp_sport_filter', 'temp_matter_filter', 'temp_outcome_filter']
-            for key in temp_keys:
-                if key in st.session_state:
-                    del st.session_state[key]
+            # Clear all special modes
+            if 'viewing_case_id' in st.session_state:
+                del st.session_state.viewing_case_id
+            if 'active_search_name' in st.session_state:
+                del st.session_state.active_search_name
+            # Clear temp values
+            for temp_key in ['temp_sport', 'temp_matter', 'temp_outcome']:
+                if temp_key in st.session_state:
+                    del st.session_state[temp_key]
             st.rerun()
     
+    # Reset All Filters button
     if st.button("Reset All Filters", use_container_width=True, type="secondary"):
         # Clear all filter session state
         all_filter_keys = ['language_filter', 'date_filter', 'matter_filter', 'outcome_filter', 
@@ -628,18 +572,23 @@ with st.sidebar:
 # Main Content Area
 st.markdown("### CAS Case Law Research")
 
+# Determine search query
+default_query = "just cause"
+if is_loaded_search and 'loaded_search_setup' in st.session_state:
+    default_query = st.session_state.loaded_search_setup.get('query', 'just cause')
+
 # Search Interface
 col1, col2 = st.columns([5, 1])
 
 with col1:
     # Force update search input when viewing a case
-    if target_case_id and default_query:
+    if is_viewing_case:
         search_query = st.text_input(
             "", 
             value=default_query,
             placeholder="Enter your search query", 
             label_visibility="collapsed",
-            key=f"main_search_input_{target_case_id}"  # Use unique key to force update
+            key=f"search_input_case_{target_case_id}"
         )
     else:
         search_query = st.text_input(
@@ -647,7 +596,7 @@ with col1:
             value=default_query,
             placeholder="Enter your search query", 
             label_visibility="collapsed",
-            key="main_search_input"
+            key="search_input_normal"
         )
 
 with col2:
@@ -658,20 +607,6 @@ with col2:
 if st.session_state.get('show_save_dialog', False):
     @st.dialog("Save Current Search")
     def save_search_dialog():
-        # Count active filters for name suggestion
-        active_filters = []
-        if st.session_state.get('language_filter', 'Any') != 'Any':
-            active_filters.append('Language')
-        if st.session_state.get('matter_filter', 'Any') != 'Any':
-            active_filters.append('Matter')
-        if st.session_state.get('outcome_filter', 'Any') != 'Any':
-            active_filters.append('Outcome')
-        if st.session_state.get('sport_filter', 'Any') != 'Any':
-            active_filters.append('Sport')
-        if st.session_state.get('procedural_filter', 'Any') != 'Any':
-            active_filters.append('Procedural')
-        
-        filter_count = len(active_filters)
         search_name = st.text_input("Search Name", value=search_query if search_query else 'My Search')
         search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
         
@@ -701,17 +636,17 @@ if st.session_state.get('show_save_dialog', False):
     
     save_search_dialog()
 
-if search_query or target_case_id or st.session_state.get('force_search', False):
-    # Clear force search flag
-    if 'force_search' in st.session_state:
-        del st.session_state.force_search
-        
-    # Perform search - ensure we always have a query when viewing a case
-    if target_case_id and not search_query:
-        query_to_use = "just cause"  # Force default query for case viewing
-    else:
-        query_to_use = search_query or "just cause"
-        
+# Show contextual messages
+if is_viewing_case:
+    st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+elif is_loaded_search:
+    st.info(f"📋 Showing results from saved search: '{loaded_search_name}'")
+
+# Perform search if we have a query or are in special mode
+if search_query or is_viewing_case:
+    # Use default query if viewing case but no query entered
+    query_to_use = search_query if search_query else "just cause"
+    
     filters = {
         "language": st.session_state.get('language_filter', 'Any'),
         "matter": st.session_state.get('matter_filter', 'Any'),
@@ -731,26 +666,12 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
     total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
     st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
     
-    # Show contextual messages (simplified)
-    if target_case_id:
-        st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
-    
-    # Show message if loaded search is active
-    if current_search_mode == 'loaded_search' and st.session_state.get('loaded_search_name'):
-        search_name = st.session_state.get('loaded_search_name')
-        st.info(f"📋 Showing results from saved search: '{search_name}'")
-    
-    # Display search results with original format
+    # Display search results
     for case_index, case in enumerate(results):
         # Auto-expand the target case if we're viewing a specific saved case
-        if target_case_id is not None and case['id'] == target_case_id:
-            should_expand = True
-        elif case_index == 0:
-            should_expand = True
-        else:
-            should_expand = False
+        should_expand = (case_index == 0) or (is_viewing_case and case['id'] == target_case_id)
         
-        # Create case title with blue square and tag-like formatting
+        # Case title with blue square tag
         case_title = f"🟦 **{case['title']}** | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
         
         with st.expander(case_title, expanded=should_expand):
@@ -761,19 +682,18 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
             **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
             """)
             
-            # Relevant Passages - Most important, moved to top (original format)
+            # Relevant Passages
             st.markdown("### **Relevant Passages**")
             for passage_index, passage in enumerate(case['relevant_passages']):
                 passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
                 
-                # Extract page reference and content for excerpt (original logic)
+                # Extract page reference and content for excerpt
                 excerpt_text = passage['excerpt']
                 if excerpt_text.startswith('Page'):
                     if '.' in excerpt_text:
                         page_ref = excerpt_text.split(' - ')[0]
                         content = excerpt_text.split('.', 1)[1]
                         
-                        # Put page and checkbox on same line (original format)
                         show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
                         
                         if show_more:
@@ -789,13 +709,13 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
                     else:
                         st.success(excerpt_text)
             
-            # Summary (original format)
+            # Summary
             st.info(f"**Summary:** {case['summary']}")
             
-            # Court Reasoning (original format)
+            # Court Reasoning
             st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
             
-            # Case Outcome (original format)
+            # Case Outcome
             with st.container():
                 st.markdown(f"""
                 <div style="
@@ -809,7 +729,7 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Save Case + Notes Section (grouped together at the bottom)
+            # Save Case + Notes Section
             st.markdown("---")
             
             # Save Case Button and Notes side by side
@@ -817,7 +737,7 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
             with col1:
                 st.markdown("### 📝 Your Case Notes")
             with col2:
-                st.markdown("<br>", unsafe_allow_html=True)  # Add spacing to align with header
+                st.markdown("<br>", unsafe_allow_html=True)
                 if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
                     save_case(case)
             
@@ -848,7 +768,7 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
                         saved_case['notes'] = notes
                         break
             
-            # AI Question Interface (original format)
+            # AI Question Interface
             st.markdown("---")
             st.markdown("**Ask a Question About This Case**")
             question_unique_key = f"ai_question_{case['id']}_{case_index}"

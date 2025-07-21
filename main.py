@@ -397,12 +397,6 @@ with st.sidebar:
     # Clean Divider
     st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
     
-    # Search Options - Collapsible
-    with st.expander("Search Options", expanded=False):
-        max_results = st.number_input("Max Results", min_value=1, max_value=100, value=20)
-        similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
-        show_similarity = st.checkbox("Show Similarity Scores")
-    
     # Saved Searches - Modern Design (Fixed)
     with st.expander("Saved Searches", expanded=True):
         if len(st.session_state.saved_searches) == 0:
@@ -487,6 +481,12 @@ with st.sidebar:
                     if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
                         st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
                         st.rerun()
+
+    # Search Options - Collapsible (moved down)
+    with st.expander("Search Options", expanded=False):
+        max_results = st.number_input("Max Results", min_value=1, max_value=100, value=20)
+        similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
+        show_similarity = st.checkbox("Show Similarity Scores")
 
     # Search Filters Section
     st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)

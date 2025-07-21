@@ -663,14 +663,42 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
     total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
     st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
     
-    # Show message if viewing a specific case
+    # Show contextual messages with inline reset buttons
+    show_reset = False
+    
     if target_case_id:
-        st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+        show_reset = True
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+        with col2:
+            if st.button("✕ Reset", key="reset_case_view", help="Clear case view and return to normal search", use_container_width=True):
+                # Clear case view data
+                if 'search_mode' in st.session_state:
+                    del st.session_state.search_mode
+                if 'view_case_search' in st.session_state:
+                    del st.session_state.view_case_search
+                st.rerun()
     
     # Show message if loaded search is active
     if st.session_state.get('search_mode') == 'loaded_search' and st.session_state.get('loaded_search_name'):
+        show_reset = True
         search_name = st.session_state.get('loaded_search_name')
-        st.info(f"📋 Showing results from saved search: '{search_name}'")
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.info(f"📋 Showing results from saved search: '{search_name}'")
+        with col2:
+            if st.button("✕ Reset", key="reset_saved_search", help="Clear loaded search and return to normal search", use_container_width=True):
+                # Clear search mode and loaded search data
+                if 'search_mode' in st.session_state:
+                    del st.session_state.search_mode
+                if 'loaded_search_name' in st.session_state:
+                    del st.session_state.loaded_search_name
+                st.rerun()
+    
+    # Debug info (remove this later)
+    if not show_reset:
+        st.write(f"Debug: target_case_id={target_case_id}, search_mode={st.session_state.get('search_mode')}, loaded_search_name={st.session_state.get('loaded_search_name')}")
     
     # Display search results with original format
     for case_index, case in enumerate(results):

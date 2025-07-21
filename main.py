@@ -545,7 +545,7 @@ with st.sidebar:
     appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter", index=0)
     respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter", index=0)
     
-    # Reset button
+    # Reset buttons
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Show reset button if in special mode

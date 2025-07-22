@@ -721,28 +721,22 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
         st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
         
-        # Display search results with blue tags
+        # Display search results with blue tags and full details
         for case_index, case in enumerate(results):
-            # Create case header with blue tags instead of case names
-            case_header_html = f"""
-            <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
-                <span class="case-tag">{case['title']}</span>
-                <span style="color: #64748b; font-size: 14px;">|</span>
-                <span style="color: #64748b; font-size: 14px;">Date: {case['date']}</span>
-                <span style="color: #64748b; font-size: 14px;">|</span>
-                <span style="color: #64748b; font-size: 14px;">Parties: {case['appellants']} v. {case['respondents']}</span>
-                <span style="color: #64748b; font-size: 14px;">|</span>
-                <span style="color: #64748b; font-size: 14px;">Matter: {case['matter']}</span>
-                <span style="color: #64748b; font-size: 14px;">|</span>
-                <span style="color: #64748b; font-size: 14px;">Outcome: {case['outcome']}</span>
-                <span style="color: #64748b; font-size: 14px;">|</span>
-                <span style="color: #64748b; font-size: 14px;">Sport: {case['sport']}</span>
+            # Show blue tag and case header together
+            case_display = f"""
+            <div style="margin: 16px 0 8px 0;">
+                <div class="case-tags-container">
+                    <span class="case-tag">{case["title"]}</span>
+                </div>
+                <div style="color: #64748b; font-size: 14px; margin-top: 4px;">
+                    Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}
+                </div>
             </div>
             """
+            st.markdown(case_display, unsafe_allow_html=True)
             
-            st.markdown(case_header_html, unsafe_allow_html=True)
-            
-            with st.expander(f"Case Details", expanded=(case_index == 0)):
+            with st.expander("View Case Details", expanded=(case_index == 0)):
                 
                 st.markdown(f"""
                 **Procedure:** {case['procedure']}  

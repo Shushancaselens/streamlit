@@ -258,6 +258,21 @@ st.markdown("""
         padding-top: 8px !important;
         padding-bottom: 8px !important;
     }
+    
+    .case-tag {
+        background-color: #3b82f6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+        margin: 4px 4px 4px 0;
+    }
+    
+    .case-tags-container {
+        margin: 8px 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -361,8 +376,8 @@ with st.sidebar:
     # Modern Navigation Buttons
     st.markdown("""
     <div class="nav-buttons">
-        <div class="nav-button-active">🔍 Search</div>
-        <div class="nav-button-inactive">📄 Documents</div>
+        <div class="nav-button-active">Search</div>
+        <div class="nav-button-inactive">Documents</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -385,7 +400,7 @@ with st.sidebar:
                 st.markdown(f"""
                 <div class="search-item">
                     <div class="search-name">{search['name']}</div>
-                    <div class="search-meta">🔍 Last run: {search['last_run']}</div>
+                    <div class="search-meta">Last run: {search['last_run']}</div>
                     <div style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 4px;">{search.get('description', '')}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -404,23 +419,24 @@ with st.sidebar:
                 # Show saved cases for this search
                 saved_cases = search.get('saved_cases', [])
                 if saved_cases:
-                    st.markdown(f"<div style='margin: 8px 0; font-size: 13px; color: #64748b;'>📋 Saved Cases ({len(saved_cases)})</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='margin: 8px 0; font-size: 13px; color: #64748b;'>Saved Cases ({len(saved_cases)})</div>", unsafe_allow_html=True)
                     
                     for i, case in enumerate(saved_cases):
-                        # Case display with tree structure
+                        # Case display with blue tags
                         tree_symbol = "├" if i < len(saved_cases) - 1 else "└"
-                        case_display = f"{tree_symbol} {case['case_ref']} - {case['title']}"
                         
-                        # Truncate long titles
-                        if len(case_display) > 50:
-                            case_display = case_display[:47] + "..."
+                        st.markdown(f"""
+                        <div style='margin: 8px 0 8px 16px;'>
+                            <div style='font-family: monospace; color: #64748b; font-size: 12px; margin-bottom: 4px;'>{tree_symbol}</div>
+                            <div class="case-tags-container">
+                                <span class="case-tag">{case['case_ref']}</span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
-                        st.markdown(f"<div style='font-size: 12px; color: #1e293b; margin: 4px 0 4px 16px; font-family: monospace;'>{case_display}</div>", unsafe_allow_html=True)
-                        
-                        # Case action buttons
                         case_col1, case_col2, case_col3 = st.columns([2, 2, 1])
                         with case_col1:
-                            if st.button("👁 View", key=f"view_{case['id']}_{search['id']}", help="View case details", use_container_width=True):
+                            if st.button("View", key=f"view_{case['id']}_{search['id']}", help="View case details", use_container_width=True):
                                 st.session_state.viewing_case = case['id']
                                 st.rerun()
                         with case_col2:
@@ -428,7 +444,7 @@ with st.sidebar:
                             notes_key = f"case_notes_{case['id']}_{search['id']}"
                             current_notes = case.get('notes', '')
                             
-                            if st.button("📝 Notes", key=f"notes_btn_{case['id']}_{search['id']}", help="Edit notes", use_container_width=True):
+                            if st.button("Notes", key=f"notes_btn_{case['id']}_{search['id']}", help="Edit notes", use_container_width=True):
                                 st.session_state[f"show_notes_{case['id']}"] = not st.session_state.get(f"show_notes_{case['id']}", False)
                         with case_col3:
                             if st.button("✕", key=f"remove_case_{case['id']}_{search['id']}", help="Remove case"):
@@ -513,7 +529,7 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
         # Header with close button
         col1, col2 = st.columns([6, 1])
         with col1:
-            st.markdown("### 📄 Viewing Saved Case")
+            st.markdown("### Viewing Saved Case")
         with col2:
             if st.button("✕ Close", help="Close case view"):
                 del st.session_state.viewing_case
@@ -549,7 +565,7 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
             st.write(f"**Arbitrators:** {case_to_view['arbitrator1']}, {case_to_view['arbitrator2']}")
             
             # Relevant Passages
-            with st.expander("📋 Relevant Passages", expanded=True):
+            with st.expander("Relevant Passages", expanded=True):
                 for i, passage in enumerate(case_to_view['relevant_passages']):
                     st.markdown(f"**Passage {i+1}:**")
                     
@@ -574,19 +590,19 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
                         st.divider()
             
             # Case Summary
-            with st.expander("📖 Case Summary", expanded=False):
+            with st.expander("Case Summary", expanded=False):
                 st.write(case_to_view['summary'])
             
             # Court Reasoning
-            with st.expander("⚖️ Court Reasoning", expanded=False):
+            with st.expander("Court Reasoning", expanded=False):
                 st.write(case_to_view['court_reasoning'])
             
             # Case Outcome
-            with st.expander("🏁 Case Outcome", expanded=False):
+            with st.expander("Case Outcome", expanded=False):
                 st.write(case_to_view['case_outcome'])
             
             # Notes section for this case
-            st.markdown("#### 📝 Your Notes")
+            st.markdown("#### Your Notes")
             
             # Get existing notes
             existing_notes = ""
@@ -608,7 +624,7 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
             )
             
             # Save notes button
-            if st.button("💾 Save Notes"):
+            if st.button("Save Notes"):
                 # Update notes in saved cases
                 for search in st.session_state.saved_searches:
                     if 'saved_cases' in search:
@@ -705,12 +721,28 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
         st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
         
-        # Display search results with original format
+        # Display search results with blue tags
         for case_index, case in enumerate(results):
-            # Clean case header with bold descriptors (original format)
-            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+            # Create case header with blue tags instead of case names
+            case_header_html = f"""
+            <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
+                <span class="case-tag">{case['title']}</span>
+                <span style="color: #64748b; font-size: 14px;">|</span>
+                <span style="color: #64748b; font-size: 14px;">Date: {case['date']}</span>
+                <span style="color: #64748b; font-size: 14px;">|</span>
+                <span style="color: #64748b; font-size: 14px;">Parties: {case['appellants']} v. {case['respondents']}</span>
+                <span style="color: #64748b; font-size: 14px;">|</span>
+                <span style="color: #64748b; font-size: 14px;">Matter: {case['matter']}</span>
+                <span style="color: #64748b; font-size: 14px;">|</span>
+                <span style="color: #64748b; font-size: 14px;">Outcome: {case['outcome']}</span>
+                <span style="color: #64748b; font-size: 14px;">|</span>
+                <span style="color: #64748b; font-size: 14px;">Sport: {case['sport']}</span>
+            </div>
+            """
             
-            with st.expander(case_title, expanded=(case_index == 0)):
+            st.markdown(case_header_html, unsafe_allow_html=True)
+            
+            with st.expander(f"Case Details", expanded=(case_index == 0)):
                 
                 st.markdown(f"""
                 **Procedure:** {case['procedure']}  
@@ -772,10 +804,10 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
                 # Save Case Button and Notes side by side
                 col1, col2 = st.columns([4, 1])
                 with col1:
-                    st.markdown("### 📝 Your Case Notes")
+                    st.markdown("### Your Case Notes")
                 with col2:
                     st.markdown("<br>", unsafe_allow_html=True)  # Add spacing to align with header
-                    if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
+                    if st.button("Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
                         save_case(case, search_query)
                 
                 # Notes text area

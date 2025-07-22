@@ -28,7 +28,8 @@ if 'saved_searches' not in st.session_state:
             "filters": {"sport": "Football", "matter": "Contract", "outcome": "Any"},
             "saved_date": "2024-07-20",
             "last_run": "2 hours ago",
-            "description": "Looking for employment termination precedents in football"
+            "description": "Looking for employment termination precedents in football",
+            "notes": "Looking for employment termination precedents in football - client case prep"
         },
         {
             "id": "search_2", 
@@ -37,7 +38,8 @@ if 'saved_searches' not in st.session_state:
             "filters": {"sport": "Football", "date_range": "2020-2024"},
             "saved_date": "2024-07-19",
             "last_run": "1 day ago",
-            "description": "Research for client consultation"
+            "description": "Research for client consultation",
+            "notes": "Research for client consultation on player transfer issues"
         }
     ]
 if 'saved_cases' not in st.session_state:
@@ -256,8 +258,8 @@ def search_cases(query, max_results=20, similarity_threshold=0.5, filters=None):
     
     return relevant_cases[:max_results]
 
-def save_current_search(search_name, query, filters):
-    """Save current search with filters"""
+def save_current_search(search_name, query, filters, notes=""):
+    """Save current search with filters and notes"""
     new_search = {
         "id": f"search_{len(st.session_state.saved_searches) + 1}",
         "name": search_name,
@@ -265,7 +267,8 @@ def save_current_search(search_name, query, filters):
         "filters": filters.copy(),
         "saved_date": datetime.now().strftime("%Y-%m-%d"),
         "last_run": "just now",
-        "description": f"Search: {query}"
+        "description": notes if notes else f"Search: {query}",
+        "notes": notes
     }
     st.session_state.saved_searches.append(new_search)
 
@@ -321,7 +324,9 @@ with st.sidebar:
                 # One line display with click functionality
                 col1, col2 = st.columns([4, 1])
                 with col1:
-                    if st.button(f"{search['name']}", key=f"load_{search['id']}", help=search['description']):
+                    # Show notes in tooltip if they exist
+                    tooltip_text = search.get('notes', search.get('description', ''))
+                    if st.button(f"{search['name']}", key=f"load_{search['id']}", help=tooltip_text):
                         st.session_state.loaded_search = search
                         st.rerun()
                 with col2:
@@ -549,6 +554,7 @@ else:
                     st.markdown(f"**Active Filters:** {', '.join(active_filters)}")
                 
                 search_name = st.text_input("Search Name", value=suggested_name)
+                search_notes = st.text_area("Notes", placeholder="e.g., Research for client consultation, wage dispute case prep, etc.", height=100)
                 
                 if st.form_submit_button("Save"):
                     filters = {
@@ -563,7 +569,7 @@ else:
                         "respondents": st.session_state.get('respondents_filter', 'Any'),
                         "date": st.session_state.get('date_filter', 'Any')
                     }
-                    save_current_search(search_name, current_search, filters)
+                    save_current_search(search_name, current_search, filters, search_notes)
                     st.success("Search saved!")
                     st.rerun()
 

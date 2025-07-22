@@ -19,6 +19,12 @@ if 'bookmarked_cases' not in st.session_state:
     st.session_state.bookmarked_cases = []
 if 'current_case' not in st.session_state:
     st.session_state.current_case = None
+if 'max_results' not in st.session_state:
+    st.session_state.max_results = 20
+if 'similarity_threshold' not in st.session_state:
+    st.session_state.similarity_threshold = 0.55
+if 'show_save_form' not in st.session_state:
+    st.session_state.show_save_form = False
 if 'saved_searches' not in st.session_state:
     st.session_state.saved_searches = [
         {
@@ -348,9 +354,13 @@ with st.sidebar:
     
     # Search Options - Collapsible
     with st.expander("Search Options", expanded=False):
-        max_results = st.number_input("Max Results", min_value=1, max_value=100, value=20)
-        similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
+        max_results = st.number_input("Max Results", min_value=1, max_value=100, value=st.session_state.max_results)
+        similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=st.session_state.similarity_threshold, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
+        
+        # Store in session state for access elsewhere
+        st.session_state.max_results = max_results
+        st.session_state.similarity_threshold = similarity
     
     # Combined Saved Searches & Cases
     total_searches = len(st.session_state.saved_searches)
@@ -622,38 +632,47 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
 
     with col2:
         if st.button("💾 Save Search + Cases", help="Save current search with selected cases", use_container_width=True, type="primary"):
-            if search_query:
-                # Get current results to show for selection
-                filters = {
-                    "language": st.session_state.get('language_filter', 'Any'),
-                    "matter": st.session_state.get('matter_filter', 'Any'),
-                    "outcome": st.session_state.get('outcome_filter', 'Any'),
-                    "sport": st.session_state.get('sport_filter', 'Any'),
-                    "procedural": st.session_state.get('procedural_filter', 'Any'),
-                    "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
-                    "category": st.session_state.get('category_filter', 'Any'),
-                    "appellants": st.session_state.get('appellants_filter', 'Any'),
-                    "respondents": st.session_state.get('respondents_filter', 'Any'),
-                    "date": st.session_state.get('date_filter', 'Any')
-                }
-                results = search_cases(search_query, max_results, similarity, filters)
+            st.session_state.show_save_form = True
+
+    # Show save form if button was clicked
+    if getattr(st.session_state, 'show_save_form', False):
+        if search_query:
+            # Get current results to show for selection - use default values to avoid scoping issues
+            current_max_results = getattr(st.session_state, 'max_results', 20)
+            current_similarity = getattr(st.session_state, 'similarity_threshold', 0.55)
+            
+            filters = {
+                "language": st.session_state.get('language_filter', 'Any'),
+                "matter": st.session_state.get('matter_filter', 'Any'),
+                "outcome": st.session_state.get('outcome_filter', 'Any'),
+                "sport": st.session_state.get('sport_filter', 'Any'),
+                "procedural": st.session_state.get('procedural_filter', 'Any'),
+                "arbitrators": st.session_state.get('arbitrators_filter', 'Any'),
+                "category": st.session_state.get('category_filter', 'Any'),
+                "appellants": st.session_state.get('appellants_filter', 'Any'),
+                "respondents": st.session_state.get('respondents_filter', 'Any'),
+                "date": st.session_state.get('date_filter', 'Any')
+            }
+            results = search_cases(search_query, current_max_results, current_similarity, filters)
+            
+            with st.form("save_search_form"):
+                st.markdown("**💾 Save Current Search & Select Cases**")
                 
-                with st.form("save_search_form"):
-                    st.markdown("**💾 Save Current Search & Select Cases**")
-                    
-                    # Search details
-                    search_name = st.text_input("Search Name", value=f'"{search_query}"')
-                    search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
-                    
-                    # Case selection
-                    selected_case_ids = []
-                    if results:
-                        st.markdown("**📋 Select Cases to Save:**")
-                        for i, case in enumerate(results):
-                            case_label = f"{case['title']} | {case['appellants']} v. {case['respondents']}"
-                            if st.checkbox(case_label, key=f"select_case_{i}"):
-                                selected_case_ids.append(case['id'])
-                    
+                # Search details
+                search_name = st.text_input("Search Name", value=f'"{search_query}"')
+                search_description = st.text_area("Description (optional)", placeholder="e.g., Research for client consultation")
+                
+                # Case selection
+                selected_case_ids = []
+                if results:
+                    st.markdown("**📋 Select Cases to Save:**")
+                    for i, case in enumerate(results):
+                        case_label = f"{case['title']} | {case['appellants']} v. {case['respondents']}"
+                        if st.checkbox(case_label, key=f"select_case_{i}"):
+                            selected_case_ids.append(case['id'])
+                
+                col1, col2 = st.columns(2)
+                with col1:
                     if st.form_submit_button("💾 Save Search & Cases", type="primary"):
                         # Build saved cases from selected IDs
                         saved_cases = []
@@ -680,13 +699,22 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
                             "saved_cases": saved_cases
                         }
                         st.session_state.saved_searches.append(new_search)
+                        st.session_state.show_save_form = False  # Hide form after saving
                         st.success(f"Search saved with {len(saved_cases)} cases!")
                         st.rerun()
-            else:
-                st.warning("Enter a search query first to save search with cases")
+                with col2:
+                    if st.form_submit_button("Cancel"):
+                        st.session_state.show_save_form = False
+                        st.rerun()
+        else:
+            st.warning("Enter a search query first to save search with cases")
+            st.session_state.show_save_form = False
 
     if search_query:
-        # Perform search
+        # Perform search using session state values
+        current_max_results = st.session_state.get('max_results', 20)
+        current_similarity = st.session_state.get('similarity_threshold', 0.55)
+        
         filters = {
             "language": st.session_state.get('language_filter', 'Any'),
             "matter": st.session_state.get('matter_filter', 'Any'),
@@ -699,7 +727,7 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
             "respondents": st.session_state.get('respondents_filter', 'Any'),
             "date": st.session_state.get('date_filter', 'Any')
         }
-        results = search_cases(search_query, max_results, similarity, filters)
+        results = search_cases(search_query, current_max_results, current_similarity, filters)
         
         # Search results summary
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)

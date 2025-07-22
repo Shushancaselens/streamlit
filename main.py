@@ -257,6 +257,22 @@ st.markdown("""
         padding-top: 8px !important;
         padding-bottom: 8px !important;
     }
+    
+    /* Style for case name tags in expander titles */
+    .stExpander summary p {
+        display: inline-block !important;
+    }
+    
+    .case-tag {
+        background-color: #3b82f6 !important;
+        color: white !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        display: inline-block !important;
+        margin-right: 8px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -322,44 +338,6 @@ def save_case(case):
     else:
         st.info("Case already saved!")
 
-# Initialize target_case_id globally
-target_case_id = None
-
-# Check if we need to show a specific case via search
-if 'view_case_search' in st.session_state:
-    case_search_params = st.session_state.view_case_search
-    default_query = case_search_params['query']
-    target_case_id = case_search_params['target_case_id']
-    
-    # Store desired filter values temporarily
-    st.session_state.temp_sport_filter = case_search_params.get('sport_filter', 'Any')
-    st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
-    st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
-    
-    # Force search execution flag
-    st.session_state.force_search = True
-    
-    # Clear the search trigger
-    del st.session_state.view_case_search
-else:
-    # Check if a saved search was loaded
-    loaded_search = getattr(st.session_state, 'loaded_search', None)
-    if loaded_search:
-        default_query = loaded_search['query']
-        # Store saved search filters temporarily
-        saved_filters = loaded_search.get('filters', {})
-        if saved_filters.get('sport') != 'Any':
-            st.session_state.temp_sport_filter = saved_filters['sport']
-        if saved_filters.get('matter') != 'Any':
-            st.session_state.temp_matter_filter = saved_filters['matter']
-        if saved_filters.get('outcome') != 'Any':
-            st.session_state.temp_outcome_filter = saved_filters['outcome']
-        # Store search name for display
-        st.session_state.loaded_search_name = loaded_search['name']
-        st.session_state.loaded_search = None  # Clear after loading
-    else:
-        default_query = "just cause"
-
 # Sidebar Navigation
 with st.sidebar:
     # Modern Logo Design
@@ -381,96 +359,102 @@ with st.sidebar:
     # Clean Divider
     st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
     
-    # Saved Searches - Modern Design (Fixed)
-    with st.expander("Saved Searches", expanded=True):
-        if len(st.session_state.saved_searches) == 0:
-            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
-        else:
-            for search in st.session_state.saved_searches:
-                # Modern card design with description
-                st.markdown(f"""
-                <div class="search-item">
-                    <div class="search-name">{search['name']}</div>
-                    <div class="search-meta">Last run: {search['last_run']}</div>
-                    <div style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 4px;">{search.get('description', '')}</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Functional buttons only (clean design)
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
-                    if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
-                        st.session_state.loaded_search = search
-                        st.session_state.search_mode = "loaded_search"  # Mark that we're in loaded search mode
-                        st.rerun()
-                with col3:
-                    if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
-                        st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
-                        st.rerun()
-    
-    # Saved Cases - Modern Design
-    with st.expander(f"Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
-        if len(st.session_state.saved_cases) == 0:
-            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved cases yet</p>", unsafe_allow_html=True)
-        else:
-            for case in st.session_state.saved_cases:
-                # Modern case card
-                st.markdown(f"""
-                <div class="case-item">
-                    <div class="search-name">{case['title']}</div>
-                    <div class="search-meta">{case['case_ref']} • {case['saved_date']}</div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Compact notes
-                notes_key = f"sidebar_notes_{case['id']}"
-                current_notes = case.get('notes', '')
-                
-                notes = st.text_area(
-                    "",
-                    value=current_notes,
-                    key=notes_key,
-                    height=50,
-                    placeholder="Quick notes...",
-                    label_visibility="collapsed"
-                )
-                
-                # Update notes
-                if notes != current_notes:
-                    case['notes'] = notes
-                
-                # Action buttons
-                col1, col2 = st.columns([4, 1]) 
-                with col1:
-                    if st.button("View", key=f"view_{case['id']}", help="View case details", use_container_width=True):
-                        # Find the full case details from database
-                        full_case = None
-                        for db_case in CASES_DATABASE:
-                            if db_case['id'] == case['id']:
-                                full_case = db_case
-                                break
-                        
-                        if full_case:
-                            # Set up search to show this case
-                            st.session_state.view_case_search = {
-                                'query': 'just cause',  # Use a query that would match this case
-                                'target_case_id': case['id'],
-                                'sport_filter': full_case['sport'],
-                                'matter_filter': full_case['matter'],
-                                'outcome_filter': full_case['outcome']
-                            }
-                            st.session_state.search_mode = "viewing_case"  # Mark that we're viewing a specific case
-                        st.rerun()
-                with col2:
-                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
-                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
-                        st.rerun()
-
-    # Search Options - Collapsible (moved down)
+    # Search Options - Collapsible
     with st.expander("Search Options", expanded=False):
         max_results = st.number_input("Max Results", min_value=1, max_value=100, value=20)
         similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
+    
+    # Combined Saved Items - Searches and Cases
+    total_saved_items = len(st.session_state.saved_searches) + len(st.session_state.saved_cases)
+    with st.expander(f"Saved Items ({total_saved_items})", expanded=True):
+        if total_saved_items == 0:
+            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches or cases yet</p>", unsafe_allow_html=True)
+        else:
+            # Saved Searches Section
+            if len(st.session_state.saved_searches) > 0:
+                st.markdown("**🔍 Saved Searches**")
+                for search in st.session_state.saved_searches:
+                    # Modern card design with description
+                    st.markdown(f"""
+                    <div class="search-item">
+                        <div class="search-name">{search['name']}</div>
+                        <div class="search-meta">Last run: {search['last_run']}</div>
+                        <div style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 4px;">{search.get('description', '')}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Functional buttons
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
+                            st.session_state.loaded_search = search
+                            st.session_state.search_mode = "loaded_search"
+                            st.rerun()
+                    with col3:
+                        if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
+                            st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
+                            st.rerun()
+                
+                # Divider between searches and cases
+                if len(st.session_state.saved_cases) > 0:
+                    st.markdown("<hr style='margin: 16px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
+            
+            # Saved Cases Section  
+            if len(st.session_state.saved_cases) > 0:
+                st.markdown("**📄 Saved Cases**")
+                for case in st.session_state.saved_cases:
+                    # Modern case card
+                    st.markdown(f"""
+                    <div class="case-item">
+                        <div class="search-name">{case['title']}</div>
+                        <div class="search-meta">{case['case_ref']} • {case['saved_date']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Compact notes
+                    notes_key = f"sidebar_notes_{case['id']}"
+                    current_notes = case.get('notes', '')
+                    
+                    notes = st.text_area(
+                        "",
+                        value=current_notes,
+                        key=notes_key,
+                        height=50,
+                        placeholder="Quick notes...",
+                        label_visibility="collapsed"
+                    )
+                    
+                    # Update notes
+                    if notes != current_notes:
+                        case['notes'] = notes
+                    
+                    # Action buttons
+                    col1, col2 = st.columns([4, 1]) 
+                    with col1:
+                        if st.button("View", key=f"view_{case['id']}", help="View case details", use_container_width=True):
+                            # Find the full case details from database
+                            full_case = None
+                            for db_case in CASES_DATABASE:
+                                if db_case['id'] == case['id']:
+                                    full_case = db_case
+                                    break
+                            
+                            if full_case:
+                                # Set up search to show this case
+                                st.session_state.view_case_search = {
+                                    'query': 'just cause',  # Use a query that would match this case
+                                    'target_case_id': case['id'],
+                                    'sport_filter': full_case['sport'],
+                                    'matter_filter': full_case['matter'],
+                                    'outcome_filter': full_case['outcome']
+                                }
+                                st.session_state.search_mode = "viewing_case"
+                            st.rerun()
+                    with col2:
+                        if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
+                            st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
+                            st.rerun()
 
     # Search Filters Section
     st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
@@ -529,48 +513,8 @@ with st.sidebar:
     appellants_filter = st.selectbox("Appellants", ["Any", "Player", "Club", "National Association"], key="appellants_filter", index=0)
     respondents_filter = st.selectbox("Respondents", ["Any", "Player", "Club", "National Association"], key="respondents_filter", index=0)
     
-    # Reset buttons section
+    # Reset button
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Check if we need to show reset button
-    show_reset_button = False
-    reset_button_text = ""
-    reset_button_help = ""
-    
-    # Debug info
-    st.write(f"Debug: target_case_id={target_case_id}")
-    st.write(f"Debug: search_mode={st.session_state.get('search_mode', 'None')}")
-    st.write(f"Debug: loaded_search_name={st.session_state.get('loaded_search_name', 'None')}")
-    
-    if target_case_id is not None:
-        show_reset_button = True
-        reset_button_text = "🔄 Reset Case View"
-        reset_button_help = "Clear case view and return to normal search"
-    elif st.session_state.get('search_mode') == 'loaded_search':
-        show_reset_button = True
-        reset_button_text = "🔄 Reset Search"
-        reset_button_help = "Clear loaded search and return to normal search"
-    elif st.session_state.get('search_mode') == 'viewing_case':
-        show_reset_button = True
-        reset_button_text = "🔄 Reset Case View"
-        reset_button_help = "Clear case view and return to normal search"
-    
-    # Show reset button if needed
-    if show_reset_button:
-        if st.button(reset_button_text, help=reset_button_help, use_container_width=True, type="secondary"):
-            # Clear all special modes
-            if 'search_mode' in st.session_state:
-                del st.session_state.search_mode
-            if 'loaded_search_name' in st.session_state:
-                del st.session_state.loaded_search_name
-            if 'view_case_search' in st.session_state:
-                del st.session_state.view_case_search
-            # Reset target case
-            target_case_id = None
-            st.success("Reset successful!")
-            st.rerun()
-    
-    # Reset all filters button
     if st.button("Reset All Filters", use_container_width=True, type="secondary"):
         # Clear all filter session state
         all_filter_keys = ['language_filter', 'date_filter', 'matter_filter', 'outcome_filter', 
@@ -583,6 +527,44 @@ with st.sidebar:
 
 # Main Content Area
 st.markdown("### CAS Case Law Research")
+
+# Initialize target_case_id
+target_case_id = None
+
+# Check if we need to show a specific case via search
+if 'view_case_search' in st.session_state:
+    case_search_params = st.session_state.view_case_search
+    default_query = case_search_params['query']
+    target_case_id = case_search_params['target_case_id']
+    
+    # Store desired filter values temporarily
+    st.session_state.temp_sport_filter = case_search_params.get('sport_filter', 'Any')
+    st.session_state.temp_matter_filter = case_search_params.get('matter_filter', 'Any') 
+    st.session_state.temp_outcome_filter = case_search_params.get('outcome_filter', 'Any')
+    
+    # Force search execution flag
+    st.session_state.force_search = True
+    
+    # Clear the search trigger
+    del st.session_state.view_case_search
+else:
+    # Check if a saved search was loaded
+    loaded_search = getattr(st.session_state, 'loaded_search', None)
+    if loaded_search:
+        default_query = loaded_search['query']
+        # Store saved search filters temporarily
+        saved_filters = loaded_search.get('filters', {})
+        if saved_filters.get('sport') != 'Any':
+            st.session_state.temp_sport_filter = saved_filters['sport']
+        if saved_filters.get('matter') != 'Any':
+            st.session_state.temp_matter_filter = saved_filters['matter']
+        if saved_filters.get('outcome') != 'Any':
+            st.session_state.temp_outcome_filter = saved_filters['outcome']
+        # Store search name for display
+        st.session_state.loaded_search_name = loaded_search['name']
+        st.session_state.loaded_search = None  # Clear after loading
+    else:
+        default_query = "just cause"
 
 # Search Interface
 col1, col2 = st.columns([5, 1])
@@ -687,14 +669,42 @@ if search_query or target_case_id or st.session_state.get('force_search', False)
     total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
     st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
     
-    # Show contextual messages (simplified)
+    # Show contextual messages with inline reset buttons
+    show_reset = False
+    
     if target_case_id:
-        st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+        show_reset = True
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.info(f"🎯 Showing search results for your saved case (Case ID: {target_case_id})")
+        with col2:
+            if st.button("✕ Reset", key="reset_case_view", help="Clear case view and return to normal search", use_container_width=True):
+                # Clear case view data
+                if 'search_mode' in st.session_state:
+                    del st.session_state.search_mode
+                if 'view_case_search' in st.session_state:
+                    del st.session_state.view_case_search
+                st.rerun()
     
     # Show message if loaded search is active
     if st.session_state.get('search_mode') == 'loaded_search' and st.session_state.get('loaded_search_name'):
+        show_reset = True
         search_name = st.session_state.get('loaded_search_name')
-        st.info(f"📋 Showing results from saved search: '{search_name}'")
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.info(f"📋 Showing results from saved search: '{search_name}'")
+        with col2:
+            if st.button("✕ Reset", key="reset_saved_search", help="Clear loaded search and return to normal search", use_container_width=True):
+                # Clear search mode and loaded search data
+                if 'search_mode' in st.session_state:
+                    del st.session_state.search_mode
+                if 'loaded_search_name' in st.session_state:
+                    del st.session_state.loaded_search_name
+                st.rerun()
+    
+    # Debug info (remove this later)
+    if not show_reset:
+        st.write(f"Debug: target_case_id={target_case_id}, search_mode={st.session_state.get('search_mode')}, loaded_search_name={st.session_state.get('loaded_search_name')}")
     
     # Display search results with original format
     for case_index, case in enumerate(results):

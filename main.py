@@ -721,15 +721,12 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
         st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
         
-        # Display search results with blue tags and case details
+        # Display search results with case tag in expander header
         for case_index, case in enumerate(results):
-            # Show blue tag first
-            st.markdown(f'<div class="case-tags-container"><span class="case-tag">{case["title"]}</span></div>', unsafe_allow_html=True)
+            # Put the tag and case details all in the expander header
+            case_header = f"[{case['title']}] | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
             
-            # Then expander with just the case details (no "View Case Details")
-            case_details = f"Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
-            
-            with st.expander(case_details, expanded=(case_index == 0)):
+            with st.expander(case_header, expanded=(case_index == 0)):
                 
                 st.markdown(f"""
                 **Procedure:** {case['procedure']}  

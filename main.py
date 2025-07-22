@@ -721,10 +721,10 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)
         st.success(f"Found {total_passages} relevant passages in {len(results)} decisions")
         
-        # Display search results with visual tag effect in expander header
+        # Display search results with blue badge tags in expander headers
         for case_index, case in enumerate(results):
-            # Create a visual tag using background blocks
-            case_header = f"▊ {case['title']} ▊ | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
+            # Use blue badge markdown directive for case name
+            case_header = f":blue-badge[{case['title']}] | Date: {case['date']} | Parties: {case['appellants']} v. {case['respondents']} | Matter: {case['matter']} | Outcome: {case['outcome']} | Sport: {case['sport']}"
             
             with st.expander(case_header, expanded=(case_index == 0)):
                 

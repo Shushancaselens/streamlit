@@ -263,6 +263,15 @@ st.markdown("""
 
 def search_cases(query, max_results=20, similarity_threshold=0.5, filters=None):
     """Search cases with comprehensive filters"""
+    if not query:
+        return []
+    
+    # Ensure parameters are valid
+    if not isinstance(max_results, (int, float)) or max_results <= 0:
+        max_results = 20
+    if not isinstance(similarity_threshold, (int, float)) or similarity_threshold < 0:
+        similarity_threshold = 0.5
+    
     relevant_cases = []
     for case in CASES_DATABASE:
         # Text matching
@@ -410,6 +419,8 @@ with st.sidebar:
                                 <div style="font-size: 11px; color: #64748b;">{case['case_ref']}</div>
                             </div>
                             """, unsafe_allow_html=True)
+    else:
+        st.info("Enter a search query to begin searching cases.")
                             
                             # Case notes
                             notes_key = f"search_case_notes_{search['id']}_{case['id']}"
@@ -637,10 +648,6 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
     # Show save form if button was clicked
     if getattr(st.session_state, 'show_save_form', False):
         if search_query:
-            # Get current results to show for selection - use default values to avoid scoping issues
-            current_max_results = getattr(st.session_state, 'max_results', 20)
-            current_similarity = getattr(st.session_state, 'similarity_threshold', 0.55)
-            
             filters = {
                 "language": st.session_state.get('language_filter', 'Any'),
                 "matter": st.session_state.get('matter_filter', 'Any'),
@@ -653,7 +660,20 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
                 "respondents": st.session_state.get('respondents_filter', 'Any'),
                 "date": st.session_state.get('date_filter', 'Any')
             }
-            results = search_cases(search_query, current_max_results, current_similarity, filters)
+            
+            # Use same safe approach for search parameters
+            max_results_val = 20
+            similarity_val = 0.55
+            
+            try:
+                if hasattr(st.session_state, 'max_results') and st.session_state.max_results:
+                    max_results_val = st.session_state.max_results
+                if hasattr(st.session_state, 'similarity_threshold') and st.session_state.similarity_threshold:
+                    similarity_val = st.session_state.similarity_threshold
+            except:
+                pass
+                
+            results = search_cases(search_query, max_results_val, similarity_val, filters)
             
             with st.form("save_search_form"):
                 st.markdown("**💾 Save Current Search & Select Cases**")
@@ -711,10 +731,7 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
             st.session_state.show_save_form = False
 
     if search_query:
-        # Perform search using session state values
-        current_max_results = st.session_state.get('max_results', 20)
-        current_similarity = st.session_state.get('similarity_threshold', 0.55)
-        
+        # Get search parameters with guaranteed defaults
         filters = {
             "language": st.session_state.get('language_filter', 'Any'),
             "matter": st.session_state.get('matter_filter', 'Any'),
@@ -727,7 +744,21 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
             "respondents": st.session_state.get('respondents_filter', 'Any'),
             "date": st.session_state.get('date_filter', 'Any')
         }
-        results = search_cases(search_query, current_max_results, current_similarity, filters)
+        
+        # Always use safe defaults
+        max_results_val = 20
+        similarity_val = 0.55
+        
+        # Try to get from session state if available
+        try:
+            if hasattr(st.session_state, 'max_results') and st.session_state.max_results:
+                max_results_val = st.session_state.max_results
+            if hasattr(st.session_state, 'similarity_threshold') and st.session_state.similarity_threshold:
+                similarity_val = st.session_state.similarity_threshold
+        except:
+            pass  # Use defaults
+        
+        results = search_cases(search_query, max_results_val, similarity_val, filters)
         
         # Search results summary
         total_passages = sum(len(case.get('relevant_passages', [])) for case in results)

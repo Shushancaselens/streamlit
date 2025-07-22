@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import pandas as pd
 from datetime import datetime, date
 import time
@@ -29,7 +29,25 @@ if 'saved_searches' not in st.session_state:
             "saved_date": "2024-07-20",
             "last_run": "2 hours ago",
             "description": "Looking for employment termination precedents in football",
-            "results_count": "15 relevant passages in 13 decisions"
+            "results_count": "15 relevant passages in 13 decisions",
+            "saved_cases": [
+                {
+                    "id": "CAS_2020_A_7242",
+                    "title": "Al Wahda FSC v. Mourad Batna",
+                    "case_ref": "CAS 2020/A/7242",
+                    "saved_date": "today",
+                    "description": "Key precedent for wage disputes. Compare with similar cases.",
+                    "notes": "Key precedent for wage disputes. Compare with similar cases. Player had valid just cause due to unpaid wages and hostile work environment."
+                },
+                {
+                    "id": "CAS_2013_A_3165",
+                    "title": "FC Volyn v. Issa Ndoye", 
+                    "case_ref": "CAS 2013/A/3165",
+                    "saved_date": "yesterday",
+                    "description": "Fundamental just cause precedent",
+                    "notes": ""
+                }
+            ]
         },
         {
             "id": "search_2", 
@@ -39,34 +57,17 @@ if 'saved_searches' not in st.session_state:
             "saved_date": "2024-07-19",
             "last_run": "1 day ago",
             "description": "Research for client consultation",
-            "results_count": "8 relevant passages in 5 decisions"
-        }
-    ]
-if 'saved_cases' not in st.session_state:
-    st.session_state.saved_cases = [
-        {
-            "id": "CAS_2020_A_7242",
-            "title": "Al Wahda FSC v. Mourad Batna",
-            "case_ref": "CAS 2020/A/7242",
-            "saved_date": "today",
-            "description": "Key precedent for wage disputes. Compare with similar cases.",
-            "notes": "Key precedent for wage disputes. Compare with similar cases. Player had valid just cause due to unpaid wages and hostile work environment."
-        },
-        {
-            "id": "CAS_2022_A_8836",
-            "title": "Samsunspor v. Brice Dja...",
-            "case_ref": "CAS 2022/A/8836",
-            "saved_date": "yesterday",
-            "description": "Important for understanding burden of proof in just cause cases.",
-            "notes": ""
-        },
-        {
-            "id": "CAS_2019_A_6082",
-            "title": "Barcelona FC v. Neymar Jr",
-            "case_ref": "CAS 2019/A/6082",
-            "saved_date": "last week",
-            "description": "Release clause jurisprudence - cite in contract review",
-            "notes": ""
+            "results_count": "8 relevant passages in 5 decisions",
+            "saved_cases": [
+                {
+                    "id": "CAS_2019_A_6082",
+                    "title": "Barcelona FC v. Neymar Jr",
+                    "case_ref": "CAS 2019/A/6082",
+                    "saved_date": "last week", 
+                    "description": "Release clause jurisprudence - cite in contract review",
+                    "notes": ""
+                }
+            ]
         }
     ]
 if 'case_notes' not in st.session_state:
@@ -306,20 +307,46 @@ def load_saved_search(search_id):
             return search
     return None
 
-def save_case(case, temp_notes=""):
-    """Save a case to bookmarks with optional temporary notes"""
-    if not any(saved['id'] == case['id'] for saved in st.session_state.saved_cases):
+def save_case(case, current_search_context=None):
+    """Save a case to the current search context"""
+    # Check if case is already saved in any search
+    already_saved = False
+    for search in st.session_state.saved_searches:
+        if 'saved_cases' in search:
+            if any(saved['id'] == case['id'] for saved in search['saved_cases']):
+                already_saved = True
+                break
+    
+    if not already_saved:
+        # Create the case data
         saved_case = {
             "id": case['id'],
             "title": f"{case['appellants']} v. {case['respondents']}",
             "case_ref": case['title'],
             "saved_date": "today",
             "description": f"Saved from search results",
-            "notes": temp_notes  # Include temporary notes when saving
+            "notes": ""
         }
-        st.session_state.saved_cases.append(saved_case)
-        return True
-    return False
+        
+        # If we have current search context, add to that search
+        if current_search_context:
+            for search in st.session_state.saved_searches:
+                if search['query'] == current_search_context:
+                    if 'saved_cases' not in search:
+                        search['saved_cases'] = []
+                    search['saved_cases'].append(saved_case)
+                    break
+        else:
+            # If no current search context, add to most recent search
+            if st.session_state.saved_searches:
+                recent_search = st.session_state.saved_searches[0]
+                if 'saved_cases' not in recent_search:
+                    recent_search['saved_cases'] = []
+                recent_search['saved_cases'].append(saved_case)
+        
+        st.success("Case saved!")
+    else:
+        st.info("Case already saved!")
 
 # Sidebar Navigation
 with st.sidebar:
@@ -348,7 +375,7 @@ with st.sidebar:
         similarity = st.slider("Similarity Threshold", min_value=0.0, max_value=1.0, value=0.55, step=0.01)
         show_similarity = st.checkbox("Show Similarity Scores")
     
-    # Saved Searches - Modern Design (Fixed)
+    # Saved Searches with nested cases - Modern Design
     with st.expander("Saved Searches", expanded=True):
         if len(st.session_state.saved_searches) == 0:
             st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved searches yet</p>", unsafe_allow_html=True)
@@ -358,63 +385,73 @@ with st.sidebar:
                 st.markdown(f"""
                 <div class="search-item">
                     <div class="search-name">{search['name']}</div>
-                    <div class="search-meta">Last run: {search['last_run']}</div>
+                    <div class="search-meta">🔍 Last run: {search['last_run']}</div>
                     <div style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 4px;">{search.get('description', '')}</div>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Functional buttons only (clean design)
+                # Search action buttons
                 col1, col2, col3 = st.columns([1, 2, 1])
                 with col2:
-                    if st.button("Load", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
+                    if st.button("Load Search", key=f"load_{search['id']}", help="Load this search", use_container_width=True):
                         st.session_state.loaded_search = search
                         st.rerun()
                 with col3:
                     if st.button("✕", key=f"delete_{search['id']}", help="Delete search", use_container_width=True):
                         st.session_state.saved_searches = [s for s in st.session_state.saved_searches if s['id'] != search['id']]
                         st.rerun()
-    
-    # Saved Cases - Modern Design
-    with st.expander(f"Saved Cases ({len(st.session_state.saved_cases)})", expanded=False):
-        if len(st.session_state.saved_cases) == 0:
-            st.markdown("<p style='color: #64748b; font-size: 14px; text-align: center; padding: 20px 0;'>No saved cases yet</p>", unsafe_allow_html=True)
-        else:
-            for case in st.session_state.saved_cases:
-                # Modern case card
-                st.markdown(f"""
-                <div class="case-item">
-                    <div class="search-name">{case['title']}</div>
-                    <div class="search-meta">{case['case_ref']} • {case['saved_date']}</div>
-                </div>
-                """, unsafe_allow_html=True)
                 
-                # Compact notes
-                notes_key = f"sidebar_notes_{case['id']}"
-                current_notes = case.get('notes', '')
+                # Show saved cases for this search
+                saved_cases = search.get('saved_cases', [])
+                if saved_cases:
+                    st.markdown(f"<div style='margin: 8px 0; font-size: 13px; color: #64748b;'>📋 Saved Cases ({len(saved_cases)})</div>", unsafe_allow_html=True)
+                    
+                    for i, case in enumerate(saved_cases):
+                        # Case display with tree structure
+                        tree_symbol = "├" if i < len(saved_cases) - 1 else "└"
+                        case_display = f"{tree_symbol} {case['case_ref']} - {case['title']}"
+                        
+                        # Truncate long titles
+                        if len(case_display) > 50:
+                            case_display = case_display[:47] + "..."
+                        
+                        st.markdown(f"<div style='font-size: 12px; color: #1e293b; margin: 4px 0 4px 16px; font-family: monospace;'>{case_display}</div>", unsafe_allow_html=True)
+                        
+                        # Case action buttons
+                        case_col1, case_col2, case_col3 = st.columns([2, 2, 1])
+                        with case_col1:
+                            if st.button("👁 View", key=f"view_{case['id']}_{search['id']}", help="View case details", use_container_width=True):
+                                st.session_state.viewing_case = case['id']
+                                st.rerun()
+                        with case_col2:
+                            # Quick notes for case
+                            notes_key = f"case_notes_{case['id']}_{search['id']}"
+                            current_notes = case.get('notes', '')
+                            
+                            if st.button("📝 Notes", key=f"notes_btn_{case['id']}_{search['id']}", help="Edit notes", use_container_width=True):
+                                st.session_state[f"show_notes_{case['id']}"] = not st.session_state.get(f"show_notes_{case['id']}", False)
+                        with case_col3:
+                            if st.button("✕", key=f"remove_case_{case['id']}_{search['id']}", help="Remove case"):
+                                search['saved_cases'] = [c for c in search['saved_cases'] if c['id'] != case['id']]
+                                st.rerun()
+                        
+                        # Show notes editor if toggled
+                        if st.session_state.get(f"show_notes_{case['id']}", False):
+                            notes = st.text_area(
+                                "",
+                                value=current_notes,
+                                key=notes_key,
+                                height=60,
+                                placeholder="Case notes...",
+                                label_visibility="collapsed"
+                            )
+                            
+                            # Update notes
+                            if notes != current_notes:
+                                case['notes'] = notes
                 
-                notes = st.text_area(
-                    "",
-                    value=current_notes,
-                    key=notes_key,
-                    height=50,
-                    placeholder="Quick notes...",
-                    label_visibility="collapsed"
-                )
-                
-                # Update notes
-                if notes != current_notes:
-                    case['notes'] = notes
-                
-                # Action buttons
-                col1, col2 = st.columns([4, 1]) 
-                with col1:
-                    if st.button("View", key=f"view_{case['id']}", help="View case details", use_container_width=True):
-                        st.session_state.viewing_case = case['id']
-                        st.rerun()
-                with col2:
-                    if st.button("✕", key=f"remove_{case['id']}", help="Remove from saved"):
-                        st.session_state.saved_cases = [c for c in st.session_state.saved_cases if c['id'] != case['id']]
-                        st.rerun()
+                # Add spacing between searches
+                st.markdown("<div style='margin: 16px 0;'></div>", unsafe_allow_html=True)
 
     # Search Filters Section
     st.markdown("<hr style='margin: 24px 0; border: none; height: 1px; background: #e2e8f0;'>", unsafe_allow_html=True)
@@ -553,10 +590,14 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
             
             # Get existing notes
             existing_notes = ""
-            for saved_case in st.session_state.saved_cases:
-                if saved_case['id'] == viewing_case_id:
-                    existing_notes = saved_case.get('notes', '')
-                    break
+            for search in st.session_state.saved_searches:
+                if 'saved_cases' in search:
+                    for saved_case in search['saved_cases']:
+                        if saved_case['id'] == viewing_case_id:
+                            existing_notes = saved_case.get('notes', '')
+                            break
+                    if existing_notes:
+                        break
             
             # Notes editor
             notes = st.text_area(
@@ -569,10 +610,12 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
             # Save notes button
             if st.button("💾 Save Notes"):
                 # Update notes in saved cases
-                for saved_case in st.session_state.saved_cases:
-                    if saved_case['id'] == viewing_case_id:
-                        saved_case['notes'] = notes
-                        break
+                for search in st.session_state.saved_searches:
+                    if 'saved_cases' in search:
+                        for saved_case in search['saved_cases']:
+                            if saved_case['id'] == viewing_case_id:
+                                saved_case['notes'] = notes
+                                break
                 st.success("Notes saved!")
         
         st.markdown("---")
@@ -664,12 +707,8 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
         
         # Display search results with original format
         for case_index, case in enumerate(results):
-            # Check if case is saved to add indicator
-            is_case_saved = any(saved['id'] == case['id'] for saved in st.session_state.saved_cases)
-            save_indicator = " ⭐" if is_case_saved else ""
-            
             # Clean case header with bold descriptors (original format)
-            case_title = f"**{case['title']}**{save_indicator} | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
             
             with st.expander(case_title, expanded=(case_index == 0)):
                 
@@ -736,45 +775,41 @@ if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
                     st.markdown("### 📝 Your Case Notes")
                 with col2:
                     st.markdown("<br>", unsafe_allow_html=True)  # Add spacing to align with header
-                    is_saved = any(saved['id'] == case['id'] for saved in st.session_state.saved_cases)
-                    
-                    if not is_saved:
-                        if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
-                            # Get temporary notes if any
-                            temp_notes = st.session_state.get(f"temp_notes_{case['id']}_{case_index}", "")
-                            if save_case(case, temp_notes):
-                                st.success("Case saved successfully!")
-                                st.rerun()
-                            else:
-                                st.error("Failed to save case")
-                    else:
-                        st.success("✅ Saved", help="This case is already saved")
+                    if st.button("⭐ Save Case", key=f"save_case_{case['id']}_{case_index}", use_container_width=True):
+                        save_case(case, search_query)
                 
-                # Check if case is already saved
-                is_saved = any(saved['id'] == case['id'] for saved in st.session_state.saved_cases)
+                # Notes text area
+                case_notes_key = f"notes_{case['id']}_{case_index}"
                 
-                if is_saved:
-                    st.info("✅ This case is already saved. View it in 'Saved Cases' to edit notes.")
-                    # Show read-only preview of saved notes
-                    for saved_case in st.session_state.saved_cases:
-                        if saved_case['id'] == case['id']:
-                            if saved_case.get('notes'):
-                                st.text_area(
-                                    "Your saved notes (read-only):",
-                                    value=saved_case['notes'],
-                                    height=80,
-                                    disabled=True
-                                )
+                # Get existing notes for this case
+                existing_notes = ""
+                for search in st.session_state.saved_searches:
+                    if 'saved_cases' in search:
+                        for saved_case in search['saved_cases']:
+                            if saved_case['id'] == case['id']:
+                                existing_notes = saved_case.get('notes', '')
+                                break
+                        if existing_notes:
                             break
-                else:
-                    # Temporary notes for unsaved case (session-specific)
-                    temp_notes_key = f"temp_notes_{case['id']}_{case_index}"
-                    notes = st.text_area(
-                        "Quick notes (will be saved with the case):",
-                        key=temp_notes_key,
-                        placeholder="e.g., Key precedent for wage disputes. Compare with similar cases.",
-                        height=100
-                    )
+                
+                notes = st.text_area(
+                    "",
+                    value=existing_notes,
+                    placeholder="e.g., Key precedent for wage disputes. Compare with similar cases. Player had valid just cause due to unpaid wages and hostile work environment.",
+                    key=case_notes_key,
+                    height=100,
+                    label_visibility="collapsed"
+                )
+                
+                # Save notes when they change
+                if notes != existing_notes:
+                    # Update notes in saved cases
+                    for search in st.session_state.saved_searches:
+                        if 'saved_cases' in search:
+                            for saved_case in search['saved_cases']:
+                                if saved_case['id'] == case['id']:
+                                    saved_case['notes'] = notes
+                                    break
                 
                 # AI Question Interface (original format)
                 st.markdown("---")

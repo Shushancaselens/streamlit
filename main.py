@@ -620,7 +620,7 @@ if 'viewing_case' in st.session_state and st.session_state.viewing_case:
             del st.session_state.viewing_case
             st.rerun()
 
-# Check if a saved search was loaded (only when not viewing a case)
+# Check if a saved search was loaded (only when not viewing a case)  
 if 'viewing_case' not in st.session_state or not st.session_state.viewing_case:
     loaded_search = getattr(st.session_state, 'loaded_search', None)
     if loaded_search:

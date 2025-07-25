@@ -317,13 +317,39 @@ with tab1:
         st.markdown("### 💰 Financial Impact Breakdown")
         
         financial_data = {
-            "Component": ["Base Demurrage", "Additional Fees", "Interest (5%)", "Legal Costs", "Total Exposure"],
-            "Amount ($)": [37317.71, 3000.00, 1865.89, 15000.00, 57183.60],
-            "Status": ["Awarded", "Awarded", "Accruing", "Estimated", "Total Risk"]
+            "Component": ["Base Demurrage", "Additional Fees", "Interest (5%)", "Legal Costs", "Enforcement Costs", "Total Exposure"],
+            "Amount ($)": [37317.71, 3000.00, 1865.89, 15000.00, 8000.00, 65183.60],
+            "Status": ["Awarded", "Awarded", "Accruing", "Estimated", "Potential", "Maximum Risk"],
+            "Recovery Probability": ["85%", "85%", "70%", "N/A", "50%", "75%"]
         }
         
         financial_df = pd.DataFrame(financial_data)
         st.dataframe(financial_df, use_container_width=True, hide_index=True)
+        
+        # Cost-Benefit Analysis
+        st.markdown("### 📊 Cost-Benefit Decision Matrix")
+        
+        cb_col1, cb_col2 = st.columns(2)
+        
+        with cb_col1:
+            st.success("""
+            **💰 SETTLEMENT BENEFITS**
+            - Guaranteed recovery: $25K+ (65%+)
+            - Speed: 30-45 days to resolution
+            - Cost control: $10-15K total expenses
+            - Relationship preservation
+            - Payment certainty
+            """)
+        
+        with cb_col2:
+            st.warning("""
+            **⚖️ LITIGATION COSTS**
+            - Extended timeline: 12-18 months
+            - Higher costs: $25-40K expenses
+            - Uncertain outcome despite strong case
+            - Enforcement challenges in Turkey
+            - Relationship damage potential
+            """)
 
 # TAB 2: LEGAL ANALYSIS
 with tab2:
@@ -451,6 +477,33 @@ with tab2:
                 st.write(f"**Key Question:** {question}")
                 st.warning(f"**Assessment:** {assessment}")
     
+    # Causation Chain Analysis
+    st.markdown("### ⚠️ Causation Chain Analysis")
+    
+    st.info("**Proximate Cause Test:** What was the 'but for' cause of demurrage?")
+    
+    causation_col1, causation_col2 = st.columns(2)
+    
+    with causation_col1:
+        st.success("""
+        **🏛️ Claimant's Causation Theory**
+        
+        Length non-compliance → Rejection → Demurrage
+        
+        *(Engine problems irrelevant to final outcome)*
+        """)
+    
+    with causation_col2:
+        st.error("""
+        **🏭 Respondent's Causation Theory**
+        
+        Engine failure → Delay → Late arrival → Rejection
+        
+        *(Timing was everything - early arrival = acceptance)*
+        """)
+    
+    st.warning("**🎯 Critical Legal Question:** Would vessel have been rejected even if it arrived on schedule?")
+    
     # Evidence Strength Matrix
     st.markdown("### 📊 Evidence Strength Analysis")
     
@@ -488,6 +541,39 @@ with tab2:
         </div>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Precedent Analysis
+    st.markdown("### ⚖️ Legal Precedent Analysis")
+    
+    precedent_col1, precedent_col2 = st.columns(2)
+    
+    with precedent_col1:
+        st.success("""
+        **✅ FAVORABLE PRECEDENTS**
+        
+        **The Seaflower [2001]:**
+        - Due diligence duty on charterers
+        - Verification of port specifications
+        
+        **Bulk Chile [2013]:**
+        - Vessel suitability standards
+        - Charterer responsibility for compliance
+        """)
+    
+    with precedent_col2:
+        st.error("""
+        **⚠️ ADVERSE PRECEDENTS**
+        
+        **Golden Victory [2007]:**
+        - Intervening events doctrine
+        - Causation complexity analysis
+        
+        **Edwinton [2021]:**
+        - COVID-19 force majeure recognition
+        - Unforeseeable circumstances
+        """)
+    
+    st.info("**🎯 Key Precedent Battle:** Due diligence standard vs. seaworthiness warranty focus")
 
 # TAB 3: STRATEGIC ASSESSMENT
 with tab3:
@@ -522,6 +608,33 @@ with tab3:
             Maximum leverage with manageable risk exposure
         </div>
         """, unsafe_allow_html=True)
+        
+        # Noksel Financial Intelligence
+        st.markdown("### 🏭 Noksel Financial Profile")
+        
+        st.warning("""
+        **⚠️ CREDIT RISK INDICATORS**
+        - Multiple same-day invoice patterns
+        - Extended payment terms requested
+        - Turkish manufacturing sector volatility
+        - Economic uncertainty factors
+        """)
+        
+        st.info("""
+        **🔍 ASSET INTELLIGENCE GAPS**
+        - Corporate structure: Unknown subsidiaries
+        - International holdings: Unclear portfolio
+        - Bank account locations: Investigation needed
+        - Asset hiding potential: Moderate risk
+        """)
+        
+        st.error("""
+        **🚨 COLLECTION RISK FACTORS**
+        - Cross-border enforcement challenges
+        - Turkish legal system complexities
+        - Currency volatility exposure
+        - Political risk considerations
+        """)
     
     with assess_col2:
         st.markdown("### 💰 Recovery Scenario Analysis")

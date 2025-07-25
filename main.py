@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, date
+from datetime import datetime
+import datetime as dt
 
 # Page configuration
 st.set_page_config(
@@ -296,8 +297,8 @@ with st.sidebar:
     st.markdown("### 📋 Case Controls")
     
     # Date inputs
-    award_date = st.date_input("Award Date", value=date(2023, 3, 19))
-    payment_due = st.date_input("Payment Due", value=date(2025, 3, 19))
+    award_date = st.date_input("Award Date", value=dt.date(2023, 3, 19))
+    payment_due = st.date_input("Payment Due", value=dt.date(2025, 3, 19))
     
     # Calculation inputs
     award_amount = st.number_input("Award Amount ($)", value=37317.71, format="%.2f")

@@ -32,48 +32,27 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ENHANCED HEADER SECTION
-st.markdown("""
-<div style="
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 300px;">
-            <h1 style="margin: 0; font-size: 2.5rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                ⚖️ MV MESSILA DEMURRAGE DISPUTE
-            </h1>
-            <h2 style="margin: 0.5rem 0; font-size: 1.4rem; color: #cbd5e1; font-weight: 300;">
-                Legal Brief & Strategic Analysis
-            </h2>
-            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; backdrop-filter: blur(10px);">
-                <div style="font-size: 1rem; line-height: 1.6;">
-                    <strong>Case:</strong> Transasya v. Noksel Çelik Boru Sanayi A.Ş.<br>
-                    <strong>Arbitrator:</strong> John Schofield<br>
-                    <strong>Award Date:</strong> March 19, 2023 | <strong>Payment Due:</strong> March 19, 2025
-                </div>
-            </div>
-        </div>
-        <div style="text-align: right; min-width: 280px; margin-left: 2rem;">
-            <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                <div style="font-size: 3rem; font-weight: bold; color: #fbbf24; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-bottom: 0.5rem;">
-                    $37,317.71
-                </div>
-                <div style="font-size: 1.1rem; color: #e5e7eb; margin-bottom: 0.5rem;">
-                    + $3,000 fees + 5% interest
-                </div>
-                <div style="background: #dc2626; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; font-size: 1rem;">
-                    ⏰ 180 days to payment
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# HEADER SECTION - Simplified for better compatibility
+st.markdown("# ⚖️ MV MESSILA DEMURRAGE DISPUTE")
+st.markdown("## Legal Brief & Strategic Analysis")
+
+header_col1, header_col2 = st.columns([2, 1])
+
+with header_col1:
+    st.markdown("""
+    **Transasya v. Noksel Çelik Boru Sanayi A.Ş.**  
+    **Arbitrator:** John Schofield  
+    **Award Date:** March 19, 2023  
+    **Payment Due:** March 19, 2025
+    """)
+
+with header_col2:
+    st.metric(
+        label="💰 Total Award",
+        value="$37,317.71",
+        delta="+ $3K fees + 5% interest"
+    )
+    st.error("⏰ 180 days to payment")
 
 # EXECUTIVE SUMMARY
 st.markdown("## 📊 EXECUTIVE SUMMARY")

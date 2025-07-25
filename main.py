@@ -32,15 +32,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER SECTION - Simplified for better compatibility
+# HEADER SECTION - Better balanced layout
 st.markdown("# ⚖️ MV MESSILA DEMURRAGE DISPUTE")
 st.markdown("## Legal Brief & Strategic Analysis")
 
-header_col1, header_col2 = st.columns([2, 1])
+# Create a more balanced header layout
+header_col1, header_col2, header_col3 = st.columns([2, 1, 1])
 
 with header_col1:
     st.markdown("""
-    **Transasya v. Noksel Çelik Boru Sanayi A.Ş.**  
+    **Case:** Transasya v. Noksel Çelik Boru Sanayi A.Ş.  
     **Arbitrator:** John Schofield  
     **Award Date:** March 19, 2023  
     **Payment Due:** March 19, 2025
@@ -52,119 +53,180 @@ with header_col2:
         value="$37,317.71",
         delta="+ $3K fees + 5% interest"
     )
-    st.error("⏰ 180 days to payment")
 
-# EXECUTIVE SUMMARY
+with header_col3:
+    st.error("⏰ **180 days to payment**")
+    st.success("🎯 **Recommended:** Settlement")
+
+# CRITICAL DECISION BOX - High priority info
+st.markdown("---")
+decision_col1, decision_col2, decision_col3 = st.columns(3)
+
+with decision_col1:
+    st.error("🚨 **URGENT ACTION REQUIRED**")
+    st.write("Settlement window closing")
+
+with decision_col2:
+    st.success("✅ **GO/NO-GO: SETTLE**")
+    st.write("65% recovery target achievable")
+
+with decision_col3:
+    st.warning("⏰ **TIMELINE: 15-30 DAYS**")
+    st.write("Optimal leverage window")
+
+# EXECUTIVE SUMMARY - Reorganized for better scanning
 st.markdown("## 📊 EXECUTIVE SUMMARY")
 
+# Key metrics in a more logical order
 summary_col1, summary_col2, summary_col3, summary_col4 = st.columns(4)
 
 with summary_col1:
     st.metric(
-        label="💰 Total Award",
-        value="$37,317.71",
-        delta="+ fees & interest"
+        label="🎯 Recommended Strategy",
+        value="Settlement",
+        delta="Immediate action"
     )
 
 with summary_col2:
     st.metric(
-        label="📈 Recovery Probability", 
-        value="70%",
-        delta="Settlement likely"
+        label="💰 Expected Recovery", 
+        value="$25,000+",
+        delta="65% of award"
     )
 
 with summary_col3:
     st.metric(
-        label="⏱️ Optimal Timeline",
-        value="15-45 days",
-        delta="Peak leverage window"
+        label="⏱️ Critical Window",
+        value="15-30 days",
+        delta="Peak leverage"
     )
 
 with summary_col4:
     st.metric(
-        label="🎯 Recommended Action",
-        value="Settlement",
-        delta="65% recovery target"
+        label="📈 Success Probability",
+        value="70%",
+        delta="Settlement track"
     )
 
+# QUICK NAVIGATION - Moved up for better UX
 st.markdown("---")
+st.markdown("### 📋 Detailed Analysis")
 
-# MAIN CONTENT LAYOUT
+# Main content tabs - moved up in hierarchy
 tab1, tab2, tab3, tab4 = st.tabs(["📋 Case Overview", "⚖️ Legal Analysis", "📊 Strategic Assessment", "🎯 Action Plan"])
 
 # TAB 1: CASE OVERVIEW
 with tab1:
-    col1, col2 = st.columns([1, 1])
+    # Quick Reference Card
+    st.markdown("### 🔍 Case Quick Reference")
     
-    with col1:
-        # Case Summary using native Streamlit components
-        st.markdown("### 📋 Case Summary")
+    ref_col1, ref_col2 = st.columns([2, 1])
+    
+    with ref_col1:
+        col1, col2 = st.columns([1, 1])
         
-        # Use info box for better compatibility
-        st.info("""
-        **Turkish steel supplier Noksel Çelik Boru Sanayi A.Ş.** chartered MV MESSILA to deliver steel pipes 
-        to the remote French Pacific island of Futuna for a dock construction project.
+        with col1:
+            # Case Summary using native Streamlit components
+            st.markdown("#### 📋 Case Summary")
+            
+            # Use info box for better compatibility
+            st.info("""
+            **Turkish steel supplier Noksel Çelik Boru Sanayi A.Ş.** chartered MV MESSILA to deliver steel pipes 
+            to the remote French Pacific island of Futuna for a dock construction project.
+            
+            After a catastrophic engine breakdown requiring 4 months of repairs and subsequent regulatory rejection 
+            at the destination port, the cargo was ultimately discharged in Fiji, triggering significant demurrage costs.
+            """)
+            
+            # Case details in a simple container
+            st.markdown("**Case Details:**")
+            case_details_col1, case_details_col2 = st.columns(2)
+            
+            with case_details_col1:
+                st.write("🏛️ **Claimant:** Transasya (Vessel Owners)")
+                st.write("⚖️ **Core Dispute:** Liability for vessel failure costs")
+            
+            with case_details_col2:
+                st.write("🏭 **Respondent:** Noksel (Turkish Steel Supplier)")
+                st.write("📜 **Current Status:** Award issued, enforcement pending")
+            
+            # Key Parties and Roles
+            st.markdown("#### 👥 Key Parties & Roles")
+            
+            parties_data = {
+                "Party": ["Transasya", "Noksel Çelik Boru", "MV MESSILA", "John Schofield"],
+                "Role": ["Vessel Owner/Claimant", "Steel Supplier/Respondent", "Chartered Vessel", "Arbitrator"],
+                "Key Interest": ["Demurrage Recovery", "Cost Avoidance", "Asset at Risk", "Fair Resolution"],
+                "Strength": ["Strong legal position", "Force majeure defense", "Operational evidence", "Industry expertise"]
+            }
+            
+            parties_df = pd.DataFrame(parties_data)
+            st.dataframe(parties_df, use_container_width=True, hide_index=True)
         
-        After a catastrophic engine breakdown requiring 4 months of repairs and subsequent regulatory rejection 
-        at the destination port, the cargo was ultimately discharged in Fiji, triggering significant demurrage costs.
-        """)
+        with col2:
+            st.markdown("#### 🕐 Critical Timeline")
+            
+            timeline_events = [
+                ("Feb 4, 2020", "📄 Supply contract signed", "Contract formation", "normal"),
+                ("Nov 12, 2020", "🚢 MV MESSILA chartered", "Vessel engagement", "normal"),
+                ("Dec 1-3, 2020", "📦 Cargo loaded in Turkey", "Voyage commencement", "normal"),
+                ("May 25, 2021", "⚠️ ENGINE BREAKDOWN", "Critical mechanical failure", "critical"),
+                ("Jun-Oct 2021", "🔧 4-MONTH REPAIR PERIOD", "Extended downtime", "critical"),
+                ("Nov 10, 2021", "❌ REJECTED at Futuna", "Regulatory non-compliance", "critical"),
+                ("Nov 23, 2021", "💰 DEMURRAGE COMMENCES", "Cost accumulation begins", "critical"),
+                ("Mar 19, 2023", "⚖️ Arbitration award issued", "Legal resolution", "award")
+            ]
+            
+            for i, (date, event, description, event_type) in enumerate(timeline_events):
+                # Use containers with color coding
+                if event_type == "critical":
+                    with st.container():
+                        st.error(f"**{date}**")
+                        st.write(f"{event}")
+                        st.caption(description)
+                elif event_type == "award":
+                    with st.container():
+                        st.success(f"**{date}**")
+                        st.write(f"{event}")
+                        st.caption(description)
+                else:
+                    with st.container():
+                        st.info(f"**{date}**")
+                        st.write(f"{event}")
+                        st.caption(description)
+    
+    with ref_col2:
+        # Risk Assessment Card
+        st.markdown("#### ⚠️ Risk Assessment")
         
-        # Case details in a simple container
-        st.markdown("**Case Details:**")
-        case_details_col1, case_details_col2 = st.columns(2)
+        st.error("**HIGH PRIORITY RISKS**")
+        st.write("• Asset hiding potential")
+        st.write("• Time decay on leverage")
+        st.write("• Turkish enforcement complexity")
+        st.write("• Currency volatility")
         
-        with case_details_col1:
-            st.write("🏛️ **Claimant:** Transasya (Vessel Owners)")
-            st.write("⚖️ **Core Dispute:** Liability for vessel failure costs")
+        st.warning("**MEDIUM RISKS**")
+        st.write("• Force majeure arguments")
+        st.write("• COVID precedent impacts")
+        st.write("• Regulatory timing disputes")
         
-        with case_details_col2:
-            st.write("🏭 **Respondent:** Noksel (Turkish Steel Supplier)")
-            st.write("📜 **Current Status:** Award issued, enforcement pending")
+        st.success("**STRENGTHS**")
+        st.write("• Clear arbitration award")
+        st.write("• Strong due diligence case")
+        st.write("• Vessel credibility issues")
+        st.write("• Industry practice support")
         
-        # Key Parties and Roles
-        st.markdown("### 👥 Key Parties & Roles")
+        # Financial Snapshot
+        st.markdown("#### 💰 Financial Snapshot")
         
-        parties_data = {
-            "Party": ["Transasya", "Noksel Çelik Boru", "MV MESSILA", "John Schofield"],
-            "Role": ["Vessel Owner/Claimant", "Steel Supplier/Respondent", "Chartered Vessel", "Arbitrator"],
-            "Key Interest": ["Demurrage Recovery", "Cost Avoidance", "Asset at Risk", "Fair Resolution"],
-            "Strength": ["Strong legal position", "Force majeure defense", "Operational evidence", "Industry expertise"]
+        financial_snapshot = {
+            "Item": ["Base Award", "Fees", "Interest", "Legal Costs", "Total Risk"],
+            "Amount": ["$37,318", "$3,000", "$1,866", "$15,000", "$57,184"],
+            "Status": ["✅ Secured", "✅ Secured", "🔄 Accruing", "💸 Estimated", "⚠️ Maximum"]
         }
         
-        parties_df = pd.DataFrame(parties_data)
-        st.dataframe(parties_df, use_container_width=True, hide_index=True)
-    
-    with col2:
-        st.markdown("### 🕐 Critical Timeline")
-        
-        timeline_events = [
-            ("Feb 4, 2020", "📄 Supply contract signed", "Contract formation", "normal"),
-            ("Nov 12, 2020", "🚢 MV MESSILA chartered", "Vessel engagement", "normal"),
-            ("Dec 1-3, 2020", "📦 Cargo loaded in Turkey", "Voyage commencement", "normal"),
-            ("May 25, 2021", "⚠️ ENGINE BREAKDOWN", "Critical mechanical failure", "critical"),
-            ("Jun-Oct 2021", "🔧 4-MONTH REPAIR PERIOD", "Extended downtime", "critical"),
-            ("Nov 10, 2021", "❌ REJECTED at Futuna", "Regulatory non-compliance", "critical"),
-            ("Nov 23, 2021", "💰 DEMURRAGE COMMENCES", "Cost accumulation begins", "critical"),
-            ("Mar 19, 2023", "⚖️ Arbitration award issued", "Legal resolution", "award")
-        ]
-        
-        for i, (date, event, description, event_type) in enumerate(timeline_events):
-            # Use containers with color coding
-            if event_type == "critical":
-                with st.container():
-                    st.error(f"**{date}**")
-                    st.write(f"{event}")
-                    st.caption(description)
-            elif event_type == "award":
-                with st.container():
-                    st.success(f"**{date}**")
-                    st.write(f"{event}")
-                    st.caption(description)
-            else:
-                with st.container():
-                    st.info(f"**{date}**")
-                    st.write(f"{event}")
-                    st.caption(description)
+        snapshot_df = pd.DataFrame(financial_snapshot)
+        st.dataframe(snapshot_df, use_container_width=True, hide_index=True)
         
         # Financial Impact
         st.markdown("### 💰 Financial Impact Breakdown")

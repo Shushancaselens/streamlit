@@ -161,6 +161,10 @@ if page == "🔍 Search":
         # Search results summary
         st.success(f"Found {len(results)} results")
         
+        # Show bookmark save reminder if user has bookmarks
+        if st.session_state.bookmarked_cases:
+            st.warning("💡 The bookmark changes will apply if you save the search above 💾")
+        
         # Display search results with clean formatting
         for case_index, case in enumerate(results):
             # Clean case header with bold descriptors
@@ -219,9 +223,6 @@ if page == "🔍 Search":
                         # Update notes if bookmark exists and notes changed
                         st.session_state.bookmarked_cases[case['id']] = notes
                         st.success("📝 Notes updated!")
-                
-                if case['id'] in st.session_state.bookmarked_cases:
-                    st.info("💡 The bookmark changes will apply if you save the search above 💾")
                 
                 st.markdown("---")
                 

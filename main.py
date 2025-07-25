@@ -10,58 +10,24 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for enhanced styling
+# Custom CSS for basic styling
 st.markdown("""
 <style>
-    .decision-dashboard {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 1rem 0 2rem 0;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    .metric-container {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
         text-align: center;
-    }
-    
-    .risk-reward-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-    
-    .risk-card {
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-        border: 2px solid;
-    }
-    
-    .risk-high {
-        background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
-        border-color: #ef4444;
-    }
-    
-    .risk-medium {
-        background: linear-gradient(135deg, #fefce8 0%, #fde047 100%);
-        border-color: #eab308;
-    }
-    
-    .risk-low {
-        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-        border-color: #22c55e;
-    }
-    
-    .decision-tree {
-        background: #f8fafc;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin: 1rem 0;
     }
     
     .main {
         padding-top: 1rem;
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -82,12 +48,13 @@ st.markdown("""
                 ⚖️ MV MESSILA DEMURRAGE DISPUTE
             </h1>
             <h2 style="margin: 0.5rem 0; font-size: 1.4rem; color: #cbd5e1; font-weight: 300;">
-                Strategic Decision Brief
+                Legal Brief & Strategic Analysis
             </h2>
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; backdrop-filter: blur(10px);">
                 <div style="font-size: 1rem; line-height: 1.6;">
                     <strong>Case:</strong> Transasya v. Noksel Çelik Boru Sanayi A.Ş.<br>
-                    <strong>Arbitrator:</strong> John Schofield | <strong>Award:</strong> March 19, 2023
+                    <strong>Arbitrator:</strong> John Schofield<br>
+                    <strong>Award Date:</strong> March 19, 2023 | <strong>Payment Due:</strong> March 19, 2025
                 </div>
             </div>
         </div>
@@ -108,369 +75,626 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# EXECUTIVE DECISION DASHBOARD - MOST PROMINENT
-st.markdown("""
-<div class="decision-dashboard">
-    <h1 style="margin: 0 0 1rem 0; font-size: 2.2rem;">🎯 EXECUTIVE DECISION</h1>
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2rem; margin: 2rem 0;">
-        <div>
-            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">DECISION</div>
-            <div style="font-size: 2rem; font-weight: bold;">✅ SETTLE</div>
-        </div>
-        <div>
-            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">TARGET</div>
-            <div style="font-size: 2rem; font-weight: bold;">65% ($25K+)</div>
-        </div>
-        <div>
-            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">TIMELINE</div>
-            <div style="font-size: 2rem; font-weight: bold;">15-30 DAYS</div>
-        </div>
-        <div>
-            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 0.5rem;">NEXT ACTION</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">🚀 LMAA MEDIATION</div>
-        </div>
-    </div>
-    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-        <strong style="font-size: 1.2rem;">CONFIDENCE LEVEL: 85% | RISK: MANAGEABLE | ACTION REQUIRED: IMMEDIATE</strong>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# EXECUTIVE SUMMARY
+st.markdown("## 📊 EXECUTIVE SUMMARY")
 
-# RISK-REWARD SUMMARY - PROMINENT SECTION
-st.markdown("## ⚖️ RISK-REWARD ANALYSIS")
+summary_col1, summary_col2, summary_col3, summary_col4 = st.columns(4)
 
-risk_col1, risk_col2, risk_col3 = st.columns(3)
+with summary_col1:
+    st.metric(
+        label="💰 Total Award",
+        value="$37,317.71",
+        delta="+ fees & interest"
+    )
 
-with risk_col1:
-    st.markdown("""
-    <div class="risk-card risk-low">
-        <h3 style="margin-top: 0; color: #166534;">🟢 SETTLEMENT PATH</h3>
-        <div style="font-size: 1.8rem; font-weight: bold; color: #166534; margin: 1rem 0;">70% Success</div>
-        <div style="color: #166534;">
-            <strong>Expected Recovery:</strong> $25-28K<br>
-            <strong>Timeline:</strong> 30-45 days<br>
-            <strong>Cost:</strong> $10-15K<br>
-            <strong>Risk:</strong> Low
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+with summary_col2:
+    st.metric(
+        label="📈 Recovery Probability", 
+        value="70%",
+        delta="Settlement likely"
+    )
 
-with risk_col2:
-    st.markdown("""
-    <div class="risk-card risk-medium">
-        <h3 style="margin-top: 0; color: #a16207;">🟡 LITIGATION PATH</h3>
-        <div style="font-size: 1.8rem; font-weight: bold; color: #a16207; margin: 1rem 0;">65% Success</div>
-        <div style="color: #a16207;">
-            <strong>Expected Recovery:</strong> $35-40K<br>
-            <strong>Timeline:</strong> 12-18 months<br>
-            <strong>Cost:</strong> $25-40K<br>
-            <strong>Risk:</strong> Medium-High
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+with summary_col3:
+    st.metric(
+        label="⏱️ Optimal Timeline",
+        value="15-45 days",
+        delta="Peak leverage window"
+    )
 
-with risk_col3:
-    st.markdown("""
-    <div class="risk-card risk-high">
-        <h3 style="margin-top: 0; color: #dc2626;">🔴 NO ACTION</h3>
-        <div style="font-size: 1.8rem; font-weight: bold; color: #dc2626; margin: 1rem 0;">15% Success</div>
-        <div style="color: #dc2626;">
-            <strong>Expected Recovery:</strong> $0-10K<br>
-            <strong>Timeline:</strong> Indefinite<br>
-            <strong>Cost:</strong> Opportunity cost<br>
-            <strong>Risk:</strong> Total loss
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+with summary_col4:
+    st.metric(
+        label="🎯 Recommended Action",
+        value="Settlement",
+        delta="65% recovery target"
+    )
 
-# DECISION TREE LOGIC
-st.markdown("## 🌳 DECISION FRAMEWORK")
-
-st.markdown("""
-<div class="decision-tree">
-    <h3 style="margin-top: 0; text-align: center; color: #374151;">IF-THEN DECISION LOGIC</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
-        <div style="text-align: center;">
-            <div style="background: #dbeafe; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <strong style="color: #1e40af;">IF: Quick Recovery Priority</strong>
-            </div>
-            <div style="color: #059669;">
-                <strong>THEN: Pursue Settlement</strong><br>
-                Target: 65% recovery in 30 days<br>
-                Risk: Low | Cost: Controlled
-            </div>
-        </div>
-        <div style="text-align: center;">
-            <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <strong style="color: #d97706;">IF: Maximum Recovery Priority</strong>
-            </div>
-            <div style="color: #d97706;">
-                <strong>THEN: Consider Litigation</strong><br>
-                Target: 90%+ recovery in 18 months<br>
-                Risk: Medium | Cost: High
-            </div>
-        </div>
-        <div style="text-align: center;">
-            <div style="background: #fecaca; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                <strong style="color: #dc2626;">IF: Resource Constraints</strong>
-            </div>
-            <div style="color: #dc2626;">
-                <strong>THEN: Structured Settlement</strong><br>
-                Target: 50% immediate + future<br>
-                Risk: Medium | Cost: Minimal
-            </div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# TIME-SENSITIVE FACTORS
-st.markdown("## ⏰ TIME-CRITICAL FACTORS")
-
-time_col1, time_col2 = st.columns(2)
-
-with time_col1:
-    st.error("""
-    **🚨 LEVERAGE DECAY ANALYSIS**
-    
-    **Days 1-15:** Peak leverage (85% recovery potential)
-    **Days 16-45:** Strong position (70% recovery potential)  
-    **Days 46-90:** Declining leverage (55% recovery potential)
-    **Days 90+:** Weak position (40% recovery potential)
-    
-    **Current Status:** Day 1 - Maximum leverage window
-    """)
-
-with time_col2:
-    st.warning("""
-    **⚠️ RISK ESCALATION TIMELINE**
-    
-    **Immediate:** Asset investigation opportunity
-    **30 days:** Settlement negotiation peak
-    **90 days:** Enforcement preparation required
-    **180 days:** Default triggers, litigation inevitable
-    
-    **Recommendation:** Act within 15 days for optimal results
-    """)
-
-# DETAILED ANALYSIS TABS - REORGANIZED
 st.markdown("---")
-st.markdown("## 📊 SUPPORTING ANALYSIS")
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 Strategic Summary", "⚖️ Legal Position", "💰 Financial Analysis", "📋 Case Background"])
+# MAIN CONTENT LAYOUT
+tab1, tab2, tab3, tab4 = st.tabs(["📋 Case Overview", "⚖️ Legal Analysis", "📊 Strategic Assessment", "🎯 Action Plan"])
 
-# TAB 1: STRATEGIC SUMMARY (Condensed key info)
+# TAB 1: CASE OVERVIEW
 with tab1:
-    st.markdown("### 🏆 Why Settlement Wins")
+    col1, col2 = st.columns([1, 1])
     
-    summary_col1, summary_col2 = st.columns(2)
-    
-    with summary_col1:
-        st.success("""
-        **✅ STRONG LEGAL POSITION**
-        - Award already issued and final
-        - Clear due diligence failure by Noksel
-        - Professional negligence well-documented
-        - Mitigation efforts demonstrate good faith
-        """)
+    with col1:
+        # Case Summary using native Streamlit components
+        st.markdown("### 📋 Case Summary")
         
+        # Use info box for better compatibility
         st.info("""
-        **📊 FAVORABLE ECONOMICS**
-        - Expected value: $28K (75% of award)
-        - Cost-controlled: $10-15K maximum
-        - Speed advantage: 30-45 days vs 18 months
-        - Relationship preservation opportunity
-        """)
-    
-    with summary_col2:
-        st.warning("""
-        **⚠️ LITIGATION RISKS**
-        - Turkish enforcement challenges
-        - Extended timeline uncertainty  
-        - Higher cost exposure ($25-40K)
-        - Potential relationship damage
-        """)
-        
-        st.error("""
-        **🚨 INACTION CONSEQUENCES**
-        - Asset hiding opportunities increase
-        - Leverage deteriorates rapidly
-        - Recovery probability drops to 15%
-        - Opportunity cost compounds
-        """)
-    
-    # Key Metrics Dashboard
-    st.markdown("### 📈 Key Performance Indicators")
-    
-    metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
-    
-    with metric_col1:
-        st.metric("Recovery Confidence", "85%", "High")
-    with metric_col2:
-        st.metric("Time to Resolution", "30 days", "Optimal")
-    with metric_col3:
-        st.metric("Cost Efficiency", "5:1 ROI", "Excellent")
-    with metric_col4:
-        st.metric("Risk Level", "Low", "Manageable")
-
-# TAB 2: LEGAL POSITION (Streamlined)
-with tab2:
-    st.markdown("### ⚖️ Legal Strength Analysis")
-    
-    # Core legal arguments in scannable format
-    legal_col1, legal_col2 = st.columns(2)
-    
-    with legal_col1:
-        st.success("**🏛️ CLAIMANT'S WINNING ARGUMENTS**")
-        
-        with st.expander("🎯 Primary Argument: Due Diligence Failure"):
-            st.write("""
-            **Core Position:** Noksel failed basic professional duty to verify vessel specifications
-            
-            **Key Evidence:**
-            - Futuna length restrictions publicly available
-            - MV MESSILA specs known pre-charter
-            - Industry standard: charterer verification responsibility
-            - 11-month voyage wasted on preventable issue
-            """)
-        
-        with st.expander("💪 Supporting Arguments"):
-            st.write("""
-            **Mitigation Efforts:** Good faith attempts at delivery despite engine problems
-            **Causation:** Rejection inevitable regardless of engine issues  
-            **Professional Standard:** Any competent charterer would have checked
-            **Contract Performance:** Vessel delivered as specified
-            """)
-    
-    with legal_col2:
-        st.error("**🏭 RESPONDENT'S BEST DEFENSES**")
-        
-        with st.expander("🛡️ Primary Defense: Force Majeure & Misrepresentation"):
-            st.write("""
-            **Core Position:** Victim of vessel owner misrepresentation and unforeseeable events
-            
-            **Key Evidence:**
-            - Multiple vessel name changes suggest concealment
-            - Contradictory build records (Ukraine vs Netherlands)
-            - Engine problems despite 'seaworthy' representations
-            - COVID-19 supply chain disruptions unforeseeable
-            """)
-        
-        with st.expander("⚠️ Timing Arguments"):
-            st.write("""
-            **Regulatory Timing:** Nov 9 amendment, day before rejection
-            **Alternative Causation:** Engine failure caused late arrival
-            **Hidden Problems:** Real delay from vessel issues
-            **Suspicious Patterns:** Identity concealment history
-            """)
-    
-    # Legal precedents
-    st.markdown("### 📚 Precedent Analysis")
-    
-    prec_col1, prec_col2 = st.columns(2)
-    
-    with prec_col1:
-        st.success("""
-        **✅ FAVORABLE PRECEDENTS**
-        - **The Seaflower [2001]:** Due diligence duty
-        - **Bulk Chile [2013]:** Vessel suitability standards
-        """)
-    
-    with prec_col2:
-        st.warning("""
-        **⚠️ ADVERSE PRECEDENTS**
-        - **Golden Victory [2007]:** Intervening events
-        - **Edwinton [2021]:** COVID force majeure
-        """)
-
-# TAB 3: FINANCIAL ANALYSIS
-with tab3:
-    st.markdown("### 💰 Financial Impact & Recovery Analysis")
-    
-    # Financial breakdown
-    financial_data = {
-        "Component": ["Base Demurrage", "Additional Fees", "Interest (5%)", "Legal Costs", "Enforcement Costs", "Total Exposure"],
-        "Amount ($)": [37317.71, 3000.00, 1865.89, 15000.00, 8000.00, 65183.60],
-        "Recovery Probability": ["85%", "85%", "70%", "N/A", "50%", "75%"],
-        "Settlement Value": [25000, 2500, 1200, 12000, 0, 40700],
-        "Litigation Value": [33500, 2750, 1600, 25000, 4000, 66850]
-    }
-    
-    financial_df = pd.DataFrame(financial_data)
-    st.dataframe(financial_df, use_container_width=True, hide_index=True)
-    
-    # Recovery scenarios
-    st.markdown("### 📊 Recovery Scenario Modeling")
-    
-    scenario_col1, scenario_col2, scenario_col3 = st.columns(3)
-    
-    with scenario_col1:
-        st.metric("Best Case (Settlement)", "$30K+", "80% of award")
-    with scenario_col2:
-        st.metric("Most Likely", "$25-28K", "65-75% of award")
-    with scenario_col3:
-        st.metric("Conservative", "$20K", "55% of award")
-    
-    # Cost-benefit analysis
-    st.markdown("### ⚖️ Cost-Benefit Comparison")
-    
-    cb_data = {
-        "Option": ["Settlement", "Litigation", "No Action"],
-        "Expected Recovery": ["$25-28K", "$30-35K", "$0-5K"],
-        "Timeline": ["30-45 days", "12-18 months", "Indefinite"],
-        "Costs": ["$10-15K", "$25-40K", "Opportunity cost"],
-        "Net Benefit": ["$15-18K", "$5-10K", "Loss"],
-        "ROI": ["150-200%", "25-40%", "Negative"]
-    }
-    
-    cb_df = pd.DataFrame(cb_data)
-    st.dataframe(cb_df, use_container_width=True, hide_index=True)
-
-# TAB 4: CASE BACKGROUND
-with tab4:
-    st.markdown("### 📋 Case Overview")
-    
-    bg_col1, bg_col2 = st.columns([1, 1])
-    
-    with bg_col1:
-        st.info("""
-        **Case Summary**
-        
-        Turkish steel supplier **Noksel Çelik Boru Sanayi A.Ş.** chartered MV MESSILA to deliver steel pipes 
+        **Turkish steel supplier Noksel Çelik Boru Sanayi A.Ş.** chartered MV MESSILA to deliver steel pipes 
         to the remote French Pacific island of Futuna for a dock construction project.
         
         After a catastrophic engine breakdown requiring 4 months of repairs and subsequent regulatory rejection 
         at the destination port, the cargo was ultimately discharged in Fiji, triggering significant demurrage costs.
         """)
         
-        # Key parties
-        st.markdown("**Key Parties:**")
-        st.write("🏛️ **Claimant:** Transasya (Vessel Owners)")
-        st.write("🏭 **Respondent:** Noksel (Turkish Steel Supplier)")
-        st.write("⚖️ **Arbitrator:** John Schofield")
-        st.write("📜 **Status:** Award issued, enforcement pending")
+        # Case details in a simple container
+        st.markdown("**Case Details:**")
+        case_details_col1, case_details_col2 = st.columns(2)
+        
+        with case_details_col1:
+            st.write("🏛️ **Claimant:** Transasya (Vessel Owners)")
+            st.write("⚖️ **Core Dispute:** Liability for vessel failure costs")
+        
+        with case_details_col2:
+            st.write("🏭 **Respondent:** Noksel (Turkish Steel Supplier)")
+            st.write("📜 **Current Status:** Award issued, enforcement pending")
+        
+        # Key Parties and Roles
+        st.markdown("### 👥 Key Parties & Roles")
+        
+        parties_data = {
+            "Party": ["Transasya", "Noksel Çelik Boru", "MV MESSILA", "John Schofield"],
+            "Role": ["Vessel Owner/Claimant", "Steel Supplier/Respondent", "Chartered Vessel", "Arbitrator"],
+            "Key Interest": ["Demurrage Recovery", "Cost Avoidance", "Asset at Risk", "Fair Resolution"],
+            "Strength": ["Strong legal position", "Force majeure defense", "Operational evidence", "Industry expertise"]
+        }
+        
+        parties_df = pd.DataFrame(parties_data)
+        st.dataframe(parties_df, use_container_width=True, hide_index=True)
     
-    with bg_col2:
+    with col2:
         st.markdown("### 🕐 Critical Timeline")
         
         timeline_events = [
-            ("Feb 4, 2020", "📄 Supply contract signed", "normal"),
-            ("Nov 12, 2020", "🚢 MV MESSILA chartered", "normal"),
-            ("Dec 1-3, 2020", "📦 Cargo loaded in Turkey", "normal"),
-            ("May 25, 2021", "⚠️ ENGINE BREAKDOWN", "critical"),
-            ("Jun-Oct 2021", "🔧 4-MONTH REPAIR PERIOD", "critical"),
-            ("Nov 10, 2021", "❌ REJECTED at Futuna", "critical"),
-            ("Nov 23, 2021", "💰 DEMURRAGE COMMENCES", "critical"),
-            ("Mar 19, 2023", "⚖️ Arbitration award issued", "award")
+            ("Feb 4, 2020", "📄 Supply contract signed", "Contract formation", "normal"),
+            ("Nov 12, 2020", "🚢 MV MESSILA chartered", "Vessel engagement", "normal"),
+            ("Dec 1-3, 2020", "📦 Cargo loaded in Turkey", "Voyage commencement", "normal"),
+            ("May 25, 2021", "⚠️ ENGINE BREAKDOWN", "Critical mechanical failure", "critical"),
+            ("Jun-Oct 2021", "🔧 4-MONTH REPAIR PERIOD", "Extended downtime", "critical"),
+            ("Nov 10, 2021", "❌ REJECTED at Futuna", "Regulatory non-compliance", "critical"),
+            ("Nov 23, 2021", "💰 DEMURRAGE COMMENCES", "Cost accumulation begins", "critical"),
+            ("Mar 19, 2023", "⚖️ Arbitration award issued", "Legal resolution", "award")
         ]
         
-        for date, event, event_type in timeline_events:
+        for i, (date, event, description, event_type) in enumerate(timeline_events):
+            # Use containers with color coding
             if event_type == "critical":
-                st.error(f"**{date}:** {event}")
+                with st.container():
+                    st.error(f"**{date}**")
+                    st.write(f"{event}")
+                    st.caption(description)
             elif event_type == "award":
-                st.success(f"**{date}:** {event}")
+                with st.container():
+                    st.success(f"**{date}**")
+                    st.write(f"{event}")
+                    st.caption(description)
             else:
-                st.info(f"**{date}:** {event}")
+                with st.container():
+                    st.info(f"**{date}**")
+                    st.write(f"{event}")
+                    st.caption(description)
+        
+        # Financial Impact
+        st.markdown("### 💰 Financial Impact Breakdown")
+        
+        financial_data = {
+            "Component": ["Base Demurrage", "Additional Fees", "Interest (5%)", "Legal Costs", "Enforcement Costs", "Total Exposure"],
+            "Amount ($)": [37317.71, 3000.00, 1865.89, 15000.00, 8000.00, 65183.60],
+            "Status": ["Awarded", "Awarded", "Accruing", "Estimated", "Potential", "Maximum Risk"],
+            "Recovery Probability": ["85%", "85%", "70%", "N/A", "50%", "75%"]
+        }
+        
+        financial_df = pd.DataFrame(financial_data)
+        st.dataframe(financial_df, use_container_width=True, hide_index=True)
+        
+        # Cost-Benefit Analysis
+        st.markdown("### 📊 Cost-Benefit Decision Matrix")
+        
+        cb_col1, cb_col2 = st.columns(2)
+        
+        with cb_col1:
+            st.success("""
+            **💰 SETTLEMENT BENEFITS**
+            - Guaranteed recovery: $25K+ (65%+)
+            - Speed: 30-45 days to resolution
+            - Cost control: $10-15K total expenses
+            - Relationship preservation
+            - Payment certainty
+            """)
+        
+        with cb_col2:
+            st.warning("""
+            **⚖️ LITIGATION COSTS**
+            - Extended timeline: 12-18 months
+            - Higher costs: $25-40K expenses
+            - Uncertain outcome despite strong case
+            - Enforcement challenges in Turkey
+            - Relationship damage potential
+            """)
+
+# TAB 2: LEGAL ANALYSIS
+with tab2:
+    # Competing Legal Narratives
+    st.markdown("## ⚖️ Competing Legal Narratives")
+    
+    narrative_col1, narrative_col2 = st.columns(2)
+    
+    with narrative_col1:
+        st.success("🏆 **CLAIMANT'S WINNING NARRATIVE**")
+        st.markdown("### 'Preventable Due Diligence Failure'")
+        
+        st.markdown("**🎯 Core Argument:**")
+        st.write("""
+        This case represents basic professional negligence - Noksel failed to verify elementary vessel 
+        specifications before chartering, wasting an 11-month voyage that could have been prevented 
+        with a 5-minute regulation check.
+        """)
+        
+        st.markdown("**✅ Supporting Evidence:**")
+        st.write("• Futuna length restrictions: publicly available in maritime regulations")
+        st.write("• MV MESSILA specifications: known and discoverable pre-charter")
+        st.write("• Industry standard: charterer responsible for destination compliance verification")
+        st.write("• Professional duty breached: any competent charterer would have checked")
+        
+        st.markdown("**📖 Legal Strategy:**")
+        st.write("""
+        We delivered a vessel in good faith. Despite extraordinary repair costs, we attempted delivery. 
+        Engine problems are irrelevant - the vessel would have been rejected regardless due to Noksel's oversight.
+        """)
+        
+        st.markdown("**🎯 Closing Position:**")
+        st.write("""
+        Noksel wants to blame unforeseeable engine problems for their own foreseeable professional negligence. 
+        The vessel was rejected for basic specifications they should have verified on day one.
+        """)
+    
+    with narrative_col2:
+        st.error("🛡️ **RESPONDENT'S BEST DEFENSE**")
+        st.markdown("### 'Vessel Owner Misrepresentation & Force Majeure'")
+        
+        st.markdown("**🎯 Core Argument:**")
+        st.write("""
+        We were victims of vessel owner misrepresentation about seaworthiness and extraordinary 
+        circumstances beyond any party's reasonable control, including COVID-19 supply chain disruptions.
+        """)
+        
+        st.markdown("**⚠️ Supporting Evidence:**")
+        st.write("• Vessel history: multiple name changes suggest concealment patterns")
+        st.write("• Build records: contradictory construction data (Ukraine vs Netherlands)")
+        st.write("• Engine condition: award claims 'no problems' yet 4-month repairs needed")
+        st.write("• COVID-19: 2021 spare parts restrictions were genuinely unforeseeable")
+        
+        st.markdown("**📖 Legal Strategy:**")
+        st.write("""
+        If the vessel had been seaworthy as represented, we would have reached Futuna months earlier, 
+        before any regulatory changes. The real delay was caused by hidden vessel problems.
+        """)
+        
+        st.markdown("**🎯 Closing Position:**")
+        st.write("""
+        The suspicious timing of Futuna regulation enforcement (Nov 9 amendment, day before rejection) 
+        combined with vessel identity concealment patterns suggest this is vessel owner liability, 
+        not charterer negligence.
+        """)
+    
+    # Decision Framework - using native components
+    st.warning("🎯 **Tribunal Decision Framework**")
+    st.markdown("**Central Question:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
+    
+    # Legal Issues Analysis
+    st.markdown("### 📚 Key Legal Issues Analysis")
+    
+    legal_col1, legal_col2 = st.columns(2)
+    
+    with legal_col1:
+        st.markdown("#### ✅ Strong Legal Positions")
+        
+        strong_issues = [
+            ("Contract Performance", "Did Noksel breach delivery obligations?", "Claimant favored - clear failure to deliver"),
+            ("Vessel Suitability", "Was vessel appropriate for intended voyage?", "Claimant favored - met charter specifications"),
+            ("Due Diligence Standard", "Should length requirements have been verified?", "Claimant favored - industry standard practice")
+        ]
+        
+        for issue, question, assessment in strong_issues:
+            with st.expander(f"📋 {issue}"):
+                st.write(f"**Key Question:** {question}")
+                st.success(f"**Assessment:** {assessment}")
+    
+    with legal_col2:
+        st.markdown("#### ⚠️ Contested Legal Areas")
+        
+        contested_issues = [
+            ("Force Majeure Scope", "Do engine/COVID problems excuse performance?", "Respondent's strongest defense argument"),
+            ("Causation Analysis", "What was the proximate cause of demurrage?", "Complex timing and multiple contributing factors"),
+            ("Mitigation Duties", "Were damages properly mitigated?", "Mixed evidence on both sides")
+        ]
+        
+        for issue, question, assessment in contested_issues:
+            with st.expander(f"⚖️ {issue}"):
+                st.write(f"**Key Question:** {question}")
+                st.warning(f"**Assessment:** {assessment}")
+    
+    # Causation Chain Analysis
+    st.markdown("### ⚠️ Causation Chain Analysis")
+    
+    st.info("**Proximate Cause Test:** What was the 'but for' cause of demurrage?")
+    
+    causation_col1, causation_col2 = st.columns(2)
+    
+    with causation_col1:
+        st.success("""
+        **🏛️ Claimant's Causation Theory**
+        
+        Length non-compliance → Rejection → Demurrage
+        
+        *(Engine problems irrelevant to final outcome)*
+        """)
+    
+    with causation_col2:
+        st.error("""
+        **🏭 Respondent's Causation Theory**
+        
+        Engine failure → Delay → Late arrival → Rejection
+        
+        *(Timing was everything - early arrival = acceptance)*
+        """)
+    
+    st.warning("**🎯 Critical Legal Question:** Would vessel have been rejected even if it arrived on schedule?")
+    
+    # Evidence Strength Matrix
+    st.markdown("### 📊 Evidence Strength Analysis")
+    
+    evidence_col1, evidence_col2, evidence_col3 = st.columns(3)
+    
+    with evidence_col1:
+        st.success("**💪 STRONG EVIDENCE**")
+        st.write("• Arbitration award documentation")
+        st.write("• Vessel rejection records")
+        st.write("• Multiple vessel name changes")
+        st.write("• Contradictory build records")
+        st.write("• Demurrage calculation details")
+    
+    with evidence_col2:
+        st.warning("**⚖️ MEDIUM EVIDENCE**")
+        st.write("• Engine repair duration claims")
+        st.write("• COVID supply chain impacts")
+        st.write("• Regulatory timing issues")
+        st.write("• Industry practice standards")
+        st.write("• Mitigation effort documentation")
+    
+    with evidence_col3:
+        st.error("**❓ DISPUTED EVIDENCE**")
+        st.write("• Vessel owner knowledge claims")
+        st.write("• Regulation discoverability")
+        st.write("• Force majeure scope limits")
+        st.write("• Seaworthiness representations")
+        st.write("• Alternative port options")
+    
+    # Precedent Analysis
+    st.markdown("### ⚖️ Legal Precedent Analysis")
+    
+    precedent_col1, precedent_col2 = st.columns(2)
+    
+    with precedent_col1:
+        st.success("""
+        **✅ FAVORABLE PRECEDENTS**
+        
+        **The Seaflower [2001]:**
+        - Due diligence duty on charterers
+        - Verification of port specifications
+        
+        **Bulk Chile [2013]:**
+        - Vessel suitability standards
+        - Charterer responsibility for compliance
+        """)
+    
+    with precedent_col2:
+        st.error("""
+        **⚠️ ADVERSE PRECEDENTS**
+        
+        **Golden Victory [2007]:**
+        - Intervening events doctrine
+        - Causation complexity analysis
+        
+        **Edwinton [2021]:**
+        - COVID-19 force majeure recognition
+        - Unforeseeable circumstances
+        """)
+    
+    st.info("**🎯 Key Precedent Battle:** Due diligence standard vs. seaworthiness warranty focus")
+
+# TAB 3: STRATEGIC ASSESSMENT
+with tab3:
+    st.markdown("## 📊 Strategic Assessment")
+    
+    # Risk-Reward Analysis
+    assess_col1, assess_col2 = st.columns(2)
+    
+    with assess_col1:
+        st.markdown("### ⏰ Time-Decay Risk Analysis")
+        
+        risk_periods = [
+            ("Days 0-30 (PEAK)", "85%", "green", "Payment deadline pressure maximizes leverage"),
+            ("Days 30-90", "70%", "yellow", "Settlement urgency peak, asset hiding risk increases"),
+            ("Days 90-150", "55%", "orange", "Enforcement preparation phase, appeal monitoring"),
+            ("Days 150-180", "40%", "red", "Default triggers, enforcement becomes primary option")
+        ]
+        
+        for period, probability, color, description in risk_periods:
+            if color == "green":
+                st.success(f"**{period}**: {probability} recovery probability\n\n{description}")
+            elif color == "yellow":
+                st.warning(f"**{period}**: {probability} recovery probability\n\n{description}")
+            elif color == "orange":
+                st.info(f"**{period}**: {probability} recovery probability\n\n{description}")
+            else:
+                st.error(f"**{period}**: {probability} recovery probability\n\n{description}")
+        
+        st.info("**🎯 Optimal Action Window: Days 15-45** - Maximum leverage with manageable risk exposure")
+        
+        # Noksel Financial Intelligence
+        st.markdown("### 🏭 Noksel Financial Profile")
+        
+        st.warning("""
+        **⚠️ CREDIT RISK INDICATORS**
+        - Multiple same-day invoice patterns
+        - Extended payment terms requested
+        - Turkish manufacturing sector volatility
+        - Economic uncertainty factors
+        """)
+        
+        st.info("""
+        **🔍 ASSET INTELLIGENCE GAPS**
+        - Corporate structure: Unknown subsidiaries
+        - International holdings: Unclear portfolio
+        - Bank account locations: Investigation needed
+        - Asset hiding potential: Moderate risk
+        """)
+        
+        st.error("""
+        **🚨 COLLECTION RISK FACTORS**
+        - Cross-border enforcement challenges
+        - Turkish legal system complexities
+        - Currency volatility exposure
+        - Political risk considerations
+        """)
+    
+    with assess_col2:
+        st.markdown("### 💰 Recovery Scenario Analysis")
+        
+        # Recovery scenarios chart
+        scenarios_data = {
+            "Scenario": ["Best Case", "Most Likely", "Conservative", "Worst Case"],
+            "Probability": ["10%", "60%", "25%", "5%"],
+            "Recovery Amount": ["$40,000+", "$28,000", "$20,000", "$10,000"],
+            "Recovery %": ["100%+", "75%", "55%", "25%"],
+            "Timeline": ["30 days", "45 days", "90 days", "180+ days"]
+        }
+        
+        scenarios_df = pd.DataFrame(scenarios_data)
+        st.dataframe(scenarios_df, use_container_width=True, hide_index=True)
+        
+        st.markdown("### 📈 Expected Value Calculation")
+        st.metric(
+            label="Weighted Expected Recovery",
+            value="$28,150",
+            delta="75% of total award"
+        )
+        
+        # Settlement vs Litigation Analysis
+        st.markdown("### 🤝 Settlement vs. Litigation")
+        
+        settlement_factors = [
+            "✅ Payment arrangement already established",
+            "✅ Turkish enforcement challenges",
+            "✅ Ongoing business relationship preservation",
+            "✅ Cost certainty and speed",
+            "✅ 70% settlement probability"
+        ]
+        
+        litigation_factors = [
+            "⚠️ Strong precedent value potential",
+            "⚠️ Clear liability case facts",
+            "⚠️ Vessel credibility issues",
+            "⚠️ Full recovery possibility",
+            "⚠️ Higher cost and time risk"
+        ]
+        
+        settle_col, litigate_col = st.columns(2)
+        
+        with settle_col:
+            st.success("**SETTLEMENT ADVANTAGES**")
+            for factor in settlement_factors:
+                st.write(factor)
+        
+        with litigate_col:
+            st.warning("**LITIGATION CONSIDERATIONS**")
+            for factor in litigation_factors:
+                st.write(factor)
+    
+    # Expert Witness Strategy
+    st.markdown("### 👨‍💼 Expert Witness Requirements")
+    
+    expert_col1, expert_col2, expert_col3 = st.columns(3)
+    
+    with expert_col1:
+        st.info("""
+        **🚢 MARITIME EXPERTS**
+        - Vessel surveyor for condition assessment
+        - Marine engineer for engine failure analysis
+        - Charter party specialist for contract interpretation
+        """)
+    
+    with expert_col2:
+        st.info("""
+        **📋 REGULATORY EXPERTS**
+        - Pacific maritime law specialist
+        - Port authority requirements expert
+        - International shipping compliance advisor
+        """)
+    
+    with expert_col3:
+        st.info("""
+        **💼 INDUSTRY EXPERTS**
+        - Steel transportation specialist
+        - Due diligence standard authority
+        - COVID-19 maritime impact analyst
+        """)
+
+# TAB 4: ACTION PLAN
+with tab4:
+    st.markdown("## 🎯 Strategic Action Plan")
+    
+    # Executive Dashboard - using native Streamlit components
+    st.markdown("## 🎯 EXECUTIVE DECISION DASHBOARD")
+    
+    # Create 4 columns for the dashboard metrics
+    dash_col1, dash_col2, dash_col3, dash_col4 = st.columns(4)
+    
+    with dash_col1:
+        st.success("**GO/NO-GO DECISION**")
+        st.markdown("### ✅ PURSUE SETTLEMENT")
+    
+    with dash_col2:
+        st.info("**OPTIMAL TIMING**")
+        st.markdown("### ⏰ 15-30 DAYS")
+    
+    with dash_col3:
+        st.warning("**BUDGET ALLOCATION**")
+        st.markdown("### 💰 $15K COSTS")
+    
+    with dash_col4:
+        st.error("**RECOVERY TARGET**")
+        st.markdown("### 🎯 65% ($25K+)")
+    
+    # Next action section
+    st.markdown("---")
+    st.success("### 🚀 IMMEDIATE NEXT ACTION: Commission LMAA Mediation Process")
+    
+    # Detailed Action Steps
+    st.markdown("### 📋 30-Day Action Timeline")
+    
+    action_col1, action_col2 = st.columns(2)
+    
+    with action_col1:
+        st.markdown("#### 🚀 IMMEDIATE ACTIONS (Days 1-7)")
+        
+        immediate_actions = [
+            ("Day 1", "📞 Contact LMAA for mediation scheduling", "Critical"),
+            ("Day 2", "🔍 Commission asset investigation on Noksel", "High"),
+            ("Day 3", "📋 Prepare settlement demand letter", "High"),
+            ("Day 5", "👨‍💼 Engage maritime law specialist", "Medium"),
+            ("Day 7", "📊 Complete financial exposure analysis", "Medium")
+        ]
+        
+        for day, action, priority in immediate_actions:
+            if priority == "Critical":
+                st.error(f"**{day}**: {action}")
+            elif priority == "High":
+                st.warning(f"**{day}**: {action}")
+            else:
+                st.info(f"**{day}**: {action}")
+    
+    with action_col2:
+        st.markdown("#### ⚖️ STRATEGIC ACTIONS (Days 8-30)")
+        
+        strategic_actions = [
+            ("Days 8-10", "🤝 Initiate preliminary settlement discussions", "Critical"),
+            ("Days 11-15", "📄 Exchange position papers and evidence", "High"),
+            ("Days 16-20", "🎯 Conduct formal mediation sessions", "Critical"),
+            ("Days 21-25", "💰 Negotiate final settlement terms", "High"),
+            ("Days 26-30", "✅ Execute settlement agreement", "Critical")
+        ]
+        
+        for day, action, priority in strategic_actions:
+            if priority == "Critical":
+                st.error(f"**{day}**: {action}")
+            elif priority == "High":
+                st.warning(f"**{day}**: {action}")
+            else:
+                st.info(f"**{day}**: {action}")
+    
+    # Risk Mitigation
+    st.markdown("### 🛡️ Risk Mitigation Strategies")
+    
+    risk_col1, risk_col2, risk_col3 = st.columns(3)
+    
+    with risk_col1:
+        st.markdown("""
+        **🏦 FINANCIAL RISKS**
+        - Monitor Noksel's financial stability
+        - Secure payment guarantees
+        - Consider partial payment structures
+        - Prepare enforcement alternatives
+        """)
+    
+    with risk_col2:
+        st.markdown("""
+        **⚖️ LEGAL RISKS**
+        - Document all settlement negotiations
+        - Preserve enforcement rights
+        - Monitor appeal deadlines
+        - Maintain evidence integrity
+        """)
+    
+    with risk_col3:
+        st.markdown("""
+        **⏰ TIMING RISKS**
+        - Avoid deadline pressures
+        - Maintain negotiation momentum
+        - Prepare litigation backup
+        - Monitor regulatory changes
+        """)
+    
+    # Success Metrics
+    st.markdown("### 📊 Success Metrics & KPIs")
+    
+    metrics_data = {
+        "Metric": [
+            "Settlement Achievement",
+            "Recovery Percentage", 
+            "Timeline Adherence",
+            "Cost Management",
+            "Client Satisfaction"
+        ],
+        "Target": [
+            "Negotiated settlement",
+            "65% of total award",
+            "Within 45 days",
+            "Under $15K costs",
+            "Exceeded expectations"
+        ],
+        "Current Status": [
+            "Planning phase",
+            "TBD",
+            "On track",
+            "Budget allocated", 
+            "High confidence"
+        ],
+        "Risk Level": [
+            "Low",
+            "Medium",
+            "Low",
+            "Low",
+            "Low"
+        ]
+    }
+    
+    metrics_df = pd.DataFrame(metrics_data)
+    st.dataframe(metrics_df, use_container_width=True, hide_index=True)
 
 # FOOTER
 st.markdown("---")
@@ -478,12 +702,12 @@ st.markdown("---")
 footer_col1, footer_col2, footer_col3 = st.columns(3)
 
 with footer_col1:
-    st.markdown(f"""
+    st.markdown("""
     **📊 Dashboard Status**  
-    Last Updated: {datetime.now().strftime("%Y-%m-%d %H:%M")}  
-    Status: Active Decision Phase  
-    Confidence: High
-    """)
+    Last Updated: {date}  
+    Status: Active Enforcement  
+    Version: 2.1
+    """.format(date=datetime.now().strftime("%Y-%m-%d %H:%M")))
 
 with footer_col2:
     st.markdown("""
@@ -495,8 +719,8 @@ with footer_col2:
 
 with footer_col3:
     st.markdown("""
-    **🎯 Next Steps**  
-    Priority: Immediate Action  
-    Window: 15-day optimal  
-    Contact: LMAA Mediation
+    **🎯 Strategic Priority**  
+    Action Status: Immediate  
+    Risk Level: Manageable  
+    Success Probability: High
     """)

@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import datetime as dt
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Page configuration
 st.set_page_config(
@@ -122,29 +120,17 @@ if user_role == "Executive (need decision)":
     with col1:
         st.markdown("#### 📊 Success Probability")
         prob_data = pd.DataFrame({
-            'Outcome': ['Settlement Success', 'Litigation Win', 'Collection Risk', 'Appeal Risk'],
-            'Probability': [0.85, 0.75, 0.35, 0.15],
-            'Impact': ['Medium', 'High', 'High', 'Medium']
-        })
-        fig = px.bar(prob_data, x='Outcome', y='Probability', 
-                    color='Impact', color_discrete_map={'Medium': '#fbbf24', 'High': '#ef4444'})
-        fig.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+            'Probability': [0.85, 0.75, 0.35, 0.15]
+        }, index=['Settlement Success', 'Litigation Win', 'Collection Risk', 'Appeal Risk'])
+        st.bar_chart(prob_data)
     
     with col2:
         st.markdown("#### ⏱️ Time vs Recovery")
         timeline_data = pd.DataFrame({
-            'Days': [30, 60, 90, 180, 365],
             'Settlement %': [85, 75, 65, 50, 30],
             'Litigation %': [20, 35, 45, 65, 75]
-        })
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=timeline_data['Days'], y=timeline_data['Settlement %'], 
-                               name='Settlement', line=dict(color='#10b981', width=3)))
-        fig.add_trace(go.Scatter(x=timeline_data['Days'], y=timeline_data['Litigation %'], 
-                               name='Litigation', line=dict(color='#ef4444', width=3)))
-        fig.update_layout(height=300, xaxis_title="Days", yaxis_title="Recovery Probability %")
-        st.plotly_chart(fig, use_container_width=True)
+        }, index=[30, 60, 90, 180, 365])
+        st.line_chart(timeline_data)
     
     # Executive-level risks only
     st.markdown("#### ⚠️ Key Risks to Monitor")
@@ -269,16 +255,20 @@ else:  # Risk Manager
     risk_tab1, risk_tab2 = st.tabs(["🎯 Risk Matrix", "📊 Risk Timeline"])
     
     with risk_tab1:
-        # Risk heat map
+        # Risk assessment table
         risks_data = pd.DataFrame({
             'Risk': ['Asset Flight', 'Non-Payment', 'Enforcement Failure', 'Appeal Filed', 'Countersuit'],
-            'Probability': [0.4, 0.3, 0.25, 0.2, 0.15],
-            'Impact': [0.8, 0.9, 0.7, 0.6, 0.4],
-            'Risk Score': [0.32, 0.27, 0.175, 0.12, 0.06]
+            'Probability': ['40%', '30%', '25%', '20%', '15%'],
+            'Impact': ['High', 'Critical', 'High', 'Medium', 'Low'],
+            'Priority': ['🔴 Critical', '🔴 Critical', '🟡 High', '🟡 High', '🟢 Medium']
         })
-        fig = px.scatter(risks_data, x='Probability', y='Impact', size='Risk Score', 
-                        hover_name='Risk', title="Risk Assessment Matrix")
-        st.plotly_chart(fig, use_container_width=True)
+        st.dataframe(risks_data, hide_index=True, use_container_width=True)
+        
+        # Risk score chart
+        risk_scores = pd.DataFrame({
+            'Risk Score': [0.32, 0.27, 0.175, 0.12, 0.06]
+        }, index=['Asset Flight', 'Non-Payment', 'Enforcement Failure', 'Appeal Filed', 'Countersuit'])
+        st.bar_chart(risk_scores)
     
     with risk_tab2:
         st.markdown("#### Risk Evolution Over Time")

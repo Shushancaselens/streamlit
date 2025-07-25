@@ -1,767 +1,450 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
+import time
+import random
 
 # Page configuration
 st.set_page_config(
-    page_title="MESSILA Dispute Analysis",
+    page_title="Caselens - Legal Research Platform",
     page_icon="⚖️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS for basic styling
+# Initialize session state
+if 'search_history' not in st.session_state:
+    st.session_state.search_history = []
+if 'bookmarked_cases' not in st.session_state:
+    st.session_state.bookmarked_cases = {}  # Changed to dict to store notes
+if 'current_case' not in st.session_state:
+    st.session_state.current_case = None
+
+# Sample case database
+CASES_DATABASE = [
+    {
+        "id": "CAS_2013_A_3165",
+        "title": "CAS 2013/A/3165",
+        "date": "2014-01-14",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "FC Volyn",
+        "respondents": "Issa Ndoye",
+        "president": "Petros Mavroidis",
+        "arbitrator1": "Geraint Jones",
+        "arbitrator2": "Raymond Hack",
+        "summary": "The case involves a contractual dispute between FC Volyn, a Ukrainian football club, and Issa Ndoye, a Senegalese footballer. Ndoye terminated his employment with FC Volyn in June 2011, claiming unpaid salary and contract breach, subsequently bringing a claim before FIFA's Dispute Resolution Chamber (DRC), which ruled in his favor, ordering the club to pay outstanding remuneration and compensation. FC Volyn appealed to the CAS, arguing that Ndoye had no just cause due to his alleged breaches (mainly late returns to training), while Ndoye countered that non-payment constituted just cause and sought increased compensation. Both parties debated applicable law and timing of appeals/counterclaims.",
+        "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Ndoye's salary for over three months was a substantial breach, constituting just cause for contract termination. Alleged late returns by Ndoye did not nullify this breach, and there was no evidence he agreed to delay payment. Counterclaims by respondents were inadmissible per CAS procedural rules. The compensation set by the FIFA DRC was appropriate.",
+        "case_outcome": "The appeal by FC Volyn was dismissed and the FIFA DRC's decision was upheld: FC Volyn must pay Ndoye USD 299,200 in outstanding remuneration and USD 495,000 as compensation. Ndoye's counterclaim for additional damages was ruled inadmissible, and all other requests were dismissed. The panel confirmed that the time limit for appeal had been respected and that FIFA regulations (with Swiss law supplementary) applied.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
+                "full_context": "Page 15 - 77. The concept of just cause has been extensively developed through CAS jurisprudence and FIFA regulations. The FIFA Regulations on the Status and Transfer of Players (RSTP) provide the foundational framework for determining when a party may terminate a contract.\n\nPage 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case. Behaviour that is in violation of the terms of an employment contract cannot justify unilateral termination by the other party if such behaviour is of minor importance.'\n\nPage 15 - 79. Furthermore, the Commentary emphasizes that just cause must be of such gravity that the injured party cannot reasonably be expected to continue the employment relationship. This standard has been consistently applied by CAS panels in determining whether contract termination was justified."
+            },
+            {
+                "excerpt": "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
+                "full_context": "Page 22 - 88. The obligation to pay salary is a fundamental contractual duty in employment relationships. When an employer fails to meet this basic obligation, it strikes at the heart of the employment contract.\n\nPage 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract. The CAS has consistently held that when salary payments are delayed for a period exceeding two to three months, this constitutes a substantial breach sufficient to justify termination.\n\nPage 22 - 90. However, the employee must demonstrate that they have given the employer reasonable opportunity to remedy the breach and that the non-payment was not justified by any countervailing circumstances or legitimate disputes over the amount owed."
+            },
+            {
+                "excerpt": "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship.",
+                "full_context": "Page 31 - 104. In assessing whether just cause exists, CAS panels must weigh all relevant circumstances, including the nature and severity of the breach, the conduct of both parties, and the overall context of the contractual relationship.\n\nPage 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship. This objective test requires careful analysis of whether a reasonable person in the same position would consider the breach sufficiently serious to warrant termination.\n\nPage 31 - 106. The Panel notes that minor infractions, isolated incidents, or breaches that can be readily remedied do not typically constitute just cause. The breach must fundamentally undermine the basis of the contractual relationship and make continued performance unreasonable or impossible."
+            }
+        ],
+        "similarity_score": 0.87
+    },
+    {
+        "id": "CAS_2020_A_7242",
+        "title": "CAS 2020/A/7242",
+        "date": "2021-11-23",
+        "procedure": "Appeal Arbitration Procedure",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Partially upheld",
+        "sport": "Football",
+        "appellants": "Al Wahda FSC Company",
+        "respondents": "Mourad Batna, Al Jazira FSC",
+        "president": "Mr Mark Hovell",
+        "arbitrator1": "Prof. Luigi Fumagalli",
+        "arbitrator2": "Mr Manfred Nan",
+        "summary": "Contractual dispute involving player Mourad Batna's transfer and termination. Al Wahda challenged the DRC decision regarding just cause for contract termination and compensation amounts.",
+        "court_reasoning": "The panel analyzed whether the player had just cause to terminate his contract with Al Wahda. The court found that systematic non-payment of salaries constituted a fundamental breach of contract, giving the player just cause for termination.",
+        "case_outcome": "The appeal was partially upheld. Al Wahda was ordered to pay outstanding compensation, but the amount was reduced from the original DRC decision.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 21 - i. The existence of just cause",
+                "full_context": "Page 21 - The Panel must determine whether the player had just cause to terminate his employment contract. Just cause exists when there is a breach of contract of such gravity that the injured party cannot reasonably be expected to continue the contractual relationship."
+            }
+        ],
+        "similarity_score": 0.82
+    },
+    {
+        "id": "CAS_2022_A_8836",
+        "title": "CAS 2022/A/8836",
+        "date": "2023-05-08",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "Samsunspor",
+        "respondents": "Brice Dja Djedje",
+        "president": "Mr Philippe Sands",
+        "arbitrator1": "Prof. Martin Schimke",
+        "arbitrator2": "Mr José Juan Pintó",
+        "summary": "Dispute over contract termination between Turkish club Samsunspor and player Brice Dja Djedje regarding unpaid wages and just cause for termination.",
+        "court_reasoning": "The Panel found that persistent non-payment of salaries over several months constituted just cause for the player to terminate his contract. The club's arguments regarding financial difficulties were not sufficient to excuse the breach.",
+        "case_outcome": "Appeal dismissed. The club was ordered to pay outstanding salaries and compensation to the player.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 18 - 67. Non-payment of salary for more than two months constitutes just cause",
+                "full_context": "Page 18 - 67. The established CAS jurisprudence clearly states that non-payment of salary for more than two months constitutes just cause for contract termination, unless there are exceptional circumstances that would justify the delay in payment."
+            }
+        ],
+        "similarity_score": 0.79
+    },
+    {
+        "id": "CAS_2023_A_9444",
+        "title": "CAS 2023/A/9444",
+        "date": "2023-10-27",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "U Craiova 1948",
+        "respondents": "Marko Gajic",
+        "president": "Prof. Ulrich Haas",
+        "arbitrator1": "Mr Manfred Nan",
+        "arbitrator2": "Dr. Despina Mavromati",
+        "summary": "Contract termination case involving player Marko Gajic and Romanian club U Craiova 1948. The dispute centered on whether the player had just cause to terminate due to unpaid wages.",
+        "court_reasoning": "The Panel determined that the club's failure to pay salaries for an extended period constituted a material breach of contract, providing just cause for the player's termination.",
+        "case_outcome": "The appeal was dismissed. The club was required to pay outstanding remuneration and compensation to the player.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 25 - 89. Just cause requires objective assessment of breach severity",
+                "full_context": "Page 25 - 89. Just cause requires objective assessment of breach severity. The Panel must determine whether a reasonable person in the player's position would consider the breach sufficiently serious to warrant contract termination."
+            }
+        ],
+        "similarity_score": 0.75
+    },
+    {
+        "id": "CAS_2022_A_9165",
+        "title": "CAS 2022/A/9165",
+        "date": "2023-09-05",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Partially upheld",
+        "sport": "Football",
+        "appellants": "BGPU-BG Pathum United FC",
+        "respondents": "Daniel Garcia Carrillo",
+        "president": "Prof. Luigi Fumagalli",
+        "arbitrator1": "Mr José Juan Pintó",
+        "arbitrator2": "Dr. Despina Mavromati",
+        "summary": "Contractual dispute between Thai club BGPU-BG Pathum United FC and Spanish player Daniel Garcia Carrillo regarding contract termination and compensation.",
+        "court_reasoning": "The Panel analyzed whether systematic delays in salary payment constituted just cause for termination. The court found that while delays occurred, they did not reach the threshold for just cause.",
+        "case_outcome": "The appeal was partially upheld. The compensation amount was adjusted, but the club was still required to pay outstanding wages.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 19 - 72. Delay in payment must be substantial to constitute just cause",
+                "full_context": "Page 19 - 72. Delay in payment must be substantial to constitute just cause. Minor delays or isolated incidents of late payment do not typically provide grounds for contract termination, unless they form part of a pattern of persistent non-payment."
+            }
+        ],
+        "similarity_score": 0.73
+    }
+]
+
+# Custom CSS
 st.markdown("""
 <style>
-    .metric-container {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
+    .main-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .logo-icon {
+        background-color: #4f46e5;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .question-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        text-align: center;
+        padding: 16px;
+        margin: 16px 0;
     }
     
-    .main {
-        padding-top: 1rem;
-    }
-    
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 2rem;
+    .sidebar-section {
+        margin-bottom: 25px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER SECTION - Better balanced layout
-st.markdown("# ⚖️ MV MESSILA DEMURRAGE DISPUTE")
-st.markdown("## Legal Brief & Strategic Analysis")
+def search_cases(query, max_results=20, similarity_threshold=0.5):
+    """Simulate case search with relevant results"""
+    relevant_cases = []
+    for case in CASES_DATABASE:
+        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
+            if case['similarity_score'] >= similarity_threshold:
+                relevant_cases.append(case)
+    
+    return relevant_cases[:max_results]
 
-# Create a more balanced header layout
-header_col1, header_col2, header_col3 = st.columns([2, 1, 1])
-
-with header_col1:
+# Sidebar Navigation
+with st.sidebar:
+    # Logo
     st.markdown("""
-    **Case:** Transasya v. Noksel Çelik Boru Sanayi A.Ş.  
-    **Arbitrator:** John Schofield  
-    **Award Date:** March 19, 2023  
-    **Payment Due:** March 19, 2025
-    """)
-
-with header_col2:
-    st.metric(
-        label="💰 Total Award",
-        value="$37,317.71",
-        delta="+ $3K fees + 5% interest"
-    )
-
-with header_col3:
-    st.error("⏰ **180 days to payment**")
-    st.success("🎯 **Recommended:** Settlement")
-
-# CRITICAL DECISION BOX - High priority info
-st.markdown("---")
-decision_col1, decision_col2, decision_col3 = st.columns(3)
-
-with decision_col1:
-    st.error("🚨 **URGENT ACTION REQUIRED**")
-    st.write("Settlement window closing")
-
-with decision_col2:
-    st.success("✅ **GO/NO-GO: SETTLE**")
-    st.write("65% recovery target achievable")
-
-with decision_col3:
-    st.warning("⏰ **TIMELINE: 15-30 DAYS**")
-    st.write("Optimal leverage window")
-
-# EXECUTIVE SUMMARY - Reorganized for better scanning
-st.markdown("## 📊 EXECUTIVE SUMMARY")
-
-# Key metrics in a more logical order
-summary_col1, summary_col2, summary_col3, summary_col4 = st.columns(4)
-
-with summary_col1:
-    st.metric(
-        label="🎯 Recommended Strategy",
-        value="Settlement",
-        delta="Immediate action"
-    )
-
-with summary_col2:
-    st.metric(
-        label="💰 Expected Recovery", 
-        value="$25,000+",
-        delta="65% of award"
-    )
-
-with summary_col3:
-    st.metric(
-        label="⏱️ Critical Window",
-        value="15-30 days",
-        delta="Peak leverage"
-    )
-
-with summary_col4:
-    st.metric(
-        label="📈 Success Probability",
-        value="70%",
-        delta="Settlement track"
-    )
-
-# QUICK NAVIGATION - Moved up for better UX
-st.markdown("---")
-st.markdown("### 📋 Detailed Analysis")
-
-# Main content tabs - moved up in hierarchy
-tab1, tab2, tab3, tab4 = st.tabs(["📋 Case Overview", "⚖️ Legal Analysis", "📊 Strategic Assessment", "🎯 Action Plan"])
-
-# TAB 1: CASE OVERVIEW
-with tab1:
-    # Quick Reference Card
-    st.markdown("### 🔍 Case Quick Reference")
+    <div class="main-header">
+        <span class="logo-icon">C</span>
+        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
-    ref_col1, ref_col2 = st.columns([2, 1])
-    
-    with ref_col1:
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            # Case Summary using native Streamlit components
-            st.markdown("#### 📋 Case Summary")
-            
-            # Use info box for better compatibility
-            st.info("""
-            **Turkish steel supplier Noksel Çelik Boru Sanayi A.Ş.** chartered MV MESSILA to deliver steel pipes 
-            to the remote French Pacific island of Futuna for a dock construction project.
-            
-            After a catastrophic engine breakdown requiring 4 months of repairs and subsequent regulatory rejection 
-            at the destination port, the cargo was ultimately discharged in Fiji, triggering significant demurrage costs.
-            """)
-            
-            # Case details in a simple container
-            st.markdown("**Case Details:**")
-            case_details_col1, case_details_col2 = st.columns(2)
-            
-            with case_details_col1:
-                st.write("🏛️ **Claimant:** Transasya (Vessel Owners)")
-                st.write("⚖️ **Core Dispute:** Liability for vessel failure costs")
-            
-            with case_details_col2:
-                st.write("🏭 **Respondent:** Noksel (Turkish Steel Supplier)")
-                st.write("📜 **Current Status:** Award issued, enforcement pending")
-            
-            # Key Parties and Roles
-            st.markdown("#### 👥 Key Parties & Roles")
-            
-            parties_data = {
-                "Party": ["Transasya", "Noksel Çelik Boru", "MV MESSILA", "John Schofield"],
-                "Role": ["Vessel Owner/Claimant", "Steel Supplier/Respondent", "Chartered Vessel", "Arbitrator"],
-                "Key Interest": ["Demurrage Recovery", "Cost Avoidance", "Asset at Risk", "Fair Resolution"],
-                "Strength": ["Strong legal position", "Force majeure defense", "Operational evidence", "Industry expertise"]
-            }
-            
-            parties_df = pd.DataFrame(parties_data)
-            st.dataframe(parties_df, use_container_width=True, hide_index=True)
-        
-        with col2:
-            st.markdown("#### 🕐 Critical Timeline")
-            
-            timeline_events = [
-                ("Feb 4, 2020", "📄 Supply contract signed", "Contract formation", "normal"),
-                ("Nov 12, 2020", "🚢 MV MESSILA chartered", "Vessel engagement", "normal"),
-                ("Dec 1-3, 2020", "📦 Cargo loaded in Turkey", "Voyage commencement", "normal"),
-                ("May 25, 2021", "⚠️ ENGINE BREAKDOWN", "Critical mechanical failure", "critical"),
-                ("Jun-Oct 2021", "🔧 4-MONTH REPAIR PERIOD", "Extended downtime", "critical"),
-                ("Nov 10, 2021", "❌ REJECTED at Futuna", "Regulatory non-compliance", "critical"),
-                ("Nov 23, 2021", "💰 DEMURRAGE COMMENCES", "Cost accumulation begins", "critical"),
-                ("Mar 19, 2023", "⚖️ Arbitration award issued", "Legal resolution", "award")
-            ]
-            
-            for i, (date, event, description, event_type) in enumerate(timeline_events):
-                # Use containers with color coding
-                if event_type == "critical":
-                    with st.container():
-                        st.error(f"**{date}**")
-                        st.write(f"{event}")
-                        st.caption(description)
-                elif event_type == "award":
-                    with st.container():
-                        st.success(f"**{date}**")
-                        st.write(f"{event}")
-                        st.caption(description)
-                else:
-                    with st.container():
-                        st.info(f"**{date}**")
-                        st.write(f"{event}")
-                        st.caption(description)
-    
-    with ref_col2:
-        # Risk Assessment Card
-        st.markdown("#### ⚠️ Risk Assessment")
-        
-        st.error("**HIGH PRIORITY RISKS**")
-        st.write("• Asset hiding potential")
-        st.write("• Time decay on leverage")
-        st.write("• Turkish enforcement complexity")
-        st.write("• Currency volatility")
-        
-        st.warning("**MEDIUM RISKS**")
-        st.write("• Force majeure arguments")
-        st.write("• COVID precedent impacts")
-        st.write("• Regulatory timing disputes")
-        
-        st.success("**STRENGTHS**")
-        st.write("• Clear arbitration award")
-        st.write("• Strong due diligence case")
-        st.write("• Vessel credibility issues")
-        st.write("• Industry practice support")
-        
-        # Financial Snapshot
-        st.markdown("#### 💰 Financial Snapshot")
-        
-        financial_snapshot = {
-            "Item": ["Base Award", "Fees", "Interest", "Legal Costs", "Total Risk"],
-            "Amount": ["$37,318", "$3,000", "$1,866", "$15,000", "$57,184"],
-            "Status": ["✅ Secured", "✅ Secured", "🔄 Accruing", "💸 Estimated", "⚠️ Maximum"]
-        }
-        
-        snapshot_df = pd.DataFrame(financial_snapshot)
-        st.dataframe(snapshot_df, use_container_width=True, hide_index=True)
-        
-        # Financial Impact
-        st.markdown("### 💰 Financial Impact Breakdown")
-        
-        financial_data = {
-            "Component": ["Base Demurrage", "Additional Fees", "Interest (5%)", "Legal Costs", "Enforcement Costs", "Total Exposure"],
-            "Amount ($)": [37317.71, 3000.00, 1865.89, 15000.00, 8000.00, 65183.60],
-            "Status": ["Awarded", "Awarded", "Accruing", "Estimated", "Potential", "Maximum Risk"],
-            "Recovery Probability": ["85%", "85%", "70%", "N/A", "50%", "75%"]
-        }
-        
-        financial_df = pd.DataFrame(financial_data)
-        st.dataframe(financial_df, use_container_width=True, hide_index=True)
-        
-        # Cost-Benefit Analysis
-        st.markdown("### 📊 Cost-Benefit Decision Matrix")
-        
-        cb_col1, cb_col2 = st.columns(2)
-        
-        with cb_col1:
-            st.success("""
-            **💰 SETTLEMENT BENEFITS**
-            - Guaranteed recovery: $25K+ (65%+)
-            - Speed: 30-45 days to resolution
-            - Cost control: $10-15K total expenses
-            - Relationship preservation
-            - Payment certainty
-            """)
-        
-        with cb_col2:
-            st.warning("""
-            **⚖️ LITIGATION COSTS**
-            - Extended timeline: 12-18 months
-            - Higher costs: $25-40K expenses
-            - Uncertain outcome despite strong case
-            - Enforcement challenges in Turkey
-            - Relationship damage potential
-            """)
-
-# TAB 2: LEGAL ANALYSIS
-with tab2:
-    # Competing Legal Narratives
-    st.markdown("## ⚖️ Competing Legal Narratives")
-    
-    narrative_col1, narrative_col2 = st.columns(2)
-    
-    with narrative_col1:
-        st.success("🏆 **CLAIMANT'S WINNING NARRATIVE**")
-        st.markdown("### 'Preventable Due Diligence Failure'")
-        
-        st.markdown("**🎯 Core Argument:**")
-        st.write("""
-        This case represents basic professional negligence - Noksel failed to verify elementary vessel 
-        specifications before chartering, wasting an 11-month voyage that could have been prevented 
-        with a 5-minute regulation check.
-        """)
-        
-        st.markdown("**✅ Supporting Evidence:**")
-        st.write("• Futuna length restrictions: publicly available in maritime regulations")
-        st.write("• MV MESSILA specifications: known and discoverable pre-charter")
-        st.write("• Industry standard: charterer responsible for destination compliance verification")
-        st.write("• Professional duty breached: any competent charterer would have checked")
-        
-        st.markdown("**📖 Legal Strategy:**")
-        st.write("""
-        We delivered a vessel in good faith. Despite extraordinary repair costs, we attempted delivery. 
-        Engine problems are irrelevant - the vessel would have been rejected regardless due to Noksel's oversight.
-        """)
-        
-        st.markdown("**🎯 Closing Position:**")
-        st.write("""
-        Noksel wants to blame unforeseeable engine problems for their own foreseeable professional negligence. 
-        The vessel was rejected for basic specifications they should have verified on day one.
-        """)
-    
-    with narrative_col2:
-        st.error("🛡️ **RESPONDENT'S BEST DEFENSE**")
-        st.markdown("### 'Vessel Owner Misrepresentation & Force Majeure'")
-        
-        st.markdown("**🎯 Core Argument:**")
-        st.write("""
-        We were victims of vessel owner misrepresentation about seaworthiness and extraordinary 
-        circumstances beyond any party's reasonable control, including COVID-19 supply chain disruptions.
-        """)
-        
-        st.markdown("**⚠️ Supporting Evidence:**")
-        st.write("• Vessel history: multiple name changes suggest concealment patterns")
-        st.write("• Build records: contradictory construction data (Ukraine vs Netherlands)")
-        st.write("• Engine condition: award claims 'no problems' yet 4-month repairs needed")
-        st.write("• COVID-19: 2021 spare parts restrictions were genuinely unforeseeable")
-        
-        st.markdown("**📖 Legal Strategy:**")
-        st.write("""
-        If the vessel had been seaworthy as represented, we would have reached Futuna months earlier, 
-        before any regulatory changes. The real delay was caused by hidden vessel problems.
-        """)
-        
-        st.markdown("**🎯 Closing Position:**")
-        st.write("""
-        The suspicious timing of Futuna regulation enforcement (Nov 9 amendment, day before rejection) 
-        combined with vessel identity concealment patterns suggest this is vessel owner liability, 
-        not charterer negligence.
-        """)
-    
-    # Decision Framework - using native components
-    st.warning("🎯 **Tribunal Decision Framework**")
-    st.markdown("**Central Question:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
-    
-    # Legal Issues Analysis
-    st.markdown("### 📚 Key Legal Issues Analysis")
-    
-    legal_col1, legal_col2 = st.columns(2)
-    
-    with legal_col1:
-        st.markdown("#### ✅ Strong Legal Positions")
-        
-        strong_issues = [
-            ("Contract Performance", "Did Noksel breach delivery obligations?", "Claimant favored - clear failure to deliver"),
-            ("Vessel Suitability", "Was vessel appropriate for intended voyage?", "Claimant favored - met charter specifications"),
-            ("Due Diligence Standard", "Should length requirements have been verified?", "Claimant favored - industry standard practice")
-        ]
-        
-        for issue, question, assessment in strong_issues:
-            with st.expander(f"📋 {issue}"):
-                st.write(f"**Key Question:** {question}")
-                st.success(f"**Assessment:** {assessment}")
-    
-    with legal_col2:
-        st.markdown("#### ⚠️ Contested Legal Areas")
-        
-        contested_issues = [
-            ("Force Majeure Scope", "Do engine/COVID problems excuse performance?", "Respondent's strongest defense argument"),
-            ("Causation Analysis", "What was the proximate cause of demurrage?", "Complex timing and multiple contributing factors"),
-            ("Mitigation Duties", "Were damages properly mitigated?", "Mixed evidence on both sides")
-        ]
-        
-        for issue, question, assessment in contested_issues:
-            with st.expander(f"⚖️ {issue}"):
-                st.write(f"**Key Question:** {question}")
-                st.warning(f"**Assessment:** {assessment}")
-    
-    # Causation Chain Analysis
-    st.markdown("### ⚠️ Causation Chain Analysis")
-    
-    st.info("**Proximate Cause Test:** What was the 'but for' cause of demurrage?")
-    
-    causation_col1, causation_col2 = st.columns(2)
-    
-    with causation_col1:
-        st.success("""
-        **🏛️ Claimant's Causation Theory**
-        
-        Length non-compliance → Rejection → Demurrage
-        
-        *(Engine problems irrelevant to final outcome)*
-        """)
-    
-    with causation_col2:
-        st.error("""
-        **🏭 Respondent's Causation Theory**
-        
-        Engine failure → Delay → Late arrival → Rejection
-        
-        *(Timing was everything - early arrival = acceptance)*
-        """)
-    
-    st.warning("**🎯 Critical Legal Question:** Would vessel have been rejected even if it arrived on schedule?")
-    
-    # Evidence Strength Matrix
-    st.markdown("### 📊 Evidence Strength Analysis")
-    
-    evidence_col1, evidence_col2, evidence_col3 = st.columns(3)
-    
-    with evidence_col1:
-        st.success("**💪 STRONG EVIDENCE**")
-        st.write("• Arbitration award documentation")
-        st.write("• Vessel rejection records")
-        st.write("• Multiple vessel name changes")
-        st.write("• Contradictory build records")
-        st.write("• Demurrage calculation details")
-    
-    with evidence_col2:
-        st.warning("**⚖️ MEDIUM EVIDENCE**")
-        st.write("• Engine repair duration claims")
-        st.write("• COVID supply chain impacts")
-        st.write("• Regulatory timing issues")
-        st.write("• Industry practice standards")
-        st.write("• Mitigation effort documentation")
-    
-    with evidence_col3:
-        st.error("**❓ DISPUTED EVIDENCE**")
-        st.write("• Vessel owner knowledge claims")
-        st.write("• Regulation discoverability")
-        st.write("• Force majeure scope limits")
-        st.write("• Seaworthiness representations")
-        st.write("• Alternative port options")
-    
-    # Precedent Analysis
-    st.markdown("### ⚖️ Legal Precedent Analysis")
-    
-    precedent_col1, precedent_col2 = st.columns(2)
-    
-    with precedent_col1:
-        st.success("""
-        **✅ FAVORABLE PRECEDENTS**
-        
-        **The Seaflower [2001]:**
-        - Due diligence duty on charterers
-        - Verification of port specifications
-        
-        **Bulk Chile [2013]:**
-        - Vessel suitability standards
-        - Charterer responsibility for compliance
-        """)
-    
-    with precedent_col2:
-        st.error("""
-        **⚠️ ADVERSE PRECEDENTS**
-        
-        **Golden Victory [2007]:**
-        - Intervening events doctrine
-        - Causation complexity analysis
-        
-        **Edwinton [2021]:**
-        - COVID-19 force majeure recognition
-        - Unforeseeable circumstances
-        """)
-    
-    st.info("**🎯 Key Precedent Battle:** Due diligence standard vs. seaworthiness warranty focus")
-
-# TAB 3: STRATEGIC ASSESSMENT
-with tab3:
-    st.markdown("## 📊 Strategic Assessment")
-    
-    # Risk-Reward Analysis
-    assess_col1, assess_col2 = st.columns(2)
-    
-    with assess_col1:
-        st.markdown("### ⏰ Time-Decay Risk Analysis")
-        
-        risk_periods = [
-            ("Days 0-30 (PEAK)", "85%", "green", "Payment deadline pressure maximizes leverage"),
-            ("Days 30-90", "70%", "yellow", "Settlement urgency peak, asset hiding risk increases"),
-            ("Days 90-150", "55%", "orange", "Enforcement preparation phase, appeal monitoring"),
-            ("Days 150-180", "40%", "red", "Default triggers, enforcement becomes primary option")
-        ]
-        
-        for period, probability, color, description in risk_periods:
-            if color == "green":
-                st.success(f"**{period}**: {probability} recovery probability\n\n{description}")
-            elif color == "yellow":
-                st.warning(f"**{period}**: {probability} recovery probability\n\n{description}")
-            elif color == "orange":
-                st.info(f"**{period}**: {probability} recovery probability\n\n{description}")
-            else:
-                st.error(f"**{period}**: {probability} recovery probability\n\n{description}")
-        
-        st.info("**🎯 Optimal Action Window: Days 15-45** - Maximum leverage with manageable risk exposure")
-        
-        # Noksel Financial Intelligence
-        st.markdown("### 🏭 Noksel Financial Profile")
-        
-        st.warning("""
-        **⚠️ CREDIT RISK INDICATORS**
-        - Multiple same-day invoice patterns
-        - Extended payment terms requested
-        - Turkish manufacturing sector volatility
-        - Economic uncertainty factors
-        """)
-        
-        st.info("""
-        **🔍 ASSET INTELLIGENCE GAPS**
-        - Corporate structure: Unknown subsidiaries
-        - International holdings: Unclear portfolio
-        - Bank account locations: Investigation needed
-        - Asset hiding potential: Moderate risk
-        """)
-        
-        st.error("""
-        **🚨 COLLECTION RISK FACTORS**
-        - Cross-border enforcement challenges
-        - Turkish legal system complexities
-        - Currency volatility exposure
-        - Political risk considerations
-        """)
-    
-    with assess_col2:
-        st.markdown("### 💰 Recovery Scenario Analysis")
-        
-        # Recovery scenarios chart
-        scenarios_data = {
-            "Scenario": ["Best Case", "Most Likely", "Conservative", "Worst Case"],
-            "Probability": ["10%", "60%", "25%", "5%"],
-            "Recovery Amount": ["$40,000+", "$28,000", "$20,000", "$10,000"],
-            "Recovery %": ["100%+", "75%", "55%", "25%"],
-            "Timeline": ["30 days", "45 days", "90 days", "180+ days"]
-        }
-        
-        scenarios_df = pd.DataFrame(scenarios_data)
-        st.dataframe(scenarios_df, use_container_width=True, hide_index=True)
-        
-        st.markdown("### 📈 Expected Value Calculation")
-        st.metric(
-            label="Weighted Expected Recovery",
-            value="$28,150",
-            delta="75% of total award"
-        )
-        
-        # Settlement vs Litigation Analysis
-        st.markdown("### 🤝 Settlement vs. Litigation")
-        
-        settlement_factors = [
-            "✅ Payment arrangement already established",
-            "✅ Turkish enforcement challenges",
-            "✅ Ongoing business relationship preservation",
-            "✅ Cost certainty and speed",
-            "✅ 70% settlement probability"
-        ]
-        
-        litigation_factors = [
-            "⚠️ Strong precedent value potential",
-            "⚠️ Clear liability case facts",
-            "⚠️ Vessel credibility issues",
-            "⚠️ Full recovery possibility",
-            "⚠️ Higher cost and time risk"
-        ]
-        
-        settle_col, litigate_col = st.columns(2)
-        
-        with settle_col:
-            st.success("**SETTLEMENT ADVANTAGES**")
-            for factor in settlement_factors:
-                st.write(factor)
-        
-        with litigate_col:
-            st.warning("**LITIGATION CONSIDERATIONS**")
-            for factor in litigation_factors:
-                st.write(factor)
-    
-    # Expert Witness Strategy
-    st.markdown("### 👨‍💼 Expert Witness Requirements")
-    
-    expert_col1, expert_col2, expert_col3 = st.columns(3)
-    
-    with expert_col1:
-        st.info("""
-        **🚢 MARITIME EXPERTS**
-        - Vessel surveyor for condition assessment
-        - Marine engineer for engine failure analysis
-        - Charter party specialist for contract interpretation
-        """)
-    
-    with expert_col2:
-        st.info("""
-        **📋 REGULATORY EXPERTS**
-        - Pacific maritime law specialist
-        - Port authority requirements expert
-        - International shipping compliance advisor
-        """)
-    
-    with expert_col3:
-        st.info("""
-        **💼 INDUSTRY EXPERTS**
-        - Steel transportation specialist
-        - Due diligence standard authority
-        - COVID-19 maritime impact analyst
-        """)
-
-# TAB 4: ACTION PLAN
-with tab4:
-    st.markdown("## 🎯 Strategic Action Plan")
-    
-    # Executive Dashboard - using native Streamlit components
-    st.markdown("## 🎯 EXECUTIVE DECISION DASHBOARD")
-    
-    # Create 4 columns for the dashboard metrics
-    dash_col1, dash_col2, dash_col3, dash_col4 = st.columns(4)
-    
-    with dash_col1:
-        st.success("**GO/NO-GO DECISION**")
-        st.markdown("### ✅ PURSUE SETTLEMENT")
-    
-    with dash_col2:
-        st.info("**OPTIMAL TIMING**")
-        st.markdown("### ⏰ 15-30 DAYS")
-    
-    with dash_col3:
-        st.warning("**BUDGET ALLOCATION**")
-        st.markdown("### 💰 $15K COSTS")
-    
-    with dash_col4:
-        st.error("**RECOVERY TARGET**")
-        st.markdown("### 🎯 65% ($25K+)")
-    
-    # Next action section
     st.markdown("---")
-    st.success("### 🚀 IMMEDIATE NEXT ACTION: Commission LMAA Mediation Process")
     
-    # Detailed Action Steps
-    st.markdown("### 📋 30-Day Action Timeline")
+    # Navigation
+    st.markdown("### Navigation")
+    page = st.radio(
+        "",
+        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
+        index=0,
+        label_visibility="collapsed"
+    )
     
-    action_col1, action_col2 = st.columns(2)
+    st.markdown("---")
     
-    with action_col1:
-        st.markdown("#### 🚀 IMMEDIATE ACTIONS (Days 1-7)")
+    if page == "🔍 Search":
+        # Search Options
+        st.markdown("### Search Options")
         
-        immediate_actions = [
-            ("Day 1", "📞 Contact LMAA for mediation scheduling", "Critical"),
-            ("Day 2", "🔍 Commission asset investigation on Noksel", "High"),
-            ("Day 3", "📋 Prepare settlement demand letter", "High"),
-            ("Day 5", "👨‍💼 Engage maritime law specialist", "Medium"),
-            ("Day 7", "📊 Complete financial exposure analysis", "Medium")
-        ]
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Max Results**")
+            max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        for day, action, priority in immediate_actions:
-            if priority == "Critical":
-                st.error(f"**{day}**: {action}")
-            elif priority == "High":
-                st.warning(f"**{day}**: {action}")
-            else:
-                st.info(f"**{day}**: {action}")
-    
-    with action_col2:
-        st.markdown("#### ⚖️ STRATEGIC ACTIONS (Days 8-30)")
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Similarity Threshold**")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            st.write(f"Current value: {similarity}")
+            st.markdown('</div>', unsafe_allow_html=True)
         
-        strategic_actions = [
-            ("Days 8-10", "🤝 Initiate preliminary settlement discussions", "Critical"),
-            ("Days 11-15", "📄 Exchange position papers and evidence", "High"),
-            ("Days 16-20", "🎯 Conduct formal mediation sessions", "Critical"),
-            ("Days 21-25", "💰 Negotiate final settlement terms", "High"),
-            ("Days 26-30", "✅ Execute settlement agreement", "Critical")
-        ]
+        show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+
+# Main Content Area
+if page == "🔍 Search":
+    # Search Interface
+    st.markdown("### Enter your search query")
+    search_query = st.text_input(
+        "", 
+        value="just cause", 
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="search_input_updated"
+    )
+    
+    if search_query:
+        # Perform search
+        results = search_cases(search_query, max_results, similarity)
         
-        for day, action, priority in strategic_actions:
-            if priority == "Critical":
-                st.error(f"**{day}**: {action}")
-            elif priority == "High":
-                st.warning(f"**{day}**: {action}")
-            else:
-                st.info(f"**{day}**: {action}")
-    
-    # Risk Mitigation
-    st.markdown("### 🛡️ Risk Mitigation Strategies")
-    
-    risk_col1, risk_col2, risk_col3 = st.columns(3)
-    
-    with risk_col1:
-        st.markdown("""
-        **🏦 FINANCIAL RISKS**
-        - Monitor Noksel's financial stability
-        - Secure payment guarantees
-        - Consider partial payment structures
-        - Prepare enforcement alternatives
-        """)
-    
-    with risk_col2:
-        st.markdown("""
-        **⚖️ LEGAL RISKS**
-        - Document all settlement negotiations
-        - Preserve enforcement rights
-        - Monitor appeal deadlines
-        - Maintain evidence integrity
-        """)
-    
-    with risk_col3:
-        st.markdown("""
-        **⏰ TIMING RISKS**
-        - Avoid deadline pressures
-        - Maintain negotiation momentum
-        - Prepare litigation backup
-        - Monitor regulatory changes
-        """)
-    
-    # Success Metrics
-    st.markdown("### 📊 Success Metrics & KPIs")
-    
-    metrics_data = {
-        "Metric": [
-            "Settlement Achievement",
-            "Recovery Percentage", 
-            "Timeline Adherence",
-            "Cost Management",
-            "Client Satisfaction"
-        ],
-        "Target": [
-            "Negotiated settlement",
-            "65% of total award",
-            "Within 45 days",
-            "Under $15K costs",
-            "Exceeded expectations"
-        ],
-        "Current Status": [
-            "Planning phase",
-            "TBD",
-            "On track",
-            "Budget allocated", 
-            "High confidence"
-        ],
-        "Risk Level": [
-            "Low",
-            "Medium",
-            "Low",
-            "Low",
-            "Low"
-        ]
-    }
-    
-    metrics_df = pd.DataFrame(metrics_data)
-    st.dataframe(metrics_df, use_container_width=True, hide_index=True)
+        # Search results summary
+        st.success(f"Found {len(results)} results")
+        
+        # Show bookmark save reminder if user has bookmarks
+        if st.session_state.bookmarked_cases:
+            st.warning("💡 The bookmark changes will apply if you save the search above 💾")
+        
+        # Display search results with clean formatting
+        for case_index, case in enumerate(results):
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
+            
+            with st.expander(case_title, expanded=(case_index == 0)):
+                
+                st.markdown(f"""
+                **Procedure:** {case['procedure']}  
+                **Category:** {case['category']}  
+                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+                """)
+                
+                # Download PDF and Bookmark section
+                col1, col2 = st.columns([3, 7])
+                
+                with col1:
+                    download_key = f"download_{case['id']}_{case_index}"
+                    if st.button("📄 Download PDF", key=download_key):
+                        st.success(f"Downloading {case['title']}.pdf...")
+                        time.sleep(1)
+                        st.info("PDF download would start here in a real implementation.")
+                
+                with col2:
+                    # Bookmark section with notes
+                    bookmark_key = f"bookmark_{case['id']}_{case_index}"
+                    notes_key = f"notes_{case['id']}_{case_index}"
+                    is_bookmarked = case['id'] in st.session_state.bookmarked_cases
+                    
+                    # Get existing notes if bookmarked
+                    existing_notes = st.session_state.bookmarked_cases.get(case['id'], '') if is_bookmarked else ''
+                    
+                    bookmark_changed = st.checkbox("📌 Bookmark", value=is_bookmarked, key=bookmark_key)
+                    
+                    # Notes text area
+                    notes = st.text_area(
+                        "",
+                        value=existing_notes,
+                        placeholder="Add your notes about this case...",
+                        key=notes_key,
+                        label_visibility="collapsed",
+                        height=100
+                    )
+                    
+                    # Save bookmark with notes when checkbox changes or notes are updated
+                    if bookmark_changed != is_bookmarked:
+                        if bookmark_changed:
+                            st.session_state.bookmarked_cases[case['id']] = notes
+                            st.success("✅ Case bookmarked!")
+                        else:
+                            if case['id'] in st.session_state.bookmarked_cases:
+                                del st.session_state.bookmarked_cases[case['id']]
+                            st.success("❌ Bookmark removed")
+                        st.rerun()
+                    elif is_bookmarked and notes != existing_notes:
+                        # Update notes if bookmark exists and notes changed
+                        st.session_state.bookmarked_cases[case['id']] = notes
+                        st.success("📝 Notes updated!")
+                
+                st.markdown("---")
+                
+                # Relevant Passages - Most important, moved to top
+                st.markdown("### **Relevant Passages**")
+                for passage_index, passage in enumerate(case['relevant_passages']):
+                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
+                    
+                    # Extract page reference and content for excerpt (first page)
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
+                            
+                            # Put page and checkbox on same line
+                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
+                            
+                            if show_more:
+                                st.success(passage['full_context'])
+                            else:
+                                st.success(content.strip())
+                        else:
+                            st.success(excerpt_text)
+                    else:
+                        show_more = st.checkbox("show more", key=passage_unique_key)
+                        if show_more:
+                            st.success(passage['full_context'])
+                        else:
+                            st.success(excerpt_text)
+                
+                # Summary
+                st.info(f"**Summary:** {case['summary']}")
+                
+                # Court Reasoning
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                
+                # Case Outcome
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # AI Question Interface
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
+                question_unique_key = f"ai_question_{case['id']}_{case_index}"
+                user_question = st.text_area(
+                    "",
+                    placeholder="e.g., What was the main legal issue?",
+                    key=question_unique_key,
+                    label_visibility="collapsed"
+                )
+                
+                button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+                if st.button("Ask Question", key=button_unique_key):
+                    if user_question:
+                        with st.spinner("Analyzing case..."):
+                            time.sleep(2)
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            
+                            st.markdown(f"""
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {ai_answer}
+                            </div>
+                            """, unsafe_allow_html=True)
 
-# FOOTER
-st.markdown("---")
+elif page == "📊 Analytics":
+    st.title("📊 Legal Analytics Dashboard")
+    st.info("Analytics features coming soon.")
 
-footer_col1, footer_col2, footer_col3 = st.columns(3)
+elif page == "🔖 Bookmarks":
+    st.title("🔖 Bookmarked Cases")
+    
+    if st.session_state.bookmarked_cases:
+        st.success(f"You have {len(st.session_state.bookmarked_cases)} bookmarked case(s)")
+        
+        # Display bookmarked cases
+        for case_id, notes in st.session_state.bookmarked_cases.items():
+            # Find the case in the database
+            bookmarked_case = next((case for case in CASES_DATABASE if case['id'] == case_id), None)
+            
+            if bookmarked_case:
+                with st.container():
+                    st.markdown(f"""
+                    ### {bookmarked_case['title']}
+                    **Date:** {bookmarked_case['date']} | **Parties:** {bookmarked_case['appellants']} v. {bookmarked_case['respondents']}  
+                    **Matter:** {bookmarked_case['matter']} | **Outcome:** {bookmarked_case['outcome']} | **Sport:** {bookmarked_case['sport']}
+                    """)
+                    
+                    # Show notes if they exist
+                    if notes and notes.strip():
+                        st.markdown(f"**Your Notes:** {notes}")
+                    
+                    col1, col2 = st.columns([2, 8])
+                    with col1:
+                        if st.button(f"📄 Download PDF", key=f"bookmark_download_{case_id}"):
+                            st.success(f"Downloading {bookmarked_case['title']}.pdf...")
+                    
+                    with col2:
+                        if st.button(f"🗑️ Remove Bookmark", key=f"remove_bookmark_{case_id}"):
+                            del st.session_state.bookmarked_cases[case_id]
+                            st.success("Removed from bookmarks")
+                            st.rerun()
+                    
+                    st.markdown("---")
+    else:
+        st.info("No bookmarked cases yet. Bookmark cases from the search results to see them here.")
 
-with footer_col1:
-    st.markdown("""
-    **📊 Dashboard Status**  
-    Last Updated: {date}  
-    Status: Active Enforcement  
-    Version: 2.1
-    """.format(date=datetime.now().strftime("%Y-%m-%d %H:%M")))
+elif page == "📄 Documents":
+    st.title("📄 Document Library")
+    st.info("Upload legal documents for analysis.")
 
-with footer_col2:
-    st.markdown("""
-    **⚖️ Legal Framework**  
-    Governing Law: English Law  
-    Arbitration Seat: London  
-    Enforcement: International
-    """)
-
-with footer_col3:
-    st.markdown("""
-    **🎯 Strategic Priority**  
-    Action Status: Immediate  
-    Risk Level: Manageable  
-    Success Probability: High
-    """)
+elif page == "👤 Admin":
+    st.title("👤 Admin Dashboard")
+    st.info("Admin features coming soon.")

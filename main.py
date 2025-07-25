@@ -174,8 +174,8 @@ if page == "🔍 Search":
                 **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
                 """)
                 
-                # Download PDF and Bookmark buttons
-                col1, col2, col3 = st.columns([2, 2, 6])
+                # Download PDF and Bookmark section
+                col1, col2, col3 = st.columns([3, 1, 6])
                 
                 with col1:
                     download_key = f"download_{case['id']}_{case_index}"
@@ -185,18 +185,24 @@ if page == "🔍 Search":
                         st.info("PDF download would start here in a real implementation.")
                 
                 with col2:
+                    # Right-aligned bookmark checkbox
                     bookmark_key = f"bookmark_{case['id']}_{case_index}"
                     is_bookmarked = case['id'] in st.session_state.bookmarked_cases
-                    bookmark_label = "🔖 Bookmarked" if is_bookmarked else "📌 Bookmark"
                     
-                    if st.button(bookmark_label, key=bookmark_key):
-                        if is_bookmarked:
-                            st.session_state.bookmarked_cases.remove(case['id'])
-                            st.success("Removed from bookmarks")
-                        else:
+                    bookmark_changed = st.checkbox("📌", value=is_bookmarked, key=bookmark_key, help="Bookmark this case")
+                    
+                    if bookmark_changed != is_bookmarked:
+                        if bookmark_changed:
                             st.session_state.bookmarked_cases.append(case['id'])
                             st.success("Added to bookmarks")
+                        else:
+                            st.session_state.bookmarked_cases.remove(case['id'])
+                            st.success("Removed from bookmarks")
                         st.rerun()
+                
+                with col3:
+                    if case['id'] in st.session_state.bookmarked_cases:
+                        st.markdown("*🔖 Bookmarked*")
                 
                 st.markdown("---")
                 

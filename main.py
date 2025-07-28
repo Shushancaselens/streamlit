@@ -64,6 +64,9 @@ with tab1:
         # Names mentioned as pills
         st.pills("Names mentioned:", ["Antani Ivanov", "Husain Al Musallam", "Brent J. Nowicki"], selection_mode="multi", key="names_pills")
         
+        # Proceedings and status as pills
+        st.pills("Tags:", ["admissability", "Not Addressed"], selection_mode="multi", key="tags_pills")
+        
         st.markdown("")
         
         # Document container

@@ -57,8 +57,9 @@ with tab1:
         # Supporting Documents section
         st.markdown("#### Supporting Documents")
         
-        # Names mentioned as pills
-        st.pills("Names mentioned:", ["Antani Ivanov", "Husain Al Musallam", "Brent J. Nowicki"], selection_mode="multi", key="names_pills")
+        # Names mentioned as collapsible section
+        with st.expander("👥 3 People mentioned"):
+            st.pills("", ["Antani Ivanov", "Husain Al Musallam", "Brent J. Nowicki"], selection_mode="multi", key="names_pills")
         
         st.markdown("")
         

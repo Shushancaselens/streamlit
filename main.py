@@ -50,10 +50,10 @@ with tab1:
                 st.markdown("Sources")
         with col2:
             st.markdown("**PROCEEDINGS:**")
-            st.button("admissability", disabled=True, key="proceedings_tag")
+            st.pills("", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
         with col3:
             st.markdown("**ADDRESSED BY:**")
-            st.button("Not Addressed", disabled=True, key="addressed_tag")
+            st.markdown(":gray[Not Addressed]")
         
         st.markdown("")
         

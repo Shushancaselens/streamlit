@@ -40,7 +40,7 @@ with tab1:
     st.text_input("Search", placeholder="Search...")
     
     # Timeline items using expanders (native dropdowns)
-    with st.expander("🔵 2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
+    with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
         # Top section with sources and tags in a single horizontal row
         col1, col2, col3, col4, col5 = st.columns([0.6, 1.2, 1.2, 1.2, 1.2])

@@ -61,6 +61,18 @@ with tab1:
         # Supporting Documents section
         st.markdown("#### Supporting Documents")
         
+        # Names mentioned in documents
+        st.markdown("**Names mentioned:**")
+        col_name1, col_name2, col_name3 = st.columns(3)
+        with col_name1:
+            st.markdown(":blue[**Antani Ivanov**]")
+        with col_name2:
+            st.markdown(":blue[**Husain Al Musallam**]")
+        with col_name3:
+            st.markdown(":blue[**Brent J. Nowicki**]")
+        
+        st.markdown("")
+        
         # Document container
         with st.container(border=True):
             # Document title

@@ -43,19 +43,17 @@ with tab1:
     with st.expander("2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
         # Top section with sources and tags in containers
-        col1, col2, col3, col4, col5 = st.columns([0.8, 1.2, 1, 1.2, 1])
+        col1, col2, col3 = st.columns([1, 2, 2])
         with col1:
             with st.container(border=True):
-                st.markdown(":blue[**2**]")
+                st.markdown("**2**")
                 st.markdown("Sources")
         with col2:
-            st.markdown("PROCEEDINGS:")
+            st.markdown("**PROCEEDINGS:**")
+            st.button("admissability", disabled=True, key="proceedings_tag")
         with col3:
-            st.markdown(":blue[admissability]")
-        with col4:
-            st.markdown("ADDRESSED BY:")
-        with col5:
-            st.markdown(":gray[Not Addressed]")
+            st.markdown("**ADDRESSED BY:**")
+            st.button("Not Addressed", disabled=True, key="addressed_tag")
         
         st.markdown("")
         

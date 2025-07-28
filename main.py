@@ -49,12 +49,12 @@ with tab1:
             st.markdown("Sources")
         with col2:
             st.markdown("**PROCEEDINGS:**")
-            st.button("admissability", disabled=True)
+            st.info("admissability")
         with col3:
             st.markdown("**ADDRESSED BY:**")
-            st.markdown("Not Addressed")
+            st.markdown(":gray[Not Addressed]")
         
-        st.markdown("---")
+        st.divider()
         
         # Supporting Documents section
         st.markdown("### Supporting Documents")
@@ -72,11 +72,11 @@ with tab1:
         # Action buttons
         col1, col2 = st.columns(2)
         with col1:
-            st.button("View Document", key="view_doc_1")
+            st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
         with col2:
-            st.button("📄 Download PDF", key="download_1")
+            st.button("📄 Download PDF", key="download_1", use_container_width=True)
         
-        st.markdown("---")
+        st.divider()
         
         # Second exhibit
         st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")

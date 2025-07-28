@@ -62,8 +62,8 @@ with tab1:
             # Document title
             st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
             
-            # Document type classification
-            st.pills("Document Type:", ["Procedural", "Evidence", "Law"], selection_mode="single", default=["Procedural"], key="doc_type_pills")
+            # Document type
+            st.markdown("**Document Type:** :green[Procedural]")
             
             # Names mentioned as pills under the title
             st.markdown("**Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")

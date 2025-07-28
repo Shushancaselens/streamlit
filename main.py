@@ -62,8 +62,11 @@ with tab1:
             # Document title
             st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
             
-            # Document info with tags
-            st.markdown("**Document Type:** :green[Procedural] | **Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")
+            # Document type
+            st.markdown("**Document Type:** :green[Procedural]")
+            
+            # Names mentioned as pills under the title
+            st.markdown("**Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")
             
             st.markdown("")
             

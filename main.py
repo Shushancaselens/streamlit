@@ -45,19 +45,26 @@ with tab1:
         # Top section with sources and tags in containers
         col1, col2, col3 = st.columns([1, 2, 2])
         with col1:
-            st.info("**2**  \nSources")
+            with st.container(border=True):
+                st.markdown("**2**")
+                st.markdown("Sources")
         with col2:
-            st.markdown("**PROCEEDINGS:**")
-            with st.container():
+            col2a, col2b = st.columns([1, 1])
+            with col2a:
+                st.markdown("**PROCEEDINGS:**")
+            with col2b:
                 st.markdown(":blue[admissability]")
         with col3:
-            st.markdown("**ADDRESSED BY:**")
-            st.markdown("Not Addressed")
+            col3a, col3b = st.columns([1, 1])
+            with col3a:
+                st.markdown("**ADDRESSED BY:**")
+            with col3b:
+                st.markdown(":gray[Not Addressed]")
         
         st.markdown("")
         
         # Supporting Documents section
-        st.markdown("**Supporting Documents**")
+        st.markdown("#### Supporting Documents")
         
         # Document container
         with st.container(border=True):

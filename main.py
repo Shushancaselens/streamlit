@@ -42,7 +42,7 @@ with tab1:
     # Timeline items using expanders (native dropdowns)
     with st.expander("2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
-        # Top section with sources and tags in containers - all in one row
+        # Top section - exactly like screenshot
         col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
         
         with col1:
@@ -51,13 +51,13 @@ with tab1:
                 st.markdown("Sources")
                 
         with col2:
-            st.markdown("**PROCEEDINGS:**")
+            st.markdown("PROCEEDINGS:")
             
         with col3:
             st.markdown(":blue[admissability]")
             
         with col4:
-            st.markdown("**ADDRESSED BY:**")
+            st.markdown("ADDRESSED BY:")
             
         with col5:
             st.markdown(":gray[Not Addressed]")

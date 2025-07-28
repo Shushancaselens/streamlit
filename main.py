@@ -53,7 +53,7 @@ with tab1:
             st.pills("", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
         with col3:
             st.markdown("**ADDRESSED BY:**")
-            st.markdown(":gray[Not Addressed]")
+            st.pills("", ["Not Addressed"], selection_mode="single", default=["Not Addressed"], key="addressed_pill")
         
         st.markdown("")
         

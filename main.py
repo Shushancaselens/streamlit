@@ -42,41 +42,48 @@ with tab1:
     # Timeline items using expanders (native dropdowns)
     with st.expander("2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
-        # Top section with sources and tags
+        # Top section with sources and tags in containers
         col1, col2, col3 = st.columns([1, 2, 2])
         with col1:
-            st.markdown("**2**")
-            st.markdown("Sources")
+            with st.container(border=True):
+                st.markdown("**2**")
+                st.markdown("Sources")
         with col2:
             st.markdown("**PROCEEDINGS:**")
-            st.info("admissability")
+            with st.container():
+                st.markdown(":blue[admissability]")
         with col3:
             st.markdown("**ADDRESSED BY:**")
-            st.markdown(":gray[Not Addressed]")
+            st.markdown("Not Addressed")
         
-        st.divider()
+        st.markdown("")
         
         # Supporting Documents section
-        st.markdown("### Supporting Documents")
+        st.markdown("## Supporting Documents")
         
-        # First exhibit
-        st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
+        # Document container
+        with st.container(border=True):
+            # Document title
+            st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
+            
+            # Summary
+            st.markdown("**Summary:** This document, titled 'Request for Conciliation - Antani Ivanov v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer Antani Ivanov, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
+            
+            # Citation in gray container
+            with st.container():
+                st.markdown("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
+            
+            # Source in green container  
+            st.success("**Source:** 34. Mr. Antani Ivanov is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
+            
+            # Action buttons
+            col1, col2 = st.columns(2)
+            with col1:
+                st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
+            with col2:
+                st.button("📄 Download PDF", key="download_1", use_container_width=True)
         
-        st.markdown("**Summary:** This document, titled 'Request for Conciliation - Antani Ivanov v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer Antani Ivanov, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
-        
-        st.markdown("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
-        
-        # Source section in green box
-        st.success("**Source:** 34. Mr. Antani Ivanov is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
-        
-        # Action buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
-        with col2:
-            st.button("📄 Download PDF", key="download_1", use_container_width=True)
-        
-        st.divider()
+        st.markdown("")
         
         # Second exhibit
         st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")

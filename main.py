@@ -46,8 +46,8 @@ with tab1:
         col1, col2, col3, col4, col5 = st.columns([0.6, 1.2, 1.2, 1.2, 1.2])
         with col1:
             with st.container(border=True):
-                st.markdown("**2**")
-                st.markdown("Sources")
+                st.markdown(":blue[**2**]")
+                st.markdown(":gray[Sources]")
         with col2:
             st.markdown("**PROCEEDINGS:**")
         with col3:

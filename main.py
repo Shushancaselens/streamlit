@@ -57,16 +57,15 @@ with tab1:
         # Supporting Documents section
         st.markdown("#### Supporting Documents")
         
-        # Names mentioned as small expandable section
-        with st.expander("👥 People mentioned (3)", expanded=False):
-            st.write("Antani Ivanov, Husain Al Musallam, Brent J. Nowicki")
-        
-        st.markdown("")
-        
         # Document container
         with st.container(border=True):
             # Document title
             st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
+            
+            # Names mentioned as pills under the title
+            st.pills("Names mentioned:", ["Antani Ivanov", "Husain Al Musallam", "Brent J. Nowicki"], selection_mode="multi", key="names_pills")
+            
+            st.markdown("")
             
             # Summary
             st.markdown("**Summary:** This document, titled 'Request for Conciliation - **Antani Ivanov** v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer **Antani Ivanov**, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")

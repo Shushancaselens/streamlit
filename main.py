@@ -42,8 +42,8 @@ with tab1:
     # Timeline items using expanders (native dropdowns)
     with st.expander("2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
-        # Top section with sources and tags in containers
-        col1, col2, col3, col4, col5 = st.columns([1, 1.5, 1, 1.5, 1])
+        # Top section with sources and tags in a single horizontal row
+        col1, col2, col3, col4, col5 = st.columns([1, 0.5, 1.5, 0.5, 1.5])
         with col1:
             with st.container(border=True):
                 st.markdown("**2**")

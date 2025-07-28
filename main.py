@@ -42,33 +42,46 @@ with tab1:
     # Timeline items using expanders (native dropdowns)
     with st.expander("2017-00-00 | In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
+        # Top section with sources and tags
         col1, col2, col3 = st.columns([1, 2, 2])
         with col1:
-            st.metric("Sources", "2")
+            st.markdown("**2**")
+            st.markdown("Sources")
         with col2:
-            st.write("**PROCEEDINGS:** :blue[admissability]")
+            st.markdown("**PROCEEDINGS:**")
+            st.button("admissability", disabled=True)
         with col3:
-            st.write("**ADDRESSED BY:** Not Addressed")
+            st.markdown("**ADDRESSED BY:**")
+            st.markdown("Not Addressed")
         
-        st.subheader("Supporting Documents")
+        st.markdown("---")
         
-        st.write("**Exhibit A17 - Request for Conciliation (English translation)**")
+        # Supporting Documents section
+        st.markdown("### Supporting Documents")
         
-        st.write("**Summary:** This document, titled 'Request for Conciliation - Antani Ivanov v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer Antani Ivanov, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
+        # First exhibit
+        st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
         
-        st.write("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
+        st.markdown("**Summary:** This document, titled 'Request for Conciliation - Antani Ivanov v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer Antani Ivanov, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
         
+        st.markdown("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
+        
+        # Source section in green box
         st.success("**Source:** 34. Mr. Antani Ivanov is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
         
+        # Action buttons
         col1, col2 = st.columns(2)
         with col1:
-            st.button("View Document ⌄")
+            st.button("View Document", key="view_doc_1")
         with col2:
-            st.button("📄 Download PDF")
+            st.button("📄 Download PDF", key="download_1")
         
-        st.write("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")
+        st.markdown("---")
         
-        st.write("**Summary:** This document, titled 'Requête de conciliation Antani Ivanov c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer Antani Ivanov. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated Ivanov's right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
+        # Second exhibit
+        st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")
+        
+        st.markdown("**Summary:** This document, titled 'Requête de conciliation Antani Ivanov c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer Antani Ivanov. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated Ivanov's right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
     
     with st.expander("2017-00-00 | At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.", expanded=False):
         st.write("Constitution details...")

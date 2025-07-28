@@ -43,18 +43,14 @@ with tab1:
     with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
         # Top section with sources and tags in a single horizontal row
-        col1, col2, col3, col4, col5 = st.columns([0.6, 1.2, 1.2, 1.2, 1.2])
+        col1, col2, col3 = st.columns([0.6, 2.5, 2.5])
         with col1:
             with st.container(border=True):
                 st.markdown(":blue[**2**]  \n:gray[Sources]")
         with col2:
-            st.markdown("**PROCEEDINGS:**")
+            st.pills("PROCEEDINGS:", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
         with col3:
-            st.markdown(":blue[admissability]")
-        with col4:
-            st.markdown("**ADDRESSED BY:**")
-        with col5:
-            st.markdown(":gray[Not Addressed]")
+            st.pills("ADDRESSED BY:", ["Not Addressed"], selection_mode="single", default=["Not Addressed"], key="addressed_pill")
         
         st.markdown("")
         
@@ -63,9 +59,6 @@ with tab1:
         
         # Names mentioned as pills
         st.pills("Names mentioned:", ["Antani Ivanov", "Husain Al Musallam", "Brent J. Nowicki"], selection_mode="multi", key="names_pills")
-        
-        # Proceedings and status as pills
-        st.pills("Tags:", ["admissability", "Not Addressed"], selection_mode="multi", key="tags_pills")
         
         st.markdown("")
         

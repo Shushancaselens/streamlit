@@ -45,8 +45,7 @@ with tab1:
         # Top section with sources and tags in containers
         col1, col2, col3 = st.columns([1, 2, 2])
         with col1:
-            with st.container(border=True):
-                st.markdown("**2**  \nSources")
+            st.info("**2**  \nSources")
         with col2:
             st.markdown("**PROCEEDINGS:**")
             with st.container():
@@ -58,7 +57,7 @@ with tab1:
         st.markdown("")
         
         # Supporting Documents section
-        st.markdown("## Supporting Documents")
+        st.markdown("**Supporting Documents**")
         
         # Document container
         with st.container(border=True):

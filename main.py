@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for dashboard-style layout
+# Custom CSS for dashboard-style layout with smaller headers
 st.markdown("""
 <style>
     .main-header {
@@ -20,6 +20,12 @@ st.markdown("""
         color: white;
         margin-bottom: 1rem;
     }
+    .section-header {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
     .metric-card {
         background: white;
         padding: 1rem;
@@ -27,10 +33,6 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .status-green { background-color: #dcfce7; border-left: 4px solid #16a34a; }
-    .status-red { background-color: #fef2f2; border-left: 4px solid #dc2626; }
-    .status-yellow { background-color: #fefce8; border-left: 4px solid #ca8a04; }
-    .status-blue { background-color: #eff6ff; border-left: 4px solid #2563eb; }
     
     .stTabs [data-baseweb="tab-list"] {
         gap: 2px;
@@ -40,20 +42,28 @@ st.markdown("""
         padding-left: 20px;
         padding-right: 20px;
     }
+    
+    /* Make headers smaller */
+    h1 { font-size: 24px !important; }
+    h2 { font-size: 20px !important; }
+    h3 { font-size: 18px !important; }
+    h4 { font-size: 16px !important; }
+    h5 { font-size: 14px !important; }
+    h6 { font-size: 12px !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER SECTION
+# HEADER SECTION - Smaller title
 st.markdown("""
 <div class="main-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h1 style="margin: 0; font-size: 28px;">⚖️ MV MESSILA DEMURRAGE DISPUTE</h1>
-            <p style="margin: 0; opacity: 0.9;">Transasya v. Noksel Çelik Boru Sanayi A.Ş. | John Schofield | Award: Mar 19, 2023</p>
+            <h2 style="margin: 0; font-size: 22px;">⚖️ MV MESSILA DEMURRAGE DISPUTE</h2>
+            <p style="margin: 0; opacity: 0.9; font-size: 14px;">Transasya v. Noksel Çelik Boru Sanayi A.Ş. | John Schofield | Award: Mar 19, 2023</p>
         </div>
         <div style="text-align: right;">
-            <h2 style="margin: 0; color: #10b981;">$37,317.71</h2>
-            <p style="margin: 0;">+ $3K fees • 180 days to payment</p>
+            <h3 style="margin: 0; color: #10b981; font-size: 20px;">$37,317.71</h3>
+            <p style="margin: 0; font-size: 14px;">+ $3K fees • 180 days to payment</p>
         </div>
     </div>
 </div>
@@ -83,7 +93,7 @@ with tab1:
     overview_left, overview_center, overview_right = st.columns([1, 1, 1])
     
     with overview_left:
-        st.markdown("### 📋 CASE SUMMARY")
+        st.markdown("#### 📋 Case Summary")
         st.markdown("""
         **The Dispute:** Turkish steel supplier Noksel chartered MV MESSILA to deliver pipes to Futuna for dock project. After engine breakdown and 4-month repairs, vessel rejected at destination for length non-compliance. Cargo discharged in Fiji triggering $37K+ demurrage.
         
@@ -97,7 +107,7 @@ with tab1:
         st.markdown("**🚢 VESSEL:** MV MESSILA")
         
     with overview_center:
-        st.markdown("### 📄 KEY DOCUMENTS")
+        st.markdown("#### 📄 Key Documents")
         
         # Critical docs - compact list
         st.markdown("**🔴 CRITICAL**")
@@ -108,14 +118,14 @@ with tab1:
         st.warning("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
         st.info("📄 **Engine Repair Records** - May-Oct 2021")
         
-        st.markdown("### ⚖️ LEGAL STRENGTH")
+        st.markdown("#### ⚖️ Legal Strength")
         st.success("✅ Contract Performance - **Strong for Claimant**")
         st.success("✅ Vessel Suitability - **Strong for Claimant**") 
         st.success("✅ Due Diligence - **Strong for Claimant**")
         st.warning("⚠️ Force Majeure - **Noksel's best defense**")
         
     with overview_right:
-        st.markdown("### 🕐 CRITICAL TIMELINE")
+        st.markdown("#### 🕐 Critical Timeline")
         
         # Compact timeline
         timeline_events = [
@@ -141,8 +151,8 @@ with tab2:
     narrative_left, narrative_right = st.columns(2)
     
     with narrative_left:
-        st.success("### 🟢 CLAIMANT'S WINNING STORY")
-        st.markdown("#### **'Noksel's Preventable Due Diligence Failure'**")
+        st.success("#### 🟢 CLAIMANT'S WINNING STORY")
+        st.markdown("**'Noksel's Preventable Due Diligence Failure'**")
         
         st.markdown("""
         **Opening Argument:**
@@ -168,8 +178,8 @@ with tab2:
         """)
     
     with narrative_right:
-        st.error("### 🔴 RESPONDENT'S BEST DEFENSE")
-        st.markdown("#### **'Vessel Owner Misrepresentation & Force Majeure'**")
+        st.error("#### 🔴 RESPONDENT'S BEST DEFENSE")
+        st.markdown("**'Vessel Owner Misrepresentation & Force Majeure'**")
         
         st.markdown("""
         **Opening Argument:**
@@ -201,18 +211,18 @@ with tab3:
     strategy_left, strategy_center, strategy_right = st.columns(3)
     
     with strategy_left:
-        st.markdown("### 🔍 CAUSATION ANALYSIS")
+        st.markdown("#### 🔍 Causation Analysis")
         st.info("**Proximate Cause Test:** What was the 'but for' cause?")
         st.success("**Claimant:** Length non-compliance → Rejection → Demurrage")
         st.error("**Respondent:** Engine failure → Delay → Late arrival → Rejection")
         st.warning("**Key Issue:** Would vessel be rejected even if on time?")
         
-        st.markdown("### 👨‍🎓 EXPERT WITNESSES")
+        st.markdown("#### 👨‍🎓 Expert Witnesses")
         st.success("**CLAIMANT NEEDS:**\n• Maritime surveyor\n• Regulatory expert\n• Industry expert")
         st.error("**RESPONDENT NEEDS:**\n• Marine engineer\n• COVID expert\n• Regulatory expert")
         
     with strategy_center:
-        st.markdown("### 📊 EVIDENCE STRENGTH")
+        st.markdown("#### 📊 Evidence Strength")
         
         strength_col1, strength_col2, strength_col3 = st.columns(3)
         with strength_col1:
@@ -225,12 +235,12 @@ with tab3:
             st.error("**WEAK**")
             st.markdown("• Owner knowledge\n• Discoverability\n• Force majeure\n• Mitigation")
             
-        st.markdown("### 💼 SETTLEMENT vs LITIGATION")
+        st.markdown("#### 💼 Settlement vs Litigation")
         st.success("**SETTLEMENT (70% Prob.)**\n• Payment arrangement exists\n• Turkish enforcement uncertain\n• Business relationships\n• Cost concerns")
         st.error("**LITIGATION (Med. Risk)**\n• Strong precedent value\n• Clear liability case\n• High recovery potential")
         
     with strategy_right:
-        st.markdown("### ⏱️ TIME-DECAY RISK")
+        st.markdown("#### ⏱️ Time-Decay Risk")
         
         # Compact risk visualization
         risk_data = [
@@ -250,7 +260,7 @@ with tab3:
         
         st.info("**🎯 OPTIMAL:** Days 15-45")
         
-        st.markdown("### 💰 RECOVERY SCENARIOS")
+        st.markdown("#### 💰 Recovery Scenarios")
         st.success("**Best (90%):** $40K+")
         st.warning("**Likely (60%):** $27K+")
         st.error("**Worst (20%):** $9K+")
@@ -261,7 +271,7 @@ with tab4:
     intel_left, intel_right = st.columns(2)
     
     with intel_left:
-        st.markdown("### 👥 KEY ENTITIES")
+        st.markdown("#### 👥 Key Entities")
         
         with st.expander("🏢 KEY PARTIES", expanded=True):
             st.info("**Noksel Çelik Boru Sanayi A.Ş.** (Respondent) - Turkish steel manufacturer arguing force majeure")
@@ -276,7 +286,7 @@ with tab4:
             st.success("**Fiji** - Alternative discharge port where demurrage commenced")
     
     with intel_right:
-        st.markdown("### 📈 FINANCIAL ANALYSIS")
+        st.markdown("#### 📈 Financial Analysis")
         
         # Financial breakdown
         financial_data = {
@@ -287,14 +297,14 @@ with tab4:
         df = pd.DataFrame(financial_data)
         st.dataframe(df, hide_index=True)
         
-        st.markdown("### 🎯 ACTION ITEMS")
+        st.markdown("#### 🎯 Action Items")
         st.error("**IMMEDIATE (Next 7 days):**\n• Commission LMAA mediation\n• Asset investigation\n• Settlement framework")
         st.warning("**SHORT TERM (7-30 days):**\n• Negotiate terms\n• Document enforcement prep\n• Monitor compliance")
         st.info("**MEDIUM TERM (30-90 days):**\n• Execute settlement\n• Enforcement if needed\n• Case closure")
 
-# BOTTOM EXECUTIVE SUMMARY
+# BOTTOM EXECUTIVE SUMMARY - Smaller headers
 st.markdown("---")
-st.markdown("## 🎯 EXECUTIVE DECISION MATRIX")
+st.markdown("#### 🎯 Executive Decision Matrix")
 
 decision_col1, decision_col2, decision_col3, decision_col4 = st.columns(4)
 

@@ -231,7 +231,7 @@ with right_col:
             st.warning("**MEDIUM**") 
             st.markdown("• Engine repairs\n• COVID disruptions\n• Regulatory timing\n• Industry standards")
         with col3:
-            st.error("**WEAK**)
+            st.error("**WEAK**")
             st.markdown("• Owner knowledge\n• Discoverability\n• Force majeure\n• Mitigation efforts")
 
     # Settlement vs Litigation

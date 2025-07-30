@@ -1,126 +1,164 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime, date
 
-# Page configuration
+# Page config
 st.set_page_config(
-    page_title="Caselens",
-    page_icon="🔷",
-    layout="wide"
+    page_title="MV MESSILA Demurrage Dispute",
+    page_icon="⚖️",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# Sidebar
-with st.sidebar:
-    st.header("🔷 caselens")
-    
-    st.subheader("Profile")
-    st.subheader("📅 Events")
-    st.subheader("Documents")
-    
-    st.markdown("---")
-    
-    st.subheader("🔽 Case Filter")
-    st.selectbox("Select Case", ["Admissibility"])
-    
-    st.subheader("📅 Date Range") 
-    st.text_input("Start Date", value="1724/01/01")
-    st.text_input("End Date", value="2025/07/21")
-    
-    st.subheader("⚙️ Submissions Filter")
-    st.checkbox("Addressed by party")
-    st.checkbox("Disputed by parties")
-    
-    st.button("Download", type="primary")
-
-# Main content
-st.header("Case name: admissability; challenge; request_for_a_stay; statement_of_appeal")
-
-tab1, tab2 = st.tabs(["Card View", "Table View"])
-
-with tab1:
-    st.text_input("Search", placeholder="Search...")
-    
-    # Timeline items using expanders (native dropdowns)
-    with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
-        
-        # Top section with sources and tags in a single horizontal row
-        col1, col2, col3 = st.columns([0.6, 2.5, 2.5])
-        with col1:
-            with st.container(border=True):
-                st.markdown(":blue[**2**]  \n:gray[Sources]")
-        with col2:
-            st.pills("PROCEEDINGS:", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
-        with col3:
-            st.pills("ADDRESSED BY:", ["Not Addressed"], selection_mode="single", default=["Not Addressed"], key="addressed_pill")
-        
-        st.markdown("")
-        
-        # Supporting Documents section
-        st.markdown("#### Supporting Documents")
-        
-        # Document container
-        with st.container(border=True):
-            # Document title
-            st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
-            
-            # Document type
-            st.markdown("**Document Type:** :green[Procedural]")
-            
-            # Names mentioned as pills under the title
-            st.markdown("**Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")
-            
-            st.markdown("")
-            
-            # Summary
-            st.markdown("**Summary:** This document, titled 'Request for Conciliation - **Antani Ivanov** v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer **Antani Ivanov**, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
-            
-            # Citation in gray container
-            st.info("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
-            
-            # Source in green container  
-            st.success("**Source:** 34. Mr. **Antani Ivanov** is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
-            
-            # Action buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
-            with col2:
-                st.button("📄 Download PDF", key="download_1", use_container_width=True)
-        
-        st.markdown("")
-        
-        # Second exhibit
-        st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")
-        
-        st.markdown("**Summary:** This document, titled 'Requête de conciliation **Antani Ivanov** c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer **Antani Ivanov**. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated **Ivanov's** right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
-    
-    with st.expander("2017-00-00 | At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.", expanded=False):
-        st.write("Constitution details...")
-    
-    with st.expander("2020-00-00 | In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.", expanded=False):
-        st.write("Olympic qualification details...")
-    
-    with st.expander("2022-12-12 | On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.", expanded=False):
-        st.write("Integrity Code details...")
-    
-    with st.expander("2023-01-01 | On 2023-01-01 the Constitution of World Aquatics came into force.", expanded=False):
-        st.write("Constitution implementation details...")
-    
-    with st.expander("2023-01-01 | On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau.", expanded=False):
-        st.write("Bureau composition details...")
-
-with tab2:
-    # Table view
-    data = {
-        "Date": ["2017-00-00", "2017-00-00", "2020-00-00", "2022-12-12", "2023-01-01", "2023-01-01"],
-        "Event": [
-            "In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.",
-            "At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.",
-            "In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.",
-            "On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.",
-            "On 2023-01-01 the Constitution of World Aquatics came into force.",
-            "On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau."
-        ]
+# Custom CSS for better styling
+st.markdown("""
+<style>
+    .metric-container {
+        background-color: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
     }
+    .stMetric > label {
+        font-size: 14px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Header
+st.title("⚖️ MV MESSILA DEMURRAGE DISPUTE")
+st.markdown("**Transasya v. Noksel Çelik Boru Sanayi A.Ş.** | Arbitrator: John Schofield | Award: Mar 19, 2023 | Due: Mar 19, 2025")
+
+# Key metrics row
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric("💰 Award Amount", "$37,317.71", "+$3K fees")
+with col2:
+    st.metric("📅 Days to Payment", "180", "Until Mar 19, 2025")
+with col3:
+    st.metric("📈 Interest Rate", "5%", "Annual")
+with col4:
+    st.metric("⚖️ Case Status", "Awarded", "Payment arranged")
+
+st.divider()
+
+# Main layout
+left_col, center_col, right_col = st.columns([2, 3, 2])
+
+# LEFT COLUMN
+with left_col:
+    # Case Summary
+    with st.container():
+        st.subheader("📋 CASE SUMMARY")
+        st.markdown("""
+        Turkish steel supplier Noksel chartered MV MESSILA to deliver pipes to remote French Pacific island (Futuna) for dock project. After engine breakdown, 4-month repairs, and regulatory rejection at destination, cargo discharged in Fiji triggering $37K+ demurrage.
+        """)
+        
+        st.info("**Claimant:** Transasya (Vessel Owners)")
+        st.error("**Respondent:** Noksel (Turkish Supplier)")  
+        st.warning("**Core Issue:** Who pays for vessel failure?")
+        st.success("**Award Status:** Issued, payment arranged")
+
+    # Key Documents
+    with st.expander("📄 KEY DOCUMENTS", expanded=True):
+        st.markdown("##### 🔴 CRITICAL - MUST READ")
+        
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Arbitration Award - John Schofield**")
+            st.caption("Mar 19, 2023 • 23 pages • $37,317.71 awarded to Transasya")
+        with col2:
+            st.error("FINAL AWARD")
+            
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Charter Party Agreement**")
+            st.caption("Nov 12, 2020 • Transasya/Noksel agreement")
+        with col2:
+            st.info("CONTRACT")
+        
+        st.markdown("##### 🟠 KEY EVIDENCE")
+        
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Futuna Port Rejection Notice**")
+            st.caption("Nov 10, 2021 • Official rejection letter")
+        with col2:
+            st.error("SMOKING GUN")
+            
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Engine Repair Records**")
+            st.caption("May-Oct 2021 • 4-month repair period")
+        with col2:
+            st.warning("TECHNICAL")
+
+    # Critical Timeline
+    with st.expander("🕐 CRITICAL TIMELINE", expanded=True):
+        timeline_data = [
+            {"Date": "Feb 4, 2020", "Event": "Noksel Çelik Boru Sanayi A.Ş. signs supply contract for Futuna dock project", "Type": "Contract"},
+            {"Date": "Nov 12, 2020", "Event": "Transasya charters MV MESSILA for steel pipe transportation", "Type": "Charter"},
+            {"Date": "Dec 1-3, 2020", "Event": "Noksel cargo loaded onto MV MESSILA at Turkish ports", "Type": "Loading"},
+            {"Date": "May 25, 2021", "Event": "MV MESSILA ENGINE BREAKDOWN at sea", "Type": "Critical"},
+            {"Date": "Jun-Oct 2021", "Event": "MV MESSILA undergoes 4-MONTH REPAIRS", "Type": "Critical"},
+            {"Date": "Nov 10, 2021", "Event": "Futuna Port Authority REJECTS MV MESSILA entry due to length restrictions", "Type": "Critical"},
+            {"Date": "Nov 23, 2021", "Event": "MV MESSILA diverts to Fiji - DEMURRAGE STARTS", "Type": "Critical"},
+            {"Date": "Mar 19, 2023", "Event": "John Schofield issues award favoring Transasya under LMAA arbitration", "Type": "Award"}
+        ]
+        
+        for item in timeline_data:
+            if item["Type"] == "Critical":
+                st.error(f"**{item['Date']}:** {item['Event']}")
+            elif item["Type"] == "Award":
+                st.success(f"**{item['Date']}:** {item['Event']}")
+            else:
+                st.info(f"**{item['Date']}:** {item['Event']}")
+
+    # Key Entities
+    with st.expander("👥 KEY ENTITIES", expanded=False):
+        st.markdown("**KEY PARTIES**")
+        st.info("**Noksel Çelik Boru Sanayi A.Ş.** (Respondent/Charterer) - Turkish steel manufacturer. Chartered vessel for Futuna delivery. Arguing force majeure defense.")
+        st.success("**Transasya** (Claimant/Vessel Owner) - Vessel owners seeking $37,317.71 demurrage. Arguing due diligence failure.")
+        
+        st.markdown("**LEGAL OFFICIALS**")
+        st.info("**John Schofield** (Arbitrator) - Maritime arbitrator. Issued final award Mar 19, 2023 favoring Transasya.")
+        
+        st.markdown("**VESSELS**")
+        st.warning("**MV MESSILA** (Cargo Vessel) - Cargo vessel with history of name changes. Engine breakdown led to 4-month repairs. Rejected at Futuna for length compliance.")
+        
+        st.markdown("**KEY LOCATIONS**")
+        st.info("**Futuna Island** (Intended Destination) - French Pacific territory. Strict vessel length restrictions led to rejection.")
+        st.success("**Fiji** (Alternative Port) - Where cargo was ultimately discharged. Demurrage costs commenced here.")
+
+    # Legal Issues
+    with st.expander("⚖️ KEY LEGAL ISSUES", expanded=False):
+        legal_issues = [
+            {"Issue": "Contract Performance", "Description": "Did Noksel breach by failing to deliver to Futuna?", "Strength": "Strong for Claimant"},
+            {"Issue": "Vessel Suitability", "Description": "Was vessel unsuitable for intended voyage?", "Strength": "Strong for Claimant"},
+            {"Issue": "Due Diligence", "Description": "Should length requirements have been verified?", "Strength": "Strong for Claimant"},
+            {"Issue": "Force Majeure", "Description": "Do engine/COVID problems excuse performance?", "Strength": "Noksel's best defense"}
+        ]
+        
+        for issue in legal_issues:
+            if "Claimant" in issue["Strength"]:
+                st.success(f"**{issue['Issue']}:** {issue['Description']} - *{issue['Strength']}*")
+            else:
+                st.warning(f"**{issue['Issue']}:** {issue['Description']} - *{issue['Strength']}*")
+
+# CENTER COLUMN
+with center_col:
+    st.subheader("🤝 STRONGEST COMPETING NARRATIVES")
     
-    df = pd.DataFrame(data)
-    st.dataframe(df, use_container_width=True)
+    tab1, tab2 = st.tabs(["🟢 CLAIMANT'S STORY", "🔴 RESPONDENT'S DEFENSE"])
+    
+    with tab1:
+        st.success("### CLAIMANT'S WINNING STORY")
+        st.markdown("**'Noksel's Preventable Due Diligence Failure'**")
+        
+        st.markdown("**Opening:** This case is about basic professional negligence - Noksel failed to verify elementary vessel specifications before chartering.")
+        
+        with st.expander("Key Facts Supporting Story"):
+            st.markdown("""
+            • Futuna length limits: publicly available in maritime regulations
+            • MV MESSILA specs: known and discoverable pre-charter  
+            • Industry stand

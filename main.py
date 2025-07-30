@@ -69,7 +69,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# EXECUTIVE SUMMARY ROW - Always visible
+# EXECUTIVE SUMMARY ROW - Always visible on all tabs
 exec_col1, exec_col2, exec_col3, exec_col4, exec_col5 = st.columns(5)
 
 with exec_col1:
@@ -146,6 +146,24 @@ with tab1:
             else:
                 st.info(f"**{date}:** {event}")
 
+    # ✅ EXECUTIVE DECISION MATRIX - Include on Case Overview tab
+    st.markdown("---")
+    st.markdown("#### 🎯 Executive Decision Matrix")
+
+    decision_col1, decision_col2, decision_col3, decision_col4 = st.columns(4)
+
+    with decision_col1:
+        st.success("**✅ GO/NO-GO**\nSettlement: **GO**\nStrong case, willing counterparty")
+
+    with decision_col2:
+        st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")
+
+    with decision_col3:
+        st.warning("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
+
+    with decision_col4:
+        st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+
 with tab2:
     # COMPETING NARRATIVES - Side by side comparison
     narrative_left, narrative_right = st.columns(2)
@@ -205,6 +223,8 @@ with tab2:
         """)
     
     st.info("**🎯 TRIBUNAL DECISION POINT:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
+    
+    # ❌ NO Executive Decision Matrix on Competing Narratives tab
 
 with tab3:
     # STRATEGIC ANALYSIS - Dashboard style layout
@@ -266,6 +286,24 @@ with tab3:
         st.error("**Worst (20%):** $9K+")
         st.info("**Expected:** $28K")
 
+    # ✅ EXECUTIVE DECISION MATRIX - Include on Strategic Analysis tab
+    st.markdown("---")
+    st.markdown("#### 🎯 Executive Decision Matrix")
+
+    decision_col1, decision_col2, decision_col3, decision_col4 = st.columns(4)
+
+    with decision_col1:
+        st.success("**✅ GO/NO-GO**\nSettlement: **GO**\nStrong case, willing counterparty")
+
+    with decision_col2:
+        st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")
+
+    with decision_col3:
+        st.warning("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
+
+    with decision_col4:
+        st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+
 with tab4:
     # DETAILED INTEL - For deeper dive
     intel_left, intel_right = st.columns(2)
@@ -301,24 +339,8 @@ with tab4:
         st.error("**IMMEDIATE (Next 7 days):**\n• Commission LMAA mediation\n• Asset investigation\n• Settlement framework")
         st.warning("**SHORT TERM (7-30 days):**\n• Negotiate terms\n• Document enforcement prep\n• Monitor compliance")
         st.info("**MEDIUM TERM (30-90 days):**\n• Execute settlement\n• Enforcement if needed\n• Case closure")
-
-# BOTTOM EXECUTIVE SUMMARY - Smaller headers
-st.markdown("---")
-st.markdown("#### 🎯 Executive Decision Matrix")
-
-decision_col1, decision_col2, decision_col3, decision_col4 = st.columns(4)
-
-with decision_col1:
-    st.success("**✅ GO/NO-GO**\nSettlement: **GO**\nStrong case, willing counterparty")
-
-with decision_col2:
-    st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")
-
-with decision_col3:
-    st.warning("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
-
-with decision_col4:
-    st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+    
+    # ❌ NO Executive Decision Matrix on Detailed Intel tab
 
 # Footer
 st.caption(f"Legal Dashboard • Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')} • Case: MV MESSILA Demurrage Dispute")

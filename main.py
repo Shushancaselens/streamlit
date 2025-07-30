@@ -161,4 +161,126 @@ with center_col:
             st.markdown("""
             • Futuna length limits: publicly available in maritime regulations
             • MV MESSILA specs: known and discoverable pre-charter  
-            • Industry stand
+            • Industry standard: charterer verifies destination compliance
+            • 11-month voyage wasted due to 5-minute regulation check
+            """)
+        
+        st.markdown("**Narrative Arc:** We provided a vessel in good faith. Despite extraordinary 4-month engine repairs costing us significantly, we still attempted delivery. When rejected due to Noksel's oversight, we immediately found alternative port to mitigate damages.")
+        
+        with st.expander("Powerful Arguments"):
+            st.markdown("""
+            • Engine problems irrelevant - vessel would have been rejected anyway
+            • Our mitigation efforts (Fiji discharge) show good faith
+            • Demurrage is natural consequence of charterer's failures
+            • Professional standard breached - any competent charterer would have checked
+            """)
+            
+        st.markdown("**Closing:** Noksel wants to blame engine problems for their own professional negligence. The vessel was rejected for basic specifications they should have verified on day one.")
+    
+    with tab2:
+        st.error("### RESPONDENT'S BEST DEFENSE")
+        st.markdown("**'Vessel Owner Misrepresentation & Force Majeure'**")
+        
+        st.markdown("**Opening:** We were victims of vessel owner misrepresentation and extraordinary circumstances beyond any party's control.")
+        
+        with st.expander("Key Facts Supporting Story"):
+            st.markdown("""
+            • Vessel history: Multiple name changes suggest concealment
+            • Build records: Contradictory construction data (Ukraine vs Netherlands)
+            • Engine condition: Award claims 'no problems' but 4-month repairs needed
+            • COVID-19: 2021 spare parts delivery restrictions were unforeseeable
+            """)
+        
+        st.markdown("**Narrative Arc:** We relied on vessel owner representations about seaworthiness. The vessel's hidden problems caused the real delay. When we finally reached Futuna after overcoming these obstacles, sudden regulatory enforcement seemed suspiciously timed.")
+        
+        with st.expander("Powerful Arguments"):
+            st.markdown("""
+            • Vessel owners knew of seaworthiness issues but concealed them
+            • Multiple vessel identity changes show pattern of liability avoidance
+            • Futuna regulation timing: Nov 9 amendment day before rejection
+            • Force majeure: Engine failure + COVID = unforeseeable events
+            """)
+            
+        st.markdown("**Closing:** If the vessel had been seaworthy as represented, we would have reached Futuna months earlier, before any regulatory changes. This is vessel owner liability, not charterer negligence.")
+    
+    st.info("**Tribunal Decision Point:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
+
+# RIGHT COLUMN  
+with right_col:
+    # Causation Analysis
+    with st.expander("🔍 CAUSATION ANALYSIS", expanded=True):
+        st.info("**Proximate Cause Test:** What was the 'but for' cause of demurrage?")
+        
+        st.success("**Claimant's Theory:** Length non-compliance → Rejection → Demurrage *(Engine problems irrelevant)*")
+        st.error("**Respondent's Theory:** Engine failure → Delay → Late arrival → Rejection *(Timing was everything)*")
+        st.warning("**Key Issue:** Would vessel have been rejected even if arrived on time?")
+
+    # Expert Witness Strategy  
+    with st.expander("👨‍🎓 EXPERT WITNESS STRATEGY"):
+        st.success("**CLAIMANT NEEDS:** Maritime surveyor, Regulatory expert, Industry expert")
+        st.error("**RESPONDENT NEEDS:** Marine engineer, COVID expert, Regulatory expert")
+        st.info("**Battle of Experts:** Due diligence standard vs force majeure scope")
+
+    # Evidence Strength
+    with st.expander("📊 EVIDENCE STRENGTH"):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.success("**STRONG**")
+            st.markdown("• Arbitration award\n• Vessel rejection\n• Name changes\n• Build records")
+        with col2:
+            st.warning("**MEDIUM**") 
+            st.markdown("• Engine repairs\n• COVID disruptions\n• Regulatory timing\n• Industry standards")
+        with col3:
+            st.error("**WEAK**)
+            st.markdown("• Owner knowledge\n• Discoverability\n• Force majeure\n• Mitigation efforts")
+
+    # Settlement vs Litigation
+    with st.expander("💼 SETTLEMENT vs LITIGATION"):
+        st.success("**SETTLEMENT DRIVERS (70% Probability)**")
+        st.markdown("• Payment arrangement in place\n• Turkish enforcement uncertainty\n• Business relationships\n• Litigation costs")
+        
+        st.error("**LITIGATION DRIVERS (Medium Risk)**")
+        st.markdown("• Strong precedent value\n• Clear liability\n• Vessel credibility issues\n• High recovery potential")
+
+    # Time-Decay Risk
+    with st.expander("⏱️ TIME-DECAY RISK"):
+        time_data = [
+            {"Period": "Days 0-30", "Probability": "85%", "Description": "Peak recovery window"},
+            {"Period": "Days 30-90", "Probability": "70%", "Description": "Settlement urgency peaks"}, 
+            {"Period": "Days 90-150", "Probability": "55%", "Description": "Enforcement preparation"},
+            {"Period": "Days 150-180", "Probability": "40%", "Description": "Default triggers"}
+        ]
+        
+        for item in time_data:
+            if item["Probability"] == "85%":
+                st.success(f"**{item['Period']}:** {item['Probability']} - {item['Description']}")
+            elif item["Probability"] == "70%":
+                st.warning(f"**{item['Period']}:** {item['Probability']} - {item['Description']}")
+            else:
+                st.error(f"**{item['Period']}:** {item['Probability']} - {item['Description']}")
+        
+        st.info("**Optimal Window:** Days 15-45")
+
+    # Recovery Scenarios
+    with st.expander("💰 RECOVERY SCENARIOS"):
+        st.success("**Best (90%):** $40K+")
+        st.warning("**Likely (60%):** $27K+") 
+        st.error("**Worst (20%):** $9K+")
+        st.info("**Expected Value:** $28K")
+
+    # Executive Dashboard
+    st.subheader("🎯 EXECUTIVE DASHBOARD")
+    
+    exec_col1, exec_col2 = st.columns(2)
+    with exec_col1:
+        st.success("**GO/NO-GO**\nSettlement: GO")
+        st.warning("**BUDGET**\n$15K costs")
+    with exec_col2:
+        st.info("**TIMING**\nWithin 15 days")
+        st.error("**TARGET**\n65% recovery")
+    
+    st.info("**NEXT ACTION:** Commission LMAA mediation")
+
+# Footer
+st.divider()
+st.caption("Dashboard generated for legal case analysis • Last updated: " + datetime.now().strftime("%Y-%m-%d %H:%M"))

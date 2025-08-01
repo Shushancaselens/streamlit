@@ -179,7 +179,7 @@ with tab3:
     with col3:
         st.markdown("**Source**")
     
-    st.markdown("")
+    st.markdown("---")
     
     # Table rows
     for term, definition, source in filtered_definitions:

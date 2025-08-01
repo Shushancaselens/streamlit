@@ -168,14 +168,14 @@ with tab3:
             "Aquatics Integrity Unit of World Aquatics.",
             "Bulgarian Swimming Federation."
         ],
-        "Source": ["2017-00-00 case", "2006-06-20 case", "2017-00-00 case", "2006-06-20 case", "2006-06-20 case", "2006-06-20 case", "2006-06-20 case", "2017-00-00 case", "2017-00-00 case", "2017-00-00 case", "2017-00-00 case"]
+        "Type": ["Person", "Person", "Person", "Location", "Location", "Location", "Organization", "Organization", "Organization", "Organization", "Organization"]
     }
     
     df = pd.DataFrame(definitions_data)
     
     # Filter based on search
     if search_term:
-        mask = df['Term'].str.lower().str.contains(search_term) | df['Definition'].str.lower().str.contains(search_term)
+        mask = df['Term'].str.lower().str.contains(search_term) | df['Definition'].str.lower().str.contains(search_term) | df['Type'].str.lower().str.contains(search_term)
         df = df[mask]
     
     st.dataframe(df, use_container_width=True, hide_index=True)

@@ -40,11 +40,13 @@ with st.sidebar:
 # Main content
 st.header("Case name: admissability; challenge; request_for_a_stay; statement_of_appeal")
 
-tab1, tab2 = st.tabs(["Card View", "Table View"])
+# Create tabs
+tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
     st.text_input("Search", placeholder="Search...")
     
+    # First timeline item
     with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
         
         # Top section with sources and tags in a single horizontal row
@@ -95,7 +97,7 @@ with tab1:
         
         st.markdown("**Summary:** This document, titled 'Requête de conciliation **Antani Ivanov** c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer **Antani Ivanov**. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated **Ivanov's** right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
 
-    # Second timeline item from the screenshot
+    # Second timeline item
     with st.expander("🔵 2006-06-20 | On 20 June 06, **Yves Dassonville**, as High Commissioner of the Republic in New Caledonia, repealed and replaced order no. 2006-2/AEM of 20 June 2006 with a new order regulating vessel access to the Leava wharf in Futuna. | :green[1 Source]", expanded=False):
         
         # Three column layout for this case
@@ -130,33 +132,14 @@ with tab1:
                 st.button("View Document ⌄", key="view_doc_2", use_container_width=True)
             with col2:
                 st.button("📄 Download PDF", key="download_2", use_container_width=True)
-    
-    with st.expander("2017-00-00 | At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.", expanded=False):
-        st.write("Constitution details...")
-    
-    with st.expander("2020-00-00 | In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.", expanded=False):
-        st.write("Olympic qualification details...")
-    
-    with st.expander("2022-12-12 | On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.", expanded=False):
-        st.write("Integrity Code details...")
-    
-    with st.expander("2023-01-01 | On 2023-01-01 the Constitution of World Aquatics came into force.", expanded=False):
-        st.write("Constitution implementation details...")
-    
-    with st.expander("2023-01-01 | On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau.", expanded=False):
-        st.write("Bureau composition details...")
 
 with tab2:
     # Table view
     data = {
-        "Date": ["2017-00-00", "2017-00-00", "2020-00-00", "2022-12-12", "2023-01-01", "2023-01-01"],
+        "Date": ["2017-00-00", "2006-06-20"],
         "Event": [
             "In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.",
-            "At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.",
-            "In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.",
-            "On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.",
-            "On 2023-01-01 the Constitution of World Aquatics came into force.",
-            "On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau."
+            "On 20 June 06, Yves Dassonville, as High Commissioner of the Republic in New Caledonia, repealed and replaced order no. 2006-2/AEM of 20 June 2006 with a new order regulating vessel access to the Leava wharf in Futuna."
         ]
     }
     

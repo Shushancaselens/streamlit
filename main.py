@@ -1,232 +1,450 @@
-def visualize(data, unique_id="", sidebar_values=None):
-    # Defensive: ensure data is always a dict with "events"
-    if isinstance(data, list):
-        events = data
-    elif isinstance(data, dict) and "events" in data:
-        events = data["events"]
-    else:
-        st.error("Invalid data format for visualize()")
-        st.stop()
-    
-    # st.markdown("### 🔍 Search Events")
-    search_query = ""
-    st.markdown("\n")
-    st.markdown("\n")
-    search_query = st.text_input("", placeholder="Search...", label_visibility="collapsed", key=f"search_input_{unique_id}")
-    st.markdown("\n")
-    st.markdown("\n")
-    # Use passed sidebar values or create new ones
-    if sidebar_values is None:
-        start_date, end_date, show_only_with_submissions, show_only_with_both_submissions, selected_case, selected_doc_types, selected_entity_names = show_sidebar(events, unique_id)
-    else:
-        start_date, end_date, show_only_with_submissions, show_only_with_both_submissions, selected_case, selected_doc_types, selected_entity_names = sidebar_values
-    
-    # Filter events
-    filtered_events = events
-    
-    # Apply case name filter
-    if selected_case and selected_case != "All Events":
-        filtered_events = [event for event in filtered_events 
-                        if event.get("case_name") == selected_case]
-    
-    # Apply document type filter
-    if selected_doc_types and len(selected_doc_types) > 0:
-        filtered_events = [event for event in filtered_events 
-                        if (event.get("doc_type", "evidence") if not isinstance(event.get("doc_type"), tuple) else event.get("doc_type", ("evidence",))[0]) in selected_doc_types]
-    
-    # Apply entity name filter
-    if selected_entity_names and len(selected_entity_names) > 0:
-        filtered_events = [event for event in filtered_events 
-                        if all(selected_name in [entity.get("name") for entity in event.get("named_entities", []) if isinstance(entity, dict)]
-                               for selected_name in selected_entity_names)]
-    # If no entity names are selected, show all events (no filtering)
-    
+import streamlit as st
+import pandas as pd
+from datetime import datetime, date
+import time
+import random
 
+# Page configuration
+st.set_page_config(
+    page_title="Caselens - Legal Research Platform",
+    page_icon="⚖️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Initialize session state
+if 'search_history' not in st.session_state:
+    st.session_state.search_history = []
+if 'bookmarked_cases' not in st.session_state:
+    st.session_state.bookmarked_cases = {}  # Changed to dict to store notes
+if 'current_case' not in st.session_state:
+    st.session_state.current_case = None
+
+# Sample case database
+CASES_DATABASE = [
+    {
+        "id": "CAS_2013_A_3165",
+        "title": "CAS 2013/A/3165",
+        "date": "2014-01-14",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "FC Volyn",
+        "respondents": "Issa Ndoye",
+        "president": "Petros Mavroidis",
+        "arbitrator1": "Geraint Jones",
+        "arbitrator2": "Raymond Hack",
+        "summary": "The case involves a contractual dispute between FC Volyn, a Ukrainian football club, and Issa Ndoye, a Senegalese footballer. Ndoye terminated his employment with FC Volyn in June 2011, claiming unpaid salary and contract breach, subsequently bringing a claim before FIFA's Dispute Resolution Chamber (DRC), which ruled in his favor, ordering the club to pay outstanding remuneration and compensation. FC Volyn appealed to the CAS, arguing that Ndoye had no just cause due to his alleged breaches (mainly late returns to training), while Ndoye countered that non-payment constituted just cause and sought increased compensation. Both parties debated applicable law and timing of appeals/counterclaims.",
+        "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Ndoye's salary for over three months was a substantial breach, constituting just cause for contract termination. Alleged late returns by Ndoye did not nullify this breach, and there was no evidence he agreed to delay payment. Counterclaims by respondents were inadmissible per CAS procedural rules. The compensation set by the FIFA DRC was appropriate.",
+        "case_outcome": "The appeal by FC Volyn was dismissed and the FIFA DRC's decision was upheld: FC Volyn must pay Ndoye USD 299,200 in outstanding remuneration and USD 495,000 as compensation. Ndoye's counterclaim for additional damages was ruled inadmissible, and all other requests were dismissed. The panel confirmed that the time limit for appeal had been respected and that FIFA regulations (with Swiss law supplementary) applied.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
+                "full_context": "Page 15 - 77. The concept of just cause has been extensively developed through CAS jurisprudence and FIFA regulations. The FIFA Regulations on the Status and Transfer of Players (RSTP) provide the foundational framework for determining when a party may terminate a contract.\n\nPage 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case. Behaviour that is in violation of the terms of an employment contract cannot justify unilateral termination by the other party if such behaviour is of minor importance.'\n\nPage 15 - 79. Furthermore, the Commentary emphasizes that just cause must be of such gravity that the injured party cannot reasonably be expected to continue the employment relationship. This standard has been consistently applied by CAS panels in determining whether contract termination was justified."
+            },
+            {
+                "excerpt": "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
+                "full_context": "Page 22 - 88. The obligation to pay salary is a fundamental contractual duty in employment relationships. When an employer fails to meet this basic obligation, it strikes at the heart of the employment contract.\n\nPage 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract. The CAS has consistently held that when salary payments are delayed for a period exceeding two to three months, this constitutes a substantial breach sufficient to justify termination.\n\nPage 22 - 90. However, the employee must demonstrate that they have given the employer reasonable opportunity to remedy the breach and that the non-payment was not justified by any countervailing circumstances or legitimate disputes over the amount owed."
+            },
+            {
+                "excerpt": "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship.",
+                "full_context": "Page 31 - 104. In assessing whether just cause exists, CAS panels must weigh all relevant circumstances, including the nature and severity of the breach, the conduct of both parties, and the overall context of the contractual relationship.\n\nPage 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship. This objective test requires careful analysis of whether a reasonable person in the same position would consider the breach sufficiently serious to warrant termination.\n\nPage 31 - 106. The Panel notes that minor infractions, isolated incidents, or breaches that can be readily remedied do not typically constitute just cause. The breach must fundamentally undermine the basis of the contractual relationship and make continued performance unreasonable or impossible."
+            }
+        ],
+        "similarity_score": 0.87
+    },
+    {
+        "id": "CAS_2020_A_7242",
+        "title": "CAS 2020/A/7242",
+        "date": "2021-11-23",
+        "procedure": "Appeal Arbitration Procedure",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Partially upheld",
+        "sport": "Football",
+        "appellants": "Al Wahda FSC Company",
+        "respondents": "Mourad Batna, Al Jazira FSC",
+        "president": "Mr Mark Hovell",
+        "arbitrator1": "Prof. Luigi Fumagalli",
+        "arbitrator2": "Mr Manfred Nan",
+        "summary": "Contractual dispute involving player Mourad Batna's transfer and termination. Al Wahda challenged the DRC decision regarding just cause for contract termination and compensation amounts.",
+        "court_reasoning": "The panel analyzed whether the player had just cause to terminate his contract with Al Wahda. The court found that systematic non-payment of salaries constituted a fundamental breach of contract, giving the player just cause for termination.",
+        "case_outcome": "The appeal was partially upheld. Al Wahda was ordered to pay outstanding compensation, but the amount was reduced from the original DRC decision.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 21 - i. The existence of just cause",
+                "full_context": "Page 21 - The Panel must determine whether the player had just cause to terminate his employment contract. Just cause exists when there is a breach of contract of such gravity that the injured party cannot reasonably be expected to continue the contractual relationship."
+            }
+        ],
+        "similarity_score": 0.82
+    },
+    {
+        "id": "CAS_2022_A_8836",
+        "title": "CAS 2022/A/8836",
+        "date": "2023-05-08",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "Samsunspor",
+        "respondents": "Brice Dja Djedje",
+        "president": "Mr Philippe Sands",
+        "arbitrator1": "Prof. Martin Schimke",
+        "arbitrator2": "Mr José Juan Pintó",
+        "summary": "Dispute over contract termination between Turkish club Samsunspor and player Brice Dja Djedje regarding unpaid wages and just cause for termination.",
+        "court_reasoning": "The Panel found that persistent non-payment of salaries over several months constituted just cause for the player to terminate his contract. The club's arguments regarding financial difficulties were not sufficient to excuse the breach.",
+        "case_outcome": "Appeal dismissed. The club was ordered to pay outstanding salaries and compensation to the player.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 18 - 67. Non-payment of salary for more than two months constitutes just cause",
+                "full_context": "Page 18 - 67. The established CAS jurisprudence clearly states that non-payment of salary for more than two months constitutes just cause for contract termination, unless there are exceptional circumstances that would justify the delay in payment."
+            }
+        ],
+        "similarity_score": 0.79
+    },
+    {
+        "id": "CAS_2023_A_9444",
+        "title": "CAS 2023/A/9444",
+        "date": "2023-10-27",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "U Craiova 1948",
+        "respondents": "Marko Gajic",
+        "president": "Prof. Ulrich Haas",
+        "arbitrator1": "Mr Manfred Nan",
+        "arbitrator2": "Dr. Despina Mavromati",
+        "summary": "Contract termination case involving player Marko Gajic and Romanian club U Craiova 1948. The dispute centered on whether the player had just cause to terminate due to unpaid wages.",
+        "court_reasoning": "The Panel determined that the club's failure to pay salaries for an extended period constituted a material breach of contract, providing just cause for the player's termination.",
+        "case_outcome": "The appeal was dismissed. The club was required to pay outstanding remuneration and compensation to the player.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 25 - 89. Just cause requires objective assessment of breach severity",
+                "full_context": "Page 25 - 89. Just cause requires objective assessment of breach severity. The Panel must determine whether a reasonable person in the player's position would consider the breach sufficiently serious to warrant contract termination."
+            }
+        ],
+        "similarity_score": 0.75
+    },
+    {
+        "id": "CAS_2022_A_9165",
+        "title": "CAS 2022/A/9165",
+        "date": "2023-09-05",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Partially upheld",
+        "sport": "Football",
+        "appellants": "BGPU-BG Pathum United FC",
+        "respondents": "Daniel Garcia Carrillo",
+        "president": "Prof. Luigi Fumagalli",
+        "arbitrator1": "Mr José Juan Pintó",
+        "arbitrator2": "Dr. Despina Mavromati",
+        "summary": "Contractual dispute between Thai club BGPU-BG Pathum United FC and Spanish player Daniel Garcia Carrillo regarding contract termination and compensation.",
+        "court_reasoning": "The Panel analyzed whether systematic delays in salary payment constituted just cause for termination. The court found that while delays occurred, they did not reach the threshold for just cause.",
+        "case_outcome": "The appeal was partially upheld. The compensation amount was adjusted, but the club was still required to pay outstanding wages.",
+        "relevant_passages": [
+            {
+                "excerpt": "Page 19 - 72. Delay in payment must be substantial to constitute just cause",
+                "full_context": "Page 19 - 72. Delay in payment must be substantial to constitute just cause. Minor delays or isolated incidents of late payment do not typically provide grounds for contract termination, unless they form part of a pattern of persistent non-payment."
+            }
+        ],
+        "similarity_score": 0.73
+    }
+]
+
+# Custom CSS
+st.markdown("""
+<style>
+    .main-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
     
-    # Apply search filter
+    .logo-icon {
+        background-color: #4f46e5;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .question-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .sidebar-section {
+        margin-bottom: 25px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+def search_cases(query, max_results=20, similarity_threshold=0.5):
+    """Simulate case search with relevant results"""
+    relevant_cases = []
+    for case in CASES_DATABASE:
+        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
+            if case['similarity_score'] >= similarity_threshold:
+                relevant_cases.append(case)
+    
+    return relevant_cases[:max_results]
+
+# Sidebar Navigation
+with st.sidebar:
+    # Logo
+    st.markdown("""
+    <div class="main-header">
+        <span class="logo-icon">C</span>
+        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    # Navigation
+    st.markdown("### Navigation")
+    page = st.radio(
+        "",
+        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
+        index=0,
+        label_visibility="collapsed"
+    )
+    
+    st.markdown("---")
+    
+    if page == "🔍 Search":
+        # Search Options
+        st.markdown("### Search Options")
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Max Results**")
+            max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Similarity Threshold**")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            st.write(f"Current value: {similarity}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        show_similarity = st.checkbox("Show Similarity Scores ⓘ")
+
+# Main Content Area
+if page == "🔍 Search":
+    # Search Interface
+    st.markdown("### Enter your search query")
+    search_query = st.text_input(
+        "", 
+        value="just cause", 
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="search_input_updated"
+    )
+    
     if search_query:
-        filtered_events = [event for event in filtered_events 
-                        if search_query.lower() in event["event"].lower()]
-    
-    # Apply date filter
-    filtered_events = [
-        event for event in filtered_events
-        if parse_date(event["date"]) and start_date <= parse_date(event["date"]).date() <= end_date
-    ]
-    
-    # Apply submissions filter if toggle is on
-    if show_only_with_submissions:
-        filtered_events = [
-            event for event in filtered_events
-            if (event.get("claimant_arguments") or event.get("respondent_arguments"))
-        ]
-    
-    # Apply both submissions filter if that toggle is on
-    if show_only_with_both_submissions:
-        filtered_events = [
-            event for event in filtered_events
-            if (event.get("claimant_arguments") and event.get("respondent_arguments") and 
-                len(event.get("claimant_arguments", [])) > 0 and len(event.get("respondent_arguments", [])) > 0)
-        ]
+        # Perform search
+        results = search_cases(search_query, max_results, similarity)
         
-    
-    # Sort events by date
-    filtered_events = sorted(filtered_events, key=lambda x: parse_date(x["date"]) or datetime.min)
-
-    # Check if any events were found
-    if not filtered_events:
-        st.warning("⚠️ No events found with the provided filter combination. Please try adjusting your filters.")
-        return filtered_events
-
-    # Display events
-    for event_key, event in enumerate(filtered_events):
-        date_formatted = format_date(event["date"])
+        # Search results summary
+        st.success(f"Found {len(results)} results")
         
-        # Create expander for each event
-        # Add CSS to increase expander font size
-        st.markdown("""
-            <style>
-            .st-emotion-cache-br351g p {
-                font-size: 15px !important;
-            }
-            .st-emotion-cache-vlxhtx {
-                gap: 0.5rem !important;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-        # Highlight named entities in event title
-        highlighted_event = highlight_named_entities_in_event(event['event'], event.get('named_entities', []))
-        with st.expander(f"**:blue-background[:blue[{event['date']}]]** | {highlighted_event}"):
-            # Calculate citation counts
-            claimant_count = len(event.get("claimant_arguments", []))
-            respondent_count = len(event.get("respondent_arguments", []))
-            doc_count = len(event.get("pdf_name", []))
-            # total_count = claimant_count + respondent_count + doc_count
-            total_count = doc_count
+        # Show bookmark save reminder if user has bookmarks
+        if st.session_state.bookmarked_cases:
+            st.warning("💡 The bookmark changes will apply if you save the search above 💾")
+        
+        # Display search results with clean formatting
+        for case_index, case in enumerate(results):
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
             
-            # Determine if each party has addressed this event
-            has_claimant = claimant_count > 0
-            has_respondent = respondent_count > 0
-            
-            # Citations counter and party badges
-            # Build the badges dynamically based on who addressed the event
-            badges = []
-            if has_claimant:
-                badges.append('<span class="badge badge-active-claimant">Claimant</span>')
-            if has_respondent:
-                badges.append('<span class="badge badge-active-respondent">Respondent</span>')
-            
-            case_name_html = ""
-            if "case_name" in event and event["case_name"]:
-                case_name_html = f"""<span style="font-size: 12px; text-transform: uppercase; color: #757575; font-weight: 500; margin-right: 10px;">Proceedings:</span> <span class='badge badge-active-case'>{event['case_name']}</span>"""
-            
-            badges_html = ''.join(badges) if badges else '<span class="badge badge-inactive">Not Addressed</span>'
-
-            st.markdown(f"""
-            <div class="citation-counter">
-                <div class="counter-box">
-                    <span class="counter-value">{total_count}</span>
-                    <span class="counter-label">Sources</span>
-                </div>
-                <div style="border-left: 1px solid #ddd; height: 24px; margin: 0 16px;"></div>
-                {case_name_html}
-                <div style="border-left: 1px solid #ddd; height: 24px; margin: 0 16px;"></div>
-                <span style="font-size: 12px; text-transform: uppercase; color: #757575; font-weight: 500; margin-right: 10px;">Addressed by:</span>
-                {badges_html}
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Supporting Documents section
-            if event.get("pdf_name") or event.get("doc_sum"):
-                st.markdown("##### Supporting Documents")
-                # st.write(event)
+            with st.expander(case_title, expanded=(case_index == 0)):
                 
-                # Create sets to track unique documents and their summaries
-                seen_docs = set()
-                doc_sum_dict = {}
-
-                # Pair documents with their summaries and remove duplicates
-                for i, (pdf_name, doc_name) in enumerate(zip(event.get("pdf_name", []), event.get("doc_name", []))):
-                    if doc_name not in seen_docs:
-                        seen_docs.add(doc_name)
-                        doc_sum_dict[pdf_name] = {
-                            'pdf_name': pdf_name,
-                            'doc_name': doc_name,
-                            'doc_sum': event.get("doc_sum", [""])[i] if i < len(event.get("doc_sum", [])) else "",
-                            'source_text': event.get("source_text", [""])[i] if i < len(event.get("source_text", [])) else "",
-                            'page': int(event.get("page", ["0"])[i]) if i < len(event.get("page", [])) and event.get("page", ["0"])[i].isdigit() else 0,
-                        }
-
-                # Display unique documents
-                for supporting_doc_key, (pdf_name, details) in enumerate(doc_sum_dict.items()):
-                    # Remove timestamp suffix from PDF name using regex
-                    pdf_name = re.sub(r'_\d{8}_\d{6}\.pdf$', '', pdf_name)
+                st.markdown(f"""
+                **Procedure:** {case['procedure']}  
+                **Category:** {case['category']}  
+                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+                """)
+                
+                # Download PDF and Bookmark section
+                col1, col2 = st.columns([3, 7])
+                
+                with col1:
+                    download_key = f"download_{case['id']}_{case_index}"
+                    if st.button("📄 Download PDF", key=download_key):
+                        st.success(f"Downloading {case['title']}.pdf...")
+                        time.sleep(1)
+                        st.info("PDF download would start here in a real implementation.")
+                
+                with col2:
+                    # Bookmark section with notes
+                    bookmark_key = f"bookmark_{case['id']}_{case_index}"
+                    notes_key = f"notes_{case['id']}_{case_index}"
+                    is_bookmarked = case['id'] in st.session_state.bookmarked_cases
+                    
+                    # Get existing notes if bookmarked
+                    existing_notes = st.session_state.bookmarked_cases.get(case['id'], '') if is_bookmarked else ''
+                    
+                    bookmark_changed = st.checkbox("📌 Bookmark", value=is_bookmarked, key=bookmark_key)
+                    
+                    # Notes text area
+                    notes = st.text_area(
+                        "",
+                        value=existing_notes,
+                        placeholder="Add your notes about this case...",
+                        key=notes_key,
+                        label_visibility="collapsed",
+                        height=100
+                    )
+                    
+                    # Save bookmark with notes when checkbox changes or notes are updated
+                    if bookmark_changed != is_bookmarked:
+                        if bookmark_changed:
+                            st.session_state.bookmarked_cases[case['id']] = notes
+                            st.success("✅ Case bookmarked!")
+                        else:
+                            if case['id'] in st.session_state.bookmarked_cases:
+                                del st.session_state.bookmarked_cases[case['id']]
+                            st.success("❌ Bookmark removed")
+                        st.rerun()
+                    elif is_bookmarked and notes != existing_notes:
+                        # Update notes if bookmark exists and notes changed
+                        st.session_state.bookmarked_cases[case['id']] = notes
+                        st.success("📝 Notes updated!")
+                
+                st.markdown("---")
+                
+                # Relevant Passages - Most important, moved to top
+                st.markdown("### **Relevant Passages**")
+                for passage_index, passage in enumerate(case['relevant_passages']):
+                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
+                    
+                    # Extract page reference and content for excerpt (first page)
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
+                            
+                            # Put page and checkbox on same line
+                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
+                            
+                            if show_more:
+                                st.success(passage['full_context'])
+                            else:
+                                st.success(content.strip())
+                        else:
+                            st.success(excerpt_text)
+                    else:
+                        show_more = st.checkbox("show more", key=passage_unique_key)
+                        if show_more:
+                            st.success(passage['full_context'])
+                        else:
+                            st.success(excerpt_text)
+                
+                # Summary
+                st.info(f"**Summary:** {case['summary']}")
+                
+                # Court Reasoning
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                
+                # Case Outcome
+                with st.container():
                     st.markdown(f"""
-                    <div class="document-card">
-                        <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">{html.escape(pdf_name or "Unknown document")}</div>
-                        <div style="font-size: 14px; color: #616161; margin-top: 4px;"><b>Summary:</b> {html.escape(details["doc_sum"] or "No summary available")}</div>
-                        <div style="font-size: 14px; color: #616161; margin-top: 4px; background-color: #1c83e11a; padding: 8px; border-radius: 4px;"><span style="font-weight: 700;">Citation: </span><span>{html.escape(pdf_name or "Unknown document")}, page {details["page"]}.</span></div>
-                        <div style="font-size: 14px; color: #616161; margin-top: 4px; background-color: #d1fae5; padding: 8px; border-radius: 4px;"><span style="font-weight: 700;">Source: </span><span>{html.escape(details["source_text"] or "No source text available")}</span></div>
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
                     </div>
                     """, unsafe_allow_html=True)
-                    
-                    popover_col_1, popover_col_2 = st.columns([3, 1])
-                    
-                    key=f"{event_key}_{supporting_doc_key}_{pdf_name}_{generate_random_string()}"
-
-                    with popover_col_1.popover("View Document", use_container_width=True):
-                        # Search for PDF in base folder and subfolders
-                        
-                        retrieve_pdf(base_folder, details, key)
-
-                    with popover_col_2:
-                        download_pdf(base_folder, details, key)
-                       
-                    # with popover_col_3:
-                    #     @st.fragment
-                    #     def on_copy_click_button(text):
-                    #         def on_copy_click(text):
-                    #             clipboard.copy(text)
-                    #             st.toast("Text copied to clipboard!", icon="📋")
-
-                    #         st.button("📋 Copy Source", key=f"copy_source_{key}", on_click=on_copy_click, args=(text,), use_container_width=True)
-                    #     on_copy_click_button(f"""Page {details["page"]}: {details["source_text"]}""")
-            
-            # Submissions section
-            if event.get("claimant_arguments") or event.get("respondent_arguments"):
-                st.markdown("##### Submissions")
                 
-                # Two-column layout for claimant and respondent
-                col1, col2 = st.columns(2)
+                # AI Question Interface
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
+                question_unique_key = f"ai_question_{case['id']}_{case_index}"
+                user_question = st.text_area(
+                    "",
+                    placeholder="e.g., What was the main legal issue?",
+                    key=question_unique_key,
+                    label_visibility="collapsed"
+                )
                 
-                # Claimant submissions
-                with col1:
-                    st.markdown("<div class='claimant-header'>Claimant</div>", unsafe_allow_html=True)
-                    
-                    if event.get("claimant_arguments"):
-                        for arg in event["claimant_arguments"]:
+                button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+                if st.button("Ask Question", key=button_unique_key):
+                    if user_question:
+                        with st.spinner("Analyzing case..."):
+                            time.sleep(2)
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
+                            
                             st.markdown(f"""
-                            <div class="document-card">
-                                <div style="font-weight: 500;">Page {arg['page']}</div>
-                                <div style="font-size: 14px; color: #616161; margin-top: 4px;">{arg['source_text']}</div>
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {ai_answer}
                             </div>
                             """, unsafe_allow_html=True)
-                    else:
-                        st.markdown("<div style='color: #BDBDBD; font-style: italic;'>No claimant submissions</div>", unsafe_allow_html=True)
+
+elif page == "📊 Analytics":
+    st.title("📊 Legal Analytics Dashboard")
+    st.info("Analytics features coming soon.")
+
+elif page == "🔖 Bookmarks":
+    st.title("🔖 Bookmarked Cases")
+    
+    if st.session_state.bookmarked_cases:
+        st.success(f"You have {len(st.session_state.bookmarked_cases)} bookmarked case(s)")
+        
+        # Display bookmarked cases
+        for case_id, notes in st.session_state.bookmarked_cases.items():
+            # Find the case in the database
+            bookmarked_case = next((case for case in CASES_DATABASE if case['id'] == case_id), None)
             
-                # Respondent submissions
-                with col2:
-                    st.markdown("<div class='respondent-header'>Respondent</div>", unsafe_allow_html=True)
+            if bookmarked_case:
+                with st.container():
+                    st.markdown(f"""
+                    ### {bookmarked_case['title']}
+                    **Date:** {bookmarked_case['date']} | **Parties:** {bookmarked_case['appellants']} v. {bookmarked_case['respondents']}  
+                    **Matter:** {bookmarked_case['matter']} | **Outcome:** {bookmarked_case['outcome']} | **Sport:** {bookmarked_case['sport']}
+                    """)
                     
-                    if event.get("respondent_arguments"):
-                        for arg in event["respondent_arguments"]:
-                            st.markdown(f"""
-                            <div class="document-card">
-                                <div style="font-weight: 500;">Page {arg['page']}</div>
-                                <div style="font-size: 14px; color: #616161; margin-top: 4px;">{arg['source_text']}</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                    else:
-                        st.markdown("<div style='color: #BDBDBD; font-style: italic;'>No respondent submissions</div>", unsafe_allow_html=True)
-    return filtered_events
+                    # Show notes if they exist
+                    if notes and notes.strip():
+                        st.markdown(f"**Your Notes:** {notes}")
+                    
+                    col1, col2 = st.columns([2, 8])
+                    with col1:
+                        if st.button(f"📄 Download PDF", key=f"bookmark_download_{case_id}"):
+                            st.success(f"Downloading {bookmarked_case['title']}.pdf...")
+                    
+                    with col2:
+                        if st.button(f"🗑️ Remove Bookmark", key=f"remove_bookmark_{case_id}"):
+                            del st.session_state.bookmarked_cases[case_id]
+                            st.success("Removed from bookmarks")
+                            st.rerun()
+                    
+                    st.markdown("---")
+    else:
+        st.info("No bookmarked cases yet. Bookmark cases from the search results to see them here.")
+
+elif page == "📄 Documents":
+    st.title("📄 Document Library")
+    st.info("Upload legal documents for analysis.")
+
+elif page == "👤 Admin":
+    st.title("👤 Admin Dashboard")
+    st.info("Admin features coming soon.")

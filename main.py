@@ -147,55 +147,31 @@ with tab2:
     st.dataframe(df, use_container_width=True)
 
 with tab3:
-    st.markdown("### Definitions from Case Documents")
+    st.markdown("### Definitions")
     
     # Search for definitions
-    search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...")
+    search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...").lower()
     
-    # Definition categories
-    col1, col2, col3 = st.columns(3)
+    # All definitions in one simple list
+    definitions = [
+        ("Antani Ivanov", "Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.", "2017-00-00 case"),
+        ("Yves Dassonville", "High Commissioner of the Republic in New Caledonia at the time of the order's issuance.", "2006-06-20 case"),
+        ("Husain Al Musallam", "Signatory for the Bureau in World Aquatics Integrity Code.", "2017-00-00 case"),
+        ("New Caledonia", "French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.", "2006-06-20 case"),
+        ("Futuna", "Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.", "2006-06-20 case"),
+        ("Leava", "Village and port on the island of Futuna, site of the regulated wharf.", "2006-06-20 case"),
+        ("High Commissioner", "French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.", "2006-06-20 case"),
+        ("World Aquatics", "International governing body for aquatic sports, formerly known as FINA.", "2017-00-00 case"),
+        ("Bulgarian Swimming Federation", "National swimming federation that issued the original disciplinary suspension.", "2017-00-00 case"),
+        ("AQIU", "Aquatics Integrity Unit of World Aquatics.", "2017-00-00 case"),
+        ("BSF", "Bulgarian Swimming Federation.", "2017-00-00 case")
+    ]
     
-    with col1:
-        st.markdown("#### 👥 People")
-        
-        with st.expander("**Yves Dassonville** - person"):
-            st.markdown("High Commissioner of the Republic in New Caledonia at the time of the order's issuance.")
-            st.markdown(":blue[**Source:** 2006-06-20 case]")
-        
-        with st.expander("**Antani Ivanov** - person"):
-            st.markdown("Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.")
-            st.markdown(":blue[**Source:** 2017-00-00 case]")
-        
-        with st.expander("**Husain Al Musallam** - person"):
-            st.markdown("Signatory for the Bureau in World Aquatics Integrity Code.")
-            st.markdown(":blue[**Source:** 2017-00-00 case]")
+    # Filter definitions based on search
+    filtered_definitions = [d for d in definitions if search_term in d[0].lower() or search_term in d[1].lower()] if search_term else definitions
     
-    with col2:
-        st.markdown("#### 🌍 Locations")
-        
-        with st.expander("**New Caledonia** - location"):
-            st.markdown("French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.")
-            st.markdown(":blue[**Source:** 2006-06-20 case]")
-        
-        with st.expander("**Futuna** - location"):
-            st.markdown("Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.")
-            st.markdown(":blue[**Source:** 2006-06-20 case]")
-        
-        with st.expander("**Leava** - location"):
-            st.markdown("Village and port on the island of Futuna, site of the regulated wharf.")
-            st.markdown(":blue[**Source:** 2006-06-20 case]")
-    
-    with col3:
-        st.markdown("#### 🏛️ Organizations")
-        
-        with st.expander("**High Commissioner** - organization"):
-            st.markdown("French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.")
-            st.markdown(":blue[**Source:** 2006-06-20 case]")
-        
-        with st.expander("**World Aquatics** - organization"):
-            st.markdown("International governing body for aquatic sports, formerly known as FINA.")
-            st.markdown(":blue[**Source:** 2017-00-00 case]")
-        
-        with st.expander("**Bulgarian Swimming Federation** - organization"):
-            st.markdown("National swimming federation that issued the original disciplinary suspension.")
-            st.markdown(":blue[**Source:** 2017-00-00 case]")
+    # Display definitions
+    for term, definition, source in filtered_definitions:
+        st.markdown(f"**{term}** - {definition}")
+        st.markdown(f":gray[Source: {source}]")
+        st.markdown("---")

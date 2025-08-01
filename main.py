@@ -152,30 +152,43 @@ with tab3:
     # Search for definitions
     search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...").lower()
     
-    # All definitions in table format
-    definitions_data = {
-        "Term": ["Antani Ivanov", "Yves Dassonville", "Husain Al Musallam", "New Caledonia", "Futuna", "Leava", "High Commissioner", "World Aquatics", "Bulgarian Swimming Federation", "AQIU", "BSF"],
-        "Definition": [
-            "Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.",
-            "High Commissioner of the Republic in New Caledonia at the time of the order's issuance.",
-            "Signatory for the Bureau in World Aquatics Integrity Code.",
-            "French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.",
-            "Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.",
-            "Village and port on the island of Futuna, site of the regulated wharf.",
-            "French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.",
-            "International governing body for aquatic sports, formerly known as FINA.",
-            "National swimming federation that issued the original disciplinary suspension.",
-            "Aquatics Integrity Unit of World Aquatics.",
-            "Bulgarian Swimming Federation."
-        ],
-        "Source": ["2017-00-00 case", "2006-06-20 case", "2017-00-00 case", "2006-06-20 case", "2006-06-20 case", "2006-06-20 case", "2006-06-20 case", "2017-00-00 case", "2017-00-00 case", "2017-00-00 case", "2017-00-00 case"]
-    }
+    # All definitions
+    definitions = [
+        ("Antani Ivanov", "Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.", "2017-00-00 case"),
+        ("Yves Dassonville", "High Commissioner of the Republic in New Caledonia at the time of the order's issuance.", "2006-06-20 case"),
+        ("Husain Al Musallam", "Signatory for the Bureau in World Aquatics Integrity Code.", "2017-00-00 case"),
+        ("New Caledonia", "French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.", "2006-06-20 case"),
+        ("Futuna", "Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.", "2006-06-20 case"),
+        ("Leava", "Village and port on the island of Futuna, site of the regulated wharf.", "2006-06-20 case"),
+        ("High Commissioner", "French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.", "2006-06-20 case"),
+        ("World Aquatics", "International governing body for aquatic sports, formerly known as FINA.", "2017-00-00 case"),
+        ("Bulgarian Swimming Federation", "National swimming federation that issued the original disciplinary suspension.", "2017-00-00 case"),
+        ("AQIU", "Aquatics Integrity Unit of World Aquatics.", "2017-00-00 case"),
+        ("BSF", "Bulgarian Swimming Federation.", "2017-00-00 case")
+    ]
     
-    df = pd.DataFrame(definitions_data)
+    # Filter definitions based on search
+    filtered_definitions = [d for d in definitions if search_term in d[0].lower() or search_term in d[1].lower()] if search_term else definitions
     
-    # Filter based on search
-    if search_term:
-        mask = df['Term'].str.lower().str.contains(search_term) | df['Definition'].str.lower().str.contains(search_term)
-        df = df[mask]
+    # Table headers
+    col1, col2, col3 = st.columns([2, 5, 2])
+    with col1:
+        st.markdown("**Term**")
+    with col2:
+        st.markdown("**Definition**")
+    with col3:
+        st.markdown("**Source**")
     
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.markdown("---")
+    
+    # Table rows
+    for term, definition, source in filtered_definitions:
+        col1, col2, col3 = st.columns([2, 5, 2])
+        with col1:
+            st.markdown(f"**{term}**")
+        with col2:
+            st.markdown(definition)
+        with col3:
+            st.markdown(f":blue[{source}]")
+        
+        st.markdown("")

@@ -152,7 +152,7 @@ with tab3:
     # Search for definitions
     search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...").lower()
     
-    # All definitions
+    # All definitions in one simple list
     definitions = [
         ("Antani Ivanov", "Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.", "2017-00-00 case"),
         ("Yves Dassonville", "High Commissioner of the Republic in New Caledonia at the time of the order's issuance.", "2006-06-20 case"),
@@ -170,25 +170,8 @@ with tab3:
     # Filter definitions based on search
     filtered_definitions = [d for d in definitions if search_term in d[0].lower() or search_term in d[1].lower()] if search_term else definitions
     
-    # Table headers
-    col1, col2, col3 = st.columns([2, 5, 2])
-    with col1:
-        st.markdown("**Term**")
-    with col2:
-        st.markdown("**Definition**")
-    with col3:
-        st.markdown("**Source**")
-    
-    st.markdown("---")
-    
-    # Table rows
+    # Display definitions
     for term, definition, source in filtered_definitions:
-        col1, col2, col3 = st.columns([2, 5, 2])
-        with col1:
-            st.markdown(f"**{term}**")
-        with col2:
-            st.markdown(definition)
-        with col3:
-            st.markdown(f":blue[{source}]")
-        
-        st.markdown("")
+        st.markdown(f"**{term}** - {definition}")
+        st.markdown(f":gray[Source: {source}]")
+        st.markdown("---")

@@ -1,167 +1,123 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, date
 
 # Page configuration
 st.set_page_config(
-    page_title="CaseLens",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Caselens",
+    page_icon="🔷",
+    layout="wide"
 )
-
-# Custom CSS for styling
-st.markdown("""
-<style>
-    .main-header {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        border-left: 4px solid #1f77b4;
-    }
-    
-    .case-date {
-        color: #1f77b4;
-        font-weight: bold;
-    }
-    
-    .definitions-section {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-    }
-    
-    .source-section {
-        background-color: #f0f8ff;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-    }
-    
-    .highlight-text {
-        background-color: #d4edda;
-        padding: 0.5rem;
-        border-radius: 0.3rem;
-        border-left: 3px solid #28a745;
-    }
-    
-    .sidebar-section {
-        margin-bottom: 2rem;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
-    st.title("🏛️ caselens")
+    st.header("🔷 caselens")
     
-    # Navigation
-    st.markdown("### Navigation")
-    nav_options = ["👤 Profile", "📅 Events", "📄 Documents"]
-    selected_nav = st.radio("", nav_options, index=1)
-    
-    st.markdown("---")
-    
-    # Case Filter
-    st.markdown("### 🔍 Case Filter")
-    st.markdown("**Select Case**")
-    case_filter = st.selectbox("", ["All Events", "Active Cases", "Closed Cases", "Pending Review"], index=0)
+    st.subheader("Profile")
+    st.subheader("📅 Events")
+    st.subheader("Documents")
     
     st.markdown("---")
     
-    # Document Type Filter
-    st.markdown("### 📋 Document Type Filter")
-    st.markdown("**Select Document Types**")
-    doc_type_filter = st.selectbox("", ["Choose an option", "Procedural", "Administrative", "Legal Opinion", "Evidence"], index=0)
+    st.subheader("🔽 Case Filter")
+    st.selectbox("Select Case", ["Admissibility"])
     
-    st.markdown("---")
+    st.subheader("📅 Date Range") 
+    st.text_input("Start Date", value="1724/01/01")
+    st.text_input("End Date", value="2025/07/21")
     
-    # Entity Name Filter
-    st.markdown("### 🏷️ Entity Name Filter")
-    st.markdown("**Select Entity Names**")
-    entity_filter = st.selectbox("", ["Choose an option", "High Commissioner", "Government Officials", "Organizations"], index=0)
+    st.subheader("⚙️ Submissions Filter")
+    st.checkbox("Addressed by party")
+    st.checkbox("Disputed by parties")
     
-    st.markdown("---")
+    st.button("Download", type="primary")
+
+# Main content
+st.header("Case name: admissability; challenge; request_for_a_stay; statement_of_appeal")
+
+tab1, tab2 = st.tabs(["Card View", "Table View"])
+
+with tab1:
+    st.text_input("Search", placeholder="Search...")
     
-    # Date Range
-    st.markdown("### 📅 Date Range")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("**Start Date**")
-        start_date = st.date_input("", value=date(1926, 12, 17), label_visibility="collapsed")
+    # Timeline items using expanders (native dropdowns)
+    with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
+        
+        # Top section with sources and tags in a single horizontal row
+        col1, col2, col3 = st.columns([0.6, 2.5, 2.5])
+        with col1:
+            with st.container(border=True):
+                st.markdown(":blue[**2**]  \n:gray[Sources]")
+        with col2:
+            st.pills("PROCEEDINGS:", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
+        with col3:
+            st.pills("ADDRESSED BY:", ["Not Addressed"], selection_mode="single", default=["Not Addressed"], key="addressed_pill")
+        
+        st.markdown("")
+        
+        # Supporting Documents section
+        st.markdown("#### Supporting Documents")
+        
+        # Document container
+        with st.container(border=True):
+            # Document title
+            st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
+            
+            # Document info with tags
+            st.markdown("**Document Type:** :green[Procedural] | **Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")
+            
+            st.markdown("")
+            
+            # Summary
+            st.markdown("**Summary:** This document, titled 'Request for Conciliation - **Antani Ivanov** v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer **Antani Ivanov**, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
+            
+            # Citation in gray container
+            st.info("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
+            
+            # Source in green container  
+            st.success("**Source:** 34. Mr. **Antani Ivanov** is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
+            
+            # Action buttons
+            col1, col2 = st.columns(2)
+            with col1:
+                st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
+            with col2:
+                st.button("📄 Download PDF", key="download_1", use_container_width=True)
+        
+        st.markdown("")
+        
+        # Second exhibit
+        st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")
+        
+        st.markdown("**Summary:** This document, titled 'Requête de conciliation **Antani Ivanov** c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer **Antani Ivanov**. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated **Ivanov's** right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
     
-    with col2:
-        st.markdown("**End Date**")
-        end_date = st.date_input("", value=date(2025, 1, 1), label_visibility="collapsed")
+    with st.expander("2017-00-00 | At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.", expanded=False):
+        st.write("Constitution details...")
     
-    st.markdown("---")
+    with st.expander("2020-00-00 | In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.", expanded=False):
+        st.write("Olympic qualification details...")
     
-    # Submissions Filter
-    st.markdown("### 📤 Submissions Filter")
-
-# Main content area
-st.markdown("""
-<div class="main-header">
-    <span class="case-date">2006-06-20</span> | On 20 June 06, <strong>Yves Dassonville</strong>, as <strong>High Commissioner of the Republic in New Caledonia</strong>, repealed and replaced order no. 2006-2/AEM of 20 June 2006 with a new order regulating vessel access to the <strong>Leava</strong> wharf in <strong>Futuna</strong>. | <span style="color: #28a745;">1 Source</span>
-</div>
-""", unsafe_allow_html=True)
-
-# Case details table
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.markdown("**Proceedings:**")
-    st.markdown('<span style="color: #6f42c1;">Astute CASE N 28459_v2</span>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown("**Addressed by:**")
-    st.markdown("None")
-
-with col3:
-    st.markdown("**Document Type:**")
-    st.markdown('<span style="color: #6f42c1;">procedural</span>', unsafe_allow_html=True)
-
-# Definitions section
-st.markdown("""
-<div class="definitions-section">
-    <h3>Definitions</h3>
-</div>
-""", unsafe_allow_html=True)
-
-# Create definitions table
-definitions_data = {
-    "Term": ["High Commissioner of th...", "New Caledonia", "Futuna", "Leava", "Yves Dassonville"],
-    "Type": ["organization", "location", "location", "location", "person"],
-    "Definition": [
-        "French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.",
-        "French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.",
-        "Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.",
-        "Village and port on the island of Futuna, site of the regulated wharf.",
-        "High Commissioner of the Republic in New Caledonia at the time of the order's issuance."
-    ]
-}
-
-df_definitions = pd.DataFrame(definitions_data)
-st.dataframe(df_definitions, use_container_width=True, hide_index=True)
-
-# Source section
-st.markdown("""
-<div class="source-section">
-    <h3>Source(s)</h3>
-    <h4>📄 Appendix 4 Bis - ENG.pdf</h4>
+    with st.expander("2022-12-12 | On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.", expanded=False):
+        st.write("Integrity Code details...")
     
-    <p><strong>Summary:</strong> This is an official order (arrêté) dated 16 June 2009, issued by the High Commissioner of the Republic in New Caledonia, regulating the access of vessels to the Leava wharf in Futuna. It establishes procedural requirements for advance notification, operational limitations based on vessel size and equipment, and prescribes authorized procedures for docking, with penalties for violations and references to previous law. The order is signed by Yves Dassonville, High Commissioner, and replaces an earlier order from June 2006.</p>
+    with st.expander("2023-01-01 | On 2023-01-01 the Constitution of World Aquatics came into force.", expanded=False):
+        st.write("Constitution implementation details...")
     
-    <p><strong>Citation:</strong> Appendix 4 Bis - ENG.pdf, page 2.</p>
-    
-    <div class="highlight-text">
-        <strong>Excerpt:</strong> This order repeals and replaces order no. 2006-2/AEM dij 20 June 2006.
-    </div>
-</div>
-""", unsafe_allow_html=True)
+    with st.expander("2023-01-01 | On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau.", expanded=False):
+        st.write("Bureau composition details...")
 
-# Footer
-st.markdown("---")
-st.markdown("*CaseLens Legal Case Management System*")
+with tab2:
+    # Table view
+    data = {
+        "Date": ["2017-00-00", "2017-00-00", "2020-00-00", "2022-12-12", "2023-01-01", "2023-01-01"],
+        "Event": [
+            "In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.",
+            "At the time of adoption of this Constitution, any term of office completed before 2017 shall be disregarded in calculating the number of full terms that a person has served as a Bureau or Executive Member.",
+            "In 2020 Antani Ivanov qualified for the 200m butterfly at the Summer Olympic Games.",
+            "On 2022-12-12, the World Aquatics Integrity Code was issued and signed in Melbourne by Husain Al Musallam and Brent J. Nowicki for the Bureau.",
+            "On 2023-01-01 the Constitution of World Aquatics came into force.",
+            "On 2023-01-01 the new composition of the Bureau as set out in Article 14 came into effect with the new additional positions within the Bureau."
+        ]
+    }
+    
+    df = pd.DataFrame(data)
+    st.dataframe(df, use_container_width=True)

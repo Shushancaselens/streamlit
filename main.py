@@ -129,11 +129,10 @@ with tab1:
         st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
 
 with tab2:
-    # 🎯 CORE QUESTION - NOW AT THE TOP for better context
+    # 🎯 CORE QUESTION - At the top for context
     st.info("#### 🎯 TRIBUNAL DECISION POINT: Did Noksel's due diligence failure outweigh force majeure circumstances?")
-    st.markdown("---")
     
-    # COMPETING NARRATIVES - Side by side comparison
+    # COMPETING NARRATIVES - Side by side comparison (removed the "---" divider)
     narrative_left, narrative_right = st.columns(2)
     
     with narrative_left:

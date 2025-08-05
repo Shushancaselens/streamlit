@@ -13,13 +13,6 @@ st.set_page_config(
 # Custom CSS for dashboard-style layout with smaller headers
 st.markdown("""
 <style>
-    .main-header {
-        background: linear-gradient(90deg, #1e293b 0%, #475569 100%);
-        padding: 1.5rem;
-        border-radius: 10px;
-        color: white;
-        margin-bottom: 1rem;
-    }
     .section-header {
         font-size: 16px;
         font-weight: 600;
@@ -53,37 +46,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER SECTION - Smaller title
-st.markdown("""
-<div class="main-header">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h2 style="margin: 0; font-size: 22px;">⚖️ MV MESSILA DEMURRAGE DISPUTE</h2>
-            <p style="margin: 0; opacity: 0.9; font-size: 14px;">Transasya v. Noksel Çelik Boru Sanayi A.Ş. | John Schofield | Award: Mar 19, 2023</p>
-        </div>
-        <div style="text-align: right;">
-            <h3 style="margin: 0; color: #10b981; font-size: 20px;">$37,317.71</h3>
-            <p style="margin: 0; font-size: 14px;">+ $3K fees • 180 days to payment</p>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# EXECUTIVE SUMMARY ROW - Always visible on all tabs
-exec_col1, exec_col2, exec_col3, exec_col4, exec_col5 = st.columns(5)
-
-with exec_col1:
-    st.metric("💰 Award Amount", "$37,317.71", "Awarded to Transasya")
-with exec_col2:
-    st.metric("📅 Payment Due", "180 days", "March 19, 2025")
-with exec_col3:
-    st.metric("🎯 Settlement Prob.", "70%", "Strong drivers")
-with exec_col4:
-    st.metric("⏱️ Optimal Window", "15-45 days", "Peak recovery")
-with exec_col5:
-    st.metric("🚀 Next Action", "LMAA Mediation", "Commission now")
-
-st.markdown("---")
+# Simple case title
+st.title("MV MESSILA Demurrage Dispute")
 
 # MAIN DASHBOARD TABS
 tab1, tab2, tab3, tab4 = st.tabs(["📊 **CASE OVERVIEW**", "🤝 **COMPETING NARRATIVES**", "📈 **STRATEGIC ANALYSIS**", "📋 **DETAILED INTEL**"])
@@ -223,8 +187,6 @@ with tab2:
         """)
     
     st.info("**🎯 TRIBUNAL DECISION POINT:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
-    
-    # ❌ NO Executive Decision Matrix on Competing Narratives tab
 
 with tab3:
     # STRATEGIC ANALYSIS - Dashboard style layout
@@ -339,8 +301,6 @@ with tab4:
         st.error("**IMMEDIATE (Next 7 days):**\n• Commission LMAA mediation\n• Asset investigation\n• Settlement framework")
         st.warning("**SHORT TERM (7-30 days):**\n• Negotiate terms\n• Document enforcement prep\n• Monitor compliance")
         st.info("**MEDIUM TERM (30-90 days):**\n• Execute settlement\n• Enforcement if needed\n• Case closure")
-    
-    # ❌ NO Executive Decision Matrix on Detailed Intel tab
 
 # Footer
 st.caption(f"Legal Dashboard • Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')} • Case: MV MESSILA Demurrage Dispute")

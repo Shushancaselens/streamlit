@@ -53,7 +53,7 @@ st.title("MV MESSILA Demurrage Dispute")
 tab1, tab2, tab3, tab4 = st.tabs(["📊 **CASE OVERVIEW**", "🤝 **COMPETING NARRATIVES**", "🎯 **CASE STRATEGY**", "📋 **DETAILED INTEL**"])
 
 with tab1:
-    # CASE OVERVIEW - Three column layout with better order
+    # CASE OVERVIEW - Three column layout with improved order
     overview_left, overview_center, overview_right = st.columns([1, 1, 1])
     
     with overview_left:
@@ -93,6 +93,22 @@ with tab1:
                 st.info(f"**{date}:** {event}")
         
     with overview_right:
+        st.markdown("#### 📄 Key Documents")
+        
+        # Critical docs - cleaner, less colorful
+        st.markdown("**CRITICAL**")
+        st.markdown("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
+        st.markdown("📄 **Charter Party Agreement** - Nov 12, 2020")
+        
+        st.markdown("**KEY EVIDENCE**") 
+        st.markdown("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
+        st.markdown("📄 **Engine Repair Records** - May-Oct 2021")
+        
+        st.markdown("#### ⚖️ Legal Strength")
+        st.success("✅ Contract Performance - **Strong for Claimant**")
+        st.success("✅ Vessel Suitability - **Strong for Claimant**") 
+        st.success("✅ Due Diligence - **Strong for Claimant**")
+        st.warning("⚠️ Force Majeure - **Noksel's best defense**")
 
     # ✅ EXECUTIVE DECISION MATRIX - Include on Case Overview tab
     st.markdown("---")
@@ -111,11 +127,12 @@ with tab1:
 
     with decision_col4:
         st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+
 with tab2:
     # 🎯 CORE QUESTION - At the top for context
     st.info("#### 🎯 TRIBUNAL DECISION POINT: Did Noksel's due diligence failure outweigh force majeure circumstances?")
     
-    # COMPETING NARRATIVES - Side by side comparison (removed the "---" divider)
+    # COMPETING NARRATIVES - Side by side comparison (no excessive spacing)
     narrative_left, narrative_right = st.columns(2)
     
     with narrative_left:
@@ -173,7 +190,7 @@ with tab2:
         """)
 
 with tab3:
-    # REDESIGNED CASE STRATEGY - More practical and actionable
+    # CASE STRATEGY - Practical and actionable
     st.markdown("#### 🎯 IMMEDIATE STRATEGIC DECISIONS")
     
     # Top priority decisions first
@@ -339,7 +356,7 @@ with tab3:
         • **Conclusion: Settlement clearly preferred**
         """)
 
-    # ✅ EXECUTIVE DECISION MATRIX - Include on Strategic Analysis tab
+    # ✅ EXECUTIVE DECISION MATRIX - Include on Case Strategy tab
     st.markdown("---")
     st.markdown("#### 🎯 Executive Decision Matrix")
 

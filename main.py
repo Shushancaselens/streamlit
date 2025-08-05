@@ -93,22 +93,22 @@ with tab1:
                 st.info(f"**{date}:** {event}")
         
     with overview_right:
-        st.markdown("#### 📄 Key Documents")
-        
-        # Critical docs - cleaner, less colorful
-        st.markdown("**CRITICAL**")
-        st.markdown("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
-        st.markdown("📄 **Charter Party Agreement** - Nov 12, 2020")
-        
-        st.markdown("**KEY EVIDENCE**") 
-        st.markdown("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
-        st.markdown("📄 **Engine Repair Records** - May-Oct 2021")
-        
-        st.markdown("#### ⚖️ Legal Strength")
-        st.success("✅ Contract Performance - **Strong for Claimant**")
-        st.success("✅ Vessel Suitability - **Strong for Claimant**") 
-        st.success("✅ Due Diligence - **Strong for Claimant**")
-        st.warning("⚠️ Force Majeure - **Noksel's best defense**")
+    st.markdown("#### 📄 Key Documents")
+    
+    # Critical docs - keep backgrounds, clean text
+    st.markdown("**CRITICAL**")
+    st.error("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
+    st.info("📄 **Charter Party Agreement** - Nov 12, 2020")
+    
+    st.markdown("**KEY EVIDENCE**") 
+    st.warning("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
+    st.info("📄 **Engine Repair Records** - May-Oct 2021")
+    
+    st.markdown("#### ⚖️ Legal Strength")
+    st.success("✅ Contract Performance - **Strong for Claimant**")
+    st.success("✅ Vessel Suitability - **Strong for Claimant**") 
+    st.success("✅ Due Diligence - **Strong for Claimant**")
+    st.warning("⚠️ Force Majeure - **Noksel's best defense**")
 
     # ✅ EXECUTIVE DECISION MATRIX - Include on Case Overview tab
     st.markdown("---")

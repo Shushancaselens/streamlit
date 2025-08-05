@@ -129,6 +129,10 @@ with tab1:
         st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
 
 with tab2:
+    # 🎯 CORE QUESTION - NOW AT THE TOP for better context
+    st.info("#### 🎯 TRIBUNAL DECISION POINT: Did Noksel's due diligence failure outweigh force majeure circumstances?")
+    st.markdown("---")
+    
     # COMPETING NARRATIVES - Side by side comparison
     narrative_left, narrative_right = st.columns(2)
     
@@ -185,8 +189,6 @@ with tab2:
         **Closing:**
         "If vessel seaworthy as represented, would have arrived before regulatory changes. This is vessel owner liability, not charterer negligence."
         """)
-    
-    st.info("**🎯 TRIBUNAL DECISION POINT:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
 
 with tab3:
     # REDESIGNED CASE STRATEGY - More practical and actionable

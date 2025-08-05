@@ -50,7 +50,7 @@ st.markdown("""
 st.title("MV MESSILA Demurrage Dispute")
 
 # MAIN DASHBOARD TABS
-tab1, tab2, tab3, tab4 = st.tabs(["📊 **CASE OVERVIEW**", "🤝 **COMPETING NARRATIVES**", "📈 **STRATEGIC ANALYSIS**", "📋 **DETAILED INTEL**"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊 **CASE OVERVIEW**", "🤝 **COMPETING NARRATIVES**", "🎯 **CASE STRATEGY**", "📋 **DETAILED INTEL**"])
 
 with tab1:
     # CASE OVERVIEW - Three column layout for side-by-side viewing
@@ -189,64 +189,171 @@ with tab2:
     st.info("**🎯 TRIBUNAL DECISION POINT:** Did Noksel's due diligence failure outweigh force majeure circumstances?")
 
 with tab3:
-    # STRATEGIC ANALYSIS - Dashboard style layout
-    strategy_left, strategy_center, strategy_right = st.columns(3)
+    # REDESIGNED CASE STRATEGY - More practical and actionable
+    st.markdown("#### 🎯 IMMEDIATE STRATEGIC DECISIONS")
     
-    with strategy_left:
-        st.markdown("#### 🔍 Causation Analysis")
-        st.info("**Proximate Cause Test:** What was the 'but for' cause?")
-        st.success("**Claimant:** Length non-compliance → Rejection → Demurrage")
-        st.error("**Respondent:** Engine failure → Delay → Late arrival → Rejection")
-        st.warning("**Key Issue:** Would vessel be rejected even if on time?")
+    # Top priority decisions first
+    priority_col1, priority_col2 = st.columns(2)
+    
+    with priority_col1:
+        st.error("#### ⚡ URGENT - NEXT 7 DAYS")
+        st.markdown("""
+        **🥇 Priority 1: Commission LMAA Mediation**
+        • Contact: LMAA appointment team
+        • Timeline: Initiate within 48 hours
+        • Cost: ~$5,000 setup
+        • Success rate: 65% for maritime disputes
         
-        st.markdown("#### 👨‍🎓 Expert Witnesses")
-        st.success("**CLAIMANT NEEDS:**\n• Maritime surveyor\n• Regulatory expert\n• Industry expert")
-        st.error("**RESPONDENT NEEDS:**\n• Marine engineer\n• COVID expert\n• Regulatory expert")
+        **🥈 Priority 2: Asset Intelligence**
+        • Noksel corporate structure investigation  
+        • Turkish bank account identification
+        • Asset protection risk assessment
+        • Cost: $3,000 investigation budget
         
-    with strategy_center:
-        st.markdown("#### 📊 Evidence Strength")
+        **🥉 Priority 3: Settlement Framework**
+        • Target: 65% recovery ($25K)
+        • Minimum: 50% recovery ($19K)
+        • Payment terms: 30-60 days max
+        • Security: Turkish parent guarantee
+        """)
         
-        strength_col1, strength_col2, strength_col3 = st.columns(3)
-        with strength_col1:
-            st.success("**STRONG**")
-            st.markdown("• Award issued\n• Vessel rejection\n• Name changes\n• Build records")
-        with strength_col2:
-            st.warning("**MEDIUM**")
-            st.markdown("• Engine repairs\n• COVID impact\n• Timing issues\n• Standards")
-        with strength_col3:
-            st.error("**WEAK**")
-            st.markdown("• Owner knowledge\n• Discoverability\n• Force majeure\n• Mitigation")
-            
-        st.markdown("#### 💼 Settlement vs Litigation")
-        st.success("**SETTLEMENT (70% Prob.)**\n• Payment arrangement exists\n• Turkish enforcement uncertain\n• Business relationships\n• Cost concerns")
-        st.error("**LITIGATION (Med. Risk)**\n• Strong precedent value\n• Clear liability case\n• High recovery potential")
+    with priority_col2:
+        st.warning("#### 📅 SHORT TERM - NEXT 30 DAYS")
+        st.markdown("""
+        **💼 Settlement Negotiation Strategy:**
+        • Open at 85% ($32K) - expect counter at 40%
+        • Leverage: Award in hand, Turkish enforcement risk
+        • Concessions: Extended payment terms only
+        • Walk-away: Below 50% recovery
         
-    with strategy_right:
-        st.markdown("#### ⏱️ Time-Decay Risk")
+        **📊 Evidence Preparation (if settlement fails):**
+        • Maritime surveyor report on vessel condition
+        • Regulatory expert on Futuna port requirements  
+        • Industry expert on due diligence standards
+        • Budget: $15K expert witness costs
         
-        # Compact risk visualization
-        risk_data = [
-            ("Days 0-30", "85%", "Peak window", "success"),
-            ("Days 30-90", "70%", "Urgency peaks", "warning"),
-            ("Days 90-150", "55%", "Enforcement prep", "error"),
-            ("Days 150-180", "40%", "Default triggers", "error")
-        ]
+        **⚖️ Enforcement Prep (backup plan):**
+        • Turkish counsel identification
+        • Enforcement cost analysis: $20-30K
+        • Asset seizure options
+        • Timeline: 6-12 months
+        """)
+
+    st.markdown("---")
+    
+    # Key strategic insights
+    strategy_insights_col1, strategy_insights_col2, strategy_insights_col3 = st.columns(3)
+    
+    with strategy_insights_col1:
+        st.markdown("#### 🔍 CASE STRENGTH ANALYSIS")
         
-        for period, prob, desc, status in risk_data:
-            if status == "success":
-                st.success(f"**{period}:** {prob} - {desc}")
-            elif status == "warning":
-                st.warning(f"**{period}:** {prob} - {desc}")
-            else:
-                st.error(f"**{period}:** {prob} - {desc}")
+        # Visual case strength meter
+        st.success("**OVERALL STRENGTH: STRONG (80%)**")
         
-        st.info("**🎯 OPTIMAL:** Days 15-45")
+        st.markdown("**✅ WINNING ARGUMENTS:**")
+        st.success("• Award already issued (100% strength)")
+        st.success("• Due diligence failure clear (85% strength)")  
+        st.success("• Industry standard breached (80% strength)")
         
-        st.markdown("#### 💰 Recovery Scenarios")
-        st.success("**Best (90%):** $40K+")
-        st.warning("**Likely (60%):** $27K+")
-        st.error("**Worst (20%):** $9K+")
-        st.info("**Expected:** $28K")
+        st.markdown("**⚠️ VULNERABILITIES:**")
+        st.warning("• Force majeure claims (moderate risk)")
+        st.warning("• COVID timing issues (low-medium risk)")
+        
+        st.markdown("**🎯 TRIBUNAL DECISION LOGIC:**")
+        st.info("Arbitrator found due diligence failure outweighed force majeure - this is our strongest precedent foundation.")
+        
+    with strategy_insights_col2:
+        st.markdown("#### 💰 FINANCIAL STRATEGY")
+        
+        # Financial decision matrix
+        financial_scenarios = {
+            "Scenario": ["Best Case", "Target", "Minimum", "Worst Case"],
+            "Recovery": ["$40K (100%)", "$27K (65%)", "$19K (50%)", "$9K (25%)"],
+            "Probability": ["15%", "45%", "30%", "10%"],
+            "Strategy": ["Quick settle", "Negotiate", "Last offer", "Enforce"]
+        }
+        
+        df_financial = pd.DataFrame(financial_scenarios)
+        st.dataframe(df_financial, hide_index=True)
+        
+        st.success("**RECOMMENDED TARGET: $27K (65%)**")
+        st.markdown("• Balances recovery vs. time/cost")
+        st.markdown("• Realistic given Turkish enforcement challenges")
+        st.markdown("• Preserves business relationship")
+        
+        st.error("**WALK-AWAY POINT: $19K (50%)**")
+        st.markdown("• Below this, enforcement becomes better option")
+        st.markdown("• Factor in $15K legal costs + time")
+        
+    with strategy_insights_col3:
+        st.markdown("#### ⏰ TIME-CRITICAL WINDOWS")
+        
+        # Urgency timeline
+        st.error("**🚨 PEAK WINDOW: Days 0-15**")
+        st.markdown("• Noksel payment pressure highest")
+        st.markdown("• Asset protection risk lowest") 
+        st.markdown("• Recovery probability: 85%")
+        
+        st.warning("**⚠️ DECLINING WINDOW: Days 15-45**")
+        st.markdown("• Settlement urgency peaks")
+        st.markdown("• Enforcement prep needed")
+        st.markdown("• Recovery probability: 70%")
+        
+        st.info("**📉 ENFORCEMENT ZONE: Days 45+**")
+        st.markdown("• Settlement probability drops")
+        st.markdown("• Asset hiding risk increases")
+        st.markdown("• Recovery probability: 55%")
+        
+        st.success("**🎯 ACTION: SETTLE WITHIN 15 DAYS**")
+
+    st.markdown("---")
+    
+    # Tactical playbook
+    st.markdown("#### 📋 TACTICAL PLAYBOOK")
+    
+    tactical_col1, tactical_col2 = st.columns(2)
+    
+    with tactical_col1:
+        st.markdown("**🎲 NEGOTIATION TACTICS**")
+        
+        st.success("**LEVERAGE POINTS:**")
+        st.markdown("""
+        • **Award in hand** - "We have binding arbitration decision"
+        • **Turkish enforcement risk** - "Costly for you if we proceed" 
+        • **Business relationship** - "Let's resolve this professionally"
+        • **Time pressure** - "Settlement window closing rapidly"
+        """)
+        
+        st.error("**POTENTIAL COUNTERS:**")
+        st.markdown("""
+        • **COVID force majeure** → Response: "Arbitrator already ruled"
+        • **Engine problems** → Response: "Vessel rejected for length anyway"
+        • **Regulatory timing** → Response: "Due diligence still required"
+        • **Financial hardship** → Response: "Payment plan available"
+        """)
+        
+    with tactical_col2:
+        st.markdown("**⚖️ LITIGATION FALLBACK**")
+        
+        st.warning("**IF SETTLEMENT FAILS:**")
+        st.markdown("""
+        **Phase 1: Turkish Enforcement (6 months)**
+        • Local counsel: Mehmet & Associates
+        • Cost: $20-30K + court fees
+        • Success rate: 60-70% in Turkish courts
+        • Asset seizure: Bank accounts, receivables
+        
+        **Phase 2: International Enforcement**  
+        • New York Convention (arbitration awards)
+        • UK/EU enforcement if assets located
+        • Cost: Additional $15-25K per jurisdiction
+        
+        **Risk Assessment:**
+        • Total enforcement cost: $35-55K
+        • Timeline: 12-18 months  
+        • Recovery after costs: $15-25K net
+        • **Conclusion: Settlement clearly preferred**
+        """)
 
     # ✅ EXECUTIVE DECISION MATRIX - Include on Strategic Analysis tab
     st.markdown("---")

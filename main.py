@@ -73,7 +73,7 @@ with tab1:
     with overview_center:
         st.markdown("#### 🕐 Critical Timeline")
         
-        # Compact timeline
+        # Compact timeline - FIXED COLORS
         timeline_events = [
             ("Feb 4, 2020", "📄 Supply contract signed", "blue"),
             ("Nov 12, 2020", "🚢 MV MESSILA chartered", "blue"), 
@@ -95,38 +95,38 @@ with tab1:
     with overview_right:
         st.markdown("#### 📄 Key Documents")
         
-        # Critical docs - keep backgrounds, clean text
+        # FIXED COLORS - by impact/importance
         st.markdown("**CRITICAL**")
-        st.error("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
-        st.info("📄 **Charter Party Agreement** - Nov 12, 2020")
+        st.success("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")  # GREEN = We won!
+        st.info("📄 **Charter Party Agreement** - Nov 12, 2020")  # BLUE = Neutral contract
         
         st.markdown("**KEY EVIDENCE**") 
-        st.warning("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
-        st.info("📄 **Engine Repair Records** - May-Oct 2021")
+        st.error("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")  # RED = Bad event
+        st.warning("📄 **Engine Repair Records** - May-Oct 2021")  # ORANGE = Mixed evidence
         
         st.markdown("#### ⚖️ Legal Strength")
         st.success("✅ Contract Performance - **Strong for Claimant**")
         st.success("✅ Vessel Suitability - **Strong for Claimant**") 
         st.success("✅ Due Diligence - **Strong for Claimant**")
-        st.warning("⚠️ Force Majeure - **Noksel's best defense**")
+        st.warning("⚠️ Force Majeure - **Noksel's best defense**")  # ORANGE = Caution
 
-    # ✅ EXECUTIVE DECISION MATRIX - Include on Case Overview tab
+    # ✅ EXECUTIVE DECISION MATRIX - FIXED COLORS
     st.markdown("---")
     st.markdown("#### 🎯 Executive Decision Matrix")
 
     decision_col1, decision_col2, decision_col3, decision_col4 = st.columns(4)
 
     with decision_col1:
-        st.success("**✅ GO/NO-GO**\nSettlement: **GO**\nStrong case, willing counterparty")
+        st.success("**✅ GO/NO-GO**\nSettlement: **GO**\nStrong case, willing counterparty")  # GREEN = Positive decision
 
     with decision_col2:
-        st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")
+        st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")  # BLUE = Neutral info
 
     with decision_col3:
-        st.warning("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
+        st.info("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")  # BLUE = Neutral info
 
     with decision_col4:
-        st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+        st.success("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")  # GREEN = Positive action
 
 with tab2:
     # 🎯 CORE QUESTION - At the top for context
@@ -197,7 +197,7 @@ with tab3:
     priority_col1, priority_col2 = st.columns(2)
     
     with priority_col1:
-        st.error("#### ⚡ URGENT - NEXT 7 DAYS")
+        st.error("#### ⚡ URGENT - NEXT 7 DAYS")  # RED = Urgent attention needed
         st.markdown("""
         **🥇 Priority 1: Commission LMAA Mediation**
         • Contact: LMAA appointment team
@@ -219,7 +219,7 @@ with tab3:
         """)
         
     with priority_col2:
-        st.warning("#### 📅 SHORT TERM - NEXT 30 DAYS")
+        st.warning("#### 📅 SHORT TERM - NEXT 30 DAYS")  # ORANGE = Important but less urgent
         st.markdown("""
         **💼 Settlement Negotiation Strategy:**
         • Open at 85% ($32K) - expect counter at 40%
@@ -277,35 +277,35 @@ with tab3:
         df_financial = pd.DataFrame(financial_scenarios)
         st.dataframe(df_financial, hide_index=True)
         
-        st.success("**RECOMMENDED TARGET: $27K (65%)**")
+        st.success("**RECOMMENDED TARGET: $27K (65%)**")  # GREEN = Positive recommendation
         st.markdown("• Balances recovery vs. time/cost")
         st.markdown("• Realistic given Turkish enforcement challenges")
         st.markdown("• Preserves business relationship")
         
-        st.error("**WALK-AWAY POINT: $19K (50%)**")
+        st.error("**WALK-AWAY POINT: $19K (50%)**")  # RED = Danger zone
         st.markdown("• Below this, enforcement becomes better option")
         st.markdown("• Factor in $15K legal costs + time")
         
     with strategy_insights_col3:
         st.markdown("#### ⏰ TIME-CRITICAL WINDOWS")
         
-        # Urgency timeline
-        st.error("**🚨 PEAK WINDOW: Days 0-15**")
+        # FIXED COLORS - by opportunity level
+        st.success("**🚨 PEAK WINDOW: Days 0-15**")  # GREEN = Best opportunity
         st.markdown("• Noksel payment pressure highest")
         st.markdown("• Asset protection risk lowest") 
         st.markdown("• Recovery probability: 85%")
         
-        st.warning("**⚠️ DECLINING WINDOW: Days 15-45**")
+        st.warning("**⚠️ DECLINING WINDOW: Days 15-45**")  # ORANGE = Caution
         st.markdown("• Settlement urgency peaks")
         st.markdown("• Enforcement prep needed")
         st.markdown("• Recovery probability: 70%")
         
-        st.info("**📉 ENFORCEMENT ZONE: Days 45+**")
+        st.error("**📉 ENFORCEMENT ZONE: Days 45+**")  # RED = Problematic
         st.markdown("• Settlement probability drops")
         st.markdown("• Asset hiding risk increases")
         st.markdown("• Recovery probability: 55%")
         
-        st.success("**🎯 ACTION: SETTLE WITHIN 15 DAYS**")
+        st.info("**🎯 ACTION: SETTLE WITHIN 15 DAYS**")  # BLUE = Neutral instruction
 
     st.markdown("---")
     
@@ -317,7 +317,7 @@ with tab3:
     with tactical_col1:
         st.markdown("**🎲 NEGOTIATION TACTICS**")
         
-        st.success("**LEVERAGE POINTS:**")
+        st.success("**LEVERAGE POINTS:**")  # GREEN = Our advantages
         st.markdown("""
         • **Award in hand** - "We have binding arbitration decision"
         • **Turkish enforcement risk** - "Costly for you if we proceed" 
@@ -325,7 +325,7 @@ with tab3:
         • **Time pressure** - "Settlement window closing rapidly"
         """)
         
-        st.error("**POTENTIAL COUNTERS:**")
+        st.warning("**POTENTIAL COUNTERS:**")  # ORANGE = Caution, expect these
         st.markdown("""
         • **COVID force majeure** → Response: "Arbitrator already ruled"
         • **Engine problems** → Response: "Vessel rejected for length anyway"
@@ -336,7 +336,7 @@ with tab3:
     with tactical_col2:
         st.markdown("**⚖️ LITIGATION FALLBACK**")
         
-        st.warning("**IF SETTLEMENT FAILS:**")
+        st.info("**IF SETTLEMENT FAILS:**")  # BLUE = Neutral backup plan
         st.markdown("""
         **Phase 1: Turkish Enforcement (6 months)**
         • Local counsel: Mehmet & Associates
@@ -356,7 +356,7 @@ with tab3:
         • **Conclusion: Settlement clearly preferred**
         """)
 
-    # ✅ EXECUTIVE DECISION MATRIX - Include on Case Strategy tab
+    # ✅ EXECUTIVE DECISION MATRIX - FIXED COLORS
     st.markdown("---")
     st.markdown("#### 🎯 Executive Decision Matrix")
 
@@ -369,10 +369,10 @@ with tab3:
         st.info("**⏱️ TIMING**\nTarget: **15 days**\nOptimal recovery window")
 
     with decision_col3:
-        st.warning("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
+        st.info("**💰 BUDGET**\nLegal costs: **$15K**\nTarget recovery: **65%**")
 
     with decision_col4:
-        st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
+        st.success("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
 
 with tab4:
     # DETAILED INTEL - For deeper dive

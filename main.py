@@ -53,7 +53,7 @@ st.title("MV MESSILA Demurrage Dispute")
 tab1, tab2, tab3, tab4 = st.tabs(["📊 **CASE OVERVIEW**", "🤝 **COMPETING NARRATIVES**", "🎯 **CASE STRATEGY**", "📋 **DETAILED INTEL**"])
 
 with tab1:
-    # CASE OVERVIEW - Three column layout for side-by-side viewing
+    # CASE OVERVIEW - Three column layout with better order
     overview_left, overview_center, overview_right = st.columns([1, 1, 1])
     
     with overview_left:
@@ -71,24 +71,6 @@ with tab1:
         st.markdown("**🚢 VESSEL:** MV MESSILA")
         
     with overview_center:
-        st.markdown("#### 📄 Key Documents")
-        
-        # Critical docs - compact list
-        st.markdown("**🔴 CRITICAL**")
-        st.error("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
-        st.info("📄 **Charter Party Agreement** - Nov 12, 2020")
-        
-        st.markdown("**🟠 KEY EVIDENCE**") 
-        st.warning("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
-        st.info("📄 **Engine Repair Records** - May-Oct 2021")
-        
-        st.markdown("#### ⚖️ Legal Strength")
-        st.success("✅ Contract Performance - **Strong for Claimant**")
-        st.success("✅ Vessel Suitability - **Strong for Claimant**") 
-        st.success("✅ Due Diligence - **Strong for Claimant**")
-        st.warning("⚠️ Force Majeure - **Noksel's best defense**")
-        
-    with overview_right:
         st.markdown("#### 🕐 Critical Timeline")
         
         # Compact timeline
@@ -109,6 +91,24 @@ with tab1:
                 st.success(f"**{date}:** {event}")
             else:
                 st.info(f"**{date}:** {event}")
+        
+    with overview_right:
+        st.markdown("#### 📄 Key Documents")
+        
+        # Critical docs - compact list
+        st.markdown("**🔴 CRITICAL**")
+        st.error("📄 **Arbitration Award** - John Schofield (Mar 19, 2023)")
+        st.info("📄 **Charter Party Agreement** - Nov 12, 2020")
+        
+        st.markdown("**🟠 KEY EVIDENCE**") 
+        st.warning("📄 **Port Rejection Notice** - Nov 10, 2021 (SMOKING GUN)")
+        st.info("📄 **Engine Repair Records** - May-Oct 2021")
+        
+        st.markdown("#### ⚖️ Legal Strength")
+        st.success("✅ Contract Performance - **Strong for Claimant**")
+        st.success("✅ Vessel Suitability - **Strong for Claimant**") 
+        st.success("✅ Due Diligence - **Strong for Claimant**")
+        st.warning("⚠️ Force Majeure - **Noksel's best defense**")
 
     # ✅ EXECUTIVE DECISION MATRIX - Include on Case Overview tab
     st.markdown("---")
@@ -127,7 +127,6 @@ with tab1:
 
     with decision_col4:
         st.error("**🚀 NEXT ACTION**\n**Commission LMAA mediation**\nPriority: Immediate")
-
 with tab2:
     # 🎯 CORE QUESTION - At the top for context
     st.info("#### 🎯 TRIBUNAL DECISION POINT: Did Noksel's due diligence failure outweigh force majeure circumstances?")

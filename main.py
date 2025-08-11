@@ -33,8 +33,9 @@ with st.sidebar:
     
     # Download section - smaller button
     st.markdown("---")
-    st.markdown("##### 📥 Download Timeline")
-    st.button("Download Timeline", use_container_width=False)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.button("📥 Download Timeline", type="primary")
     st.markdown("---")
     
     st.subheader("⚙️ Submissions Filter")

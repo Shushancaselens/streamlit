@@ -31,6 +31,11 @@ with st.sidebar:
     st.text_input("Start Date", value="1926/12/17")
     st.text_input("End Date", value="2025/03/19")
     
+    # Download section moved up
+    st.markdown("---")
+    st.button("Download Timeline", type="primary", use_container_width=True)
+    st.markdown("---")
+    
     st.subheader("⚙️ Submissions Filter")
     addressed_toggle = st.toggle("Addressed by party")
     disputed_toggle = st.toggle("Disputed by parties")
@@ -46,11 +51,13 @@ with st.sidebar:
     
     # Warning message
     st.warning("⚠️ No events selected - will download all events")
-    
-    st.button("Download Timeline", type="primary", use_container_width=True)
 
 # Main content
-st.header("Case name: Astute CASE N 28459")
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.header("Case name: Astute CASE N 28459")
+with col2:
+    st.button("📥 Download", type="primary", use_container_width=True, key="main_download")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])

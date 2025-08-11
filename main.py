@@ -31,39 +31,36 @@ with st.sidebar:
     st.text_input("Start Date", value="1926/12/17")
     st.text_input("End Date", value="2025/03/19")
     
-    # Download section moved up
-    st.markdown("---")
-    st.button("Download Timeline", type="primary", use_container_width=True)
-    st.markdown("---")
-    
     st.subheader("⚙️ Submissions Filter")
     addressed_toggle = st.toggle("Addressed by party")
     disputed_toggle = st.toggle("Disputed by parties")
     
-    st.subheader("📅 Event Selection")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Select All", use_container_width=True):
-            st.session_state.select_all = True
-    with col2:
-        if st.button("Clear All", use_container_width=True):
-            st.session_state.clear_all = True
-    
     # Warning message
     st.warning("⚠️ No events selected - will download all events")
+    
+    st.button("Download Timeline", type="primary", use_container_width=True)
 
 # Main content
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.header("Case name: Astute CASE N 28459")
-with col2:
-    st.button("📥 Download", type="primary", use_container_width=True, key="main_download")
+st.header("Case name: Astute CASE N 28459")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
-    st.text_input("Search", placeholder="Search...")
+    # Top controls row
+    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+    with col1:
+        st.text_input("Search", placeholder="Search...")
+    with col2:
+        if st.button("Select All", use_container_width=True, key="select_all_main"):
+            st.session_state.select_all = True
+    with col3:
+        if st.button("Clear All", use_container_width=True, key="clear_all_main"):
+            st.session_state.clear_all = True
+    with col4:
+        st.button("📥 Download", type="primary", use_container_width=True, key="timeline_download")
+    
+    st.markdown("")
     
     # Timeline items with checkboxes
     col_check1, col_exp1 = st.columns([0.05, 0.95])

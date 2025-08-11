@@ -57,7 +57,7 @@ with tab1:
     # Top controls row
     col1, col2, col3 = st.columns([0.05, 2, 1])
     with col1:
-        st.checkbox("", key="master_checkbox", help="Select/Deselect All")
+        master_check = st.checkbox("", key="master_checkbox", help="Select/Deselect All")
     with col2:
         st.text_input("Search", placeholder="Search...", key="search_input")
     with col3:
@@ -78,7 +78,7 @@ with tab1:
     for i, (date, event, sources) in enumerate(timeline_items):
         col_check, col_exp = st.columns([0.05, 0.95])
         with col_check:
-            st.checkbox("", key=f"check_{i}")
+            st.checkbox("", key=f"check_{i}", value=master_check)
         with col_exp:
             with st.expander(f"🔵 {date} | {event} | :green[{sources}]", expanded=False):
                 st.markdown("Timeline content...")

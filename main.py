@@ -31,19 +31,19 @@ with st.sidebar:
     st.text_input("Start Date", value="1926/12/17")
     st.text_input("End Date", value="2025/03/19")
     
-    # Download section moved up
+    # Download section
     st.markdown("---")
     st.button("Download Timeline", type="primary", use_container_width=True)
     st.markdown("---")
     
     st.subheader("⚙️ Submissions Filter")
-    addressed_toggle = st.toggle("Addressed by party")
-    disputed_toggle = st.toggle("Disputed by parties")
+    st.toggle("Addressed by party")
+    st.toggle("Disputed by parties")
     
     # Warning message
     st.warning("⚠️ No events selected - will download all events")
 
-# Main content
+# Main content header
 col1, col2 = st.columns([3, 1])
 with col1:
     st.header("Case name: Astute CASE N 28459")
@@ -54,65 +54,34 @@ with col2:
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
-    # Top controls row with master checkbox
+    # Top controls row
     col1, col2, col3 = st.columns([0.05, 2, 1])
     with col1:
-        select_all = st.checkbox("", key="master_checkbox", help="Select/Deselect All")
+        st.checkbox("", key="master_checkbox", help="Select/Deselect All")
     with col2:
-        st.text_input("Search", placeholder="Search...")
+        st.text_input("Search", placeholder="Search...", key="search_input")
     with col3:
         st.button("📥 Download", type="primary", use_container_width=True, key="timeline_download")
     
     st.markdown("")
     
-    # Timeline items with checkboxes
-    col_check1, col_exp1 = st.columns([0.05, 0.95])
-    with col_check1:
-        st.checkbox("", key="check_1926")
-    with col_exp1:
-        with st.expander("🔵 1926-12-17 | On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy. | :green[2 Sources]", expanded=False):
-            # Content for 1926 case
-            st.markdown("Timeline content...")
+    # Timeline items
+    timeline_items = [
+        ("1926-12-17", "On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy.", "2 Sources"),
+        ("1961-10-05", "On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961.", "1 Source"),
+        ("1985-02-06", "On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters.", "2 Sources"),
+        ("2004-00-00", "In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project.", "1 Source"),
+        ("2004-00-00", "In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**.", "1 Source"),
+        ("2004-10-00", "In October 2004, Damen Shipyards built **MV Messila** in the Netherlands.", "1 Source")
+    ]
     
-    col_check2, col_exp2 = st.columns([0.05, 0.95])
-    with col_check2:
-        st.checkbox("", key="check_1961")
-    with col_exp2:
-        with st.expander("🔵 1961-10-05 | On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961. | :green[1 Source]", expanded=False):
-            # Content for 1961 case
-            st.markdown("Timeline content...")
-    
-    col_check3, col_exp3 = st.columns([0.05, 0.95])
-    with col_check3:
-        st.checkbox("", key="check_1985")
-    with col_exp3:
-        with st.expander("🔵 1985-02-06 | On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters. | :green[2 Sources]", expanded=False):
-            # Content for 1985 case
-            st.markdown("Timeline content...")
-    
-    col_check4, col_exp4 = st.columns([0.05, 0.95])
-    with col_check4:
-        st.checkbox("", key="check_2004_1")
-    with col_exp4:
-        with st.expander("🔵 2004-00-00 | In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
-    
-    col_check5, col_exp5 = st.columns([0.05, 0.95])
-    with col_check5:
-        st.checkbox("", key="check_2004_2")
-    with col_exp5:
-        with st.expander("🔵 2004-00-00 | In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
-    
-    col_check6, col_exp6 = st.columns([0.05, 0.95])
-    with col_check6:
-        st.checkbox("", key="check_2004_3")
-    with col_exp6:
-        with st.expander("🔵 2004-10-00 | In October 2004, Damen Shipyards built **MV Messila** in the Netherlands. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+    for i, (date, event, sources) in enumerate(timeline_items):
+        col_check, col_exp = st.columns([0.05, 0.95])
+        with col_check:
+            st.checkbox("", key=f"check_{i}")
+        with col_exp:
+            with st.expander(f"🔵 {date} | {event} | :green[{sources}]", expanded=False):
+                st.markdown("Timeline content...")
 
 with tab2:
     # Table view
@@ -135,7 +104,7 @@ with tab3:
     st.markdown("### Definitions")
     
     # Search for definitions
-    search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...").lower()
+    search_term = st.text_input("Search definitions...", placeholder="Search for terms, people, locations...", key="def_search").lower()
     
     # All definitions in table format
     definitions_data = {
@@ -157,11 +126,11 @@ with tab3:
         "Type": ["Location", "Location", "Organization", "Organization", "Organization", "Organization", "Vessel", "Infrastructure", "Location", "Location", "Location", "Legal Document"]
     }
     
-    df = pd.DataFrame(definitions_data)
+    df_def = pd.DataFrame(definitions_data)
     
     # Filter based on search
     if search_term:
-        mask = df['Term'].str.lower().str.contains(search_term) | df['Definition'].str.lower().str.contains(search_term) | df['Type'].str.lower().str.contains(search_term)
-        df = df[mask]
+        mask = df_def['Term'].str.lower().str.contains(search_term) | df_def['Definition'].str.lower().str.contains(search_term) | df_def['Type'].str.lower().str.contains(search_term)
+        df_def = df_def[mask]
     
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df_def, use_container_width=True, hide_index=True)

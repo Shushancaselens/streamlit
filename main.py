@@ -54,14 +54,19 @@ with col2:
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
-    # Top controls row with master checkbox
-    col1, col2, col3 = st.columns([0.05, 2, 1])
+    # Search and download row
+    col1, col2 = st.columns([3, 1])
     with col1:
-        select_all = st.checkbox("", key="master_checkbox", help="Select/Deselect All")
-    with col2:
         st.text_input("Search", placeholder="Search...")
-    with col3:
+    with col2:
         st.button("📥 Download", type="primary", use_container_width=True, key="timeline_download")
+    
+    # Master checkbox row - positioned lower
+    col_master, col_spacer = st.columns([0.05, 0.95])
+    with col_master:
+        select_all = st.checkbox("", key="master_checkbox", help="Select/Deselect All")
+    with col_spacer:
+        st.markdown("")
     
     st.markdown("")
     

@@ -40,7 +40,30 @@ col1, col2 = st.columns([4, 1])
 with col1:
     st.header("Case name: Astute CASE N 28459")
 with col2:
-    st.button("📥 Download Timeline", type="primary", key="main_download")
+    # Check how many events are selected to determine button text
+    selected_events = []
+    if 'check_1926' in st.session_state and st.session_state.check_1926:
+        selected_events.append('1926')
+    if 'check_1961' in st.session_state and st.session_state.check_1961:
+        selected_events.append('1961')
+    if 'check_1985' in st.session_state and st.session_state.check_1985:
+        selected_events.append('1985')
+    if 'check_2004_1' in st.session_state and st.session_state.check_2004_1:
+        selected_events.append('2004_1')
+    if 'check_2004_2' in st.session_state and st.session_state.check_2004_2:
+        selected_events.append('2004_2')
+    if 'check_2004_3' in st.session_state and st.session_state.check_2004_3:
+        selected_events.append('2004_3')
+    
+    # Dynamic button text based on selection
+    if len(selected_events) == 0:
+        button_text = "📥 Download All Events"
+    elif len(selected_events) == 6:  # All events selected
+        button_text = "📥 Download All Events"
+    else:
+        button_text = f"📥 Download {len(selected_events)} Events"
+    
+    st.button(button_text, type="primary", key="main_download")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])

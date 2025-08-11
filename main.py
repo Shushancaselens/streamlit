@@ -41,11 +41,7 @@ with st.sidebar:
     disputed_toggle = st.toggle("Disputed by parties")
 
 # Main content
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.header("Case name: Astute CASE N 28459")
-with col2:
-    st.button("📥 Download", type="primary", use_container_width=True, key="main_download")
+st.header("Case name: Astute CASE N 28459")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])

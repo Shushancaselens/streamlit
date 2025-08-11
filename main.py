@@ -36,11 +36,11 @@ with st.sidebar:
     disputed_toggle = st.toggle("Disputed by parties")
 
 # Main content
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([4, 1])
 with col1:
     st.header("Case name: Astute CASE N 28459")
 with col2:
-    st.button("📥 Download", type="primary", use_container_width=True, key="main_download")
+    st.button("📥 Download Timeline", type="primary", key="main_download")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])

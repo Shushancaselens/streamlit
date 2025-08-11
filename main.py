@@ -31,11 +31,9 @@ with st.sidebar:
     st.text_input("Start Date", value="1926/12/17")
     st.text_input("End Date", value="2025/03/19")
     
-    # Download section - smaller button
+    # Download section moved up
     st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.button("📥 Download Timeline", type="primary")
+    st.button("Download Timeline", type="primary", use_container_width=True)
     st.markdown("---")
     
     st.subheader("⚙️ Submissions Filter")

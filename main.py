@@ -29,16 +29,28 @@ with st.sidebar:
     
     st.subheader("📅 Date Range") 
     st.text_input("Start Date", value="1926/12/17")
-    st.text_input("End Date", value="2025/01/01")
+    st.text_input("End Date", value="2025/03/19")
     
     st.subheader("⚙️ Submissions Filter")
-    st.checkbox("Addressed by party")
-    st.checkbox("Disputed by parties")
+    addressed_toggle = st.toggle("Addressed by party")
+    disputed_toggle = st.toggle("Disputed by parties")
     
-    st.button("Download", type="primary")
+    st.subheader("📅 Event Selection")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Select All", use_container_width=True):
+            st.session_state.select_all = True
+    with col2:
+        if st.button("Clear All", use_container_width=True):
+            st.session_state.clear_all = True
+    
+    # Warning message
+    st.warning("⚠️ No events selected - will download all events")
+    
+    st.button("Download Timeline", type="primary", use_container_width=True)
 
 # Main content
-st.header("Case name: admissability; challenge; request_for_a_stay; statement_of_appeal")
+st.header("Case name: Astute CASE N 28459")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
@@ -46,100 +58,66 @@ tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 with tab1:
     st.text_input("Search", placeholder="Search...")
     
-    # First timeline item
-    with st.expander("🔵 2017-00-00 | In 2017, **Antani Ivanov** participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.", expanded=False):
-        
-        # Top section with sources and tags in a single horizontal row
-        col1, col2, col3 = st.columns([0.6, 2.5, 2.5])
-        with col1:
-            with st.container(border=True):
-                st.markdown(":blue[**2**]  \n:gray[Sources]")
-        with col2:
-            st.pills("PROCEEDINGS:", ["admissability"], selection_mode="single", default=["admissability"], key="proceedings_pill")
-        with col3:
-            st.pills("ADDRESSED BY:", ["Not Addressed"], selection_mode="single", default=["Not Addressed"], key="addressed_pill")
-        
-        st.markdown("")
-        
-        # Supporting Documents section
-        st.markdown("#### Supporting Documents")
-        
-        # Document container
-        with st.container(border=True):
-            # Document title
-            st.markdown("**Exhibit A17 - Request for Conciliation (English translation)**")
-            
-            # Document info with tags
-            st.markdown("**Document Type:** :green[Procedural] | **Names mentioned:** :blue[Antani Ivanov], :blue[Husain Al Musallam], :blue[Brent J. Nowicki]")
-            
-            st.markdown("")
-            
-            # Summary
-            st.markdown("**Summary:** This document, titled 'Request for Conciliation - **Antani Ivanov** v. World Aquatics,' was filed on June 24, 2024, with the Lausanne District Court in Switzerland. On behalf of Bulgarian swimmer **Antani Ivanov**, it challenges a decision by the Aquatics Integrity Unit (AQIU) of World Aquatics, which extended a disciplinary suspension issued by the Bulgarian Swimming Federation (BSF) to all World Aquatics competitions worldwide. The application seeks to declare the AQIU's May 23, 2024 decision null and void (or, alternatively, to annul it) on the grounds of lack of due process, violation of the right to be heard, and failure to properly assess the legality of the original BSF decision.")
-            
-            # Citation in gray container
-            st.info("**Citation:** Exhibit A17 - Request for Conciliation (English translation), page 6.")
-            
-            # Source in green container  
-            st.success("**Source:** 34. Mr. **Antani Ivanov** is a professional swimmer from Bulgaria, aged 24. He participated in the 50m, 100m, and 200m butterfly events at the 2017 World Championships, setting a national record and qualifying for the 200m butterfly at the 2020 Olympic Games.")
-            
-            # Action buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                st.button("View Document ⌄", key="view_doc_1", use_container_width=True)
-            with col2:
-                st.button("📄 Download PDF", key="download_1", use_container_width=True)
-        
-        st.markdown("")
-        
-        # Second exhibit
-        st.markdown("**Exhibit A17 - REQUETE de conciliation 24.6.2024**")
-        
-        st.markdown("**Summary:** This document, titled 'Requête de conciliation **Antani Ivanov** c. World Aquatics' and dated June 24, 2024, is a legal petition filed before the Tribunal d'arrondissement de Lausanne by the attorneys representing Bulgarian swimmer **Antani Ivanov**. The request seeks to declare null and void, or alternatively annul, the decision of the Aquatics Integrity Unit (AQIU) of World Aquatics made on May 23, 2024, which globally extended the effects of a disciplinary sanction originally imposed by the Bulgarian Swimming Federation (BSF). The petition argues that both the BSF and AQIU decisions gravely violated **Ivanov's** right to be heard and procedural safeguards, urging the Swiss civil court to intervene due to the lack of a valid arbitration clause covering such recognition actions.")
-
-    # Second timeline item
-    with st.expander("🔵 2006-06-20 | On 20 June 06, **Yves Dassonville**, as High Commissioner of the Republic in New Caledonia, repealed and replaced order no. 2006-2/AEM of 20 June 2006 with a new order regulating vessel access to the Leava wharf in Futuna. | :green[1 Source]", expanded=False):
-        
-        # Three column layout for this case
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown("**Proceedings:**")
-            st.markdown(":violet[Astute CASE N 28459_v2]")
-        with col2:
-            st.markdown("**Addressed by:**")
-            st.markdown(":gray[None]")
-        with col3:
-            st.markdown("**Document Type:**")
-            st.markdown(":violet[procedural]")
-        
-        st.markdown("")
-        
-        # Source(s) section
-        st.markdown("#### Source(s)")
-        
-        with st.container(border=True):
-            st.markdown("**Appendix 4 Bis - ENG.pdf**")
-            
-            st.markdown("**Summary:** This is an official order (arrêté) dated 16 June 2009, issued by the High Commissioner of the Republic in New Caledonia, regulating the access of vessels to the Leava wharf in Futuna. It establishes procedural requirements for advance notification, operational limitations based on vessel size and equipment, and prescribes authorized procedures for docking, with penalties for violations and references to previous law. The order is signed by Yves Dassonville, High Commissioner, and replaces an earlier order from June 2006.")
-            
-            st.info("**Citation:** Appendix 4 Bis - ENG.pdf, page 2.")
-            
-            st.success("**Excerpt:** This order repeals and replaces order no. 2006-2/AEM dij 20 June 2006.")
-            
-            # Action buttons
-            col1, col2 = st.columns(2)
-            with col1:
-                st.button("View Document ⌄", key="view_doc_2", use_container_width=True)
-            with col2:
-                st.button("📄 Download PDF", key="download_2", use_container_width=True)
+    # Timeline items with checkboxes
+    col_check1, col_exp1 = st.columns([0.05, 0.95])
+    with col_check1:
+        st.checkbox("", key="check_1926")
+    with col_exp1:
+        with st.expander("🔵 1926-12-17 | On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy. | :green[2 Sources]", expanded=False):
+            # Content for 1926 case
+            st.markdown("Timeline content...")
+    
+    col_check2, col_exp2 = st.columns([0.05, 0.95])
+    with col_check2:
+        st.checkbox("", key="check_1961")
+    with col_exp2:
+        with st.expander("🔵 1961-10-05 | On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961. | :green[1 Source]", expanded=False):
+            # Content for 1961 case
+            st.markdown("Timeline content...")
+    
+    col_check3, col_exp3 = st.columns([0.05, 0.95])
+    with col_check3:
+        st.checkbox("", key="check_1985")
+    with col_exp3:
+        with st.expander("🔵 1985-02-06 | On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters. | :green[2 Sources]", expanded=False):
+            # Content for 1985 case
+            st.markdown("Timeline content...")
+    
+    col_check4, col_exp4 = st.columns([0.05, 0.95])
+    with col_check4:
+        st.checkbox("", key="check_2004_1")
+    with col_exp4:
+        with st.expander("🔵 2004-00-00 | In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project. | :green[1 Source]", expanded=False):
+            # Content for 2004 case
+            st.markdown("Timeline content...")
+    
+    col_check5, col_exp5 = st.columns([0.05, 0.95])
+    with col_check5:
+        st.checkbox("", key="check_2004_2")
+    with col_exp5:
+        with st.expander("🔵 2004-00-00 | In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**. | :green[1 Source]", expanded=False):
+            # Content for 2004 case
+            st.markdown("Timeline content...")
+    
+    col_check6, col_exp6 = st.columns([0.05, 0.95])
+    with col_check6:
+        st.checkbox("", key="check_2004_3")
+    with col_exp6:
+        with st.expander("🔵 2004-10-00 | In October 2004, Damen Shipyards built **MV Messila** in the Netherlands. | :green[1 Source]", expanded=False):
+            # Content for 2004 case
+            st.markdown("Timeline content...")
 
 with tab2:
     # Table view
     data = {
-        "Date": ["2017-00-00", "2006-06-20"],
+        "Date": ["1926-12-17", "1961-10-05", "1985-02-06", "2004-00-00", "2004-00-00", "2004-10-00"],
         "Event": [
-            "In 2017, Antani Ivanov participated in the 50m, 100m, and 200m butterfly events at the World Championships, set a national record, and qualified for the 200m butterfly at the 2020 Olympic Games.",
-            "On 20 June 06, Yves Dassonville, as High Commissioner of the Republic in New Caledonia, repealed and replaced order no. 2006-2/AEM of 20 June 2006 with a new order regulating vessel access to the Leava wharf in Futuna."
+            "On 17 December 26, France issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy.",
+            "On 05 October 61, the United Kingdom of Great Britain and Northern Ireland signed the Hague Convention of 5 October 1961.",
+            "On 06 February 85, France issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters.",
+            "In 2004 Schedule A of the supply agreement between Elfaag Travaux Maritimes et Fluviaux and Noksel Celik Boru Sanayi A.S. referenced the production standard EN 10025:2004 for steel grade requirements for the Wharf Futuna project.",
+            "In 2004 OKEAN SHIPBUILDING YARD built MV Messila in Nikolayev, Ukraine.",
+            "In October 2004, Damen Shipyards built MV Messila in the Netherlands."
         ]
     }
     
@@ -154,21 +132,22 @@ with tab3:
     
     # All definitions in table format
     definitions_data = {
-        "Term": ["Antani Ivanov", "Yves Dassonville", "Husain Al Musallam", "New Caledonia", "Futuna", "Leava", "High Commissioner", "World Aquatics", "Bulgarian Swimming Federation", "AQIU", "BSF"],
+        "Term": ["France", "United Kingdom of Great Britain and Northern Ireland", "Elfaag Travaux Maritimes et Fluviaux", "Noksel Celik Boru Sanayi A.S.", "OKEAN SHIPBUILDING YARD", "Damen Shipyards", "MV Messila", "Wharf Futuna", "Nikolayev", "Ukraine", "Netherlands", "Hague Convention"],
         "Definition": [
-            "Professional swimmer from Bulgaria, aged 24. Participated in butterfly events at World Championships.",
-            "High Commissioner of the Republic in New Caledonia at the time of the order's issuance.",
-            "Signatory for the Bureau in World Aquatics Integrity Code.",
-            "French overseas territory in the South Pacific, the jurisdiction of the High Commissioner.",
-            "Island in the French overseas collectivity of Wallis and Futuna; location of Leava wharf.",
-            "Village and port on the island of Futuna, site of the regulated wharf.",
-            "French governmental authority in New Caledonia overseeing administrative and legal matters, including maritime regulation.",
-            "International governing body for aquatic sports, formerly known as FINA.",
-            "National swimming federation that issued the original disciplinary suspension.",
-            "Aquatics Integrity Unit of World Aquatics.",
-            "Bulgarian Swimming Federation."
+            "European country that issued naval disciplinary codes and territorial waters regulations.",
+            "Country that signed the Hague Convention of 5 October 1961.",
+            "Maritime and fluvial construction company involved in supply agreement.",
+            "Turkish steel pipe manufacturing company.",
+            "Shipbuilding facility that constructed MV Messila in Ukraine.",
+            "Dutch shipbuilding company that built MV Messila in the Netherlands.",
+            "Vessel built by multiple shipyards in different locations.",
+            "Port infrastructure project in Futuna requiring steel grade specifications.",
+            "City in Ukraine where MV Messila was built.",
+            "Country where OKEAN SHIPBUILDING YARD is located.",
+            "Country where Damen Shipyards built MV Messila.",
+            "International convention signed by the UK in 1961."
         ],
-        "Type": ["Person", "Person", "Person", "Location", "Location", "Location", "Organization", "Organization", "Organization", "Organization", "Organization"]
+        "Type": ["Location", "Location", "Organization", "Organization", "Organization", "Organization", "Vessel", "Infrastructure", "Location", "Location", "Location", "Legal Document"]
     }
     
     df = pd.DataFrame(definitions_data)

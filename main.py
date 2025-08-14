@@ -28,9 +28,11 @@ with st.sidebar:
     st.selectbox("Select Entity Names", ["Choose an option"], key="entity_filter")
     
     st.subheader("📊 Source Filter")
-    st.checkbox("1 Source")
-    st.checkbox("2+ Sources")
-    st.checkbox("3+ Sources")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.number_input("Min Sources", min_value=1, max_value=20, value=1)
+    with col2:
+        st.number_input("Max Sources", min_value=1, max_value=20, value=20)
     
     st.subheader("📅 Date Range") 
     st.text_input("Start Date", value="1926/12/17")

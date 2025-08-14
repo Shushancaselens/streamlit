@@ -68,8 +68,7 @@ with tab1:
     
     # Show AI answer when in question mode
     if search_mode and st.session_state.get("ai_search", ""):
-        with st.container(border=True):
-            st.info("This is a sample AI response that would analyze the case data and provide a comprehensive answer to the user's question.")
+        st.info("This is a sample AI response that would analyze the case data and provide a comprehensive answer to the user's question.")
     
     # Master checkbox row - positioned lower
     col_master, col_spacer = st.columns([0.05, 0.95])

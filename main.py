@@ -57,7 +57,7 @@ tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
     # Search mode switcher and search
-    col1, col2 = st.columns([0.3, 2.7])
+    col1, col2 = st.columns([0.5, 2.5])
     with col1:
         search_mode = st.toggle("Question", key="search_mode")
     with col2:

@@ -52,6 +52,22 @@ with col1:
 with col2:
     st.button("📥 Download All Events", type="primary", key="main_download")
 
+# Case Summary
+with st.expander("📋 Case Summary", expanded=True):
+    st.markdown("""
+    **Case Overview:** This maritime law case spans nearly a century of regulatory and commercial developments affecting French territorial waters and international shipping operations.
+    
+    **Key Themes:**
+    - **Maritime Regulation**: French naval codes (1926) and territorial waters regulations (1985)
+    - **International Conventions**: UK's adoption of the Hague Convention (1961)  
+    - **Commercial Shipping**: Construction of MV Messila by multiple shipyards (2004)
+    - **Infrastructure Projects**: Steel requirements for Wharf Futuna development (2004)
+    
+    **Timeline Span**: 1926-2004 (78 years) involving France, UK, Ukraine, Netherlands, and various maritime companies.
+    """)
+
+st.markdown("")
+
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 

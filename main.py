@@ -56,18 +56,18 @@ with col2:
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
 
 with tab1:
-    # Search mode segmented control and search
-    col1, col2 = st.columns([0.6, 2.4])
+    # Search mode selector and search
+    col1, col2 = st.columns([0.5, 2.5])
     with col1:
-        search_mode = st.pills("", ["Search", "Question"], selection_mode="single", default=["Search"], key="search_mode_pills")
+        search_mode = st.selectbox("", ["Search", "Question"], key="search_mode_select", label_visibility="collapsed")
     with col2:
-        if "Question" in search_mode:
+        if search_mode == "Question":
             st.text_input("Ask a question...", placeholder="Ask about the case, events, or documents...", key="ai_search", label_visibility="collapsed")
         else:
             st.text_input("Search", placeholder="Search...", key="regular_search", label_visibility="collapsed")
     
     # Show AI answer when in question mode
-    if "Question" in search_mode and st.session_state.get("ai_search", ""):
+    if search_mode == "Question" and st.session_state.get("ai_search", ""):
         st.info("**General Answer:** This case involves a series of maritime regulatory events spanning from 1926 to 2004. The timeline shows France's establishment of naval disciplinary codes (1926), international maritime conventions (1961), territorial waters regulations (1985), and various shipbuilding and infrastructure projects (2004). The case appears to focus on maritime law, vessel regulations, and port infrastructure development across multiple jurisdictions including France, United Kingdom, Ukraine, and the Netherlands.")
     
     # Master checkbox row - positioned lower

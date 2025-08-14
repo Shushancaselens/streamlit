@@ -59,7 +59,7 @@ with tab1:
     # Search mode switcher and search
     col1, col2 = st.columns([0.4, 2.6])
     with col1:
-        search_mode = st.toggle("🤖 AI Mode", key="search_mode")
+        search_mode = st.toggle("🤖 Question", key="search_mode")
     with col2:
         if search_mode:
             st.text_input("Ask a question...", placeholder="Ask about the case, events, or documents...", key="ai_search", label_visibility="collapsed")

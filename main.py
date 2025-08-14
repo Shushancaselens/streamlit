@@ -67,11 +67,15 @@ with tab1:
             st.text_input("Search", placeholder="Search...", key="regular_search", label_visibility="collapsed")
     
     # Show AI answer when in question mode and user has entered a question
-    if search_mode and st.session_state.get("ai_search", "").strip():
-        with st.container(border=True):
-            st.markdown("### 🤖 AI Answer")
-            st.markdown("Based on the case documents, here's what I found about your question...")
-            st.info("This is a sample AI response that would analyze the case data and provide a comprehensive answer to the user's question.")
+    if search_mode:
+        if st.session_state.get("ai_search", "").strip():
+            with st.container(border=True):
+                st.markdown("### 🤖 AI Answer")
+                st.markdown(f"**Question:** {st.session_state.get('ai_search', '')}")
+                st.markdown("Based on the case documents, here's what I found...")
+                st.info("This analysis covers events from 1926 to 2004 involving France, the United Kingdom, and various maritime organizations. The timeline shows naval regulations, international conventions, and shipbuilding activities across multiple decades.")
+        else:
+            st.info("💡 Enter a question above to get an AI-powered analysis of the case documents.")
     
     # Master checkbox row - positioned lower
     col_master, col_spacer = st.columns([0.05, 0.95])

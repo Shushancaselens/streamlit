@@ -28,7 +28,7 @@ with st.sidebar:
     st.selectbox("Select Entity Names", ["Choose an option"], key="entity_filter")
     
     st.subheader("📊 Source Filter")
-    source_filter_type = st.radio("", ["Any number of sources", "Specific range"], key="source_filter_type")
+    source_filter_type = st.radio("Select source filtering:", ["Any number of sources", "Specific range"], key="source_filter_type")
     
     if source_filter_type == "Specific range":
         col1, col2 = st.columns(2)

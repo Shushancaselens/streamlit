@@ -62,12 +62,12 @@ with tab1:
         search_mode = st.toggle("Question", key="search_mode")
     with col2:
         if search_mode:
-            st.text_input("Ask a question...", placeholder="Ask about the case, events, or documents...", key="ai_search", label_visibility="collapsed")
+            user_question = st.text_input("Ask a question...", placeholder="Ask about the case, events, or documents...", key="ai_search", label_visibility="collapsed")
         else:
             st.text_input("Search", placeholder="Search...", key="regular_search", label_visibility="collapsed")
     
-    # Show AI answer when in question mode
-    if search_mode and st.session_state.get("ai_search", ""):
+    # Show AI answer when in question mode and user has entered a question
+    if search_mode and st.session_state.get("ai_search", "").strip():
         with st.container(border=True):
             st.markdown("### 🤖 AI Answer")
             st.markdown("Based on the case documents, here's what I found about your question...")
@@ -88,48 +88,42 @@ with tab1:
         st.checkbox("", key="check_1926", value=select_all)
     with col_exp1:
         with st.expander("🔵 1926-12-17 | On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy. | :green[2 Sources]", expanded=False):
-            # Content for 1926 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 1926 case...")
     
     col_check2, col_exp2 = st.columns([0.05, 0.95])
     with col_check2:
         st.checkbox("", key="check_1961", value=select_all)
     with col_exp2:
         with st.expander("🔵 1961-10-05 | On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961. | :green[1 Source]", expanded=False):
-            # Content for 1961 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 1961 case...")
     
     col_check3, col_exp3 = st.columns([0.05, 0.95])
     with col_check3:
         st.checkbox("", key="check_1985", value=select_all)
     with col_exp3:
         with st.expander("🔵 1985-02-06 | On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters. | :green[2 Sources]", expanded=False):
-            # Content for 1985 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 1985 case...")
     
     col_check4, col_exp4 = st.columns([0.05, 0.95])
     with col_check4:
         st.checkbox("", key="check_2004_1", value=select_all)
     with col_exp4:
         with st.expander("🔵 2004-00-00 | In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 2004 case 1...")
     
     col_check5, col_exp5 = st.columns([0.05, 0.95])
     with col_check5:
         st.checkbox("", key="check_2004_2", value=select_all)
     with col_exp5:
         with st.expander("🔵 2004-00-00 | In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 2004 case 2...")
     
     col_check6, col_exp6 = st.columns([0.05, 0.95])
     with col_check6:
         st.checkbox("", key="check_2004_3", value=select_all)
     with col_exp6:
         with st.expander("🔵 2004-10-00 | In October 2004, Damen Shipyards built **MV Messila** in the Netherlands. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+            st.markdown("Timeline content for 2004 case 3...")
 
 with tab2:
     # Table view
@@ -182,4 +176,3 @@ with tab3:
         df = df[mask]
     
     st.dataframe(df, use_container_width=True, hide_index=True)
-

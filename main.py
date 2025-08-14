@@ -40,7 +40,7 @@ col1, col2 = st.columns([4, 1])
 with col1:
     st.header("Case name: Astute CASE N 28459")
 with col2:
-    st.button("📥 Download Timeline", type="primary", key="main_download")
+    st.button("📥 Download All Events", type="primary", key="main_download")
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Card View", "Table View", "Definitions"])
@@ -58,54 +58,48 @@ with tab1:
     
     st.markdown("")
     
-    # Timeline items with checkboxes
+    # Timeline items with checkboxes - showing different source visualizations
     col_check1, col_exp1 = st.columns([0.05, 0.95])
     with col_check1:
         st.checkbox("", key="check_1926", value=select_all)
     with col_exp1:
-        with st.expander("🔵 1926-12-17 | On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy. | :green[2 Sources]", expanded=False):
-            # Content for 1926 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 1926-12-17 | On 17 December 26, **France** issued laws establishing the disciplinary and penal codes for both the French navy and the merchant navy. | :blue[2]", expanded=False):
+            st.markdown("**Option 1: Blue pill number**")
     
     col_check2, col_exp2 = st.columns([0.05, 0.95])
     with col_check2:
         st.checkbox("", key="check_1961", value=select_all)
     with col_exp2:
-        with st.expander("🔵 1961-10-05 | On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961. | :green[1 Source]", expanded=False):
-            # Content for 1961 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 1961-10-05 | On 05 October 61, the **United Kingdom of Great Britain and Northern Ireland** signed the Hague Convention of 5 October 1961. | 📄1", expanded=False):
+            st.markdown("**Option 2: Document icon + number**")
     
     col_check3, col_exp3 = st.columns([0.05, 0.95])
     with col_check3:
         st.checkbox("", key="check_1985", value=select_all)
     with col_exp3:
-        with st.expander("🔵 1985-02-06 | On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters. | :green[2 Sources]", expanded=False):
-            # Content for 1985 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 1985-02-06 | On 06 February 85, **France** issued decree 85-185 regulating the passage of foreign ships and vessels through French territorial waters. | [2]", expanded=False):
+            st.markdown("**Option 3: Square brackets**")
     
     col_check4, col_exp4 = st.columns([0.05, 0.95])
     with col_check4:
         st.checkbox("", key="check_2004_1", value=select_all)
     with col_exp4:
-        with st.expander("🔵 2004-00-00 | In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 2004-00-00 | In 2004 Schedule A of the supply agreement between **Elfaag Travaux Maritimes et Fluviaux** and **Noksel Celik Boru Sanayi A.S.** referenced the production standard EN 10025:2004 for steel grade requirements for the **Wharf** **Futuna** project. | (1)", expanded=False):
+            st.markdown("**Option 4: Parentheses**")
     
     col_check5, col_exp5 = st.columns([0.05, 0.95])
     with col_check5:
         st.checkbox("", key="check_2004_2", value=select_all)
     with col_exp5:
-        with st.expander("🔵 2004-00-00 | In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 2004-00-00 | In 2004 **OKEAN SHIPBUILDING YARD** built **MV Messila** in **Nikolayev**, **Ukraine**. | 📊1", expanded=False):
+            st.markdown("**Option 5: Chart icon + number**")
     
     col_check6, col_exp6 = st.columns([0.05, 0.95])
     with col_check6:
         st.checkbox("", key="check_2004_3", value=select_all)
     with col_exp6:
-        with st.expander("🔵 2004-10-00 | In October 2004, Damen Shipyards built **MV Messila** in the Netherlands. | :green[1 Source]", expanded=False):
-            # Content for 2004 case
-            st.markdown("Timeline content...")
+        with st.expander("🔵 2004-10-00 | In October 2004, Damen Shipyards built **MV Messila** in the Netherlands. | :green[1]", expanded=False):
+            st.markdown("**Option 6: Green pill number**")
 
 with tab2:
     # Table view

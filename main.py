@@ -5,7 +5,7 @@ import pandas as pd
 import base64
 
 # Set page config
-st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
+st.set_page_config(page_title="Commercial Arbitration Analysis - TechStart v. MegaCorp", layout="wide")
 
 # Override Streamlit's default styling to use full width
 st.markdown("""
@@ -27,83 +27,84 @@ def get_argument_data():
     claimant_args = {
         "1": {
             "id": "1",
-            "title": "Sporting Succession",
-            "paragraphs": "15-18",
+            "title": "Breach of Software Licensing Agreement",
+            "paragraphs": "15-35",
             "overview": {
                 "points": [
-                    "Analysis of multiple established criteria",
-                    "Focus on continuous use of identifying elements",
-                    "Public recognition assessment"
+                    "Material breach of payment obligations under Section 4.2",
+                    "Unauthorized use beyond licensed territory in violation of Section 2.1",
+                    "Failure to provide required usage reports per Section 5.3"
                 ],
-                "paragraphs": "15-16"
+                "paragraphs": "15-17"
             },
             "factualPoints": [
                 {
-                    "point": "Continuous operation under same name since 1950",
-                    "date": "1950-present",
-                    "isDisputed": False,
-                    "paragraphs": "18-19",
-                    "exhibits": ["C-1"]
+                    "point": "MegaCorp failed to make quarterly license payments for Q3 and Q4 2023",
+                    "date": "2023-07-01 to 2023-12-31",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "18-20",
+                    "exhibits": ["C-1", "C-2"]
                 }
             ],
             "evidence": [
                 {
                     "id": "C-1",
-                    "title": "Historical Registration Documents",
-                    "summary": "Official records showing continuous name usage from 1950 to present day. Includes original registration certificate dated January 12, 1950, and all subsequent renewal documentation without interruption.",
-                    "citations": ["20", "21", "24"]
+                    "title": "Software Licensing Agreement",
+                    "summary": "Master licensing agreement executed on January 15, 2023, between TechStart Inc. and MegaCorp Ltd., governing the licensing of TechStart's proprietary AI analytics software platform including payment terms, territorial restrictions, and usage obligations.",
+                    "citations": ["18", "19", "22"]
                 }
             ],
             "caseLaw": [
                 {
-                    "caseNumber": "CAS 2016/A/4576",
-                    "title": "Criteria for sporting succession",
-                    "relevance": "Establishes key factors for succession including: (1) continuous use of identifying elements, (2) public recognition of the entity's identity, (3) preservation of sporting records and achievements, and (4) consistent participation in competitions under the same identity.",
-                    "paragraphs": "45-48",
-                    "citedParagraphs": ["45", "46", "47"]
+                    "caseNumber": "ICC Case No. 21045/2019",
+                    "title": "Material breach in software licensing",
+                    "relevance": "Established that failure to make scheduled license payments for more than 60 days constitutes material breach, regardless of disputes over calculation methodology. The tribunal emphasized that payment obligations are independent of performance disputes unless explicitly linked in the contract.",
+                    "paragraphs": "23-26",
+                    "citedParagraphs": ["24", "25"]
                 }
             ],
             "children": {
                 "1.1": {
                     "id": "1.1",
-                    "title": "Club Name Analysis",
-                    "paragraphs": "20-45",
+                    "title": "Payment Obligations Breach",
+                    "paragraphs": "30-55",
                     "overview": {
                         "points": [
-                            "Historical continuity of name usage",
-                            "Legal protection of naming rights",
-                            "Public recognition of club name"
+                            "Clear contractual payment schedule in Section 4.2",
+                            "No valid dispute resolution procedure invoked",
+                            "Acceptance of software continued during non-payment"
                         ],
-                        "paragraphs": "20-21"
+                        "paragraphs": "30-32"
                     },
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
-                            "title": "Registration History",
-                            "paragraphs": "25-30",
+                            "title": "Quarterly Payment Analysis",
+                            "paragraphs": "40-45",
                             "factualPoints": [
                                 {
-                                    "point": "Initial registration in 1950",
-                                    "date": "1950",
+                                    "point": "Q3 2023 payment of $2.5M due July 1, 2023 - never received",
+                                    "date": "2023-07-01",
                                     "isDisputed": False,
-                                    "paragraphs": "25-26",
-                                    "exhibits": ["C-2"]
+                                    "paragraphs": "40-41",
+                                    "exhibits": ["C-3"]
                                 },
                                 {
-                                    "point": "Brief administrative gap in 1975-1976",
-                                    "date": "1975-1976",
+                                    "point": "Q4 2023 payment of $2.8M due October 1, 2023 - partial payment only",
+                                    "date": "2023-10-01",
                                     "isDisputed": True,
                                     "source": "Respondent",
-                                    "paragraphs": "29-30",
-                                    "exhibits": ["C-2"]
+                                    "paragraphs": "42-43",
+                                    "exhibits": ["C-3", "C-4"]
                                 }
                             ],
                             "evidence": [
                                 {
-                                    "id": "C-2",
-                                    "title": "Registration Records",
-                                    "summary": "Comprehensive collection of official documentation showing the full registration history of the club from its founding to present day. Includes original application forms, government certificates, and renewal documentation.",
-                                    "citations": ["25", "26", "28"]
+                                    "id": "C-3",
+                                    "title": "Payment Schedule and Banking Records",
+                                    "summary": "Detailed payment schedule from the licensing agreement and TechStart's banking records showing all payments received from MegaCorp, including wire transfer confirmations and account statements for the entire contract period.",
+                                    "citations": ["40", "41", "42"]
                                 }
                             ]
                         }
@@ -111,242 +112,221 @@ def get_argument_data():
                 },
                 "1.2": {
                     "id": "1.2",
-                    "title": "Club Colors Analysis",
-                    "paragraphs": "46-65",
+                    "title": "Territorial Usage Violations",
+                    "paragraphs": "56-75",
                     "overview": {
                         "points": [
-                            "Consistent use of club colors",
-                            "Minor variations analysis",
-                            "Color trademark protection"
+                            "License limited to North American territory",
+                            "Evidence of European deployment without authorization",
+                            "Usage logs confirm unauthorized geographic expansion"
                         ],
-                        "paragraphs": "46-47"
+                        "paragraphs": "56-58"
                     },
                     "factualPoints": [
                         {
-                            "point": "Consistent use of blue and white since founding",
-                            "date": "1950-present",
+                            "point": "Software deployed in UK and German data centers without additional licensing",
+                            "date": "2023-09-15 to present",
                             "isDisputed": True,
                             "source": "Respondent",
-                            "paragraphs": "51-52",
-                            "exhibits": ["C-4"]
+                            "paragraphs": "62-65",
+                            "exhibits": ["C-7"]
                         }
                     ],
                     "evidence": [
                         {
-                            "id": "C-4",
-                            "title": "Historical Photographs",
-                            "summary": "Collection of 73 photographs spanning from 1950 to present day showing the team's uniforms, promotional materials, and stadium decorations. Images are chronologically arranged and authenticated by sports historians.",
-                            "citations": ["53", "54", "55"]
+                            "id": "C-7",
+                            "title": "Server Access Logs and Geographic Data",
+                            "summary": "Comprehensive server access logs from TechStart's monitoring systems showing API calls and data processing requests originating from IP addresses in European Union countries, including detailed timestamp and geographic location data.",
+                            "citations": ["62", "63", "64"]
                         }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Variations Analysis",
-                            "paragraphs": "56-60",
-                            "factualPoints": [
-                                {
-                                    "point": "Minor shade variations do not affect continuity",
-                                    "date": "1970-1980",
-                                    "isDisputed": False,
-                                    "paragraphs": "56-57",
-                                    "exhibits": ["C-5"]
-                                },
-                                {
-                                    "point": "Temporary third color addition in 1980s",
-                                    "date": "1982-1988",
-                                    "isDisputed": False,
-                                    "paragraphs": "58-59",
-                                    "exhibits": ["C-5"]
-                                }
-                            ],
-                            "children": {
-                                "1.2.1.1": {
-                                    "id": "1.2.1.1",
-                                    "title": "Historical Color Documentation",
-                                    "paragraphs": "61-65",
-                                    "evidence": [
-                                        {
-                                            "id": "C-5",
-                                            "title": "Color Archives",
-                                            "summary": "Detailed color specification documents from club archives, including official style guides, manufacturer specifications, and board meeting minutes about uniform decisions from 1950 to present day.",
-                                            "citations": ["61", "62", "63"]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
+                    ]
                 }
             }
+        },
+        "2": {
+            "id": "2",
+            "title": "Intellectual Property Ownership Disputes",
+            "paragraphs": "76-95",
+            "overview": {
+                "points": [
+                    "Unauthorized creation of derivative works",
+                    "Breach of IP ownership provisions in Section 7",
+                    "Misappropriation of proprietary algorithms"
+                ],
+                "paragraphs": "76-78"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp developed competing software using TechStart's proprietary algorithms",
+                    "date": "2023-11-01 to present",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "82-85",
+                    "exhibits": ["C-9"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-9",
+                    "title": "Code Analysis Report",
+                    "summary": "Expert technical analysis comparing TechStart's proprietary algorithms with MegaCorp's newly developed software, identifying substantial similarities in core computational methods and data processing approaches.",
+                    "citations": ["82", "83", "84"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 156789",
+                    "title": "Derivative works in software licensing",
+                    "relevance": "Established that licensees cannot create derivative works or competing products using licensed technology without explicit authorization. The tribunal ruled that even improvements made by the licensee remain subject to the original IP ownership terms.",
+                    "paragraphs": "86-88",
+                    "citedParagraphs": ["87"]
+                }
+            ]
         }
     }
     
     respondent_args = {
         "1": {
             "id": "1",
-            "title": "Sporting Succession Rebuttal",
-            "paragraphs": "200-218",
+            "title": "No Material Breach - Payment Disputes",
+            "paragraphs": "200-225",
             "overview": {
                 "points": [
-                    "Challenge to claimed continuity of operations",
-                    "Analysis of discontinuities in club operations",
-                    "Dispute over public recognition factors"
+                    "Payments withheld due to software performance issues",
+                    "Valid invocation of dispute resolution under Section 8.4",
+                    "TechStart's failure to remedy defects justified payment suspension"
                 ],
                 "paragraphs": "200-202"
             },
             "factualPoints": [
                 {
-                    "point": "Operations ceased between 1975-1976",
-                    "date": "1975-1976",
+                    "point": "Software experienced critical performance failures affecting MegaCorp's operations",
+                    "date": "2023-06-15 to 2023-09-30",
                     "isDisputed": True,
                     "source": "Claimant",
-                    "paragraphs": "206-207",
-                    "exhibits": ["R-1"]
+                    "paragraphs": "206-209",
+                    "exhibits": ["R-1", "R-2"]
                 }
             ],
             "evidence": [
                 {
                     "id": "R-1",
-                    "title": "Federation Records",
-                    "summary": "Official competition records from the National Football Federation for the 1975-1976 season, showing complete absence of the club from all levels of competition that season. Includes official withdrawal notification dated May 15, 1975.",
-                    "citations": ["208", "209", "210"]
+                    "title": "System Performance Reports",
+                    "summary": "Detailed technical reports documenting software failures, including system downtime logs, error messages, and impact assessments showing significant business disruption caused by TechStart's software performance issues.",
+                    "citations": ["206", "207", "208"]
                 }
             ],
             "caseLaw": [
                 {
-                    "caseNumber": "CAS 2017/A/5465",
-                    "title": "Operational continuity requirement",
-                    "relevance": "Establishes that actual operational continuity (specifically participation in competitions) is the primary determinant of sporting succession, outweighing factors such as name, colors, or stadium usage when they conflict. The panel specifically ruled that a gap in competitive activity creates a presumption against continuity that must be overcome with substantial evidence.",
-                    "paragraphs": "211-213",
-                    "citedParagraphs": ["212"]
+                    "caseNumber": "ICC Case No. 19876/2020",
+                    "title": "Suspension of payment for non-conforming performance",
+                    "relevance": "Confirmed that parties may suspend payment obligations when the counterparty fails to deliver conforming performance, provided proper notice is given and cure period allowed. Material non-performance excuses payment obligations until remedy.",
+                    "paragraphs": "210-213",
+                    "citedParagraphs": ["211", "212"]
                 }
             ],
             "children": {
                 "1.1": {
                     "id": "1.1",
-                    "title": "Club Name Analysis Rebuttal",
+                    "title": "Software Performance Defects",
                     "paragraphs": "220-240",
                     "overview": {
                         "points": [
-                            "Name registration discontinuities",
-                            "Trademark ownership gaps",
-                            "Analysis of public confusion"
+                            "Critical system failures impacting business operations",
+                            "TechStart's inadequate technical support response",
+                            "Failure to meet SLA requirements in Section 3.2"
                         ],
                         "paragraphs": "220-222"
                     },
                     "children": {
                         "1.1.1": {
                             "id": "1.1.1",
-                            "title": "Registration Gap Evidence",
-                            "paragraphs": "226-230",
+                            "title": "Documented System Failures",
+                            "paragraphs": "230-235",
                             "factualPoints": [
                                 {
-                                    "point": "Registration formally terminated on April 30, 1975",
-                                    "date": "April 30, 1975",
+                                    "point": "System downtime exceeded 15% in Q3 2023, violating 99% uptime SLA",
+                                    "date": "2023-07-01 to 2023-09-30",
                                     "isDisputed": False,
-                                    "paragraphs": "226-227",
-                                    "exhibits": ["R-2"]
+                                    "paragraphs": "230-231",
+                                    "exhibits": ["R-3"]
                                 },
                                 {
-                                    "point": "New entity registered on September 15, 1976",
-                                    "date": "September 15, 1976",
-                                    "isDisputed": False,
-                                    "paragraphs": "228-229",
-                                    "exhibits": ["R-2"]
+                                    "point": "Critical data processing errors resulted in $1.2M in business losses",
+                                    "date": "2023-08-15 to 2023-08-30",
+                                    "isDisputed": True,
+                                    "source": "Claimant",
+                                    "paragraphs": "232-234",
+                                    "exhibits": ["R-4"]
                                 }
                             ],
                             "evidence": [
                                 {
-                                    "id": "R-2",
-                                    "title": "Termination Certificate",
-                                    "summary": "Official government certificate of termination for the original club entity, stamped and notarized on April 30, 1975, along with completely new registration documents for a separate legal entity filed on September 15, 1976, with different founding members and bylaws.",
-                                    "citations": ["226", "227"]
+                                    "id": "R-3",
+                                    "title": "SLA Compliance Reports",
+                                    "summary": "Comprehensive service level agreement monitoring reports showing actual vs. contracted performance metrics, including uptime statistics, response times, and resolution timeframes for technical issues.",
+                                    "citations": ["230", "231"]
                                 }
                             ]
                         }
                     }
-                },
-                "1.2": {
-                    "id": "1.2",
-                    "title": "Club Colors Analysis Rebuttal",
-                    "paragraphs": "241-249",
-                    "overview": {
-                        "points": [
-                            "Significant color variations",
-                            "Trademark registration gaps",
-                            "Multiple competing color claims"
-                        ],
-                        "paragraphs": "241-242"
-                    },
-                    "factualPoints": [
-                        {
-                            "point": "Significant color scheme change in 1976",
-                            "date": "1976",
-                            "isDisputed": True,
-                            "source": "Claimant",
-                            "paragraphs": "245-246",
-                            "exhibits": ["R-4"]
-                        }
-                    ],
-                    "evidence": [
-                        {
-                            "id": "R-4",
-                            "title": "Historical Photographs Comparison",
-                            "summary": "Side-by-side comparison of team uniforms from 1974 (pre-dissolution) and 1976 (post-new registration), showing significant differences in shade, pattern, and design elements. Includes expert color analysis report from textile historian confirming different dye formulations were used.",
-                            "citations": ["245", "246", "247"]
-                        }
-                    ],
-                    "children": {
-                        "1.2.1": {
-                            "id": "1.2.1",
-                            "title": "Color Changes Analysis",
-                            "paragraphs": "247-249",
-                            "factualPoints": [
-                                {
-                                    "point": "Pre-1976 colors represented original city district",
-                                    "date": "1950-1975",
-                                    "isDisputed": False,
-                                    "paragraphs": "247",
-                                    "exhibits": ["R-5"]
-                                },
-                                {
-                                    "point": "Post-1976 colors represented new ownership region",
-                                    "date": "1976-present",
-                                    "isDisputed": True,
-                                    "source": "Claimant",
-                                    "paragraphs": "248-249",
-                                    "exhibits": ["R-5"]
-                                }
-                            ],
-                            "children": {
-                                "1.2.1.1": {
-                                    "id": "1.2.1.1",
-                                    "title": "Color Identity Documentation",
-                                    "paragraphs": "250-255",
-                                    "evidence": [
-                                        {
-                                            "id": "R-5",
-                                            "title": "Marketing Materials",
-                                            "summary": "Collection of promotional materials, merchandise, and internal design documents from both pre-1975 and post-1976 periods, showing the deliberate change in color symbolism used in marketing campaigns and communications with fans.",
-                                            "citations": ["250", "251", "252"]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
                 }
             }
+        },
+        "2": {
+            "id": "2",
+            "title": "Legitimate IP Development",
+            "paragraphs": "250-275",
+            "overview": {
+                "points": [
+                    "Independent development of proprietary technology",
+                    "No use of TechStart's confidential information",
+                    "Legitimate competitive product development"
+                ],
+                "paragraphs": "250-252"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp's development team created algorithms independently using clean-room methodology",
+                    "date": "2023-01-01 to 2023-10-31",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "258-262",
+                    "exhibits": ["R-7"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-7",
+                    "title": "Development Documentation and Clean-Room Procedures",
+                    "summary": "Complete development documentation including design specifications, coding standards, and clean-room procedures implemented to ensure independent development without reference to TechStart's proprietary technology.",
+                    "citations": ["258", "259", "260"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "SIAC ARB 045/2021",
+                    "title": "Independent development vs. misappropriation",
+                    "relevance": "Distinguished between legitimate independent development and misappropriation, establishing that licensees retain the right to develop competing products using their own resources and expertise, provided they do not use confidential information from the licensed technology.",
+                    "paragraphs": "265-268",
+                    "citedParagraphs": ["266", "267"]
+                }
+            ]
         }
     }
     
     topics = [
         {
             "id": "topic-1",
-            "title": "Sporting Succession and Identity",
-            "description": "Questions of club identity, continuity, and succession rights",
+            "title": "Contract Performance and Payment Disputes",
+            "description": "Questions of material breach, payment obligations, and excuse for non-performance",
             "argumentIds": ["1"]
+        },
+        {
+            "id": "topic-2", 
+            "title": "Intellectual Property Rights and Development",
+            "description": "Disputes over IP ownership, derivative works, and competitive product development",
+            "argumentIds": ["2"]
         }
     ]
     
@@ -360,49 +340,61 @@ def get_timeline_data():
     return [
         {
             "date": "2023-01-15",
-            "appellantVersion": "Contract signed with Club",
+            "claimantVersion": "Software licensing agreement executed between TechStart and MegaCorp",
             "respondentVersion": "—",
             "status": "Undisputed"
         },
         {
-            "date": "2023-03-20",
-            "appellantVersion": "Player received notification of exclusion from team",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-03-22",
-            "appellantVersion": "Player requested explanation",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-01",
-            "appellantVersion": "Player sent termination letter",
-            "respondentVersion": "—",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-05",
-            "appellantVersion": "—",
-            "respondentVersion": "Club rejected termination as invalid",
-            "status": "Undisputed"
-        },
-        {
-            "date": "2023-04-10",
-            "appellantVersion": "Player was denied access to training facilities",
-            "respondentVersion": "—",
+            "date": "2023-06-15",
+            "claimantVersion": "MegaCorp began experiencing minor software performance issues",
+            "respondentVersion": "Critical system failures began affecting business operations",
             "status": "Disputed"
         },
         {
-            "date": "2023-04-15",
-            "appellantVersion": "—",
-            "respondentVersion": "Club issued warning letter",
+            "date": "2023-07-01",
+            "claimantVersion": "Q3 license payment of $2.5M due but not received",
+            "respondentVersion": "Payment withheld due to ongoing software performance issues",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-08-15",
+            "claimantVersion": "TechStart provided software updates to address performance concerns",
+            "respondentVersion": "System failures resulted in $1.2M business losses despite 'updates'",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-09-15",
+            "claimantVersion": "Discovered unauthorized deployment in European territories",
+            "respondentVersion": "Deployed software globally as business necessity due to system reliability issues",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-10-01",
+            "claimantVersion": "Q4 license payment of $2.8M due - only partial payment received",
+            "respondentVersion": "Made partial payment pending resolution of performance issues",
             "status": "Undisputed"
         },
         {
-            "date": "2023-05-01",
-            "appellantVersion": "Player filed claim with FIFA",
+            "date": "2023-11-01",
+            "claimantVersion": "MegaCorp began developing competing software using TechStart's algorithms",
+            "respondentVersion": "Commenced independent development of alternative solution using clean-room methodology",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-12-15",
+            "claimantVersion": "Formal notice of breach sent to MegaCorp",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2024-01-20",
+            "claimantVersion": "TechStart terminated licensing agreement for material breach",
+            "respondentVersion": "Disputed termination as invalid due to TechStart's prior material breaches",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-03-01",
+            "claimantVersion": "Arbitration proceedings initiated under ICC Rules",
             "respondentVersion": "—",
             "status": "Undisputed"
         }
@@ -412,52 +404,80 @@ def get_exhibits_data():
     return [
         {
             "id": "C-1",
-            "party": "Appellant",
-            "title": "Employment Contract",
+            "party": "Claimant",
+            "title": "Software Licensing Agreement",
             "type": "contract",
-            "summary": "Employment contract dated 15 January 2023 between Player and Club"
+            "summary": "Master licensing agreement executed January 15, 2023, between TechStart Inc. and MegaCorp Ltd."
         },
         {
             "id": "C-2",
-            "party": "Appellant",
-            "title": "Termination Letter",
-            "type": "letter",
-            "summary": "Player's termination letter sent on 1 April 2023"
+            "party": "Claimant", 
+            "title": "Payment Demand Letters",
+            "type": "correspondence",
+            "summary": "Series of payment demand letters sent to MegaCorp for overdue Q3 and Q4 2023 license fees"
         },
         {
             "id": "C-3",
-            "party": "Appellant",
-            "title": "Email Correspondence",
-            "type": "communication",
-            "summary": "Email exchanges between Player and Club from 22-30 March 2023"
+            "party": "Claimant",
+            "title": "Banking Records and Payment Schedule",
+            "type": "financial",
+            "summary": "TechStart's banking records and contractual payment schedule showing payment defaults"
         },
         {
             "id": "C-4",
-            "party": "Appellant",
-            "title": "Witness Statement",
-            "type": "statement",
-            "summary": "Statement from team captain confirming Player's exclusion"
+            "party": "Claimant",
+            "title": "Partial Payment Confirmation",
+            "type": "financial",
+            "summary": "Wire transfer confirmation for partial Q4 2023 payment of $1.1M received from MegaCorp"
+        },
+        {
+            "id": "C-7",
+            "party": "Claimant",
+            "title": "Server Access Logs",
+            "type": "technical",
+            "summary": "Comprehensive server logs showing API calls from European IP addresses proving territorial violations"
+        },
+        {
+            "id": "C-9",
+            "party": "Claimant",
+            "title": "Code Analysis Expert Report",
+            "type": "expert",
+            "summary": "Technical expert analysis comparing TechStart's algorithms with MegaCorp's competing software"
         },
         {
             "id": "R-1",
             "party": "Respondent",
-            "title": "Club Regulations",
-            "type": "regulations",
-            "summary": "Internal regulations of the Club dated January 2022"
+            "title": "System Performance Reports",
+            "type": "technical",
+            "summary": "Detailed technical reports documenting software failures and business impact from June-September 2023"
         },
         {
             "id": "R-2",
             "party": "Respondent",
-            "title": "Warning Letter",
-            "type": "letter",
-            "summary": "Warning letter issued to Player on 15 April 2023"
+            "title": "SLA Breach Documentation",
+            "type": "technical",
+            "summary": "Evidence of TechStart's failure to meet 99% uptime service level agreement requirements"
         },
         {
             "id": "R-3",
             "party": "Respondent",
-            "title": "Training Schedule",
-            "type": "schedule",
-            "summary": "Team training schedule for March-April 2023"
+            "title": "SLA Compliance Reports",
+            "type": "technical",
+            "summary": "Quarterly SLA monitoring reports showing actual vs. contracted performance metrics"
+        },
+        {
+            "id": "R-4",
+            "party": "Respondent",
+            "title": "Business Loss Documentation",
+            "type": "financial",
+            "summary": "Financial impact assessment of $1.2M in losses caused by software failures in August 2023"
+        },
+        {
+            "id": "R-7",
+            "party": "Respondent",
+            "title": "Clean-Room Development Documentation",
+            "type": "technical",
+            "summary": "Complete development records proving independent creation of competing software using clean-room methodology"
         }
     ]
 
@@ -492,7 +512,7 @@ def get_all_facts():
     
     # Extract from claimant args
     for arg_id, arg in args_data['claimantArgs'].items():
-        extract_facts(arg, 'Appellant')
+        extract_facts(arg, 'Claimant')
         
     # Extract from respondent args
     for arg_id, arg in args_data['respondentArgs'].items():
@@ -673,13 +693,13 @@ def main():
             }}
             
             /* Party view styles */
-            .appellant-only .arguments-row > div:nth-child(2) {{
+            .claimant-only .arguments-row > div:nth-child(2) {{
                 display: none;
             }}
-            .appellant-only .arguments-row > div:nth-child(1) {{
+            .claimant-only .arguments-row > div:nth-child(1) {{
                 grid-column: 1 / span 2;
             }}
-            .appellant-only .respondent-color {{
+            .claimant-only .respondent-color {{
                 display: none;
             }}
             
@@ -689,7 +709,7 @@ def main():
             .respondent-only .arguments-row > div:nth-child(2) {{
                 grid-column: 1 / span 2;
             }}
-            .respondent-only .appellant-color {{
+            .respondent-only .claimant-color {{
                 display: none;
             }}
             
@@ -698,7 +718,7 @@ def main():
                 font-weight: 500;
             }}
             
-            .appellant-color {{
+            .claimant-color {{
                 color: #3182ce;
             }}
             
@@ -715,7 +735,7 @@ def main():
                 font-weight: 500;
             }}
             
-            .appellant-badge {{
+            .claimant-badge {{
                 background-color: rgba(49, 130, 206, 0.1);
                 color: #3182ce;
             }}
@@ -1056,14 +1076,14 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
-                <div class="section-title">Issues</div>
+                <div class="section-title">Dispute Summary: Software Licensing & IP Rights</div>
                 
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
                     <div id="party-buttons">
                         <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
                         
-                        <button id="app-btn" onclick="changePartyView('appellant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Appellant Only</button>
+                        <button id="app-btn" onclick="changePartyView('claimant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; margin-right: 5px;">Claimant Only</button>
                         
                         <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
@@ -1131,7 +1151,7 @@ def main():
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Appellant's Version</th>
+                            <th>Claimant's Version</th>
                             <th>Respondent's Version</th>
                             <th>Status</th>
                         </tr>
@@ -1193,10 +1213,10 @@ def main():
                     bothBtn.style.backgroundColor = '#4299e1';
                     bothBtn.style.color = 'white';
                     // Default view - no special class needed
-                }} else if (view === 'appellant') {{
+                }} else if (view === 'claimant') {{
                     appBtn.style.backgroundColor = '#4299e1';
                     appBtn.style.color = 'white';
-                    container.className = 'appellant-only';
+                    container.className = 'claimant-only';
                 }} else if (view === 'respondent') {{
                     respBtn.style.backgroundColor = '#4299e1';
                     respBtn.style.color = 'white';
@@ -1536,9 +1556,9 @@ def main():
                 }}
                 
                 // Get flattened arguments
-                const appellantArgs = flattenArguments(argsData.claimantArgs, "Appellant");
+                const claimantArgs = flattenArguments(argsData.claimantArgs, "Claimant");
                 const respondentArgs = flattenArguments(argsData.respondentArgs, "Respondent");
-                const allArgs = [...appellantArgs, ...respondentArgs];
+                const allArgs = [...claimantArgs, ...respondentArgs];
                 
                 // Render rows
                 allArgs.forEach(arg => {{
@@ -1557,7 +1577,7 @@ def main():
                     // Party column
                     const partyCell = document.createElement('td');
                     const partyBadge = document.createElement('span');
-                    partyBadge.className = `badge ${{arg.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.className = `badge ${{arg.party === 'Claimant' ? 'claimant-badge' : 'respondent-badge'}}`;
                     partyBadge.textContent = arg.party;
                     partyCell.appendChild(partyBadge);
                     row.appendChild(partyCell);
@@ -1640,7 +1660,7 @@ def main():
                     // Party column
                     const partyCell = document.createElement('td');
                     const partyBadge = document.createElement('span');
-                    partyBadge.className = `badge ${{fact.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge'}}`;
+                    partyBadge.className = `badge ${{fact.party === 'Claimant' ? 'claimant-badge' : 'respondent-badge'}}`;
                     partyBadge.textContent = fact.party;
                     partyCell.appendChild(partyBadge);
                     row.appendChild(partyCell);
@@ -1836,7 +1856,7 @@ def main():
                 const pairId = arg.id;
                 
                 // Style based on side
-                const badgeClass = side === 'appellant' ? 'appellant-badge' : 'respondent-badge';
+                const badgeClass = side === 'claimant' ? 'claimant-badge' : 'respondent-badge';
                 
                 // Render children if any - removed style="display: none;"
                 let childrenHtml = '';
@@ -1894,8 +1914,8 @@ def main():
                                     <div style="margin-top: 16px;">
                                         <div class="arguments-row">
                                             <div>
-                                                <h3 class="side-heading appellant-color">Appellant's Position</h3>
-                                                ${{renderArgument(argsData.claimantArgs[argId], 'appellant')}}
+                                                <h3 class="side-heading claimant-color">Claimant's Position</h3>
+                                                ${{renderArgument(argsData.claimantArgs[argId], 'claimant')}}
                                             </div>
                                             <div>
                                                 <h3 class="side-heading respondent-color">Respondent's Position</h3>
@@ -1943,7 +1963,7 @@ def main():
                 toggleCard(argId);
                 
                 // Then, determine and handle the counterpart
-                const otherSide = side === 'appellant' ? 'respondent' : 'appellant';
+                const otherSide = side === 'claimant' ? 'respondent' : 'claimant';
                 const counterpartId = `${{otherSide}}-${{pairId}}`;
                 
                 // Toggle the counterpart (if it exists)
@@ -1978,7 +1998,7 @@ def main():
                     
                     row.innerHTML = `
                         <td>${{item.date}}</td>
-                        <td>${{item.appellantVersion}}</td>
+                        <td>${{item.claimantVersion}}</td>
                         <td>${{item.respondentVersion}}</td>
                         <td>${{item.status}}</td>
                     `;
@@ -1994,7 +2014,7 @@ def main():
                 
                 exhibitsData.forEach(item => {{
                     const row = document.createElement('tr');
-                    const badgeClass = item.party === 'Appellant' ? 'appellant-badge' : 'respondent-badge';
+                    const badgeClass = item.party === 'Claimant' ? 'claimant-badge' : 'respondent-badge';
                     
                     row.innerHTML = `
                         <td>${{item.id}}</td>
@@ -2013,7 +2033,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("Summary of arguments")
+    st.title("TechStart Inc. v. MegaCorp Ltd. - Commercial Arbitration Analysis")
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

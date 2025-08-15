@@ -5,7 +5,7 @@ import pandas as pd
 import base64
 
 # Set page config
-st.set_page_config(page_title="Commercial Arbitration Analysis - TechStart v. MegaCorp", layout="wide")
+st.set_page_config(page_title="TechStart Inc. v. MegaCorp Ltd.", layout="wide")
 
 # Override Streamlit's default styling to use full width
 st.markdown("""
@@ -2033,7 +2033,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("TechStart Inc. v. MegaCorp Ltd. - Commercial Arbitration Analysis")
+    st.title("TechStart Inc. v. MegaCorp Ltd.")
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

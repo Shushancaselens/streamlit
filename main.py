@@ -606,17 +606,8 @@ def main():
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
-                padding: 0;
+                padding: 20px;
                 background-color: #fff;
-            }}
-            
-            /* Simple container */
-            .container {{
-                width: 100%;
-                margin: 0;
-                padding: 10px;
-                min-width: 0;
-                overflow-x: auto;
             }}
             
             /* Content sections */
@@ -657,8 +648,6 @@ def main():
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
-                width: 100%;
-                min-width: 0;
             }}
             
             /* Party view styles */
@@ -764,8 +753,6 @@ def main():
             table {{
                 width: 100%;
                 border-collapse: collapse;
-                table-layout: auto;
-                min-width: 800px;
             }}
             
             th {{
@@ -786,11 +773,12 @@ def main():
             
             /* Action buttons */
             .action-buttons {{
-                position: absolute;
+                position: fixed;
                 top: 20px;
                 right: 20px;
                 display: flex;
                 gap: 10px;
+                z-index: 1000;
             }}
             
             .action-button {{
@@ -1005,11 +993,9 @@ def main():
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1 style="margin: 0 0 20px 0; font-size: 2rem; font-weight: 600;">Summary of arguments</h1>
-            <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
-            
-            <div class="action-buttons">
+        <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
+        
+        <div class="action-buttons">
                 <button class="action-button" onclick="copyAllContent()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -1992,8 +1978,9 @@ def main():
     </html>
     """
     
-    # Render the HTML in Streamlit - use a larger height and ensure full width
-    components.html(html_content, height=1000, scrolling=True)
+    # Render the HTML in Streamlit
+    st.title("Summary of arguments")
+    components.html(html_content, height=950, scrolling=True)
 
 if __name__ == "__main__":
     main()

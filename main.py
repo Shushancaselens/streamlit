@@ -613,10 +613,13 @@ def main():
             /* Content sections */
             .content-section {{
                 display: none;
+                width: 100%;
+                max-width: none;
             }}
             
             .content-section.active {{
                 display: block;
+                width: 100%;
             }}
             
             /* Card styling */
@@ -648,6 +651,8 @@ def main():
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
+                width: 100%;
+                max-width: none;
             }}
             
             /* Party view styles */

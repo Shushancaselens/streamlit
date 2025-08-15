@@ -601,25 +601,42 @@ def main():
     <head>
         <style>
             /* Minimalistic base styling */
-            body {{
+            html, body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
-                padding: 20px;
+                padding: 0;
                 background-color: #fff;
+                width: 100vw;
+                min-width: 100vw;
+                box-sizing: border-box;
+                overflow-x: auto;
+            }}
+            
+            * {{
+                box-sizing: border-box;
+                max-width: none !important;
+            }}
+            
+            body > * {{
+                width: 100vw !important;
+                max-width: none !important;
             }}
             
             /* Content sections */
             .content-section {{
                 display: none;
-                width: 100%;
-                max-width: none;
+                width: 100vw !important;
+                max-width: none !important;
+                padding: 20px;
+                margin: 0;
             }}
             
             .content-section.active {{
                 display: block;
-                width: 100%;
+                width: 100vw !important;
+                max-width: none !important;
             }}
             
             /* Card styling */
@@ -757,6 +774,7 @@ def main():
             /* Tables */
             table {{
                 width: 100%;
+                max-width: none;
                 border-collapse: collapse;
             }}
             
@@ -890,6 +908,14 @@ def main():
                 margin-bottom: 1rem;
                 padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
+                width: 100vw !important;
+                max-width: none !important;
+                padding-left: 20px;
+            }}
+            
+            #topics-container, #facts-table-body, #timeline-body, #exhibits-body {{
+                width: 100vw !important;
+                max-width: none !important;
             }}
             
             /* Table view */
@@ -1985,7 +2011,7 @@ def main():
     
     # Render the HTML in Streamlit
     st.title("Summary of arguments")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":
     main()

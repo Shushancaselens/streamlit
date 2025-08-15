@@ -1059,7 +1059,7 @@ def main():
                 <div class="section-title">Issues</div>
                 
                 <!-- Direct inline buttons for view toggling -->
-                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
                     <div id="party-buttons">
                         <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;">Both Parties</button>
                         
@@ -1067,10 +1067,36 @@ def main():
                         
                         <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
-                    <div>
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
-                        
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div>
+                            <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; margin-right: 5px; border-radius: 4px 0 0 4px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
+                            
+                            <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 0 4px 4px 0;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-button" onclick="copyAllContent()" style="padding: 8px 16px; background-color: #f9f9f9; border: 1px solid #e1e4e8; border-radius: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='#f9f9f9'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy
+                            </button>
+                            <div style="position: relative; display: inline-block;" onmouseenter="this.querySelector('div').style.display='block'" onmouseleave="this.querySelector('div').style.display='none'">
+                                <button class="action-button" style="padding: 8px 16px; background-color: #f9f9f9; border: 1px solid #e1e4e8; border-radius: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='#f9f9f9'">>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Export
+                                </button>
+                                <div style="display: none; position: absolute; right: 0; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 4px;">
+                                    <a onclick="exportAsCsv()" style="color: black; padding: 12px 16px; text-decoration: none; display: block; cursor: pointer;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='transparent'">CSV</a>
+                                    <a onclick="exportAsPdf()" style="color: black; padding: 12px 16px; text-decoration: none; display: block; cursor: pointer;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='transparent'">PDF</a>
+                                    <a onclick="exportAsWord()" style="color: black; padding: 12px 16px; text-decoration: none; display: block; cursor: pointer;" onmouseover="this.style.backgroundColor='#f1f1f1'" onmouseout="this.style.backgroundColor='transparent'">Word</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 

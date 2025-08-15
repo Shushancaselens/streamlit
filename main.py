@@ -7,6 +7,25 @@ import base64
 # Set page config
 st.set_page_config(page_title="Legal Arguments Analysis", layout="wide")
 
+# Add CSS to make the app use full width
+st.markdown("""
+<style>
+    .main > div {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: none;
+    }
+    .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: none;
+    }
+    iframe {
+        width: 100% !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state to track selected view
 if 'view' not in st.session_state:
     st.session_state.view = "Arguments"
@@ -590,20 +609,24 @@ def main():
     <head>
         <style>
             /* Minimalistic base styling */
-            body {{
+            html, body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                 line-height: 1.5;
                 color: #333;
                 margin: 0;
                 padding: 0;
                 background-color: #fff;
+                width: 100%;
+                overflow-x: auto;
             }}
             
             /* Simple container */
             .container {{
-                width: 100%;
+                width: 100vw;
+                min-width: 100%;
                 margin: 0;
                 padding: 20px;
+                box-sizing: border-box;
             }}
             
             /* Content sections */
@@ -989,6 +1012,8 @@ def main():
     </head>
     <body>
         <div class="container">
+            <h1 style="margin-bottom: 20px; font-size: 2.5rem; font-weight: 600;">Summary of arguments</h1>
+            
             <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
             
             <div class="action-buttons">
@@ -1975,8 +2000,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("Summary of arguments")
-    components.html(html_content, height=950, scrolling=True)
+    components.html(html_content, height=950, width=None, scrolling=True)
 
 if __name__ == "__main__":
     main()

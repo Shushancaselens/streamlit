@@ -1076,8 +1076,6 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
-                <div class="section-title">Dispute Summary: Software Licensing & IP Rights</div>
-                
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">

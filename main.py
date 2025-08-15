@@ -627,7 +627,7 @@ def main():
             /* Content sections */
             .content-section {{
                 display: none;
-                width: 100vw !important;
+                width: calc(100vw - 40px) !important;
                 max-width: none !important;
                 padding: 20px;
                 margin: 0;
@@ -635,7 +635,7 @@ def main():
             
             .content-section.active {{
                 display: block;
-                width: 100vw !important;
+                width: calc(100vw - 40px) !important;
                 max-width: none !important;
             }}
             
@@ -798,10 +798,12 @@ def main():
             .action-buttons {{
                 position: fixed;
                 top: 20px;
-                right: 20px;
+                right: 40px;
                 display: flex;
                 gap: 10px;
                 z-index: 1000;
+                width: auto !important;
+                max-width: none !important;
             }}
             
             .action-button {{
@@ -813,6 +815,7 @@ def main():
                 align-items: center;
                 gap: 6px;
                 cursor: pointer;
+                white-space: nowrap;
             }}
             
             .action-button:hover {{

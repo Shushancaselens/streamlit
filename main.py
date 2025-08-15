@@ -2033,7 +2033,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("TechStart Inc. v. MegaCorp Ltd. - Commercial Arbitration Analysis")
+    st.title("TechStart Inc. v. MegaCorp Ltd.")
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

@@ -647,15 +647,16 @@ def main():
             /* Content sections */
             .content-section {{
                 display: none;
-                width: calc(100vw - 40px) !important;
+                width: 100% !important;
                 max-width: none !important;
                 padding: 20px;
                 margin: 0;
+                box-sizing: border-box;
             }}
             
             .content-section.active {{
                 display: block;
-                width: calc(100vw - 40px) !important;
+                width: 100% !important;
                 max-width: none !important;
             }}
             
@@ -931,14 +932,24 @@ def main():
                 margin-bottom: 1rem;
                 padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
-                width: 100vw !important;
+                width: 100% !important;
                 max-width: none !important;
-                padding-left: 20px;
+                margin: 0 0 1rem 0;
+                padding-left: 0;
             }}
             
             #topics-container, #facts-table-body, #timeline-body, #exhibits-body {{
-                width: 100vw !important;
+                width: 100% !important;
                 max-width: none !important;
+            }}
+            
+            /* Ensure all tables use available width */
+            .table-view {{
+                width: 100% !important;
+                max-width: none !important;
+                border-collapse: collapse;
+                margin-top: 20px;
+                table-layout: auto;
             }}
             
             /* Table view */
@@ -2034,7 +2045,7 @@ def main():
     
     # Render the HTML in Streamlit
     st.title("TechStart Inc. v. MegaCorp Ltd. - Commercial Arbitration Analysis")
-    components.html(html_content, height=950, width=1400, scrolling=True)
+    components.html(html_content, height=950, scrolling=True)
 
 if __name__ == "__main__":
     main()

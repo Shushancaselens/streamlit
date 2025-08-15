@@ -1076,6 +1076,8 @@ def main():
             
             <!-- Arguments Section -->
             <div id="arguments" class="content-section">
+                <div class="section-title">Dispute Summary: Software Licensing & IP Rights</div>
+                
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">
@@ -2031,7 +2033,7 @@ def main():
     """
     
     # Render the HTML in Streamlit
-    st.title("TechStart Inc. v. MegaCorp Ltd.")
+    st.title("TechStart Inc. v. MegaCorp Ltd. - Commercial Arbitration Analysis")
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

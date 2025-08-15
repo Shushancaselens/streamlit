@@ -614,7 +614,9 @@ def main():
             .container {{
                 width: 100%;
                 margin: 0;
-                padding: 20px;
+                padding: 10px;
+                min-width: 0;
+                overflow-x: auto;
             }}
             
             /* Content sections */
@@ -655,6 +657,8 @@ def main():
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
+                width: 100%;
+                min-width: 0;
             }}
             
             /* Party view styles */
@@ -760,6 +764,8 @@ def main():
             table {{
                 width: 100%;
                 border-collapse: collapse;
+                table-layout: auto;
+                min-width: 800px;
             }}
             
             th {{
@@ -1000,6 +1006,7 @@ def main():
     </head>
     <body>
         <div class="container">
+            <h1 style="margin: 0 0 20px 0; font-size: 2rem; font-weight: 600;">Summary of arguments</h1>
             <div id="copy-notification" class="copy-notification">Content copied to clipboard!</div>
             
             <div class="action-buttons">
@@ -1985,9 +1992,8 @@ def main():
     </html>
     """
     
-    # Render the HTML in Streamlit
-    st.title("Summary of arguments")
-    components.html(html_content, height=950, scrolling=True)
+    # Render the HTML in Streamlit - use a larger height and ensure full width
+    components.html(html_content, height=1000, scrolling=True)
 
 if __name__ == "__main__":
     main()

@@ -31,7 +31,7 @@ st.markdown("""
     }
     /* Add spacing to title */
     h1 {
-        margin-bottom: 24px !important;
+        margin-bottom: 16px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -2069,6 +2069,7 @@ def main():
                 max-width: none !important;
                 padding: 20px;
                 margin: 0;
+                position: relative;
             }}
             
             .content-section.active {{
@@ -2097,7 +2098,7 @@ def main():
             }}
             
             .card-content {{
-                padding: 20px;
+                padding: 16px;
                 display: none;
             }}
             
@@ -2132,7 +2133,7 @@ def main():
             }}
             
             .side-heading {{
-                margin-bottom: 20px;
+                margin-bottom: 16px;
                 font-weight: 500;
             }}
             
@@ -2183,8 +2184,8 @@ def main():
             .item-block {{
                 background-color: #fafafa;
                 border-radius: 6px;
-                padding: 14px;
-                margin-bottom: 12px;
+                padding: 12px;
+                margin-bottom: 10px;
             }}
             
             .item-title {{
@@ -2196,16 +2197,16 @@ def main():
             .evidence-block {{
                 background-color: #fff8f0;
                 border-left: 3px solid #dd6b20;
-                padding: 14px 16px;
-                margin-bottom: 16px;
+                padding: 12px 14px;
+                margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
             }}
             
             .caselaw-block {{
                 background-color: #EFF6FF;
                 border-left: 3px solid #3B82F6;
-                padding: 14px 16px;
-                margin-bottom: 16px;
+                padding: 12px 14px;
+                margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
             }}
             
@@ -2218,13 +2219,13 @@ def main():
             
             th {{
                 text-align: left;
-                padding: 14px 16px;
+                padding: 12px 14px;
                 background-color: #fafafa;
                 border-bottom: 1px solid #f0f0f0;
             }}
             
             td {{
-                padding: 14px 16px;
+                padding: 12px 14px;
                 border-bottom: 1px solid #f0f0f0;
             }}
             
@@ -2234,12 +2235,12 @@ def main():
             
             /* Action buttons */
             .action-buttons {{
-                position: fixed;
-                top: 30px;
-                right: 50px;
+                position: absolute;
+                top: 22px;
+                right: 30px;
                 display: flex;
                 gap: 12px;
-                z-index: 1000;
+                z-index: 100;
                 width: auto !important;
                 max-width: none !important;
             }}
@@ -2295,7 +2296,7 @@ def main():
             /* Nested content */
             .nested-content {{
                 padding-left: 24px;
-                margin-top: 16px;
+                margin-top: 12px;
                 border-left: 1px solid #f0f0f0;
                 /* No display:none to show nested content */
             }}
@@ -2346,8 +2347,8 @@ def main():
             .section-title {{
                 font-size: 1.5rem;
                 font-weight: 600;
-                margin-bottom: 2rem;
-                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+                margin-top: 0;
                 padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
                 width: 100vw !important;
@@ -2364,11 +2365,11 @@ def main():
             .table-view {{
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 24px;
+                margin-top: 20px;
             }}
             
             .table-view th {{
-                padding: 14px 16px;
+                padding: 12px 14px;
                 text-align: left;
                 background-color: #f8f9fa;
                 border-bottom: 2px solid #dee2e6;
@@ -2382,7 +2383,7 @@ def main():
             }}
             
             .table-view td {{
-                padding: 14px 16px;
+                padding: 12px 14px;
                 border-bottom: 1px solid #dee2e6;
             }}
             
@@ -2397,12 +2398,12 @@ def main():
             
             .facts-header {{
                 display: flex;
-                margin-bottom: 24px;
+                margin-bottom: 20px;
                 border-bottom: 1px solid #dee2e6;
             }}
             
             .tab-button {{
-                padding: 12px 24px;
+                padding: 10px 20px;
                 background: none;
                 border: none;
                 cursor: pointer;
@@ -2417,7 +2418,7 @@ def main():
             }}
             
             .facts-content {{
-                margin-top: 24px;
+                margin-top: 20px;
             }}
             
             /* View toggle */
@@ -3163,7 +3164,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 16px;">
                     <div class="item-title">Events</div>
                     ${{pointsHtml}}
                 </div>
@@ -3192,7 +3193,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 16px;">
                     <div class="item-title">Evidence</div>
                     ${{evidenceHtml}}
                 </div>
@@ -3223,7 +3224,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 16px;">
                     <div class="item-title">Case Law</div>
                     ${{casesHtml}}
                 </div>
@@ -3308,7 +3309,7 @@ def main():
                 
                 argsData.topics.forEach(topic => {{
                     html += `
-                    <div class="card" style="margin-bottom: 32px;">
+                    <div class="card" style="margin-bottom: 20px;">
                         <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <svg id="chevron-topic-${{topic.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3323,7 +3324,7 @@ def main():
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
-                                    <div style="margin-top: 24px;">
+                                    <div style="margin-top: 20px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading claimant-color">Claimant's Position</h3>
@@ -3455,7 +3456,7 @@ def main():
         st.button("Search", type="primary", use_container_width=True)
     
     # Add spacing after search bar
-    st.markdown("<div style='margin-bottom: 40px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

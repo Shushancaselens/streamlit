@@ -39,6 +39,12 @@ st.markdown("""
     .stTextInput {
         height: 48px !important;
     }
+    /* Search button height */
+    .stButton > button {
+        height: 48px !important;
+        padding: 0 24px !important;
+        font-size: 15px !important;
+    }
     /* Add spacing to title */
     h1 {
         margin-bottom: 16px !important;

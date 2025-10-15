@@ -7,13 +7,22 @@ import base64
 # Set page config
 st.set_page_config(page_title="TechStart Inc. v. MegaCorp Ltd.", layout="wide")
 
-# Override Streamlit's default styling to use full width
+# Override Streamlit's default styling to use full width and custom colors
 st.markdown("""
 <style>
     .main .block-container {
         padding-left: 0rem;
         padding-right: 0rem;
         max-width: none;
+    }
+    /* Use #4D68F9 as primary color */
+    .stButton > button[kind="primary"] {
+        background-color: #4D68F9;
+        border-color: #4D68F9;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background-color: #3D58E9;
+        border-color: #3D58E9;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -767,7 +776,7 @@ def main():
             }}
             
             .claimant-color {{
-                color: #3182ce;
+                color: #4D68F9;
             }}
             
             .respondent-color {{
@@ -784,8 +793,8 @@ def main():
             }}
             
             .claimant-badge {{
-                background-color: rgba(49, 130, 206, 0.1);
-                color: #3182ce;
+                background-color: rgba(77, 104, 249, 0.1);
+                color: #4D68F9;
             }}
             
             .respondent-badge {{
@@ -832,8 +841,8 @@ def main():
             }}
             
             .caselaw-block {{
-                background-color: #ebf8ff;
-                border-left: 3px solid #3182ce;
+                background-color: #f0f3ff;
+                border-left: 3px solid #4D68F9;
                 padding: 10px 12px;
                 margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
@@ -1038,8 +1047,8 @@ def main():
             }}
             
             .tab-button.active {{
-                border-bottom: 2px solid #4299e1;
-                color: #4299e1;
+                border-bottom: 2px solid #4D68F9;
+                color: #4D68F9;
                 font-weight: 500;
             }}
             
@@ -1062,9 +1071,9 @@ def main():
             }}
             
             .view-toggle button.active {{
-                background-color: #4299e1;
+                background-color: #4D68F9;
                 color: white;
-                border-color: #4299e1;
+                border-color: #4D68F9;
             }}
             
             .view-toggle button:first-child {{
@@ -1258,15 +1267,15 @@ def main():
                 container.className = '';
                 
                 if (view === 'both') {{
-                    bothBtn.style.backgroundColor = '#4299e1';
+                    bothBtn.style.backgroundColor = '#4D68F9';
                     bothBtn.style.color = 'white';
                     // Default view - no special class needed
                 }} else if (view === 'claimant') {{
-                    appBtn.style.backgroundColor = '#4299e1';
+                    appBtn.style.backgroundColor = '#4D68F9';
                     appBtn.style.color = 'white';
                     container.className = 'claimant-only';
                 }} else if (view === 'respondent') {{
-                    respBtn.style.backgroundColor = '#4299e1';
+                    respBtn.style.backgroundColor = '#4D68F9';
                     respBtn.style.color = 'white';
                     container.className = 'respondent-only';
                 }}

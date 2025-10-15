@@ -41,7 +41,7 @@ st.markdown("""
     }
     /* Make search button 46px */
     .stButton > button {
-        height: 40px !important;
+        height: 46px !important;
         padding: 8px 24px !important;
         font-size: 15px !important;
     }

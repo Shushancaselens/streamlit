@@ -2466,7 +2466,7 @@ def main():
             <div id="arguments" class="content-section">
                 <div class="section-title">Dispute Summary: Software Licensing & IP Rights</div>
                 
-                
+                <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">
                         <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #3B82F6; color: white; cursor: pointer; border-radius: 8px;">Both Parties</button>

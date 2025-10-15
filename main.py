@@ -2073,7 +2073,7 @@ def main():
                 background-color: #fff;
                 border: 1px solid #f0f0f0;
                 border-radius: 8px;
-                margin-bottom: 16px;
+                margin-bottom: 8px;
                 overflow: hidden;
             }}
             

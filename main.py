@@ -25,23 +25,12 @@ st.markdown("""
         border-color: #2563EB;
     }
     /* Reduce search input height */
-    .stTextInput input {
-        height: 56px !important;
-        padding: 14px 18px !important;
-        font-size: 15px !important;
-        border-radius: 8px !important;
-    }
-    .stTextInput > div {
-        height: 56px !important;
-    }
-    .stTextInput [data-baseweb="input"] {
-        height: 56px !important;
-    }
-    /* Match search button height */
-    .stButton > button {
-        height: 56px !important;
-        padding: 14px 20px !important;
-        font-size: 15px !important;
+    .stTextInput > div > div > input {
+        height: 60px !important;
+        padding: 16px 20px !important;
+        font-size: 16px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
     }
     /* Add spacing to title */
     h1 {
@@ -2070,7 +2059,7 @@ def main():
                 display: none;
                 width: calc(100vw - 40px) !important;
                 max-width: none !important;
-                padding: 30px 20px 20px 20px;
+                padding: 20px;
                 margin: 0;
                 position: relative;
             }}
@@ -2239,7 +2228,7 @@ def main():
             /* Action buttons */
             .action-buttons {{
                 position: absolute;
-                top: 35px;
+                top: 22px;
                 right: 30px;
                 display: flex;
                 gap: 12px;
@@ -2350,9 +2339,9 @@ def main():
             .section-title {{
                 font-size: 1.5rem;
                 font-weight: 600;
-                margin-bottom: 2rem;
+                margin-bottom: 1.5rem;
                 margin-top: 0;
-                padding-bottom: 1rem;
+                padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
                 width: 100vw !important;
                 max-width: none !important;

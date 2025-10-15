@@ -26,18 +26,24 @@ st.markdown("""
     }
     /* Reduce search input height */
     .stTextInput > div > div > input {
-        height: 56px !important;
-        padding: 14px 18px !important;
+        height: 60px !important;
+        padding: 16px 20px !important;
         font-size: 16px !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 12px !important;
     }
     /* Make search container taller */
     .stTextInput > div {
-        height: 56px !important;
+        height: 60px !important;
     }
     .stTextInput {
-        height: 56px !important;
+        height: 60px !important;
+    }
+    /* Make search button same height */
+    .stButton > button {
+        height: 60px !important;
+        padding: 0 24px !important;
+        font-size: 16px !important;
     }
     /* Add spacing to title */
     h1 {

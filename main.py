@@ -26,7 +26,7 @@ st.markdown("""
     }
     /* Reduce search input height */
     .stTextInput > div > div > input {
-        height: 58px !important;
+        height: 54px !important;
         padding: 14px 18px !important;
         font-size: 16px !important;
         border: 1px solid #e5e7eb !important;
@@ -34,16 +34,10 @@ st.markdown("""
     }
     /* Make search container taller */
     .stTextInput > div {
-        height: 58px !important;
+        height: 54px !important;
     }
     .stTextInput {
-        height: 58px !important;
-    }
-    /* Make search button same height */
-    .stButton > button {
-        height: 58px !important;
-        padding: 0 24px !important;
-        font-size: 16px !important;
+        height: 54px !important;
     }
     /* Add spacing to title */
     h1 {

@@ -24,6 +24,15 @@ st.markdown("""
         background-color: #2563EB;
         border-color: #2563EB;
     }
+    /* Reduce search input height */
+    .stTextInput > div > div > input {
+        height: 45px;
+        padding: 10px 16px;
+    }
+    /* Add spacing to title */
+    h1 {
+        margin-bottom: 24px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1994,15 +2003,15 @@ def main():
             st.session_state.view = "Exhibits"
         
         # Create buttons with conditional styling
-        if st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True, 
+        if st.button("Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True, 
                     type="primary" if st.session_state.view == "Arguments" else "secondary"):
             pass
             
-        if st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True,
+        if st.button("Facts", key="facts_button", on_click=set_facts_view, use_container_width=True,
                     type="primary" if st.session_state.view == "Facts" else "secondary"):
             pass
             
-        if st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True,
+        if st.button("Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True,
                     type="primary" if st.session_state.view == "Exhibits" else "secondary"):
             pass
         
@@ -2088,7 +2097,7 @@ def main():
             }}
             
             .card-content {{
-                padding: 16px;
+                padding: 20px;
                 display: none;
             }}
             
@@ -2123,7 +2132,7 @@ def main():
             }}
             
             .side-heading {{
-                margin-bottom: 16px;
+                margin-bottom: 20px;
                 font-weight: 500;
             }}
             
@@ -2174,8 +2183,8 @@ def main():
             .item-block {{
                 background-color: #fafafa;
                 border-radius: 6px;
-                padding: 12px;
-                margin-bottom: 10px;
+                padding: 14px;
+                margin-bottom: 12px;
             }}
             
             .item-title {{
@@ -2187,16 +2196,16 @@ def main():
             .evidence-block {{
                 background-color: #fff8f0;
                 border-left: 3px solid #dd6b20;
-                padding: 10px 12px;
-                margin-bottom: 12px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
                 border-radius: 0 4px 4px 0;
             }}
             
             .caselaw-block {{
                 background-color: #EFF6FF;
                 border-left: 3px solid #3B82F6;
-                padding: 10px 12px;
-                margin-bottom: 12px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
                 border-radius: 0 4px 4px 0;
             }}
             
@@ -2209,13 +2218,13 @@ def main():
             
             th {{
                 text-align: left;
-                padding: 12px;
+                padding: 14px 16px;
                 background-color: #fafafa;
                 border-bottom: 1px solid #f0f0f0;
             }}
             
             td {{
-                padding: 12px;
+                padding: 14px 16px;
                 border-bottom: 1px solid #f0f0f0;
             }}
             
@@ -2226,25 +2235,25 @@ def main():
             /* Action buttons */
             .action-buttons {{
                 position: fixed;
-                top: 20px;
-                right: 40px;
+                top: 30px;
+                right: 50px;
                 display: flex;
-                gap: 10px;
+                gap: 12px;
                 z-index: 1000;
                 width: auto !important;
                 max-width: none !important;
             }}
             
             .action-button {{
-                padding: 8px 16px;
+                padding: 10px 20px;
                 background-color: #f9f9f9;
                 border: 1px solid #e1e4e8;
                 border-radius: 8px;
                 display: flex;
                 align-items: center;
-                gap: 6px;
                 cursor: pointer;
                 white-space: nowrap;
+                font-size: 14px;
             }}
             
             .action-button:hover {{
@@ -2285,8 +2294,8 @@ def main():
             
             /* Nested content */
             .nested-content {{
-                padding-left: 20px;
-                margin-top: 10px;
+                padding-left: 24px;
+                margin-top: 16px;
                 border-left: 1px solid #f0f0f0;
                 /* No display:none to show nested content */
             }}
@@ -2337,7 +2346,8 @@ def main():
             .section-title {{
                 font-size: 1.5rem;
                 font-weight: 600;
-                margin-bottom: 1rem;
+                margin-bottom: 2rem;
+                margin-top: 1rem;
                 padding-bottom: 0.5rem;
                 border-bottom: 1px solid #eaeaea;
                 width: 100vw !important;
@@ -2354,11 +2364,11 @@ def main():
             .table-view {{
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 20px;
+                margin-top: 24px;
             }}
             
             .table-view th {{
-                padding: 12px;
+                padding: 14px 16px;
                 text-align: left;
                 background-color: #f8f9fa;
                 border-bottom: 2px solid #dee2e6;
@@ -2372,7 +2382,7 @@ def main():
             }}
             
             .table-view td {{
-                padding: 12px;
+                padding: 14px 16px;
                 border-bottom: 1px solid #dee2e6;
             }}
             
@@ -2387,16 +2397,17 @@ def main():
             
             .facts-header {{
                 display: flex;
-                margin-bottom: 20px;
+                margin-bottom: 24px;
                 border-bottom: 1px solid #dee2e6;
             }}
             
             .tab-button {{
-                padding: 10px 20px;
+                padding: 12px 24px;
                 background: none;
                 border: none;
                 cursor: pointer;
                 border-radius: 8px 8px 0 0;
+                font-size: 14px;
             }}
             
             .tab-button.active {{
@@ -2406,7 +2417,7 @@ def main():
             }}
             
             .facts-content {{
-                margin-top: 20px;
+                margin-top: 24px;
             }}
             
             /* View toggle */
@@ -2461,19 +2472,10 @@ def main():
         
         <div class="action-buttons">
                 <button class="action-button" onclick="copyAllContent()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
                     Copy
                 </button>
                 <div class="export-dropdown">
                     <button class="action-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
                         Export
                     </button>
                     <div class="export-dropdown-content">
@@ -3161,7 +3163,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
+                <div style="margin-top: 20px;">
                     <div class="item-title">Events</div>
                     ${{pointsHtml}}
                 </div>
@@ -3190,7 +3192,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
+                <div style="margin-top: 20px;">
                     <div class="item-title">Evidence</div>
                     ${{evidenceHtml}}
                 </div>
@@ -3221,7 +3223,7 @@ def main():
                 }}).join('');
                 
                 return `
-                <div style="margin-top: 16px;">
+                <div style="margin-top: 20px;">
                     <div class="item-title">Case Law</div>
                     ${{casesHtml}}
                 </div>
@@ -3306,7 +3308,7 @@ def main():
                 
                 argsData.topics.forEach(topic => {{
                     html += `
-                    <div class="card" style="margin-bottom: 24px;">
+                    <div class="card" style="margin-bottom: 32px;">
                         <div class="card-header" onclick="toggleCard('topic-${{topic.id}}')">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <svg id="chevron-topic-${{topic.id}}" class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3321,7 +3323,7 @@ def main():
                             ${{topic.argumentIds.map(argId => {{
                                 if (argsData.claimantArgs[argId] && argsData.respondentArgs[argId]) {{
                                     return `
-                                    <div style="margin-top: 16px;">
+                                    <div style="margin-top: 24px;">
                                         <div class="arguments-row">
                                             <div>
                                                 <h3 class="side-heading claimant-color">Claimant's Position</h3>
@@ -3450,7 +3452,10 @@ def main():
     with col1:
         search_query = st.text_input("", placeholder="Search arguments, facts, evidence...", label_visibility="collapsed", key="main_search")
     with col2:
-        st.button("🔍 Search", type="primary", use_container_width=True)
+        st.button("Search", type="primary", use_container_width=True)
+    
+    # Add spacing after search bar
+    st.markdown("<div style='margin-bottom: 40px;'></div>", unsafe_allow_html=True)
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

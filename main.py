@@ -3236,10 +3236,10 @@ def main():
     st.title("TechStart Inc. v. MegaCorp Ltd.")
     
     # Add search bar with button under title
-    col1, col2, col3 = st.columns([1, 4, 1])
-    with col2:
+    col1, col2 = st.columns([6, 1])
+    with col1:
         search_query = st.text_input("", placeholder="Search arguments, facts, evidence...", label_visibility="collapsed", key="main_search")
-    with col3:
+    with col2:
         st.button("Search", type="primary", use_container_width=True)
     
     # Add spacing after search bar

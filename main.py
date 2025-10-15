@@ -24,20 +24,20 @@ st.markdown("""
         background-color: #2563EB;
         border-color: #2563EB;
     }
-    /* Reduce search input height */
+    /* Search bar container height */
     .stTextInput > div > div > input {
-        height: 54px !important;
-        padding: 14px 18px !important;
-        font-size: 16px !important;
+        height: 48px !important;
+        padding: 12px 16px !important;
+        font-size: 15px !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 12px !important;
     }
     /* Make search container taller */
     .stTextInput > div {
-        height: 54px !important;
+        height: 48px !important;
     }
     .stTextInput {
-        height: 54px !important;
+        height: 48px !important;
     }
     /* Add spacing to title */
     h1 {

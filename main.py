@@ -26,8 +26,9 @@ st.markdown("""
     }
     /* Reduce search input height */
     .stTextInput > div > div > input {
-        height: 45px;
-        padding: 10px 16px;
+        height: 50px;
+        padding: 12px 16px;
+        font-size: 15px;
     }
     /* Add spacing to title */
     h1 {
@@ -1996,19 +1997,12 @@ def main():
         def set_arguments_view():
             st.session_state.view = "Arguments"
             
-        def set_facts_view():
-            st.session_state.view = "Facts"
-            
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
         # Create buttons with conditional styling
         if st.button("Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True, 
                     type="primary" if st.session_state.view == "Arguments" else "secondary"):
-            pass
-            
-        if st.button("Facts", key="facts_button", on_click=set_facts_view, use_container_width=True,
-                    type="primary" if st.session_state.view == "Facts" else "secondary"):
             pass
             
         if st.button("Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True,
@@ -2020,12 +2014,8 @@ def main():
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":
         active_tab = 0
-    elif st.session_state.view == "Facts":
-        active_tab = 1
-    elif st.session_state.view == "Timeline":
-        active_tab = 2
     else:  # Exhibits
-        active_tab = 3
+        active_tab = 1
     
     # Initialize the view options as a JavaScript variable
     view_options_json = json.dumps({
@@ -2391,36 +2381,6 @@ def main():
                 background-color: #f8f9fa;
             }}
             
-            /* Facts styling */
-            .facts-container {{
-                margin-top: 20px;
-            }}
-            
-            .facts-header {{
-                display: flex;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #dee2e6;
-            }}
-            
-            .tab-button {{
-                padding: 10px 20px;
-                background: none;
-                border: none;
-                cursor: pointer;
-                border-radius: 8px 8px 0 0;
-                font-size: 14px;
-            }}
-            
-            .tab-button.active {{
-                border-bottom: 2px solid #3B82F6;
-                color: #3B82F6;
-                font-weight: 500;
-            }}
-            
-            .facts-content {{
-                margin-top: 20px;
-            }}
-            
             /* View toggle */
             .view-toggle {{
                 display: flex;
@@ -2530,49 +2490,6 @@ def main():
                 </div>
             </div>
             
-            <!-- Facts Section -->
-            <div id="facts" class="content-section">
-                <div class="section-title">Case Facts</div>
-                
-                <div class="facts-header">
-                    <button class="tab-button active" id="all-facts-btn" onclick="switchFactsTab('all')">All Facts</button>
-                    <button class="tab-button" id="disputed-facts-btn" onclick="switchFactsTab('disputed')">Disputed Facts</button>
-                    <button class="tab-button" id="undisputed-facts-btn" onclick="switchFactsTab('undisputed')">Undisputed Facts</button>
-                </div>
-                
-                <div class="facts-content">
-                    <table class="table-view">
-                        <thead>
-                            <tr>
-                                <th onclick="sortTable('facts-table-body', 0)">Date</th>
-                                <th onclick="sortTable('facts-table-body', 1)">Event</th>
-                                <th onclick="sortTable('facts-table-body', 2)">Party</th>
-                                <th onclick="sortTable('facts-table-body', 3)">Status</th>
-                                <th onclick="sortTable('facts-table-body', 4)">Related Argument</th>
-                                <th onclick="sortTable('facts-table-body', 5)">Evidence</th>
-                            </tr>
-                        </thead>
-                        <tbody id="facts-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Timeline Section -->
-            <div id="timeline" class="content-section">
-                <div class="section-title">Case Timeline</div>
-                <table id="timeline-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Claimant's Version</th>
-                            <th>Respondent's Version</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="timeline-body"></tbody>
-                </table>
-            </div>
-            
             <!-- Exhibits Section -->
             <div id="exhibits" class="content-section">
                 <div class="section-title">Case Exhibits</div>
@@ -2640,7 +2557,7 @@ def main():
             // Show the selected view based on sidebar selection
             document.addEventListener('DOMContentLoaded', function() {{
                 // Show the correct section based on sidebar selection
-                const sections = ['arguments', 'facts', 'timeline', 'exhibits'];
+                const sections = ['arguments', 'exhibits'];
                 const activeSection = sections[viewOptions.activeTab];
                 
                 document.querySelectorAll('.content-section').forEach(section => {{
@@ -2654,9 +2571,7 @@ def main():
                     renderTopics();
                     renderArgumentsTable();
                 }}
-                if (activeSection === 'timeline') renderTimeline();
                 if (activeSection === 'exhibits') renderExhibits();
-                if (activeSection === 'facts') renderFacts();
             }});
             
             // Switch view between detailed and table
@@ -2676,30 +2591,6 @@ def main():
                     tableBtn.classList.add('active');
                     detailedView.style.display = 'none';
                     tableView.style.display = 'block';
-                }}
-            }}
-            
-            // Switch facts tab
-            function switchFactsTab(tabType) {{
-                const allBtn = document.getElementById('all-facts-btn');
-                const disputedBtn = document.getElementById('disputed-facts-btn');
-                const undisputedBtn = document.getElementById('undisputed-facts-btn');
-                
-                // Remove active class from all
-                allBtn.classList.remove('active');
-                disputedBtn.classList.remove('active');
-                undisputedBtn.classList.remove('active');
-                
-                // Add active to selected
-                if (tabType === 'all') {{
-                    allBtn.classList.add('active');
-                    renderFacts('all');
-                }} else if (tabType === 'disputed') {{
-                    disputedBtn.classList.add('active');
-                    renderFacts('disputed');
-                }} else {{
-                    undisputedBtn.classList.add('active');
-                    renderFacts('undisputed');
                 }}
             }}
             
@@ -2756,12 +2647,8 @@ def main():
                     }} else {{
                         contentToCopy = extractArgumentsTableText();
                     }}
-                }} else if (activeSection.id === 'timeline') {{
-                    contentToCopy = extractTimelineText();
                 }} else if (activeSection.id === 'exhibits') {{
                     contentToCopy = extractExhibitsText();
-                }} else if (activeSection.id === 'facts') {{
-                    contentToCopy = extractFactsText();
                 }}
                 
                 // Create a temporary textarea to copy the content
@@ -2795,12 +2682,8 @@ def main():
                     }} else {{
                         contentToCsv = extractArgumentsTableText();
                     }}
-                }} else if (activeSection.id === 'timeline') {{
-                    contentToCsv = extractTimelineText();
                 }} else if (activeSection.id === 'exhibits') {{
                     contentToCsv = extractExhibitsText();
-                }} else if (activeSection.id === 'facts') {{
-                    contentToCsv = extractFactsText();
                 }}
                 
                 // Create link for CSV download
@@ -2855,59 +2738,9 @@ def main():
                 return text;
             }}
             
-            // Extract text from timeline
-            function extractTimelineText() {{
-                const table = document.getElementById('timeline-table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
             // Extract text from exhibits
             function extractExhibitsText() {{
                 const table = document.getElementById('exhibits-table');
-                let text = '';
-                
-                // Get headers
-                const headers = Array.from(table.querySelectorAll('th'))
-                    .map(th => th.textContent.trim())
-                    .join('\\t');
-                
-                text += headers + '\\n';
-                
-                // Get rows
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {{
-                    const rowText = Array.from(row.querySelectorAll('td'))
-                        .map(td => td.textContent.trim())
-                        .join('\\t');
-                    
-                    text += rowText + '\\n';
-                }});
-                
-                return text;
-            }}
-            
-            // Extract text from facts
-            function extractFactsText() {{
-                const table = document.querySelector('.facts-content table');
                 let text = '';
                 
                 // Get headers
@@ -3029,86 +2862,6 @@ def main():
                     }};
                     actionsCell.appendChild(viewBtn);
                     row.appendChild(actionsCell);
-                    
-                    tableBody.appendChild(row);
-                }});
-            }}
-            
-            // Render facts table
-            function renderFacts(type = 'all') {{
-                const tableBody = document.getElementById('facts-table-body');
-                tableBody.innerHTML = '';
-                
-                // Filter by type
-                let filteredFacts = factsData;
-                
-                if (type === 'disputed') {{
-                    filteredFacts = factsData.filter(fact => fact.isDisputed);
-                }} else if (type === 'undisputed') {{
-                    filteredFacts = factsData.filter(fact => !fact.isDisputed);
-                }}
-                
-                // Sort by date
-                filteredFacts.sort((a, b) => {{
-                    // Handle date ranges like "1950-present"
-                    const dateA = a.date.split('-')[0];
-                    const dateB = b.date.split('-')[0];
-                    return new Date(dateA) - new Date(dateB);
-                }});
-                
-                // Render rows
-                filteredFacts.forEach(fact => {{
-                    const row = document.createElement('tr');
-                    
-                    // Date column
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = fact.date;
-                    row.appendChild(dateCell);
-                    
-                    // Event column
-                    const eventCell = document.createElement('td');
-                    eventCell.textContent = fact.point;
-                    row.appendChild(eventCell);
-                    
-                    // Party column
-                    const partyCell = document.createElement('td');
-                    const partyBadge = document.createElement('span');
-                    partyBadge.className = `badge ${{fact.party === 'Claimant' ? 'claimant-badge' : 'respondent-badge'}}`;
-                    partyBadge.textContent = fact.party;
-                    partyCell.appendChild(partyBadge);
-                    row.appendChild(partyCell);
-                    
-                    // Status column
-                    const statusCell = document.createElement('td');
-                    if (fact.isDisputed) {{
-                        const disputedBadge = document.createElement('span');
-                        disputedBadge.className = 'badge disputed-badge';
-                        disputedBadge.textContent = 'Disputed';
-                        statusCell.appendChild(disputedBadge);
-                    }} else {{
-                        statusCell.textContent = 'Undisputed';
-                    }}
-                    row.appendChild(statusCell);
-                    
-                    // Related argument
-                    const argCell = document.createElement('td');
-                    argCell.textContent = `${{fact.argId}}. ${{fact.argTitle}}`;
-                    row.appendChild(argCell);
-                    
-                    // Evidence column
-                    const evidenceCell = document.createElement('td');
-                    if (fact.exhibits && fact.exhibits.length > 0) {{
-                        fact.exhibits.forEach(exhibitId => {{
-                            const exhibitBadge = document.createElement('span');
-                            exhibitBadge.className = 'badge exhibit-badge';
-                            exhibitBadge.textContent = exhibitId;
-                            exhibitBadge.style.marginRight = '4px';
-                            evidenceCell.appendChild(exhibitBadge);
-                        }});
-                    }} else {{
-                        evidenceCell.textContent = 'None';
-                    }}
-                    row.appendChild(evidenceCell);
                     
                     tableBody.appendChild(row);
                 }});
@@ -3354,6 +3107,27 @@ def main():
                         toggleCard(`topic-${{firstTopic.id}}`);
                     }}
                 }}, 100);
+            }}
+            
+            // Render exhibits
+            function renderExhibits() {{
+                const tbody = document.getElementById('exhibits-body');
+                tbody.innerHTML = '';
+                
+                exhibitsData.forEach(item => {{
+                    const row = document.createElement('tr');
+                    const badgeClass = item.party === 'Claimant' ? 'claimant-badge' : 'respondent-badge';
+                    
+                    row.innerHTML = `
+                        <td>${{item.id}}</td>
+                        <td><span class="badge ${{badgeClass}}">${{item.party}}</span></td>
+                        <td>${{item.title}}</td>
+                        <td>${{item.type}}</td>
+                        <td>${{item.summary}}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }});
             }}
             
             // Toggle a card without synchronizing - modified to only toggle content, not children

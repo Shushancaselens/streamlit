@@ -191,6 +191,157 @@ def get_argument_data():
                     "citedParagraphs": ["87"]
                 }
             ]
+        },
+        "3": {
+            "id": "3",
+            "title": "Damages and Financial Losses",
+            "paragraphs": "96-120",
+            "overview": {
+                "points": [
+                    "Unpaid license fees totaling $5.3M",
+                    "Lost profits from territorial violations estimated at $8.2M",
+                    "Costs of investigating and pursuing IP misappropriation"
+                ],
+                "paragraphs": "96-98"
+            },
+            "factualPoints": [
+                {
+                    "point": "TechStart incurred $750,000 in forensic investigation costs",
+                    "date": "2023-12-01 to 2024-02-28",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "102-104",
+                    "exhibits": ["C-11", "C-12"]
+                },
+                {
+                    "point": "Projected revenue loss from European market entry amounts to $8.2M",
+                    "date": "2023-09-15 to 2025-12-31",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "105-108",
+                    "exhibits": ["C-13"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-11",
+                    "title": "Forensic Investigation Invoices",
+                    "summary": "Invoices and payment records from cybersecurity firms engaged to investigate unauthorized software deployments and code analysis, totaling $750,000.",
+                    "citations": ["102", "103"]
+                },
+                {
+                    "id": "C-12",
+                    "title": "Legal Fees and Costs Schedule",
+                    "summary": "Detailed breakdown of legal costs incurred in investigating breaches, preparing arbitration claims, and expert witness fees.",
+                    "citations": ["104"]
+                },
+                {
+                    "id": "C-13",
+                    "title": "Market Analysis and Revenue Projections",
+                    "summary": "Expert economic analysis of European market opportunity and projected revenue losses due to MegaCorp's unauthorized territorial expansion.",
+                    "citations": ["105", "106", "107"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 18234/2018",
+                    "title": "Calculation of damages in software licensing disputes",
+                    "relevance": "Established methodology for calculating lost profits in territorial breach cases, including market analysis, projected growth rates, and reasonable profit margins.",
+                    "paragraphs": "110-114",
+                    "citedParagraphs": ["111", "112"]
+                }
+            ],
+            "children": {
+                "3.1": {
+                    "id": "3.1",
+                    "title": "Unpaid License Fees",
+                    "paragraphs": "115-125",
+                    "overview": {
+                        "points": [
+                            "Q3 2023 payment: $2.5M outstanding",
+                            "Q4 2023 payment: $1.7M outstanding (after partial payment)",
+                            "Q1 2024 payment: $1.1M outstanding"
+                        ],
+                        "paragraphs": "115-117"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Total unpaid license fees amount to $5.3M as of March 2024",
+                            "date": "2023-07-01 to 2024-03-31",
+                            "isDisputed": False,
+                            "paragraphs": "118-120",
+                            "exhibits": ["C-3", "C-14"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "C-14",
+                            "title": "Comprehensive Payment Ledger",
+                            "summary": "Complete accounting ledger showing all invoiced amounts, payments received, and outstanding balances for the entire contract period.",
+                            "citations": ["118", "119"]
+                        }
+                    ]
+                }
+            }
+        },
+        "4": {
+            "id": "4",
+            "title": "Wrongful Termination of Agreement",
+            "paragraphs": "126-145",
+            "overview": {
+                "points": [
+                    "TechStart properly terminated agreement after material breach",
+                    "Required notice periods were observed",
+                    "MegaCorp's cure period expired without remedy"
+                ],
+                "paragraphs": "126-128"
+            },
+            "factualPoints": [
+                {
+                    "point": "30-day cure notice sent December 15, 2023, expired January 14, 2024",
+                    "date": "2023-12-15 to 2024-01-14",
+                    "isDisputed": False,
+                    "paragraphs": "130-132",
+                    "exhibits": ["C-15", "C-16"]
+                },
+                {
+                    "point": "Formal termination effective January 20, 2024",
+                    "date": "2024-01-20",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "133-135",
+                    "exhibits": ["C-17"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-15",
+                    "title": "Notice of Default and Opportunity to Cure",
+                    "summary": "Official notice sent to MegaCorp on December 15, 2023, outlining all breaches and providing 30-day cure period as required by contract Section 9.2.",
+                    "citations": ["130", "131"]
+                },
+                {
+                    "id": "C-16",
+                    "title": "Delivery Confirmation and Read Receipts",
+                    "summary": "Email delivery confirmations and read receipts proving MegaCorp received and opened the cure notice.",
+                    "citations": ["132"]
+                },
+                {
+                    "id": "C-17",
+                    "title": "Termination Letter",
+                    "summary": "Formal termination notice dated January 20, 2024, terminating the licensing agreement for material uncured breaches.",
+                    "citations": ["133", "134"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 145622",
+                    "title": "Termination procedures in commercial contracts",
+                    "relevance": "Confirmed that strict compliance with contractual termination procedures is required, including proper notice and reasonable cure periods, but that non-material procedural defects do not invalidate otherwise proper termination.",
+                    "paragraphs": "138-142",
+                    "citedParagraphs": ["139", "140"]
+                }
+            ]
         }
     }
     
@@ -321,6 +472,147 @@ def get_argument_data():
                     "citedParagraphs": ["266", "267"]
                 }
             ]
+        },
+        "3": {
+            "id": "3",
+            "title": "MegaCorp's Counterclaim for Damages",
+            "paragraphs": "276-310",
+            "overview": {
+                "points": [
+                    "TechStart's software defects caused $3.5M in business losses",
+                    "Breach of warranty and service level commitments",
+                    "Improper termination caused additional $2M in damages"
+                ],
+                "paragraphs": "276-278"
+            },
+            "factualPoints": [
+                {
+                    "point": "Business disruption from software failures resulted in lost revenue of $3.5M",
+                    "date": "2023-06-15 to 2023-12-31",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "282-286",
+                    "exhibits": ["R-8", "R-9"]
+                },
+                {
+                    "point": "Emergency migration to alternative platform cost $2M",
+                    "date": "2024-01-20 to 2024-04-30",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "287-290",
+                    "exhibits": ["R-10"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-8",
+                    "title": "Financial Impact Analysis",
+                    "summary": "Detailed financial analysis prepared by MegaCorp's CFO documenting lost revenue, operational costs, and business interruption damages directly attributable to software performance issues.",
+                    "citations": ["282", "283", "284"]
+                },
+                {
+                    "id": "R-9",
+                    "title": "Customer Complaint Records",
+                    "summary": "Documentation of customer complaints, service disruptions, and contract cancellations resulting from system failures during the relevant period.",
+                    "citations": ["285", "286"]
+                },
+                {
+                    "id": "R-10",
+                    "title": "Migration Project Costs",
+                    "summary": "Complete accounting of costs incurred to migrate to alternative software platform following TechStart's termination, including software licenses, implementation costs, and consulting fees.",
+                    "citations": ["287", "288", "289"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 20145/2019",
+                    "title": "Consequential damages in software contracts",
+                    "relevance": "Established framework for calculating consequential damages in software disputes, including lost profits, business interruption, and migration costs, provided such damages were foreseeable at contract formation.",
+                    "paragraphs": "295-299",
+                    "citedParagraphs": ["296", "297"]
+                }
+            ],
+            "children": {
+                "3.1": {
+                    "id": "3.1",
+                    "title": "Warranty Breach Claims",
+                    "paragraphs": "300-310",
+                    "overview": {
+                        "points": [
+                            "Software failed to perform as warranted in Section 3.1",
+                            "TechStart breached fitness for purpose warranty",
+                            "Inadequate support violated maintenance obligations"
+                        ],
+                        "paragraphs": "300-302"
+                    },
+                    "factualPoints": [
+                        {
+                            "point": "Software never achieved warranted 99% uptime throughout contract period",
+                            "date": "2023-01-15 to 2024-01-20",
+                            "isDisputed": True,
+                            "source": "Claimant",
+                            "paragraphs": "304-307",
+                            "exhibits": ["R-3", "R-11"]
+                        }
+                    ],
+                    "evidence": [
+                        {
+                            "id": "R-11",
+                            "title": "Complete Performance Monitoring Data",
+                            "summary": "Year-long performance monitoring data showing consistent failure to meet warranted uptime, response time, and processing capacity specifications.",
+                            "citations": ["304", "305", "306"]
+                        }
+                    ]
+                }
+            }
+        },
+        "4": {
+            "id": "4",
+            "title": "Invalid Termination",
+            "paragraphs": "311-335",
+            "overview": {
+                "points": [
+                    "TechStart's own material breaches invalidated termination right",
+                    "Cure notice was defective and improper",
+                    "Termination was premature and in bad faith"
+                ],
+                "paragraphs": "311-313"
+            },
+            "factualPoints": [
+                {
+                    "point": "TechStart was in material breach of SLA obligations when it attempted termination",
+                    "date": "2023-06-15 to 2024-01-20",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "317-320",
+                    "exhibits": ["R-3", "R-12"]
+                },
+                {
+                    "point": "Cure notice failed to specify breaches with required particularity",
+                    "date": "2023-12-15",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "321-324",
+                    "exhibits": ["R-12"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-12",
+                    "title": "Legal Analysis of Cure Notice",
+                    "summary": "Legal memorandum analyzing deficiencies in TechStart's cure notice, including lack of specificity and failure to acknowledge TechStart's own breaches.",
+                    "citations": ["321", "322", "323"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 134567",
+                    "title": "Clean hands doctrine in contract termination",
+                    "relevance": "Established that a party in material breach of its own obligations cannot terminate the contract for the other party's breaches, applying the clean hands doctrine to commercial arbitration.",
+                    "paragraphs": "327-331",
+                    "citedParagraphs": ["328", "329"]
+                }
+            ]
         }
     }
     
@@ -336,6 +628,18 @@ def get_argument_data():
             "title": "Intellectual Property Rights and Development",
             "description": "Disputes over IP ownership, derivative works, and competitive product development",
             "argumentIds": ["2"]
+        },
+        {
+            "id": "topic-3",
+            "title": "Damages and Financial Claims",
+            "description": "Calculation of damages, lost profits, and financial consequences of alleged breaches",
+            "argumentIds": ["3"]
+        },
+        {
+            "id": "topic-4",
+            "title": "Contract Termination",
+            "description": "Validity of contract termination, cure procedures, and termination consequences",
+            "argumentIds": ["4"]
         }
     ]
     
@@ -404,6 +708,42 @@ def get_timeline_data():
         {
             "date": "2024-03-01",
             "claimantVersion": "Arbitration proceedings initiated under ICC Rules",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2024-03-15",
+            "claimantVersion": "TechStart filed Statement of Claim seeking $13.5M in damages",
+            "respondentVersion": "Received excessive and unsubstantiated damage claims",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-04-30",
+            "claimantVersion": "—",
+            "respondentVersion": "MegaCorp completed emergency migration to alternative platform at cost of $2M",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-05-15",
+            "claimantVersion": "—",
+            "respondentVersion": "MegaCorp filed Statement of Defense and Counterclaim seeking $5.5M",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-06-01",
+            "claimantVersion": "Tribunal constituted with three arbitrators",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2024-07-20",
+            "claimantVersion": "Document production phase completed",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2024-09-10",
+            "claimantVersion": "Expert reports on damages and technical issues exchanged",
             "respondentVersion": "—",
             "status": "Undisputed"
         }
@@ -487,6 +827,90 @@ def get_exhibits_data():
             "title": "Clean-Room Development Documentation",
             "type": "technical",
             "summary": "Complete development records proving independent creation of competing software using clean-room methodology"
+        },
+        {
+            "id": "C-11",
+            "party": "Claimant",
+            "title": "Forensic Investigation Invoices",
+            "type": "financial",
+            "summary": "Invoices from cybersecurity firms for investigating unauthorized deployments totaling $750,000"
+        },
+        {
+            "id": "C-12",
+            "party": "Claimant",
+            "title": "Legal Fees and Costs Schedule",
+            "type": "financial",
+            "summary": "Breakdown of legal costs for investigating breaches and preparing arbitration claims"
+        },
+        {
+            "id": "C-13",
+            "party": "Claimant",
+            "title": "Market Analysis and Revenue Projections",
+            "type": "expert",
+            "summary": "Expert economic analysis of European market and $8.2M projected revenue losses"
+        },
+        {
+            "id": "C-14",
+            "party": "Claimant",
+            "title": "Comprehensive Payment Ledger",
+            "type": "financial",
+            "summary": "Complete accounting showing all invoices, payments, and $5.3M outstanding balance"
+        },
+        {
+            "id": "C-15",
+            "party": "Claimant",
+            "title": "Notice of Default and Opportunity to Cure",
+            "type": "correspondence",
+            "summary": "Official notice sent December 15, 2023 providing 30-day cure period per contract Section 9.2"
+        },
+        {
+            "id": "C-16",
+            "party": "Claimant",
+            "title": "Delivery Confirmation and Read Receipts",
+            "type": "correspondence",
+            "summary": "Email confirmations proving MegaCorp received and opened the cure notice"
+        },
+        {
+            "id": "C-17",
+            "party": "Claimant",
+            "title": "Termination Letter",
+            "type": "correspondence",
+            "summary": "Formal termination notice dated January 20, 2024 for material uncured breaches"
+        },
+        {
+            "id": "R-8",
+            "party": "Respondent",
+            "title": "Financial Impact Analysis",
+            "type": "financial",
+            "summary": "CFO analysis documenting $3.5M in lost revenue from software performance issues"
+        },
+        {
+            "id": "R-9",
+            "party": "Respondent",
+            "title": "Customer Complaint Records",
+            "type": "correspondence",
+            "summary": "Documentation of customer complaints and contract cancellations from system failures"
+        },
+        {
+            "id": "R-10",
+            "party": "Respondent",
+            "title": "Migration Project Costs",
+            "type": "financial",
+            "summary": "Complete accounting of $2M costs to migrate to alternative software platform"
+        },
+        {
+            "id": "R-11",
+            "party": "Respondent",
+            "title": "Complete Performance Monitoring Data",
+            "type": "technical",
+            "summary": "Year-long data showing consistent failure to meet warranted uptime specifications"
+        },
+        {
+            "id": "R-12",
+            "party": "Respondent",
+            "title": "Legal Analysis of Cure Notice",
+            "type": "expert",
+            "summary": "Legal memorandum analyzing deficiencies in TechStart's cure notice"
         }
     ]
 
@@ -571,9 +995,6 @@ def main():
             <span style="margin-left: 12px; font-size: 24px; font-weight: 600; color: #262730;">caselens</span>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Search input
-        search_query = st.text_input("", placeholder="Search", label_visibility="collapsed")
         
         st.markdown("---")
         
@@ -835,7 +1256,7 @@ def main():
                 padding: 8px 16px;
                 background-color: #f9f9f9;
                 border: 1px solid #e1e4e8;
-                border-radius: 4px;
+                border-radius: 8px;
                 display: flex;
                 align-items: center;
                 gap: 6px;
@@ -860,7 +1281,7 @@ def main():
                 min-width: 160px;
                 box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
                 z-index: 1;
-                border-radius: 4px;
+                border-radius: 8px;
             }}
             
             .export-dropdown-content a {{
@@ -992,6 +1413,7 @@ def main():
                 background: none;
                 border: none;
                 cursor: pointer;
+                border-radius: 8px 8px 0 0;
             }}
             
             .tab-button.active {{
@@ -1025,11 +1447,11 @@ def main():
             }}
             
             .view-toggle button:first-child {{
-                border-radius: 4px 0 0 4px;
+                border-radius: 8px 0 0 8px;
             }}
             
             .view-toggle button:last-child {{
-                border-radius: 0 4px 4px 0;
+                border-radius: 0 8px 8px 0;
             }}
             
             /* Copy notification */
@@ -1086,16 +1508,16 @@ def main():
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">
-                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer;">Both Parties</button>
+                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 8px;">Both Parties</button>
                         
-                        <button id="app-btn" onclick="changePartyView('claimant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Claimant Only</button>
+                        <button id="app-btn" onclick="changePartyView('claimant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; border-radius: 8px;">Claimant Only</button>
                         
-                        <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
+                        <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; border-radius: 8px;">Respondent Only</button>
                     </div>
                     <div style="display: flex; gap: 20px; align-items: center;">
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
+                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
                         
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
                     </div>
                 </div>
                 
@@ -1611,7 +2033,7 @@ def main():
                     viewBtn.style.padding = '4px 8px';
                     viewBtn.style.marginRight = '8px';
                     viewBtn.style.border = '1px solid #e2e8f0';
-                    viewBtn.style.borderRadius = '4px';
+                    viewBtn.style.borderRadius = '8px';
                     viewBtn.style.backgroundColor = '#f7fafc';
                     viewBtn.style.cursor = 'pointer';
                     viewBtn.onclick = function() {{
@@ -2039,6 +2461,9 @@ def main():
     
     # Render the HTML in Streamlit
     st.title("TechStart Inc. v. MegaCorp Ltd.")
+    
+    # Add search bar under title
+    search_query = st.text_input("", placeholder="Search arguments, facts, evidence...", label_visibility="collapsed", key="main_search")
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

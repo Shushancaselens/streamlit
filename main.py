@@ -26,9 +26,13 @@ st.markdown("""
     }
     /* Reduce search input height */
     .stTextInput > div > div > input {
-        height: 50px;
-        padding: 12px 16px;
+        height: 56px;
+        padding: 14px 18px;
         font-size: 15px;
+        border-radius: 8px;
+    }
+    .stTextInput > div > div {
+        height: 56px;
     }
     /* Add spacing to title */
     h1 {

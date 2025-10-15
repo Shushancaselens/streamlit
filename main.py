@@ -603,58 +603,6 @@ def main():
             pass
         
         st.markdown("---")
-        
-        # Search Filters section
-        st.markdown("### Search Filters")
-        
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            if st.button("Reset All Filters", use_container_width=True):
-                st.session_state.filters_active = 0
-        
-        # Initialize filter count
-        if 'filters_active' not in st.session_state:
-            st.session_state.filters_active = 0
-            
-        st.markdown(f'<p style="color: #4D68F9; font-size: 14px; margin-top: 10px;">{st.session_state.filters_active} active filters</p>', unsafe_allow_html=True)
-        
-        # Filter dropdowns - direct multiselects without expanders
-        st.multiselect("Party", ["Claimant", "Respondent"], key="party_filter")
-        
-        st.multiselect("Topic", [
-            "Contract Performance and Payment Disputes",
-            "Intellectual Property Rights and Development",
-            "Software Licensing",
-            "Payment Obligations"
-        ], key="topic_filter")
-        
-        st.multiselect("Dispute Status", ["Disputed", "Undisputed"], key="status_filter")
-        
-        st.multiselect("Evidence Type", [
-            "Contract",
-            "Financial",
-            "Technical",
-            "Expert",
-            "Correspondence"
-        ], key="evidence_filter")
-        
-        st.date_input("Date From", key="date_from")
-        st.date_input("Date To", key="date_to")
-        
-        st.multiselect("Argument Category", [
-            "Breach of Agreement",
-            "Payment Breach",
-            "Territorial Violations",
-            "IP Ownership",
-            "Performance Defects",
-            "Clean-Room Development"
-        ], key="arg_category_filter")
-        
-        st.markdown("**Case Law**")
-        st.checkbox("Has Case Law Citations", key="caselaw_filter")
-        st.checkbox("ICC Cases", key="icc_filter")
-        st.checkbox("LCIA Cases", key="lcia_filter")
-        st.checkbox("SIAC Cases", key="siac_filter")
     
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":
@@ -1138,16 +1086,16 @@ def main():
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">
-                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer;">Both Parties</button>
+                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer;">Both Parties</button>
                         
                         <button id="app-btn" onclick="changePartyView('claimant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Claimant Only</button>
                         
                         <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer;">Respondent Only</button>
                     </div>
                     <div style="display: flex; gap: 20px; align-items: center;">
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4299e1; color: white; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
+                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
                         
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4299e1'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 4px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
                     </div>
                 </div>
                 

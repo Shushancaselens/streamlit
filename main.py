@@ -609,52 +609,43 @@ def main():
             
         st.markdown(f'<p style="color: #4D68F9; font-size: 14px; margin-top: 10px;">{st.session_state.filters_active} active filters</p>', unsafe_allow_html=True)
         
-        # Filter dropdowns - updated to be relevant to legal case
-        with st.expander("Party", expanded=False):
-            st.multiselect("Select party", ["Claimant", "Respondent"], key="party_filter", label_visibility="collapsed")
+        # Filter dropdowns - direct multiselects without expanders
+        st.multiselect("Party", ["Claimant", "Respondent"], key="party_filter")
         
-        with st.expander("Topic", expanded=False):
-            st.multiselect("Select topics", [
-                "Contract Performance and Payment Disputes",
-                "Intellectual Property Rights and Development",
-                "Software Licensing",
-                "Payment Obligations"
-            ], key="topic_filter", label_visibility="collapsed")
+        st.multiselect("Topic", [
+            "Contract Performance and Payment Disputes",
+            "Intellectual Property Rights and Development",
+            "Software Licensing",
+            "Payment Obligations"
+        ], key="topic_filter")
         
-        with st.expander("Dispute Status", expanded=False):
-            st.multiselect("Select status", ["Disputed", "Undisputed"], key="status_filter", label_visibility="collapsed")
+        st.multiselect("Dispute Status", ["Disputed", "Undisputed"], key="status_filter")
         
-        with st.expander("Evidence Type", expanded=False):
-            st.multiselect("Select evidence types", [
-                "Contract",
-                "Financial",
-                "Technical",
-                "Expert",
-                "Correspondence"
-            ], key="evidence_filter", label_visibility="collapsed")
+        st.multiselect("Evidence Type", [
+            "Contract",
+            "Financial",
+            "Technical",
+            "Expert",
+            "Correspondence"
+        ], key="evidence_filter")
         
-        with st.expander("Date Range", expanded=False):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.date_input("From", key="date_from", label_visibility="collapsed")
-            with col2:
-                st.date_input("To", key="date_to", label_visibility="collapsed")
+        st.date_input("Date From", key="date_from")
+        st.date_input("Date To", key="date_to")
         
-        with st.expander("Argument Category", expanded=False):
-            st.multiselect("Select categories", [
-                "Breach of Agreement",
-                "Payment Breach",
-                "Territorial Violations",
-                "IP Ownership",
-                "Performance Defects",
-                "Clean-Room Development"
-            ], key="arg_category_filter", label_visibility="collapsed")
+        st.multiselect("Argument Category", [
+            "Breach of Agreement",
+            "Payment Breach",
+            "Territorial Violations",
+            "IP Ownership",
+            "Performance Defects",
+            "Clean-Room Development"
+        ], key="arg_category_filter")
         
-        with st.expander("Case Law", expanded=False):
-            st.checkbox("Has Case Law Citations", key="caselaw_filter")
-            st.checkbox("ICC Cases", key="icc_filter")
-            st.checkbox("LCIA Cases", key="lcia_filter")
-            st.checkbox("SIAC Cases", key="siac_filter")
+        st.markdown("**Case Law**")
+        st.checkbox("Has Case Law Citations", key="caselaw_filter")
+        st.checkbox("ICC Cases", key="icc_filter")
+        st.checkbox("LCIA Cases", key="lcia_filter")
+        st.checkbox("SIAC Cases", key="siac_filter")
     
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":

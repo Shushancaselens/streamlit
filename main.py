@@ -545,44 +545,78 @@ def main():
     if 'view' not in st.session_state:
         st.session_state.view = "Arguments"
     
-    # Add Streamlit sidebar with navigation buttons only
+    # Add Streamlit sidebar with native design
     with st.sidebar:
         # Add the logo and CaseLens text
         st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="35" height="35">
+        <div style="display: flex; align-items: center; margin-bottom: 30px; padding: 10px 0;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 175" width="40" height="40">
               <mask id="whatsapp-mask" maskUnits="userSpaceOnUse">
                 <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
               </mask>
               <g mask="url(#whatsapp-mask)">
-                <!-- Rounded square background -->
                 <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
-                <!-- WhatsApp phone icon -->
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
               </g>
             </svg>
-            <h1 style="margin-left: 10px; font-weight: 600; color: #4D68F9;">CaseLens</h1>
+            <span style="margin-left: 12px; font-size: 24px; font-weight: 600; color: #262730;">caselens</span>
         </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("<h3>Legal Analysis</h3>", unsafe_allow_html=True)
+        # Search input
+        search_query = st.text_input("", placeholder="Search", label_visibility="collapsed")
         
-        # Custom CSS for button styling
-        st.markdown("""
-        <style>
-        .stButton > button {
-            width: 100%;
-            border-radius: 6px;
-            height: 50px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-        }
-        .stButton > button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        st.markdown("---")
+        
+        # Documents section
+        st.markdown("### 📄 Documents")
+        
+        # Saved Searches expander
+        with st.expander("Saved Searches", expanded=False):
+            st.info("No saved searches yet")
+        
+        st.markdown("---")
+        
+        # Search Filters section
+        st.markdown("### Search Filters")
+        
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            if st.button("Reset All Filters", use_container_width=True):
+                st.session_state.filters_active = 0
+        
+        # Initialize filter count
+        if 'filters_active' not in st.session_state:
+            st.session_state.filters_active = 0
+            
+        st.markdown(f'<p style="color: #4D68F9; font-size: 14px; margin-top: 10px;">{st.session_state.filters_active} active filters</p>', unsafe_allow_html=True)
+        
+        # Filter dropdowns
+        with st.expander("Language", expanded=False):
+            st.multiselect("Select languages", ["English", "Spanish", "French", "German"], key="lang_filter", label_visibility="collapsed")
+        
+        with st.expander("Year", expanded=False):
+            st.slider("Select year range", 2020, 2024, (2020, 2024), key="year_filter", label_visibility="collapsed")
+        
+        with st.expander("Procedural Types", expanded=False):
+            st.multiselect("Select types", ["Arbitration", "Litigation", "Mediation"], key="proc_filter", label_visibility="collapsed")
+        
+        with st.expander("Sport", expanded=False):
+            st.multiselect("Select sports", ["Football", "Basketball", "Tennis"], key="sport_filter", label_visibility="collapsed")
+        
+        with st.expander("Matter", expanded=False):
+            st.multiselect("Select matters", ["Contract", "IP Rights", "Payment"], key="matter_filter", label_visibility="collapsed")
+        
+        with st.expander("Category", expanded=False):
+            st.multiselect("Select categories", ["Commercial", "Employment", "Technology"], key="cat_filter", label_visibility="collapsed")
+        
+        with st.expander("Outcome", expanded=False):
+            st.multiselect("Select outcomes", ["Settled", "Won", "Lost"], key="outcome_filter", label_visibility="collapsed")
+        
+        st.markdown("---")
+        
+        # Navigation section at the bottom
+        st.markdown("### Navigation")
         
         # Define button click handlers
         def set_arguments_view():
@@ -594,10 +628,18 @@ def main():
         def set_exhibits_view():
             st.session_state.view = "Exhibits"
         
-        # Create buttons with names
-        st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True)
-        st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True)
-        st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True)
+        # Create buttons with conditional styling
+        if st.button("📑 Arguments", key="args_button", on_click=set_arguments_view, use_container_width=True, 
+                    type="primary" if st.session_state.view == "Arguments" else "secondary"):
+            pass
+            
+        if st.button("📊 Facts", key="facts_button", on_click=set_facts_view, use_container_width=True,
+                    type="primary" if st.session_state.view == "Facts" else "secondary"):
+            pass
+            
+        if st.button("📁 Exhibits", key="exhibits_button", on_click=set_exhibits_view, use_container_width=True,
+                    type="primary" if st.session_state.view == "Exhibits" else "secondary"):
+            pass
     
     # Determine which view to show based on sidebar selection
     if st.session_state.view == "Arguments":
@@ -2038,4 +2080,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -192,6 +192,683 @@ def get_argument_data():
                 }
             ]
         },
+        "5": {
+            "id": "5",
+            "title": "No Confidentiality Breach",
+            "paragraphs": "336-360",
+            "overview": {
+                "points": [
+                    "Information shared was not confidential under agreement definition",
+                    "Public domain and independently developed information",
+                    "TechStart's claims are speculative and unsubstantiated"
+                ],
+                "paragraphs": "336-338"
+            },
+            "factualPoints": [
+                {
+                    "point": "Alleged confidential information was publicly available through TechStart's own documentation",
+                    "date": "2023-05-01",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "342-345",
+                    "exhibits": ["R-13", "R-14"]
+                },
+                {
+                    "point": "MegaCorp developed similar technology independently before TechStart disclosure",
+                    "date": "2022-11-01 to 2023-01-14",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "346-349",
+                    "exhibits": ["R-15"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-13",
+                    "title": "Public TechStart Documentation",
+                    "summary": "Screenshots and archives of TechStart's publicly available technical documentation containing alleged confidential information.",
+                    "citations": ["342", "343"]
+                },
+                {
+                    "id": "R-14",
+                    "title": "Industry Standard Practices Analysis",
+                    "summary": "Expert report showing that alleged confidential methods are standard industry practices known to all practitioners.",
+                    "citations": ["344", "345"]
+                },
+                {
+                    "id": "R-15",
+                    "title": "Prior Development Records",
+                    "summary": "MegaCorp's internal development documentation predating licensing agreement showing independent development of similar technology.",
+                    "citations": ["346", "347", "348"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "SIAC ARB 089/2020",
+                    "title": "Definition of confidential information",
+                    "relevance": "Established that information publicly available or independently developed cannot be deemed confidential, and that burden rests on claiming party to prove information meets contractual definition of confidentiality.",
+                    "paragraphs": "353-357",
+                    "citedParagraphs": ["354", "355"]
+                }
+            ]
+        },
+        "6": {
+            "id": "6",
+            "title": "No Indemnification Obligation",
+            "paragraphs": "361-385",
+            "overview": {
+                "points": [
+                    "Third-party claims resulted from TechStart's IP defects, not MegaCorp's use",
+                    "TechStart failed to provide proper indemnification to MegaCorp",
+                    "Indemnification clause does not cover TechStart's own IP problems"
+                ],
+                "paragraphs": "361-363"
+            },
+            "factualPoints": [
+                {
+                    "point": "Patent claims arose from TechStart's underlying code, not territorial deployment",
+                    "date": "2024-02-15",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "367-370",
+                    "exhibits": ["R-16"]
+                },
+                {
+                    "point": "TechStart refused MegaCorp's indemnification demand for patent defense",
+                    "date": "2024-03-10",
+                    "isDisputed": False,
+                    "paragraphs": "371-373",
+                    "exhibits": ["R-17", "R-18"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-16",
+                    "title": "Patent Claim Technical Analysis",
+                    "summary": "Expert analysis of third-party patent claims showing they target TechStart's core algorithms, not MegaCorp's deployment decisions.",
+                    "citations": ["367", "368", "369"]
+                },
+                {
+                    "id": "R-17",
+                    "title": "MegaCorp Indemnification Demand",
+                    "summary": "MegaCorp's formal demand to TechStart for indemnification under Section 8.1 for patent infringement claims.",
+                    "citations": ["371", "372"]
+                },
+                {
+                    "id": "R-18",
+                    "title": "TechStart's Refusal to Defend",
+                    "summary": "TechStart's response refusing to defend or indemnify MegaCorp against third-party patent claims.",
+                    "citations": ["373"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 19234/2018",
+                    "title": "Indemnification for IP infringement",
+                    "relevance": "Confirmed that licensors must indemnify licensees for IP claims arising from the licensed technology itself, regardless of how licensee uses the technology.",
+                    "paragraphs": "377-381",
+                    "citedParagraphs": ["378", "379"]
+                }
+            ]
+        },
+        "7": {
+            "id": "7",
+            "title": "Proper Exercise of Privacy Rights",
+            "paragraphs": "386-410",
+            "overview": {
+                "points": [
+                    "Audit timing conflicted with critical business operations",
+                    "MegaCorp offered reasonable alternative dates",
+                    "TechStart refused to accommodate legitimate business needs"
+                ],
+                "paragraphs": "386-388"
+            },
+            "factualPoints": [
+                {
+                    "point": "Proposed audit coincided with quarter-end financial close requiring all systems",
+                    "date": "2023-09-05",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "392-395",
+                    "exhibits": ["R-19"]
+                },
+                {
+                    "point": "MegaCorp offered alternative audit dates in October 2023, declined by TechStart",
+                    "date": "2023-09-08",
+                    "isDisputed": False,
+                    "paragraphs": "396-398",
+                    "exhibits": ["R-20"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-19",
+                    "title": "Quarter-End Schedule and System Requirements",
+                    "summary": "Documentation showing critical financial close processes scheduled for proposed audit dates requiring full system availability.",
+                    "citations": ["392", "393"]
+                },
+                {
+                    "id": "R-20",
+                    "title": "Alternative Date Proposal",
+                    "summary": "MegaCorp's correspondence offering multiple alternative audit dates in October and November 2023.",
+                    "citations": ["396", "397"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 145678",
+                    "title": "Reasonable accommodation of audit rights",
+                    "relevance": "Established that audit rights must be exercised reasonably with accommodation for licensee's legitimate business needs, and that offering reasonable alternatives satisfies cooperation obligations.",
+                    "paragraphs": "402-406",
+                    "citedParagraphs": ["403", "404"]
+                }
+            ]
+        },
+        "8": {
+            "id": "8",
+            "title": "Limitation of Liability Applies",
+            "paragraphs": "411-435",
+            "overview": {
+                "points": [
+                    "Limitation clause explicitly applies to all claims under agreement",
+                    "No evidence of willful or fraudulent conduct",
+                    "TechStart's attempt to avoid limitation is improper"
+                ],
+                "paragraphs": "411-413"
+            },
+            "factualPoints": [
+                {
+                    "point": "Contract Section 9.5 limits all damages to fees paid in prior 12 months",
+                    "date": "2023-01-15",
+                    "isDisputed": False,
+                    "paragraphs": "417-419",
+                    "exhibits": ["C-1"]
+                },
+                {
+                    "point": "MegaCorp's conduct was based on good faith interpretation of territorial rights",
+                    "date": "2023-09-15",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "420-423",
+                    "exhibits": ["R-21"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-21",
+                    "title": "Legal Analysis of Territorial Provisions",
+                    "summary": "MegaCorp's internal legal memorandum showing good faith basis for interpreting territorial restrictions as advisory rather than mandatory.",
+                    "citations": ["420", "421", "422"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 20456/2020",
+                    "title": "Enforcement of limitation of liability clauses",
+                    "relevance": "Confirmed that limitation clauses are strictly enforced absent clear proof of fraud or willful misconduct, and that disputed contract interpretation does not constitute willfulness.",
+                    "paragraphs": "427-431",
+                    "citedParagraphs": ["428", "429"]
+                }
+            ]
+        },
+        "9": {
+            "id": "9",
+            "title": "TechStart's SLA Breaches",
+            "paragraphs": "436-460",
+            "overview": {
+                "points": [
+                    "TechStart consistently failed to meet 99% uptime requirement",
+                    "System failures were frequent and severe throughout contract",
+                    "TechStart's monitoring data is unreliable and self-serving"
+                ],
+                "paragraphs": "436-438"
+            },
+            "factualPoints": [
+                {
+                    "point": "Independent monitoring shows actual uptime of 87% in Q3 2023",
+                    "date": "2023-07-01 to 2023-09-30",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "442-445",
+                    "exhibits": ["R-22", "R-23"]
+                },
+                {
+                    "point": "TechStart's monitoring excluded planned maintenance in violation of SLA definition",
+                    "date": "2023-01-15 to 2024-01-20",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "446-449",
+                    "exhibits": ["R-24"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-22",
+                    "title": "MegaCorp's Independent Monitoring Data",
+                    "summary": "Comprehensive monitoring data from MegaCorp's independent systems showing actual uptime significantly below SLA requirements.",
+                    "citations": ["442", "443"]
+                },
+                {
+                    "id": "R-23",
+                    "title": "Third-Party Monitoring Report",
+                    "summary": "Report from independent monitoring service engaged by MegaCorp confirming poor system performance.",
+                    "citations": ["444", "445"]
+                },
+                {
+                    "id": "R-24",
+                    "title": "SLA Calculation Methodology Analysis",
+                    "summary": "Expert analysis showing TechStart's monitoring excluded downtime that should be counted under proper SLA calculation.",
+                    "citations": ["446", "447", "448"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "SIAC ARB 091/2021",
+                    "title": "SLA measurement and compliance verification",
+                    "relevance": "Established that licensee's independent monitoring data is admissible to rebut licensor's self-reported compliance, and that unilateral exclusions from uptime calculations are improper.",
+                    "paragraphs": "453-457",
+                    "citedParagraphs": ["454", "455"]
+                }
+            ]
+        },
+        "10": {
+            "id": "10",
+            "title": "Necessary Transition Period Use",
+            "paragraphs": "461-485",
+            "overview": {
+                "points": [
+                    "Post-termination use was necessary to prevent business catastrophe",
+                    "TechStart's improper termination created emergency situation",
+                    "Industry standard allows reasonable transition period"
+                ],
+                "paragraphs": "461-463"
+            },
+            "factualPoints": [
+                {
+                    "point": "Immediate cessation would have shut down critical business operations affecting 50,000 customers",
+                    "date": "2024-01-20",
+                    "isDisputed": True,
+                    "source": "Claimant",
+                    "paragraphs": "467-470",
+                    "exhibits": ["R-25"]
+                },
+                {
+                    "point": "MegaCorp completed migration within 70 days, standard industry timeframe",
+                    "date": "2024-01-21 to 2024-03-31",
+                    "isDisputed": False,
+                    "paragraphs": "471-473",
+                    "exhibits": ["R-26"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "R-25",
+                    "title": "Business Impact Assessment",
+                    "summary": "Analysis showing catastrophic business impact of immediate software cessation including customer service disruption.",
+                    "citations": ["467", "468", "469"]
+                },
+                {
+                    "id": "R-26",
+                    "title": "Migration Timeline and Industry Standards",
+                    "summary": "Documentation of migration project timeline and expert testimony on industry-standard transition periods for enterprise software.",
+                    "citations": ["471", "472"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 21789/2021",
+                    "title": "Reasonable transition period after termination",
+                    "relevance": "Recognized implied right to reasonable transition period after contract termination to prevent disproportionate harm, particularly where termination itself is disputed.",
+                    "paragraphs": "477-481",
+                    "citedParagraphs": ["478", "479"]
+                }
+            ]
+        },
+        "5": {
+            "id": "5",
+            "title": "Confidentiality Breaches",
+            "paragraphs": "146-170",
+            "overview": {
+                "points": [
+                    "MegaCorp disclosed TechStart's confidential information to competitors",
+                    "Breach of confidentiality obligations in Section 6",
+                    "Unauthorized sharing of technical specifications and trade secrets"
+                ],
+                "paragraphs": "146-148"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp shared proprietary API documentation with third-party developers",
+                    "date": "2023-10-01 to 2023-11-15",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "152-155",
+                    "exhibits": ["C-18", "C-19"]
+                },
+                {
+                    "point": "Confidential information appeared in competitor's product launch materials",
+                    "date": "2023-11-20",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "156-158",
+                    "exhibits": ["C-20"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-18",
+                    "title": "Email Communications with Third Parties",
+                    "summary": "Email chain showing MegaCorp employees sharing TechStart's confidential API documentation with external developers in violation of confidentiality agreement.",
+                    "citations": ["152", "153"]
+                },
+                {
+                    "id": "C-19",
+                    "title": "Access Log Analysis",
+                    "summary": "System logs showing unauthorized downloads of confidential technical documentation by MegaCorp personnel.",
+                    "citations": ["154", "155"]
+                },
+                {
+                    "id": "C-20",
+                    "title": "Competitor Product Materials",
+                    "summary": "Marketing materials and technical specifications from competitor showing proprietary TechStart information.",
+                    "citations": ["156", "157"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 22156/2020",
+                    "title": "Breach of confidentiality in technology agreements",
+                    "relevance": "Established that disclosure of confidential information to third parties constitutes material breach even if not directly to competitors, and that licensee bears strict liability for all disclosures by its employees.",
+                    "paragraphs": "162-166",
+                    "citedParagraphs": ["163", "164"]
+                }
+            ]
+        },
+        "6": {
+            "id": "6",
+            "title": "Indemnification Claims",
+            "paragraphs": "171-195",
+            "overview": {
+                "points": [
+                    "MegaCorp's breach triggered third-party IP claims against TechStart",
+                    "Indemnification obligations under Section 8",
+                    "MegaCorp must reimburse defense costs and settlements"
+                ],
+                "paragraphs": "171-173"
+            },
+            "factualPoints": [
+                {
+                    "point": "Third-party patent holder filed suit against TechStart for MegaCorp's unauthorized use",
+                    "date": "2024-02-15",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "177-180",
+                    "exhibits": ["C-21", "C-22"]
+                },
+                {
+                    "point": "TechStart incurred $450,000 in legal fees defending third-party claims",
+                    "date": "2024-02-15 to 2024-06-30",
+                    "isDisputed": False,
+                    "paragraphs": "181-183",
+                    "exhibits": ["C-23"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-21",
+                    "title": "Third-Party Patent Infringement Complaint",
+                    "summary": "Complaint filed by patent holder alleging infringement based on MegaCorp's unauthorized territorial deployment of TechStart software.",
+                    "citations": ["177", "178"]
+                },
+                {
+                    "id": "C-22",
+                    "title": "Indemnification Demand Letter",
+                    "summary": "TechStart's formal demand to MegaCorp for indemnification under Section 8 of licensing agreement.",
+                    "citations": ["179", "180"]
+                },
+                {
+                    "id": "C-23",
+                    "title": "Defense Cost Documentation",
+                    "summary": "Invoices and billing statements from legal counsel defending third-party patent claims totaling $450,000.",
+                    "citations": ["181", "182"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 167890",
+                    "title": "Indemnification obligations in licensing disputes",
+                    "relevance": "Confirmed that licensees must indemnify licensors for third-party claims arising from licensee's breach of territorial or use restrictions, including all defense costs and settlements.",
+                    "paragraphs": "186-190",
+                    "citedParagraphs": ["187", "188"]
+                }
+            ]
+        },
+        "7": {
+            "id": "7",
+            "title": "Audit Rights and Compliance Verification",
+            "paragraphs": "196-220",
+            "overview": {
+                "points": [
+                    "MegaCorp refused TechStart's contractual audit rights",
+                    "Obstruction of compliance verification under Section 5.4",
+                    "Failure to provide required usage reports and documentation"
+                ],
+                "paragraphs": "196-198"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp denied access for scheduled audit in September 2023",
+                    "date": "2023-09-05",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "202-205",
+                    "exhibits": ["C-24", "C-25"]
+                },
+                {
+                    "point": "No usage reports submitted for Q3 or Q4 2023 as required",
+                    "date": "2023-07-01 to 2023-12-31",
+                    "isDisputed": False,
+                    "paragraphs": "206-208",
+                    "exhibits": ["C-26"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-24",
+                    "title": "Audit Request and Scheduling Correspondence",
+                    "summary": "Email correspondence showing TechStart's proper notice for contractual audit and MegaCorp's refusal to provide access.",
+                    "citations": ["202", "203"]
+                },
+                {
+                    "id": "C-25",
+                    "title": "Audit Rights Provision Analysis",
+                    "summary": "Contract excerpt and legal analysis of Section 5.4 audit rights and MegaCorp's obligations to provide access.",
+                    "citations": ["204", "205"]
+                },
+                {
+                    "id": "C-26",
+                    "title": "Usage Report Requirements and Compliance Record",
+                    "summary": "Documentation showing required reporting schedule and MegaCorp's failure to submit usage reports for two consecutive quarters.",
+                    "citations": ["206", "207"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 20987/2019",
+                    "title": "Audit rights in software licensing agreements",
+                    "relevance": "Established that refusal to permit contractual audits constitutes material breach and creates presumption of non-compliance with licensing terms.",
+                    "paragraphs": "212-216",
+                    "citedParagraphs": ["213", "214"]
+                }
+            ]
+        },
+        "8": {
+            "id": "8",
+            "title": "Limitation of Liability Disputes",
+            "paragraphs": "221-245",
+            "overview": {
+                "points": [
+                    "Liability cap does not apply to MegaCorp's willful breaches",
+                    "Exception for breach of confidentiality and IP provisions",
+                    "MegaCorp's conduct falls outside limitation protections"
+                ],
+                "paragraphs": "221-223"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp's territorial violations were knowing and willful, not negligent",
+                    "date": "2023-09-15 to present",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "227-230",
+                    "exhibits": ["C-27"]
+                },
+                {
+                    "point": "Internal emails show MegaCorp executives approved European deployment despite restrictions",
+                    "date": "2023-09-10",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "231-234",
+                    "exhibits": ["C-28"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-27",
+                    "title": "Willful Breach Analysis",
+                    "summary": "Legal memorandum establishing that MegaCorp's conduct constituted willful and knowing breach beyond scope of limitation clause.",
+                    "citations": ["227", "228"]
+                },
+                {
+                    "id": "C-28",
+                    "title": "Executive Email Communications",
+                    "summary": "Internal MegaCorp emails showing senior management's knowledge of territorial restrictions and decision to violate them.",
+                    "citations": ["231", "232", "233"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "SIAC ARB 078/2020",
+                    "title": "Limitation of liability for willful breaches",
+                    "relevance": "Confirmed that limitation of liability clauses do not protect against willful or knowing breaches, and that knowledge of breach by senior management establishes willfulness.",
+                    "paragraphs": "238-242",
+                    "citedParagraphs": ["239", "240"]
+                }
+            ]
+        },
+        "9": {
+            "id": "9",
+            "title": "Service Level Agreement Enforcement",
+            "paragraphs": "246-270",
+            "overview": {
+                "points": [
+                    "TechStart met all SLA requirements throughout contract period",
+                    "Performance issues resulted from MegaCorp's infrastructure problems",
+                    "MegaCorp's SLA claims are pretextual"
+                ],
+                "paragraphs": "246-248"
+            },
+            "factualPoints": [
+                {
+                    "point": "TechStart's monitoring data shows 99.7% uptime throughout contract period",
+                    "date": "2023-01-15 to 2024-01-20",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "252-255",
+                    "exhibits": ["C-29", "C-30"]
+                },
+                {
+                    "point": "Performance issues traced to MegaCorp's inadequate server infrastructure",
+                    "date": "2023-06-15 to 2023-09-30",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "256-259",
+                    "exhibits": ["C-31"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-29",
+                    "title": "TechStart System Monitoring Reports",
+                    "summary": "Comprehensive monitoring data from TechStart's systems showing consistent 99.7% uptime and compliance with all SLA metrics.",
+                    "citations": ["252", "253"]
+                },
+                {
+                    "id": "C-30",
+                    "title": "Independent Third-Party Audit",
+                    "summary": "Independent audit report confirming TechStart's SLA compliance throughout contract period.",
+                    "citations": ["254", "255"]
+                },
+                {
+                    "id": "C-31",
+                    "title": "Root Cause Analysis Report",
+                    "summary": "Technical analysis identifying MegaCorp's inadequate infrastructure as cause of performance issues, not TechStart's software.",
+                    "citations": ["256", "257", "258"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "ICC Case No. 21567/2021",
+                    "title": "SLA compliance and burden of proof",
+                    "relevance": "Established that licensor's contemporaneous monitoring data creates presumption of SLA compliance, and licensee bears burden to prove non-compliance with clear evidence.",
+                    "paragraphs": "263-267",
+                    "citedParagraphs": ["264", "265"]
+                }
+            ]
+        },
+        "10": {
+            "id": "10",
+            "title": "Post-Termination Obligations",
+            "paragraphs": "271-295",
+            "overview": {
+                "points": [
+                    "MegaCorp continues to use TechStart software after termination",
+                    "Failure to return or destroy confidential information",
+                    "Breach of post-termination obligations in Section 10"
+                ],
+                "paragraphs": "271-273"
+            },
+            "factualPoints": [
+                {
+                    "point": "MegaCorp's systems show continued API calls to TechStart software after termination",
+                    "date": "2024-01-21 to 2024-03-31",
+                    "isDisputed": True,
+                    "source": "Respondent",
+                    "paragraphs": "277-280",
+                    "exhibits": ["C-32"]
+                },
+                {
+                    "point": "MegaCorp failed to certify destruction of confidential materials as required",
+                    "date": "2024-02-20",
+                    "isDisputed": False,
+                    "paragraphs": "281-283",
+                    "exhibits": ["C-33"]
+                }
+            ],
+            "evidence": [
+                {
+                    "id": "C-32",
+                    "title": "Post-Termination Usage Logs",
+                    "summary": "Server logs showing continued API calls from MegaCorp systems for 70 days after termination date.",
+                    "citations": ["277", "278", "279"]
+                },
+                {
+                    "id": "C-33",
+                    "title": "Post-Termination Compliance Demand",
+                    "summary": "TechStart's demand for certification of data destruction per Section 10.3 and MegaCorp's failure to respond.",
+                    "citations": ["281", "282"]
+                }
+            ],
+            "caseLaw": [
+                {
+                    "caseNumber": "LCIA Ref. 178901",
+                    "title": "Post-termination use of licensed software",
+                    "relevance": "Established that continued use of software after termination constitutes conversion and unauthorized use, subject to damages calculated at 3x normal licensing fees.",
+                    "paragraphs": "287-291",
+                    "citedParagraphs": ["288", "289"]
+                }
+            ]
+        },
         "3": {
             "id": "3",
             "title": "Damages and Financial Losses",
@@ -640,6 +1317,42 @@ def get_argument_data():
             "title": "Contract Termination",
             "description": "Validity of contract termination, cure procedures, and termination consequences",
             "argumentIds": ["4"]
+        },
+        {
+            "id": "topic-5",
+            "title": "Confidentiality and Data Protection",
+            "description": "Breach of confidentiality obligations and unauthorized disclosure of proprietary information",
+            "argumentIds": ["5"]
+        },
+        {
+            "id": "topic-6",
+            "title": "Indemnification and Third-Party Claims",
+            "description": "Obligations to indemnify for third-party claims and allocation of defense costs",
+            "argumentIds": ["6"]
+        },
+        {
+            "id": "topic-7",
+            "title": "Audit Rights and Compliance Verification",
+            "description": "Exercise of contractual audit rights and compliance with reporting obligations",
+            "argumentIds": ["7"]
+        },
+        {
+            "id": "topic-8",
+            "title": "Limitation of Liability",
+            "description": "Application and scope of contractual limitation of liability provisions",
+            "argumentIds": ["8"]
+        },
+        {
+            "id": "topic-9",
+            "title": "Service Level Agreement Compliance",
+            "description": "Disputes over SLA performance metrics and compliance measurement",
+            "argumentIds": ["9"]
+        },
+        {
+            "id": "topic-10",
+            "title": "Post-Termination Obligations",
+            "description": "Continuing obligations after contract termination and transition requirements",
+            "argumentIds": ["10"]
         }
     ]
     
@@ -746,6 +1459,66 @@ def get_timeline_data():
             "claimantVersion": "Expert reports on damages and technical issues exchanged",
             "respondentVersion": "—",
             "status": "Undisputed"
+        },
+        {
+            "date": "2023-10-01",
+            "claimantVersion": "Discovered MegaCorp sharing confidential API documentation with third parties",
+            "respondentVersion": "Shared only publicly available information with authorized partners",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-11-20",
+            "claimantVersion": "TechStart's confidential information appeared in competitor's product materials",
+            "respondentVersion": "Information was independently developed and publicly known",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-02-15",
+            "claimantVersion": "—",
+            "respondentVersion": "Third-party patent holder filed suit against TechStart for MegaCorp's use",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-03-10",
+            "claimantVersion": "—",
+            "respondentVersion": "TechStart refused MegaCorp's indemnification demand for patent defense",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-09-05",
+            "claimantVersion": "MegaCorp denied access for scheduled contractual audit",
+            "respondentVersion": "Requested reasonable postponement due to quarter-end financial close",
+            "status": "Disputed"
+        },
+        {
+            "date": "2023-09-08",
+            "claimantVersion": "—",
+            "respondentVersion": "MegaCorp offered alternative audit dates in October, declined by TechStart",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2023-09-10",
+            "claimantVersion": "Internal MegaCorp emails show executives approved European deployment despite restrictions",
+            "respondentVersion": "Management made good faith interpretation of ambiguous territorial provisions",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-01-21",
+            "claimantVersion": "MegaCorp continued using TechStart software after termination without authorization",
+            "respondentVersion": "Necessary transition period to prevent catastrophic business disruption",
+            "status": "Disputed"
+        },
+        {
+            "date": "2024-02-20",
+            "claimantVersion": "MegaCorp failed to certify destruction of confidential materials as required",
+            "respondentVersion": "—",
+            "status": "Undisputed"
+        },
+        {
+            "date": "2024-03-31",
+            "claimantVersion": "MegaCorp finally ceased using TechStart software after 70 days of unauthorized use",
+            "respondentVersion": "Completed migration within industry-standard 70-day transition period",
+            "status": "Disputed"
         }
     ]
 
@@ -911,6 +1684,216 @@ def get_exhibits_data():
             "title": "Legal Analysis of Cure Notice",
             "type": "expert",
             "summary": "Legal memorandum analyzing deficiencies in TechStart's cure notice"
+        },
+        {
+            "id": "C-18",
+            "party": "Claimant",
+            "title": "Email Communications with Third Parties",
+            "type": "correspondence",
+            "summary": "Email chain showing MegaCorp sharing confidential API documentation with external developers"
+        },
+        {
+            "id": "C-19",
+            "party": "Claimant",
+            "title": "Access Log Analysis",
+            "type": "technical",
+            "summary": "System logs showing unauthorized downloads of confidential documentation by MegaCorp"
+        },
+        {
+            "id": "C-20",
+            "party": "Claimant",
+            "title": "Competitor Product Materials",
+            "type": "technical",
+            "summary": "Marketing materials from competitor showing proprietary TechStart information"
+        },
+        {
+            "id": "C-21",
+            "party": "Claimant",
+            "title": "Third-Party Patent Infringement Complaint",
+            "type": "correspondence",
+            "summary": "Complaint alleging infringement based on MegaCorp's unauthorized territorial deployment"
+        },
+        {
+            "id": "C-22",
+            "party": "Claimant",
+            "title": "Indemnification Demand Letter",
+            "type": "correspondence",
+            "summary": "TechStart's formal indemnification demand to MegaCorp under Section 8"
+        },
+        {
+            "id": "C-23",
+            "party": "Claimant",
+            "title": "Defense Cost Documentation",
+            "type": "financial",
+            "summary": "Legal invoices for defending third-party patent claims totaling $450,000"
+        },
+        {
+            "id": "C-24",
+            "party": "Claimant",
+            "title": "Audit Request and Scheduling Correspondence",
+            "type": "correspondence",
+            "summary": "Email correspondence showing proper audit notice and MegaCorp's refusal"
+        },
+        {
+            "id": "C-25",
+            "party": "Claimant",
+            "title": "Audit Rights Provision Analysis",
+            "type": "contract",
+            "summary": "Contract excerpt and legal analysis of Section 5.4 audit rights"
+        },
+        {
+            "id": "C-26",
+            "party": "Claimant",
+            "title": "Usage Report Requirements and Compliance Record",
+            "type": "technical",
+            "summary": "Documentation showing MegaCorp failed to submit usage reports for two quarters"
+        },
+        {
+            "id": "C-27",
+            "party": "Claimant",
+            "title": "Willful Breach Analysis",
+            "type": "expert",
+            "summary": "Legal memorandum establishing MegaCorp's willful and knowing breach"
+        },
+        {
+            "id": "C-28",
+            "party": "Claimant",
+            "title": "Executive Email Communications",
+            "type": "correspondence",
+            "summary": "Internal MegaCorp emails showing management knew of and violated territorial restrictions"
+        },
+        {
+            "id": "C-29",
+            "party": "Claimant",
+            "title": "TechStart System Monitoring Reports",
+            "type": "technical",
+            "summary": "Monitoring data showing consistent 99.7% uptime and SLA compliance"
+        },
+        {
+            "id": "C-30",
+            "party": "Claimant",
+            "title": "Independent Third-Party Audit",
+            "type": "expert",
+            "summary": "Independent audit confirming TechStart's SLA compliance throughout contract"
+        },
+        {
+            "id": "C-31",
+            "party": "Claimant",
+            "title": "Root Cause Analysis Report",
+            "type": "technical",
+            "summary": "Technical analysis identifying MegaCorp's infrastructure as cause of performance issues"
+        },
+        {
+            "id": "C-32",
+            "party": "Claimant",
+            "title": "Post-Termination Usage Logs",
+            "type": "technical",
+            "summary": "Server logs showing continued API calls from MegaCorp for 70 days after termination"
+        },
+        {
+            "id": "C-33",
+            "party": "Claimant",
+            "title": "Post-Termination Compliance Demand",
+            "type": "correspondence",
+            "summary": "TechStart's demand for data destruction certification and MegaCorp's failure to respond"
+        },
+        {
+            "id": "R-13",
+            "party": "Respondent",
+            "title": "Public TechStart Documentation",
+            "type": "technical",
+            "summary": "Screenshots of TechStart's publicly available documentation containing alleged confidential information"
+        },
+        {
+            "id": "R-14",
+            "party": "Respondent",
+            "title": "Industry Standard Practices Analysis",
+            "type": "expert",
+            "summary": "Expert report showing alleged confidential methods are standard industry practices"
+        },
+        {
+            "id": "R-15",
+            "party": "Respondent",
+            "title": "Prior Development Records",
+            "type": "technical",
+            "summary": "MegaCorp's internal development documentation predating licensing agreement"
+        },
+        {
+            "id": "R-16",
+            "party": "Respondent",
+            "title": "Patent Claim Technical Analysis",
+            "type": "expert",
+            "summary": "Expert analysis showing patent claims target TechStart's core algorithms"
+        },
+        {
+            "id": "R-17",
+            "party": "Respondent",
+            "title": "MegaCorp Indemnification Demand",
+            "type": "correspondence",
+            "summary": "MegaCorp's formal indemnification demand to TechStart under Section 8.1"
+        },
+        {
+            "id": "R-18",
+            "party": "Respondent",
+            "title": "TechStart's Refusal to Defend",
+            "type": "correspondence",
+            "summary": "TechStart's response refusing to defend or indemnify MegaCorp"
+        },
+        {
+            "id": "R-19",
+            "party": "Respondent",
+            "title": "Quarter-End Schedule and System Requirements",
+            "type": "financial",
+            "summary": "Documentation showing critical financial close processes during proposed audit dates"
+        },
+        {
+            "id": "R-20",
+            "party": "Respondent",
+            "title": "Alternative Date Proposal",
+            "type": "correspondence",
+            "summary": "MegaCorp's correspondence offering multiple alternative audit dates"
+        },
+        {
+            "id": "R-21",
+            "party": "Respondent",
+            "title": "Legal Analysis of Territorial Provisions",
+            "type": "expert",
+            "summary": "Internal legal memorandum showing good faith basis for territorial interpretation"
+        },
+        {
+            "id": "R-22",
+            "party": "Respondent",
+            "title": "MegaCorp's Independent Monitoring Data",
+            "type": "technical",
+            "summary": "Independent monitoring data showing actual uptime below SLA requirements"
+        },
+        {
+            "id": "R-23",
+            "party": "Respondent",
+            "title": "Third-Party Monitoring Report",
+            "type": "expert",
+            "summary": "Independent monitoring service report confirming poor system performance"
+        },
+        {
+            "id": "R-24",
+            "party": "Respondent",
+            "title": "SLA Calculation Methodology Analysis",
+            "type": "expert",
+            "summary": "Expert analysis showing TechStart's monitoring excluded downtime improperly"
+        },
+        {
+            "id": "R-25",
+            "party": "Respondent",
+            "title": "Business Impact Assessment",
+            "type": "financial",
+            "summary": "Analysis showing catastrophic impact of immediate software cessation on 50,000 customers"
+        },
+        {
+            "id": "R-26",
+            "party": "Respondent",
+            "title": "Migration Timeline and Industry Standards",
+            "type": "technical",
+            "summary": "Migration timeline documentation and expert testimony on industry-standard transition periods"
         }
     ]
 
@@ -2462,8 +3445,12 @@ def main():
     # Render the HTML in Streamlit
     st.title("TechStart Inc. v. MegaCorp Ltd.")
     
-    # Add search bar under title
-    search_query = st.text_input("", placeholder="Search arguments, facts, evidence...", label_visibility="collapsed", key="main_search")
+    # Add search bar with button under title
+    col1, col2 = st.columns([6, 1])
+    with col1:
+        search_query = st.text_input("", placeholder="Search arguments, facts, evidence...", label_visibility="collapsed", key="main_search")
+    with col2:
+        st.button("🔍 Search", type="primary", use_container_width=True)
     components.html(html_content, height=950, width=1400, scrolling=True)
 
 if __name__ == "__main__":

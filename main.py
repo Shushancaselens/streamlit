@@ -15,14 +15,14 @@ st.markdown("""
         padding-right: 0rem;
         max-width: none;
     }
-    /* Use #4D68F9 as primary color */
+    /* Use #3B82F6 as primary color */
     .stButton > button[kind="primary"] {
-        background-color: #4D68F9;
-        border-color: #4D68F9;
+        background-color: #3B82F6;
+        border-color: #3B82F6;
     }
     .stButton > button[kind="primary"]:hover {
-        background-color: #3D58E9;
-        border-color: #3D58E9;
+        background-color: #2563EB;
+        border-color: #2563EB;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1971,7 +1971,7 @@ def main():
                 <path d="M174.049 0.257812H0V174.258H174.049V0.257812Z" fill="white"/>
               </mask>
               <g mask="url(#whatsapp-mask)">
-                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#4D68F9"/>
+                <path d="M136.753 0.257812H37.2963C16.6981 0.257812 0 16.9511 0 37.5435V136.972C0 157.564 16.6981 174.258 37.2963 174.258H136.753C157.351 174.258 174.049 157.564 174.049 136.972V37.5435C174.049 16.9511 157.351 0.257812 136.753 0.257812Z" fill="#3B82F6"/>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M137.367 54.0014C126.648 40.3105 110.721 32.5723 93.3045 32.5723C63.2347 32.5723 38.5239 57.1264 38.5239 87.0377C38.5239 96.9229 41.1859 106.155 45.837 114.103L45.6925 113.966L37.918 141.957L65.5411 133.731C73.8428 138.579 83.5458 141.355 93.8997 141.355C111.614 141.355 127.691 132.723 137.664 119.628L114.294 101.621C109.53 108.467 101.789 112.187 93.4531 112.187C79.4603 112.187 67.9982 100.877 67.9982 87.0377C67.9982 72.9005 79.6093 61.7396 93.751 61.7396C102.236 61.7396 109.679 65.9064 114.294 72.3052L137.367 54.0014Z" fill="white"/>
               </g>
             </svg>
@@ -2128,7 +2128,7 @@ def main():
             }}
             
             .claimant-color {{
-                color: #4D68F9;
+                color: #3B82F6;
             }}
             
             .respondent-color {{
@@ -2145,8 +2145,8 @@ def main():
             }}
             
             .claimant-badge {{
-                background-color: rgba(77, 104, 249, 0.1);
-                color: #4D68F9;
+                background-color: rgba(59, 130, 246, 0.1);
+                color: #3B82F6;
             }}
             
             .respondent-badge {{
@@ -2193,8 +2193,8 @@ def main():
             }}
             
             .caselaw-block {{
-                background-color: #f0f3ff;
-                border-left: 3px solid #4D68F9;
+                background-color: #EFF6FF;
+                border-left: 3px solid #3B82F6;
                 padding: 10px 12px;
                 margin-bottom: 12px;
                 border-radius: 0 4px 4px 0;
@@ -2400,8 +2400,8 @@ def main():
             }}
             
             .tab-button.active {{
-                border-bottom: 2px solid #4D68F9;
-                color: #4D68F9;
+                border-bottom: 2px solid #3B82F6;
+                color: #3B82F6;
                 font-weight: 500;
             }}
             
@@ -2424,9 +2424,9 @@ def main():
             }}
             
             .view-toggle button.active {{
-                background-color: #4D68F9;
+                background-color: #3B82F6;
                 color: white;
-                border-color: #4D68F9;
+                border-color: #3B82F6;
             }}
             
             .view-toggle button:first-child {{
@@ -2491,16 +2491,16 @@ def main():
                 <!-- Direct inline buttons for view toggling -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div id="party-buttons" style="display: flex; gap: 5px;">
-                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 8px;">Both Parties</button>
+                        <button id="both-btn" onclick="changePartyView('both')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #3B82F6; color: white; cursor: pointer; border-radius: 8px;">Both Parties</button>
                         
                         <button id="app-btn" onclick="changePartyView('claimant')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; border-radius: 8px;">Claimant Only</button>
                         
                         <button id="resp-btn" onclick="changePartyView('respondent')" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; color: black; cursor: pointer; border-radius: 8px;">Respondent Only</button>
                     </div>
                     <div style="display: flex; gap: 20px; align-items: center;">
-                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #4D68F9; color: white; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
+                        <button id="detailed-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #3B82F6; color: white; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='block'; document.getElementById('table-view').style.display='none'; this.style.backgroundColor='#3B82F6'; this.style.color='white'; document.getElementById('table-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('table-view-btn').style.color='black';">Detailed View</button>
                         
-                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#4D68F9'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
+                        <button id="table-view-btn" style="padding: 8px 16px; border: 1px solid #e2e8f0; background-color: #f7fafc; cursor: pointer; border-radius: 8px;" onclick="document.getElementById('detailed-view').style.display='none'; document.getElementById('table-view').style.display='block'; this.style.backgroundColor='#3B82F6'; this.style.color='white'; document.getElementById('detailed-view-btn').style.backgroundColor='#f7fafc'; document.getElementById('detailed-view-btn').style.color='black';">Table View</button>
                     </div>
                 </div>
                 
@@ -2620,15 +2620,15 @@ def main():
                 container.className = '';
                 
                 if (view === 'both') {{
-                    bothBtn.style.backgroundColor = '#4D68F9';
+                    bothBtn.style.backgroundColor = '#3B82F6';
                     bothBtn.style.color = 'white';
                     // Default view - no special class needed
                 }} else if (view === 'claimant') {{
-                    appBtn.style.backgroundColor = '#4D68F9';
+                    appBtn.style.backgroundColor = '#3B82F6';
                     appBtn.style.color = 'white';
                     container.className = 'claimant-only';
                 }} else if (view === 'respondent') {{
-                    respBtn.style.backgroundColor = '#4D68F9';
+                    respBtn.style.backgroundColor = '#3B82F6';
                     respBtn.style.color = 'white';
                     container.className = 'respondent-only';
                 }}

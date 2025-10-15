@@ -39,7 +39,7 @@ st.markdown("""
     .stTextInput {
         height: 40px !important;
     }
-    /* Make search button 40px */
+    /* Make search button 46px */
     .stButton > button {
         height: 40px !important;
         padding: 8px 24px !important;

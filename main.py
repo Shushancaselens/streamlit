@@ -595,15 +595,6 @@ def main():
         
         st.markdown("---")
         
-        # Documents section
-        st.markdown("### 📄 Documents")
-        
-        # Saved Searches expander
-        with st.expander("Saved Searches", expanded=False):
-            st.info("No saved searches yet")
-        
-        st.markdown("---")
-        
         # Search Filters section
         st.markdown("### Search Filters")
         

@@ -1,386 +1,264 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
+import time
+import random
 
-# Set page configuration
+# Page configuration
 st.set_page_config(
-    page_title="CaseLens Timeline",
+    page_title="Caselens - Legal Research Platform",
+    page_icon="⚖️",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="expanded"
 )
 
-# Load the data directly in Python without JSON parsing
-@st.cache_data
-def load_data():
-    # Create the data structure directly
-    data = {
-        "events": [
+# Initialize session state
+if 'search_history' not in st.session_state:
+    st.session_state.search_history = []
+if 'bookmarked_cases' not in st.session_state:
+    st.session_state.bookmarked_cases = []
+if 'current_case' not in st.session_state:
+    st.session_state.current_case = None
+
+# Sample case database
+CASES_DATABASE = [
+    {
+        "id": "CAS_2013_A_3165",
+        "title": "CAS 2013/A/3165",
+        "date": "2014-01-14",
+        "procedure": "Appeal Arbitration",
+        "matter": "Contract",
+        "category": "Award",
+        "outcome": "Dismissed",
+        "sport": "Football",
+        "appellants": "FC Volyn",
+        "respondents": "Issa Ndoye",
+        "president": "Petros Mavroidis",
+        "arbitrator1": "Geraint Jones",
+        "arbitrator2": "Raymond Hack",
+        "summary": "The case involves a contractual dispute between FC Volyn, a Ukrainian football club, and Issa Ndoye, a Senegalese footballer. Ndoye terminated his employment with FC Volyn in June 2011, claiming unpaid salary and contract breach, subsequently bringing a claim before FIFA's Dispute Resolution Chamber (DRC), which ruled in his favor, ordering the club to pay outstanding remuneration and compensation. FC Volyn appealed to the CAS, arguing that Ndoye had no just cause due to his alleged breaches (mainly late returns to training), while Ndoye countered that non-payment constituted just cause and sought increased compensation. Both parties debated applicable law and timing of appeals/counterclaims.",
+        "court_reasoning": "The CAS panel found that FIFA regulations take precedence over national law due to the contract's terms and parties' submission to FIFA/CAS jurisdiction. The Club's repeated failure to pay Ndoye's salary for over three months was a substantial breach, constituting just cause for contract termination. Alleged late returns by Ndoye did not nullify this breach, and there was no evidence he agreed to delay payment. Counterclaims by respondents were inadmissible per CAS procedural rules. The compensation set by the FIFA DRC was appropriate.",
+        "case_outcome": "The appeal by FC Volyn was dismissed and the FIFA DRC's decision was upheld: FC Volyn must pay Ndoye USD 299,200 in outstanding remuneration and USD 495,000 as compensation. Ndoye's counterclaim for additional damages was ruled inadmissible, and all other requests were dismissed. The panel confirmed that the time limit for appeal had been respected and that FIFA regulations (with Swiss law supplementary) applied.",
+        "relevant_passages": [
             {
-                "date": "1965-00-00",
-                "end_date": None,
-                "event": "Martineek Herald began publishing reliable everyday news.",
-                "source_text": [
-                    "FDI Moot CENTER FOR INTERNATIONAL LEGAL STUDIES <LINE: 415> CLAIMANT'S EXHIBIT C9 – Martineek Herald Article of 19 December 2022 VOL. XXIX NO. 83 MONDAY, DECEMBER 19, 2022 MARTINEEK HERALD RELIABLE EVERYDAY NEWS"
-                ],
-                "page": ["1"],
-                "pdf_name": ["CLAIMANT'S EXHIBIT C9 – Martineek Herald Article of 19 December 2022.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"]
+                "excerpt": "Page 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case.",
+                "full_context": "Page 15 - 77. The concept of just cause has been extensively developed through CAS jurisprudence and FIFA regulations. The FIFA Regulations on the Status and Transfer of Players (RSTP) provide the foundational framework for determining when a party may terminate a contract.\n\nPage 15 - 78. The Commentary on the RSTP states the following with regard to the concept of 'just cause': 'The definition of just cause and whether just cause exists shall be established in accordance with the merits of each particular case. Behaviour that is in violation of the terms of an employment contract cannot justify unilateral termination by the other party if such behaviour is of minor importance.'\n\nPage 15 - 79. Furthermore, the Commentary emphasizes that just cause must be of such gravity that the injured party cannot reasonably be expected to continue the employment relationship. This standard has been consistently applied by CAS panels in determining whether contract termination was justified."
             },
             {
-                "date": "2007-12-28",
-                "end_date": None,
-                "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                "source_text": [
-                    "29.12.2007 Official Journal of the Republic of Martineek L 425 LAW DECREE 53/20 07 of 28 December 2007 ON THE CONTROL OF FOREIGN TRADE IN DEFENCE AND DUAL-USE MATERIAL"
-                ],
-                "page": ["1"],
-                "pdf_name": ["RESPONDENT'S EXHIBIT R1 - Law Decree 53:2007 on the Control of Foreign Trade in Defence and Dual-Use Material.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [],
-                "respondent_arguments": [
-                    {
-                        "fragment_start": "LAW DECREE",
-                        "fragment_end": "Claimant's investment.",
-                        "page": "13",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "LAW DECREE 53/2007,11 that is, Dual-Use Regulation, has been promulgated on 28 December 2007, which is the basis for judging the legitimacy of Claimant's investment."
-                    },
-                    {
-                        "fragment_start": "According to",
-                        "fragment_end": "Dual-Use Material33",
-                        "page": "17",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "According to the Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material33"
-                    },
-                    {
-                        "fragment_start": "It was",
-                        "fragment_end": "Dual-Use Material35",
-                        "page": "17",
-                        "event": "Issuance of Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material.",
-                        "source_text": "It was clearly stated in the Law Decree 53/2007 on the Control of Foreign Trade in Defence and Dual-Use Material35"
-                    }
-                ]
+                "excerpt": "Page 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract.",
+                "full_context": "Page 22 - 88. The obligation to pay salary is a fundamental contractual duty in employment relationships. When an employer fails to meet this basic obligation, it strikes at the heart of the employment contract.\n\nPage 22 - 89. Non-payment of salary constitutes a breach of contract which may give rise to just cause for the employee to terminate the employment contract. The CAS has consistently held that when salary payments are delayed for a period exceeding two to three months, this constitutes a substantial breach sufficient to justify termination.\n\nPage 22 - 90. However, the employee must demonstrate that they have given the employer reasonable opportunity to remedy the breach and that the non-payment was not justified by any countervailing circumstances or legitimate disputes over the amount owed."
             },
             {
-                "date": "2013-06-28",
-                "end_date": None,
-                "event": "The Martineek-Albion BIT was ratified.",
-                "source_text": [
-                    "rtineek and Albion terminated the 1993 Agreement on Encouragement and Reciprocal Protection of Investments between the Republic of Martineek and the Federation of Albion and replaced it with a revised Agreement on Encouragement and Reciprocal Protection of Investments between the Republic of Martineek and the Federation of Albion (the 'Martineek-Albion BIT'). The Martineek-Albion BIT was ratified on"
-                ],
-                "page": ["1"],
-                "pdf_name": ["Statement of Uncontested Facts.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [
-                    {
-                        "fragment_start": "Martineek and",
-                        "fragment_end": "28 June 2013.",
-                        "page": "16",
-                        "event": "The Martineek-Albion BIT was ratified.",
-                        "source_text": "Martineek and Albion ratified the BIT on 28 June 2013."
-                    }
-                ],
-                "respondent_arguments": []
-            },
-            {
-                "date": "2016-00-00",
-                "end_date": None,
-                "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                "source_text": [
-                    "6. In late 2016, with technological advances in the Archipelago, Martineek became one of the world's leading manufacturers of industrial robots."
-                ],
-                "page": ["1"],
-                "pdf_name": ["Statement of Uncontested Facts.pdf"],
-                "doc_name": ["name of the document"],
-                "doc_sum": ["summary of the document"],
-                "claimant_arguments": [
-                    {
-                        "fragment_start": "In late",
-                        "fragment_end": "competitive purposes",
-                        "page": "19",
-                        "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                        "source_text": "In late 2016, Martineek became one of the world's leading manufacturers of industrial robots,37 while the rapid development in technology of Albion might be in advance of Martineek's entities. Respondent's actions were more likely for competitive purposes"
-                    }
-                ],
-                "respondent_arguments": [
-                    {
-                        "fragment_start": "Through a",
-                        "fragment_end": "robotic industry.",
-                        "page": "6",
-                        "event": "Martineek became one of the world's leading manufacturers of industrial robots.",
-                        "source_text": "Through a raft of major reforms, Martineek made significant efforts to attract foreign investments and became a global leader in the robotic industry."
-                    }
-                ]
+                "excerpt": "Page 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship.",
+                "full_context": "Page 31 - 104. In assessing whether just cause exists, CAS panels must weigh all relevant circumstances, including the nature and severity of the breach, the conduct of both parties, and the overall context of the contractual relationship.\n\nPage 31 - 105. The consistent jurisprudence of CAS establishes that just cause must be of such severity that the injured party cannot reasonably be expected to continue the contractual relationship. This objective test requires careful analysis of whether a reasonable person in the same position would consider the breach sufficiently serious to warrant termination.\n\nPage 31 - 106. The Panel notes that minor infractions, isolated incidents, or breaches that can be readily remedied do not typically constitute just cause. The breach must fundamentally undermine the basis of the contractual relationship and make continued performance unreasonable or impossible."
             }
-        ]
+        ],
+        "similarity_score": 0.87
     }
-    return data
+]
 
-# Function to parse date
-def parse_date(date_str):
-    if not date_str or date_str == "null":
-        return None
+# Custom CSS
+st.markdown("""
+<style>
+    .main-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
     
-    # Handle cases like "2016-00-00"
-    if "-00-00" in date_str:
-        date_str = date_str.replace("-00-00", "-01-01")
-    elif "-00" in date_str:
-        date_str = date_str.replace("-00", "-01")
+    .logo-icon {
+        background-color: #4f46e5;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
     
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
-    except:
-        return None
+    .question-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .sidebar-section {
+        margin-bottom: 25px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-# Function to format date for display
-def format_date(date_str):
-    date = parse_date(date_str)
-    if not date:
-        return "Unknown date"
+def search_cases(query, max_results=20, similarity_threshold=0.5):
+    """Simulate case search with relevant results"""
+    relevant_cases = []
+    for case in CASES_DATABASE:
+        if query.lower() in case['summary'].lower() or query.lower() in case['court_reasoning'].lower():
+            if case['similarity_score'] >= similarity_threshold:
+                relevant_cases.append(case)
     
-    # If we have only the year (original had -00-00)
-    if "-00-00" in date_str:
-        return date.strftime("%Y")
-    # If we have year and month (original had -00)
-    elif "-00" in date_str:
-        return date.strftime("%B %Y")
-    # Full date
-    else:
-        return date.strftime("%d %B %Y")
+    return relevant_cases[:max_results]
 
-# Function to generate timeline text for copying
-def generate_timeline_text(events):
-    text = ""
-    for event in sorted(events, key=lambda x: parse_date(x["date"]) or datetime.min):
-        # Format the event text with date in bold
-        date_formatted = format_date(event["date"])
-        text += f"**{date_formatted}** {event['event']}[1]\n\n"
-        
-        # Sources for footnote
-        sources = []
-        if event.get("claimant_arguments"):
-            sources.extend([f"{arg['fragment_start']}... (Page {arg['page']})" for arg in event["claimant_arguments"]])
-        if event.get("respondent_arguments"):
-            sources.extend([f"{arg['fragment_start']}... (Page {arg['page']})" for arg in event["respondent_arguments"]])
-        if event.get("pdf_name"):
-            sources.extend(event["pdf_name"])
-        
-        if sources:
-            text += f"[1] {'; '.join(sources)}\n\n"
+# Sidebar Navigation
+with st.sidebar:
+    # Logo
+    st.markdown("""
+    <div class="main-header">
+        <span class="logo-icon">C</span>
+        <h2 style="margin: 0; color: #1f2937;">caselens</h2>
+    </div>
+    """, unsafe_allow_html=True)
     
-    return text
+    st.markdown("---")
+    
+    # Navigation
+    st.markdown("### Navigation")
+    page = st.radio(
+        "",
+        ["🔍 Search", "📄 Documents", "📊 Analytics", "🔖 Bookmarks", "👤 Admin"],
+        index=0,
+        label_visibility="collapsed"
+    )
+    
+    st.markdown("---")
+    
+    if page == "🔍 Search":
+        # Search Options
+        st.markdown("### Search Options")
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Max Results**")
+            max_results = st.number_input("", min_value=1, max_value=100, value=20, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with st.container():
+            st.markdown('<div class="sidebar-section">', unsafe_allow_html=True)
+            st.markdown("**Similarity Threshold**")
+            similarity = st.slider("", min_value=0.0, max_value=1.0, value=0.55, step=0.01, label_visibility="collapsed")
+            st.write(f"Current value: {similarity}")
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        show_similarity = st.checkbox("Show Similarity Scores ⓘ")
 
-# Improved search function that checks all relevant fields
-def search_event(event, query):
-    if not query:
-        return True
+# Main Content Area
+if page == "🔍 Search":
+    # Search Interface
+    st.markdown("### Enter your search query")
+    search_query = st.text_input(
+        "", 
+        value="just cause", 
+        placeholder="Enter your search query", 
+        label_visibility="collapsed",
+        key="search_input_updated"
+    )
     
-    query = query.lower()
-    
-    # Check main event text
-    if query in event["event"].lower():
-        return True
-    
-    # Check source texts
-    for source in event.get("source_text", []):
-        if query in source.lower():
-            return True
-    
-    # Check document names
-    for doc in event.get("pdf_name", []):
-        if query in doc.lower():
-            return True
-    
-    # Check claimant arguments
-    for arg in event.get("claimant_arguments", []):
-        if query in arg.get("source_text", "").lower():
-            return True
-    
-    # Check respondent arguments
-    for arg in event.get("respondent_arguments", []):
-        if query in arg.get("source_text", "").lower():
-            return True
-            
-    return False
-
-# Main app function
-def main():
-    # Load data
-    data = load_data()
-    events = data["events"]
-    
-    # Sidebar - Logo and title
-    with st.sidebar:
-        st.title("🔍 CaseLens")
-        st.divider()
-        
-        # Search with improved explanation
-        st.subheader("Search Events")
-        search_query = st.text_input("", placeholder="Search across all event data...", label_visibility="collapsed")
-        if search_query:
-            st.caption("Searching in event descriptions, document names, and all arguments")
-        
-        # Date Range
-        st.subheader("Date Range")
-        
-        # Get min and max dates
-        valid_dates = [parse_date(event["date"]) for event in events if parse_date(event["date"])]
-        min_date = min(valid_dates) if valid_dates else datetime(1965, 1, 1)
-        max_date = max(valid_dates) if valid_dates else datetime(2022, 1, 1)
-        
-        start_date = st.date_input("Start Date", min_date)
-        end_date = st.date_input("End Date", max_date)
-    
-    # Main content area
-    st.title("Desert Line Projects (DLP) and The Republic of Yemen")
-    
-    # Button to copy timeline
-    if st.button("📋 Copy Timeline", type="primary"):
-        timeline_text = generate_timeline_text(events)
-        st.code(timeline_text, language="markdown")
-        st.download_button(
-            label="Download Timeline as Text",
-            data=timeline_text,
-            file_name="timeline.md",
-            mime="text/markdown",
-        )
-    
-    # Filter events - IMPROVED SEARCH
-    filtered_events = events.copy()
-    
-    # Apply search filter
     if search_query:
-        filtered_events = [event for event in filtered_events if search_event(event, search_query)]
-        st.success(f"Found {len(filtered_events)} events matching '{search_query}'")
-    
-    # Apply date filter
-    filtered_events = [
-        event for event in filtered_events
-        if parse_date(event["date"]) and start_date <= parse_date(event["date"]).date() <= end_date
-    ]
-    
-    # Sort events by date
-    filtered_events = sorted(filtered_events, key=lambda x: parse_date(x["date"]) or datetime.min)
-    
-    # Display events
-    if not filtered_events:
-        st.warning("No events match your search criteria. Try adjusting your search or date range.")
-    
-    for event in filtered_events:
-        date_formatted = format_date(event["date"])
+        # Perform search
+        results = search_cases(search_query, max_results, similarity)
         
-        # Create expander for each event
-        with st.expander(f"{date_formatted}: {event['event']}"):
-            # Calculate citation counts
-            claimant_count = len(event.get("claimant_arguments", []))
-            respondent_count = len(event.get("respondent_arguments", []))
-            doc_count = len(event.get("pdf_name", []))
-            total_count = claimant_count + respondent_count + doc_count
+        # Search results summary
+        st.success(f"Found {len(results)} results")
+        
+        # Display search results with clean formatting
+        for case_index, case in enumerate(results):
+            # Clean case header with bold descriptors
+            case_title = f"**{case['title']}** | 📅 **Date:** {case['date']} | 👥 **Parties:** {case['appellants']} v. {case['respondents']} | 📝 **Matter:** {case['matter']} | 📄 **Outcome:** {case['outcome']} | 🏅 **Sport:** {case['sport']}"
             
-            # Determine if each party has addressed this event
-            has_claimant = claimant_count > 0
-            has_respondent = respondent_count > 0
-            
-            # Citation counter and badges using pure Streamlit
-            st.divider()
-            
-            # Citation counter
-            col1, col2 = st.columns([1, 4])
-            with col1:
-                st.metric("Citations", total_count)
-            
-            with col2:
-                st.write("**Addressed by:**")
+            with st.expander(case_title, expanded=(case_index == 0)):
                 
-                # Use pure Streamlit components for badges
-                badge_cols = st.columns(2)
-                with badge_cols[0]:
-                    if has_claimant:
-                        st.info("Claimant")
-                    else:
-                        st.text("Claimant")
-                with badge_cols[1]:
-                    if has_respondent:
-                        st.error("Respondent")
-                    else:
-                        st.text("Respondent")
-            
-            st.divider()
-            
-            # Supporting Documents section
-            if event.get("pdf_name") or event.get("source_text"):
-                st.subheader("📄 Supporting Documents")
+                st.markdown(f"""
+                **Procedure:** {case['procedure']}  
+                **Category:** {case['category']}  
+                **President:** {case['president']} | **Arbitrators:** {case['arbitrator1']}, {case['arbitrator2']}
+                """)
                 
-                for i, pdf_name in enumerate(event.get("pdf_name", [])):
-                    source_text = event.get("source_text", [""])[i] if i < len(event.get("source_text", [])) else ""
+                # Relevant Passages - Most important, moved to top
+                st.markdown("### **Relevant Passages**")
+                for passage_index, passage in enumerate(case['relevant_passages']):
+                    passage_unique_key = f"show_more_{case['id']}_{passage_index}_{case_index}"
                     
-                    # Use color to indicate search matches
-                    with st.container():
-                        if search_query and search_query.lower() in pdf_name.lower():
-                            st.success(f"**{pdf_name}**")
-                        else:
-                            st.write(f"**{pdf_name}**")
+                    # Extract page reference and content for excerpt (first page)
+                    excerpt_text = passage['excerpt']
+                    if excerpt_text.startswith('Page'):
+                        if '.' in excerpt_text:
+                            page_ref = excerpt_text.split(' - ')[0]
+                            content = excerpt_text.split('.', 1)[1]
                             
-                        if search_query and search_query.lower() in source_text.lower():
-                            st.success(source_text)
-                        else:
-                            st.caption(source_text)
+                            # Put page and checkbox on same line
+                            show_more = st.checkbox(f"show more | **{page_ref}**", key=passage_unique_key)
                             
-                        st.button("Open Document", key=f"doc_{event['date']}_{i}")
-                    st.divider()
-            
-            # Submissions section
-            st.subheader("📝 Submissions")
-            
-            # Two-column layout for claimant and respondent
-            claimant_col, respondent_col = st.columns(2)
-            
-            # Claimant submissions - with Streamlit colors
-            with claimant_col:
-                # Use info color for claimant
-                st.info("**Claimant**")
-                
-                if event.get("claimant_arguments"):
-                    for idx, arg in enumerate(event["claimant_arguments"]):
-                        source_text = arg.get('source_text', '')
-                        
-                        with st.container():
-                            st.write(f"**Page {arg['page']}**")
-                            
-                            # Highlight matched search terms with success color
-                            if search_query and search_query.lower() in source_text.lower():
-                                st.success(source_text)
+                            if show_more:
+                                st.success(passage['full_context'])
                             else:
-                                st.caption(source_text)
-                                
-                        st.divider()
-                else:
-                    st.caption("No claimant submissions")
-            
-            # Respondent submissions - with Streamlit colors
-            with respondent_col:
-                # Use error color for respondent
-                st.error("**Respondent**")
+                                st.success(content.strip())
+                        else:
+                            st.success(excerpt_text)
+                    else:
+                        show_more = st.checkbox("show more", key=passage_unique_key)
+                        if show_more:
+                            st.success(passage['full_context'])
+                        else:
+                            st.success(excerpt_text)
                 
-                if event.get("respondent_arguments"):
-                    for idx, arg in enumerate(event["respondent_arguments"]):
-                        source_text = arg.get('source_text', '')
-                        
-                        with st.container():
-                            st.write(f"**Page {arg['page']}**")
+                # Summary
+                st.info(f"**Summary:** {case['summary']}")
+                
+                # Court Reasoning
+                st.warning(f"**Court Reasoning:** {case['court_reasoning']}")
+                
+                # Case Outcome
+                with st.container():
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f0f2f6; 
+                        border-radius: 0.5rem; 
+                        padding: 0.75rem 1rem;
+                        margin: 0.5rem 0 1rem 0;
+                        line-height: 1.6;
+                    ">
+                        <strong>Case Outcome:</strong> {case['case_outcome']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # AI Question Interface
+                st.markdown("---")
+                st.markdown("**Ask a Question About This Case**")
+                question_unique_key = f"ai_question_{case['id']}_{case_index}"
+                user_question = st.text_area(
+                    "",
+                    placeholder="e.g., What was the main legal issue?",
+                    key=question_unique_key,
+                    label_visibility="collapsed"
+                )
+                
+                button_unique_key = f"ask_ai_{case['id']}_{case_index}"
+                if st.button("Ask Question", key=button_unique_key):
+                    if user_question:
+                        with st.spinner("Analyzing case..."):
+                            time.sleep(2)
+                            ai_answer = f"Based on the case details, this relates to {case['matter'].lower()} issues in sports arbitration."
                             
-                            # Highlight matched search terms with success color
-                            if search_query and search_query.lower() in source_text.lower():
-                                st.success(source_text)
-                            else:
-                                st.caption(source_text)
-                                
-                        st.divider()
-                else:
-                    st.caption("No respondent submissions")
+                            st.markdown(f"""
+                            <div class="question-box">
+                                <strong>AI Answer:</strong><br>
+                                {ai_answer}
+                            </div>
+                            """, unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+elif page == "📊 Analytics":
+    st.title("📊 Legal Analytics Dashboard")
+    st.info("Analytics features coming soon.")
+
+elif page == "🔖 Bookmarks":
+    st.title("🔖 Bookmarked Cases")
+    st.info("No bookmarked cases yet.")
+
+elif page == "📄 Documents":
+    st.title("📄 Document Library")
+    st.info("Upload legal documents for analysis.")
+
+elif page == "👤 Admin":
+    st.title("👤 Admin Dashboard")
+    st.info("Admin features coming soon.")

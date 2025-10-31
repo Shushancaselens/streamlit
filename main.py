@@ -72,12 +72,20 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Case Details
-st.markdown('<div class="case-detail"><strong>Parties:</strong> Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje</div>', unsafe_allow_html=True)
-st.markdown('<div class="case-detail"><strong>Procedure:</strong> Appeal Arbitration Procedure</div>', unsafe_allow_html=True)
-st.markdown('<div class="case-detail"><strong>Category:</strong> Award</div>', unsafe_allow_html=True)
-st.markdown('<div class="case-detail"><strong>President:</strong> Olivier Carrard</div>', unsafe_allow_html=True)
-st.markdown('<div class="case-detail"><strong>Arbitrators:</strong> Unknown, Unknown</div>', unsafe_allow_html=True)
+# Case Details - Compact Layout
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.text("Parties:")
+    st.text("Procedure:")
+    st.text("Category:")
+    st.text("President:")
+    st.text("Arbitrators:")
+with col2:
+    st.text("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    st.text("Appeal Arbitration Procedure")
+    st.text("Award")
+    st.text("Olivier Carrard")
+    st.text("Unknown, Unknown")
 
 # Buttons
 col1, col2, col3 = st.columns([1, 1, 10])

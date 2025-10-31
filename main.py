@@ -1,46 +1,40 @@
 import streamlit as st
-import pandas as pd
 
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 
 # Case Header
-st.markdown("### CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
+st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
-# Tags using st.pills (not interactive, just for display)
-st.pills("Status", ["Contract", "Dismissed", "Football"], selection_mode="multi", default=["Contract", "Dismissed", "Football"], disabled=True)
+# Tags - Simple and clean
+col1, col2, col3 = st.columns([1, 1, 8])
+with col1:
+    st.success("✓ Contract")
+with col2:
+    st.error("✗ Dismissed")
+with col3:
+    st.info("⚽ Football")
 
-# Case Details in a bordered container - Compact and Beautiful
+# Case Details - Ultra compact with border
 with st.container(border=True):
-    col1, col2 = st.columns([1, 3])
-    
-    with col1:
-        st.markdown("**Parties:**")
-        st.markdown("**Procedure:**")
-        st.markdown("**Category:**")
-        st.markdown("**President:**")
-        st.markdown("**Arbitrators:**")
-    
-    with col2:
-        st.markdown("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
-        st.markdown("Appeal Arbitration Procedure")
-        st.markdown("Award")
-        st.markdown("Olivier Carrard")
-        st.markdown("Unknown, Unknown")
+    st.markdown("""
+    **Parties:** Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje  
+    **Procedure:** Appeal Arbitration Procedure  
+    **Category:** Award  
+    **President:** Olivier Carrard  
+    **Arbitrators:** Unknown, Unknown
+    """)
 
 # Buttons
-col1, col2 = st.columns([1, 1])
+col1, col2 = st.columns(2)
 with col1:
-    if st.button("📄 PDF", use_container_width=True):
-        st.info("PDF download would be triggered here")
+    st.button("📄 PDF", use_container_width=True)
 with col2:
-    if st.button("💾 Save", use_container_width=True):
-        st.success("Case saved!")
+    st.button("💾 Save", use_container_width=True)
 
-# Relevant Passages Section
-st.markdown("### Relevant Passages")
+# Relevant Passages
+st.subheader("Relevant Passages")
 
-# Expandable section
 with st.expander("Show adjacent sections | Page 22 | Section: a.", expanded=True):
     st.markdown("""
     **a. Termination of the Contract without just cause 90.** Article 14 FIFA RSTP provides that a contract may be terminated by either party 
@@ -63,5 +57,4 @@ with st.expander("Show adjacent sections | Page 22 | Section: a.", expanded=True
     A contract may be terminated with just cause where there is objective criteria [...] and there is a valid reason to do so.
     """)
 
-# Footer
 st.caption("CAS Case Management System")

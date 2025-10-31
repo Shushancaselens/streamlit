@@ -8,17 +8,7 @@ st.markdown("""
 <style>
     /* Make container content more compact */
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.3rem;
-    }
-    /* Smaller text in containers */
-    [data-testid="stVerticalBlock"] h5 {
-        font-size: 0.7rem;
-        margin: 0;
-        padding: 0;
-    }
-    /* Reduce caption size */
-    [data-testid="stCaptionContainer"] {
-        font-size: 0.8rem;
+        gap: 0.4rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -35,35 +25,38 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Improved Card Layout (Compact & Beautiful)
+# Case Details - Improved Card Layout (No Scrolling, Auto Height)
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    with st.container(height=60, border=True):
-        st.markdown("##### PARTIES")
-        st.caption("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    with st.container(border=True):
+        st.markdown("**PARTIES**")
+        st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
     
 with col2:
-    with st.container(height=60, border=True):
-        st.markdown("##### PROCEDURE")
-        st.caption("Appeal Arbitration Procedure")
+    with st.container(border=True):
+        st.markdown("**PROCEDURE**")
+        st.write("Appeal Arbitration Procedure")
 
 with col3:
-    with st.container(height=60, border=True):
-        st.markdown("##### CATEGORY")
-        st.caption("Award")
+    with st.container(border=True):
+        st.markdown("**CATEGORY**")
+        st.write("Award")
 
 col4, col5, col6 = st.columns(3)
 
 with col4:
-    with st.container(height=60, border=True):
-        st.markdown("##### PRESIDENT")
-        st.caption("Olivier Carrard")
+    with st.container(border=True):
+        st.markdown("**PRESIDENT**")
+        st.write("Olivier Carrard")
 
 with col5:
-    with st.container(height=60, border=True):
-        st.markdown("##### ARBITRATORS")
-        st.caption("Unknown, Unknown")
+    with st.container(border=True):
+        st.markdown("**ARBITRATORS**")
+        st.write("Unknown, Unknown")
+
+with col6:
+    st.write("")  # Empty for visual balance
 
 
 # Buttons

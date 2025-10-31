@@ -53,6 +53,24 @@ st.markdown("""
         border-radius: 8px;
         border-left: 4px solid #0066cc;
     }
+    .compact-details {
+        font-size: 13px;
+        line-height: 1.3;
+        margin: 5px 0;
+    }
+    .compact-details strong {
+        font-weight: 600;
+        display: inline-block;
+        width: 100px;
+    }
+    /* Reduce padding in Streamlit elements */
+    .element-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    div[data-testid="stVerticalBlock"] > div {
+        gap: 0.2rem !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -72,20 +90,16 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Case Details - Compact Layout
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.text("Parties:")
-    st.text("Procedure:")
-    st.text("Category:")
-    st.text("President:")
-    st.text("Arbitrators:")
-with col2:
-    st.text("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
-    st.text("Appeal Arbitration Procedure")
-    st.text("Award")
-    st.text("Olivier Carrard")
-    st.text("Unknown, Unknown")
+# Case Details - Ultra Compact
+st.markdown("""
+<div class="compact-details">
+<strong>Parties:</strong> Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje<br>
+<strong>Procedure:</strong> Appeal Arbitration Procedure<br>
+<strong>Category:</strong> Award<br>
+<strong>President:</strong> Olivier Carrard<br>
+<strong>Arbitrators:</strong> Unknown, Unknown
+</div>
+""", unsafe_allow_html=True)
 
 # Buttons
 col1, col2, col3 = st.columns([1, 1, 10])

@@ -15,15 +15,40 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Ultra compact with border
-with st.container(border=True):
-    st.markdown("""
-    **Parties:** Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje  
-    **Procedure:** Appeal Arbitration Procedure  
-    **Category:** Award  
-    **President:** Olivier Carrard  
-    **Arbitrators:** Unknown, Unknown
-    """)
+# Case Details - Beautiful UI with native Streamlit
+st.markdown("---")
+
+# Option 1: Using columns with containers for a card-like layout
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    with st.container(border=True):
+        st.caption("PARTIES")
+        st.markdown("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    
+with col2:
+    with st.container(border=True):
+        st.caption("PROCEDURE")
+        st.markdown("Appeal Arbitration Procedure")
+
+with col3:
+    with st.container(border=True):
+        st.caption("CATEGORY")
+        st.markdown("Award")
+
+col4, col5, col6 = st.columns([1, 1, 1])
+
+with col4:
+    with st.container(border=True):
+        st.caption("PRESIDENT")
+        st.markdown("Olivier Carrard")
+
+with col5:
+    with st.container(border=True):
+        st.caption("ARBITRATORS")
+        st.markdown("Unknown, Unknown")
+
+st.markdown("---")
 
 # Buttons
 col1, col2 = st.columns(2)

@@ -3,16 +3,6 @@ import streamlit as st
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 
-# Custom CSS to reduce spacing
-st.markdown("""
-<style>
-    .compact-container div[data-testid="stVerticalBlock"] > div {
-        gap: 0rem !important;
-        padding: 0rem !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Case Header
 st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
@@ -25,13 +15,37 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Ultra Minimal
+# Case Details - Super Compact
 with st.container(border=True):
-    st.write("**Parties:** Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
-    st.write("**Procedure:** Appeal Arbitration Procedure")
-    st.write("**Category:** Award")
-    st.write("**President:** Olivier Carrard")
-    st.write("**Arbitrators:** Unknown, Unknown")
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("**Parties:**")
+    with col2:
+        st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("**Procedure:**")
+    with col2:
+        st.write("Appeal Arbitration Procedure")
+    
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("**Category:**")
+    with col2:
+        st.write("Award")
+    
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("**President:**")
+    with col2:
+        st.write("Olivier Carrard")
+    
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.write("**Arbitrators:**")
+    with col2:
+        st.write("Unknown, Unknown")
 
 # Buttons
 col1, col2 = st.columns(2)

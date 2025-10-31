@@ -3,125 +3,87 @@ import streamlit as st
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 
-st.title("Different UI Approaches")
-st.markdown("---")
+# Case Header
+st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
-# ============ OPTION 1: Using st.metric() ============
-st.subheader("Option 1: Using st.metric()")
-col1, col2, col3, col4, col5 = st.columns(5)
+# Status Tags
+col1, col2, col3 = st.columns([1, 1, 8])
 with col1:
-    st.metric("Parties", "Samsunspor v. Dja Djedje")
+    st.success("✓ Contract")
 with col2:
-    st.metric("Procedure", "Appeal Arbitration")
+    st.error("✗ Dismissed")
 with col3:
-    st.metric("Category", "Award")
-with col4:
-    st.metric("President", "O. Carrard")
-with col5:
-    st.metric("Arbitrators", "Unknown, Unknown")
+    st.info("⚽ Football")
 
-st.markdown("---")
+# Case Details - Using Custom Badge Tags (MOST COMPACT)
+st.markdown("""
+<style>
+.info-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 4px 8px 4px 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.info-label {
+    font-weight: 700;
+    opacity: 0.9;
+}
+.info-value {
+    opacity: 1;
+    margin-left: 6px;
+}
+.tag-container {
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+</style>
 
-# ============ OPTION 2: Horizontal Layout (All in one row) ============
-st.subheader("Option 2: Single Row with Dividers")
-cols = st.columns(5)
-data = [
-    ("👥 Parties", "Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje"),
-    ("📋 Procedure", "Appeal Arbitration Procedure"),
-    ("🏷️ Category", "Award"),
-    ("👤 President", "Olivier Carrard"),
-    ("⚖️ Arbitrators", "Unknown, Unknown")
-]
-for col, (label, value) in zip(cols, data):
-    with col:
-        st.markdown(f"**{label}**")
-        st.caption(value)
+<div class="tag-container">
+    <span class="info-badge"><span class="info-label">👥 Parties:</span><span class="info-value">Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje</span></span>
+    <span class="info-badge"><span class="info-label">📋 Procedure:</span><span class="info-value">Appeal Arbitration Procedure</span></span>
+    <span class="info-badge"><span class="info-label">🏷️ Category:</span><span class="info-value">Award</span></span>
+    <span class="info-badge"><span class="info-label">👤 President:</span><span class="info-value">Olivier Carrard</span></span>
+    <span class="info-badge"><span class="info-label">⚖️ Arbitrators:</span><span class="info-value">Unknown, Unknown</span></span>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
-
-# ============ OPTION 3: Using Tabs ============
-st.subheader("Option 3: Using Tabs")
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["👥 Parties", "📋 Procedure", "🏷️ Category", "👤 President", "⚖️ Arbitrators"])
-with tab1:
-    st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
-with tab2:
-    st.write("Appeal Arbitration Procedure")
-with tab3:
-    st.write("Award")
-with tab4:
-    st.write("Olivier Carrard")
-with tab5:
-    st.write("Unknown, Unknown")
-
-st.markdown("---")
-
-# ============ OPTION 4: Status Containers ============
-st.subheader("Option 4: Using st.status()")
-col1, col2, col3 = st.columns(3)
+# Buttons
+col1, col2 = st.columns(2)
 with col1:
-    with st.status("Parties", expanded=True):
-        st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    st.button("📄 PDF", use_container_width=True)
 with col2:
-    with st.status("Procedure", expanded=True):
-        st.write("Appeal Arbitration Procedure")
-with col3:
-    with st.status("Category", expanded=True):
-        st.write("Award")
+    st.button("💾 Save", use_container_width=True)
 
-col4, col5, col6 = st.columns(3)
-with col4:
-    with st.status("President", expanded=True):
-        st.write("Olivier Carrard")
-with col5:
-    with st.status("Arbitrators", expanded=True):
-        st.write("Unknown, Unknown")
+# Relevant Passages
+st.subheader("Relevant Passages")
 
-st.markdown("---")
-
-# ============ OPTION 5: Compact Key-Value Pairs ============
-st.subheader("Option 5: Simple Key-Value List")
-with st.container(border=True):
+with st.expander("Show adjacent sections | Page 22 | Section: a.", expanded=True):
     st.markdown("""
-    | Field | Value |
-    |-------|-------|
-    | **Parties** | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje |
-    | **Procedure** | Appeal Arbitration Procedure |
-    | **Category** | Award |
-    | **President** | Olivier Carrard |
-    | **Arbitrators** | Unknown, Unknown |
+    **a. Termination of the Contract without just cause 90.** Article 14 FIFA RSTP provides that a contract may be terminated by either party 
+    without consequences of any kind (either payment of compensation or imposition of sporting sanctions) where there is just cause.
+    
+    91. According to the Commentary on the Regulations for the Status and Transfer of Players edition 2021 (hereinafter: "RSTP Commentary") 
+    on Article 14 (page 109):
+    
+    "Whether there is just cause for the early termination of a contract signed between a professional player and a club must be assessed in 
+    consideration of all the specific circumstances of the individual case.
+    
+    The Regulations to do not provide a defined list of 'just causes".
+    
+    It is impossible to capture all potential conduct that might be considered just cause for the premature and unilateral termination of a 
+    contract concluded between a professional player and a club.
+    
+    Over the years, jurisprudence has established several criteria that define, in abstract terms, which combinations of circumstances should be 
+    considered just causes.
+    
+    A contract may be terminated with just cause where there is objective criteria [...] and there is a valid reason to do so.
     """)
 
-st.markdown("---")
-
-# ============ OPTION 6: Badge Style ============
-st.subheader("Option 6: Badge Style with Pills")
-st.markdown("**Case Details**")
-selection = st.pills(
-    "Field",
-    ["Parties", "Procedure", "Category", "President", "Arbitrators"],
-    selection_mode="single",
-    default="Parties"
-)
-
-# Show value based on selection
-values = {
-    "Parties": "Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje",
-    "Procedure": "Appeal Arbitration Procedure",
-    "Category": "Award",
-    "President": "Olivier Carrard",
-    "Arbitrators": "Unknown, Unknown"
-}
-if selection:
-    st.info(values[selection])
-
-st.markdown("---")
-
-# ============ OPTION 7: Horizontal Container ============
-st.subheader("Option 7: Horizontal Scrollable Container")
-with st.container(border=True):
-    flex = st.container()
-    cols = flex.columns(5)
-    for col, (label, value) in zip(cols, data):
-        with col:
-            st.markdown(f"**{label}**")
-            st.write(value)
+st.caption("CAS Case Management System")

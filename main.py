@@ -3,10 +3,20 @@ import streamlit as st
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 
+# Custom CSS to reduce spacing
+st.markdown("""
+<style>
+    .compact-container div[data-testid="stVerticalBlock"] > div {
+        gap: 0rem !important;
+        padding: 0rem !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Case Header
 st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
-# Tags - Simple and clean
+# Tags
 col1, col2, col3 = st.columns([1, 1, 8])
 with col1:
     st.success("✓ Contract")
@@ -15,40 +25,13 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Beautiful UI with native Streamlit
-st.markdown("---")
-
-# Option 1: Using columns with containers for a card-like layout
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    with st.container(border=True):
-        st.caption("PARTIES")
-        st.markdown("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
-    
-with col2:
-    with st.container(border=True):
-        st.caption("PROCEDURE")
-        st.markdown("Appeal Arbitration Procedure")
-
-with col3:
-    with st.container(border=True):
-        st.caption("CATEGORY")
-        st.markdown("Award")
-
-col4, col5, col6 = st.columns([1, 1, 1])
-
-with col4:
-    with st.container(border=True):
-        st.caption("PRESIDENT")
-        st.markdown("Olivier Carrard")
-
-with col5:
-    with st.container(border=True):
-        st.caption("ARBITRATORS")
-        st.markdown("Unknown, Unknown")
-
-st.markdown("---")
+# Case Details - Ultra Minimal
+with st.container(border=True):
+    st.write("**Parties:** Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    st.write("**Procedure:** Appeal Arbitration Procedure")
+    st.write("**Category:** Award")
+    st.write("**President:** Olivier Carrard")
+    st.write("**Arbitrators:** Unknown, Unknown")
 
 # Buttons
 col1, col2 = st.columns(2)

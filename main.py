@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
@@ -32,13 +33,6 @@ st.markdown("""
         background-color: #d1ecf1;
         color: #0c5460;
     }
-    .case-detail {
-        margin: 8px 0;
-        font-size: 15px;
-    }
-    .case-detail strong {
-        font-weight: 600;
-    }
     .section-header {
         font-size: 18px;
         font-weight: 600;
@@ -53,23 +47,12 @@ st.markdown("""
         border-radius: 8px;
         border-left: 4px solid #0066cc;
     }
-    .compact-details {
-        font-size: 13px;
-        line-height: 1.3;
-        margin: 5px 0;
-    }
-    .compact-details strong {
-        font-weight: 600;
-        display: inline-block;
-        width: 100px;
-    }
-    /* Reduce padding in Streamlit elements */
-    .element-container {
-        margin: 0 !important;
-        padding: 0 !important;
+    /* Make table more compact */
+    .stDataFrame {
+        font-size: 15px;
     }
     div[data-testid="stVerticalBlock"] > div {
-        gap: 0.2rem !important;
+        gap: 0.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -90,16 +73,19 @@ st.markdown(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Case Details - Ultra Compact
-st.markdown("""
-<div class="compact-details">
-<strong>Parties:</strong> Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje<br>
-<strong>Procedure:</strong> Appeal Arbitration Procedure<br>
-<strong>Category:</strong> Award<br>
-<strong>President:</strong> Olivier Carrard<br>
-<strong>Arbitrators:</strong> Unknown, Unknown
-</div>
-""", unsafe_allow_html=True)
+# Case Details - Compact and Beautiful
+case_data = {
+    "Field": ["Parties", "Procedure", "Category", "President", "Arbitrators"],
+    "Details": [
+        "Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje",
+        "Appeal Arbitration Procedure",
+        "Award",
+        "Olivier Carrard",
+        "Unknown, Unknown"
+    ]
+}
+df = pd.DataFrame(case_data)
+st.dataframe(df, hide_index=True, use_container_width=True)
 
 # Buttons
 col1, col2, col3 = st.columns([1, 1, 10])

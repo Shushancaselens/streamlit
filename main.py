@@ -3,10 +3,30 @@ import streamlit as st
 # Page configuration
 st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 
+# Custom CSS for compact cards
+st.markdown("""
+<style>
+    /* Make container content more compact */
+    div[data-testid="stVerticalBlock"] > div {
+        gap: 0.3rem;
+    }
+    /* Smaller text in containers */
+    [data-testid="stVerticalBlock"] h5 {
+        font-size: 0.7rem;
+        margin: 0;
+        padding: 0;
+    }
+    /* Reduce caption size */
+    [data-testid="stCaptionContainer"] {
+        font-size: 0.8rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Case Header
 st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
-# Tags
+# Tags - Simple and clean
 col1, col2, col3 = st.columns([1, 1, 8])
 with col1:
     st.success("✓ Contract")
@@ -15,38 +35,38 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Using columns with borders (newer Streamlit feature)
-st.markdown("#### Case Information")
-
-col1, col2, col3 = st.columns(3, gap="small", border=True)
+# Case Details - Improved Card Layout (Compact & Beautiful)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("**PARTIES**")
-    st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+    with st.container(height=60, border=True):
+        st.markdown("##### PARTIES")
+        st.caption("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
     
 with col2:
-    st.markdown("**PROCEDURE**")
-    st.write("Appeal Arbitration Procedure")
+    with st.container(height=60, border=True):
+        st.markdown("##### PROCEDURE")
+        st.caption("Appeal Arbitration Procedure")
 
 with col3:
-    st.markdown("**CATEGORY**")
-    st.write("Award")
+    with st.container(height=60, border=True):
+        st.markdown("##### CATEGORY")
+        st.caption("Award")
 
-col4, col5, col6 = st.columns(3, gap="small", border=True)
+col4, col5, col6 = st.columns(3)
 
 with col4:
-    st.markdown("**PRESIDENT**")
-    st.write("Olivier Carrard")
+    with st.container(height=60, border=True):
+        st.markdown("##### PRESIDENT")
+        st.caption("Olivier Carrard")
 
 with col5:
-    st.markdown("**ARBITRATORS**")
-    st.write("Unknown, Unknown")
+    with st.container(height=60, border=True):
+        st.markdown("##### ARBITRATORS")
+        st.caption("Unknown, Unknown")
 
-with col6:
-    st.write("")  # Empty for balance
 
 # Buttons
-st.markdown("")
 col1, col2 = st.columns(2)
 with col1:
     st.button("📄 PDF", use_container_width=True)

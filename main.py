@@ -6,7 +6,7 @@ st.set_page_config(page_title="CAS Case Viewer", layout="wide")
 # Case Header
 st.subheader("CAS 2022/A/8836 | Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje | 2023-05-08")
 
-# Tags
+# Tags - Simple and clean
 col1, col2, col3 = st.columns([1, 1, 8])
 with col1:
     st.success("✓ Contract")
@@ -15,37 +15,40 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Super Compact
-with st.container(border=True):
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.write("**Parties:**")
-    with col2:
-        st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+# Case Details - Beautiful UI with native Streamlit
+st.markdown("---")
+
+# Option 1: Using columns with containers for a card-like layout
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    with st.container(border=True):
+        st.caption("PARTIES")
+        st.markdown("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
     
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.write("**Procedure:**")
-    with col2:
-        st.write("Appeal Arbitration Procedure")
-    
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.write("**Category:**")
-    with col2:
-        st.write("Award")
-    
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.write("**President:**")
-    with col2:
-        st.write("Olivier Carrard")
-    
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.write("**Arbitrators:**")
-    with col2:
-        st.write("Unknown, Unknown")
+with col2:
+    with st.container(border=True):
+        st.caption("PROCEDURE")
+        st.markdown("Appeal Arbitration Procedure")
+
+with col3:
+    with st.container(border=True):
+        st.caption("CATEGORY")
+        st.markdown("Award")
+
+col4, col5, col6 = st.columns([1, 1, 1])
+
+with col4:
+    with st.container(border=True):
+        st.caption("PRESIDENT")
+        st.markdown("Olivier Carrard")
+
+with col5:
+    with st.container(border=True):
+        st.caption("ARBITRATORS")
+        st.markdown("Unknown, Unknown")
+
+st.markdown("---")
 
 # Buttons
 col1, col2 = st.columns(2)

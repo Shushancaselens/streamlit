@@ -10,16 +10,14 @@ st.markdown("""
     div[data-testid="stVerticalBlock"] > div {
         gap: 0.2rem;
     }
-    /* Smaller headings */
-    [data-testid="stVerticalBlock"] h5 {
-        font-size: 0.65rem;
+    /* Smaller text */
+    [data-testid="stMarkdown"] p {
+        font-size: 0.8rem;
         margin: 0;
-        padding: 0;
-        font-weight: 600;
     }
     /* Smaller captions */
     [data-testid="stCaptionContainer"] {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         line-height: 1.2;
     }
 </style>
@@ -37,35 +35,33 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Ultra Compact Card Layout
-col1, col2, col3 = st.columns(3, gap="small")
+# Case Details - Compact boxes in one row
+col1, col2, col3, col4, col5 = st.columns(5, gap="small")
 
 with col1:
-    with st.container(height=50, border=True):
-        st.markdown("##### PARTIES")
+    with st.container(height=70, border=True):
+        st.markdown("**Parties**")
         st.caption("Samsunspor v. Dja Djedje")
     
 with col2:
-    with st.container(height=50, border=True):
-        st.markdown("##### PROCEDURE")
+    with st.container(height=70, border=True):
+        st.markdown("**Procedure**")
         st.caption("Appeal Arbitration")
 
 with col3:
-    with st.container(height=50, border=True):
-        st.markdown("##### CATEGORY")
+    with st.container(height=70, border=True):
+        st.markdown("**Category**")
         st.caption("Award")
 
-col4, col5, col6 = st.columns(3, gap="small")
-
 with col4:
-    with st.container(height=50, border=True):
-        st.markdown("##### PRESIDENT")
-        st.caption("Olivier Carrard")
+    with st.container(height=70, border=True):
+        st.markdown("**President**")
+        st.caption("O. Carrard")
 
 with col5:
-    with st.container(height=50, border=True):
-        st.markdown("##### ARBITRATORS")
-        st.caption("Unknown, Unknown")
+    with st.container(height=70, border=True):
+        st.markdown("**Arbitrators**")
+        st.caption("Unknown")
 
 # Buttons
 col1, col2 = st.columns(2)

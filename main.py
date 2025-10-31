@@ -15,44 +15,123 @@ with col2:
 with col3:
     st.info("⚽ Football")
 
-# Case Details - Using Custom Badge Tags (MOST COMPACT)
+st.markdown("---")
+
+# ============ OPTION 1: Using st.pills() as Display Tags ============
+st.markdown("#### Option 1: Pills as Tags (Read-Only)")
+st.pills("Parties", ["Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje"], disabled=True, default=["Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje"])
+st.pills("Procedure", ["Appeal Arbitration Procedure"], disabled=True, default=["Appeal Arbitration Procedure"])
+st.pills("Category", ["Award"], disabled=True, default=["Award"])
+st.pills("President", ["Olivier Carrard"], disabled=True, default=["Olivier Carrard"])
+st.pills("Arbitrators", ["Unknown, Unknown"], disabled=True, default=["Unknown, Unknown"])
+
+st.markdown("---")
+
+# ============ OPTION 2: Inline Badges using Markdown ============
+st.markdown("#### Option 2: Custom Badge Style")
 st.markdown("""
 <style>
-.info-badge {
+.badge {
     display: inline-block;
-    padding: 6px 14px;
-    margin: 4px 8px 4px 0;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    border-radius: 0.5rem;
+    background-color: #f0f2f6;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
 }
-.info-label {
-    font-weight: 700;
-    opacity: 0.9;
+.badge-label {
+    font-weight: 600;
+    color: #374151;
 }
-.info-value {
-    opacity: 1;
-    margin-left: 6px;
-}
-.tag-container {
-    padding: 16px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    margin: 16px 0;
+.badge-value {
+    color: #6b7280;
 }
 </style>
 
-<div class="tag-container">
-    <span class="info-badge"><span class="info-label">👥 Parties:</span><span class="info-value">Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje</span></span>
-    <span class="info-badge"><span class="info-label">📋 Procedure:</span><span class="info-value">Appeal Arbitration Procedure</span></span>
-    <span class="info-badge"><span class="info-label">🏷️ Category:</span><span class="info-value">Award</span></span>
-    <span class="info-badge"><span class="info-label">👤 President:</span><span class="info-value">Olivier Carrard</span></span>
-    <span class="info-badge"><span class="info-label">⚖️ Arbitrators:</span><span class="info-value">Unknown, Unknown</span></span>
+<div>
+    <span class="badge"><span class="badge-label">Parties:</span> <span class="badge-value">Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje</span></span>
+    <span class="badge"><span class="badge-label">Procedure:</span> <span class="badge-value">Appeal Arbitration Procedure</span></span>
+    <span class="badge"><span class="badge-label">Category:</span> <span class="badge-value">Award</span></span>
+    <span class="badge"><span class="badge-label">President:</span> <span class="badge-value">Olivier Carrard</span></span>
+    <span class="badge"><span class="badge-label">Arbitrators:</span> <span class="badge-value">Unknown, Unknown</span></span>
 </div>
 """, unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ============ OPTION 3: Using st.tag (if available) or colored pills ============
+st.markdown("#### Option 3: Colored Badge Style")
+
+# Using columns to create badge-like layout
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.info("**Parties:**", icon="👥")
+with col2:
+    st.write("Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.info("**Procedure:**", icon="📋")
+with col2:
+    st.write("Appeal Arbitration Procedure")
+
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.info("**Category:**", icon="🏷️")
+with col2:
+    st.write("Award")
+
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.info("**President:**", icon="👤")
+with col2:
+    st.write("Olivier Carrard")
+
+col1, col2 = st.columns([1, 5])
+with col1:
+    st.info("**Arbitrators:**", icon="⚖️")
+with col2:
+    st.write("Unknown, Unknown")
+
+st.markdown("---")
+
+# ============ OPTION 4: Compact Tags in Grid ============
+st.markdown("#### Option 4: Grid of Tags")
+with st.container(border=True):
+    cols = st.columns(2)
+    
+    with cols[0]:
+        st.markdown("🏷️ **Parties:** Samsunspor Futbol Kulübü A.S. v. Brice Dja Djedje")
+        st.markdown("🏷️ **Procedure:** Appeal Arbitration Procedure")
+        st.markdown("🏷️ **Category:** Award")
+    
+    with cols[1]:
+        st.markdown("🏷️ **President:** Olivier Carrard")
+        st.markdown("🏷️ **Arbitrators:** Unknown, Unknown")
+
+st.markdown("---")
+
+# ============ OPTION 5: Status/Success/Info Tags ============
+st.markdown("#### Option 5: Using Status Elements as Tags")
+cols = st.columns(5)
+
+with cols[0]:
+    st.success("**Parties**  \nSamsunspor v. Dja Djedje", icon="👥")
+
+with cols[1]:
+    st.info("**Procedure**  \nAppeal Arbitration", icon="📋")
+
+with cols[2]:
+    st.warning("**Category**  \nAward", icon="🏷️")
+
+with cols[3]:
+    st.info("**President**  \nO. Carrard", icon="👤")
+
+with cols[4]:
+    st.error("**Arbitrators**  \nUnknown, Unknown", icon="⚖️")
+
+st.markdown("---")
 
 # Buttons
 col1, col2 = st.columns(2)
@@ -60,30 +139,5 @@ with col1:
     st.button("📄 PDF", use_container_width=True)
 with col2:
     st.button("💾 Save", use_container_width=True)
-
-# Relevant Passages
-st.subheader("Relevant Passages")
-
-with st.expander("Show adjacent sections | Page 22 | Section: a.", expanded=True):
-    st.markdown("""
-    **a. Termination of the Contract without just cause 90.** Article 14 FIFA RSTP provides that a contract may be terminated by either party 
-    without consequences of any kind (either payment of compensation or imposition of sporting sanctions) where there is just cause.
-    
-    91. According to the Commentary on the Regulations for the Status and Transfer of Players edition 2021 (hereinafter: "RSTP Commentary") 
-    on Article 14 (page 109):
-    
-    "Whether there is just cause for the early termination of a contract signed between a professional player and a club must be assessed in 
-    consideration of all the specific circumstances of the individual case.
-    
-    The Regulations to do not provide a defined list of 'just causes".
-    
-    It is impossible to capture all potential conduct that might be considered just cause for the premature and unilateral termination of a 
-    contract concluded between a professional player and a club.
-    
-    Over the years, jurisprudence has established several criteria that define, in abstract terms, which combinations of circumstances should be 
-    considered just causes.
-    
-    A contract may be terminated with just cause where there is objective criteria [...] and there is a valid reason to do so.
-    """)
 
 st.caption("CAS Case Management System")

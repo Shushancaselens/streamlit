@@ -8,6 +8,22 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom CSS for CaseLens blue filled buttons
+st.markdown("""
+    <style>
+    /* Primary buttons - filled with CaseLens blue */
+    div[data-testid="stButton"] > button[kind="primary"] {
+        background-color: #4D68F9;
+        color: white;
+        border: none;
+    }
+    div[data-testid="stButton"] > button[kind="primary"]:hover {
+        background-color: #3D58E9;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Custom CSS for CaseLens blue buttons
 st.markdown("""
 <style>

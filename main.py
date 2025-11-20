@@ -8,6 +8,25 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom CSS for CaseLens blue buttons
+st.markdown("""
+<style>
+    /* Primary buttons */
+    .stButton > button[kind="primary"] {
+        background-color: #4D68F9;
+        border-color: #4D68F9;
+    }
+    .stButton > button[kind="primary"]:hover {
+        background-color: #3D58E9;
+        border-color: #3D58E9;
+    }
+    .stButton > button[kind="primary"]:active {
+        background-color: #2D48D9;
+        border-color: #2D48D9;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state for navigation
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'home'

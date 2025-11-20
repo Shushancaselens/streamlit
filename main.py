@@ -135,7 +135,7 @@ def show_events_page():
         st.markdown("**User:** shushan@caselens.tech")
     
     # Back button and header
-    if st.button("← Back to Cases"):
+    if st.button("← Back to Cases", type="secondary"):
         st.session_state.current_page = 'home'
         st.rerun()
     

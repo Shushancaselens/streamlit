@@ -10,6 +10,20 @@ st.set_page_config(
 
 # Custom CSS for CaseLens blue buttons
 st.markdown("""
+    <style>
+    .stButton > button {
+        background-color: #4D68F9;
+        color: white;
+    }
+    .stButton > button:hover {
+        background-color: #3D58E9;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Custom CSS for CaseLens blue buttons
+st.markdown("""
 <style>
     /* Primary buttons */
     .stButton > button[kind="primary"] {

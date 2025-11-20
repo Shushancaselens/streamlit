@@ -4,7 +4,7 @@ from datetime import datetime
 # Page configuration
 st.set_page_config(
     page_title="CaseLens - Home",
-    page_icon="📁",
+    page_icon="C",
     layout="wide"
 )
 
@@ -72,83 +72,38 @@ def navigate_to_events(case):
 def show_home_page():
     """Display the home page with case selection"""
     
-    # Header
-    col1, col2 = st.columns([6, 1])
-    with col1:
-        st.title("📁 CaseLens")
-        st.markdown("### My Cases")
-    with col2:
-        if st.button("⚙️ Settings", use_container_width=True):
+    # Sidebar with user info
+    with st.sidebar:
+        st.markdown("**User:** shushan@caselens.tech")
+        st.divider()
+        if st.button("Settings", use_container_width=True):
             st.session_state.current_page = 'settings'
             st.rerun()
     
+    # Header
+    st.title("CaseLens")
+    st.markdown("### My Cases")
     st.divider()
     
-    # User info
-    st.markdown(f"**User:** shushan@caselens.tech")
-    st.markdown(f"**Total Cases:** {len(cases)}")
-    
-    st.divider()
-    
-    # Search and filter
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        search_query = st.text_input("🔍 Search cases", placeholder="Search by case name or description...")
-    with col2:
-        status_filter = st.selectbox("Filter by Status", ["All", "Active", "Pending", "In Review", "Closed"])
-    
-    # Filter cases based on search and status
-    filtered_cases = cases
-    if search_query:
-        filtered_cases = [c for c in filtered_cases if 
-                         search_query.lower() in c['name'].lower() or 
-                         search_query.lower() in c['description'].lower()]
-    if status_filter != "All":
-        filtered_cases = [c for c in filtered_cases if c['status'] == status_filter]
-    
-    st.markdown(f"**Showing {len(filtered_cases)} case(s)**")
-    st.divider()
-    
-    # Display cases in a grid layout
-    if len(filtered_cases) == 0:
-        st.info("No cases found matching your criteria.")
-    else:
-        # Create columns for card layout (2 cards per row)
-        for i in range(0, len(filtered_cases), 2):
-            cols = st.columns(2)
-            
-            for j, col in enumerate(cols):
-                if i + j < len(filtered_cases):
-                    case = filtered_cases[i + j]
-                    
-                    with col:
-                        # Create a card using Streamlit native container with border
-                        with st.container(border=True):
-                            # Case header
-                            status_colors = {
-                                "Active": "🟢",
-                                "Pending": "🟡",
-                                "In Review": "🔵",
-                                "Closed": "⚫"
-                            }
-                            
-                            st.markdown(f"### 📂 {case['name']}")
-                            st.markdown(f"{status_colors.get(case['status'], '⚪')} **Status:** {case['status']}")
-                            
-                            # Case details
-                            st.markdown(f"**Description:** {case['description']}")
-                            st.markdown(f"📄 **Documents:** {case['documents']}")
-                            st.markdown(f"📅 **Date Range:** {case['date_range']}")
-                            st.markdown(f"🕐 **Last Updated:** {case['last_updated']}")
-                            
-                            # Action buttons
-                            col_btn1, col_btn2 = st.columns(2)
-                            with col_btn1:
-                                if st.button("📊 Open Events", key=f"open_{case['id']}", use_container_width=True):
-                                    navigate_to_events(case)
-                            with col_btn2:
-                                if st.button("ℹ️ Details", key=f"details_{case['id']}", use_container_width=True):
-                                    st.info(f"Case ID: {case['id']}\nOpening case details...")
+    # Display cases in a grid layout (3 cards per row for smaller cards)
+    for i in range(0, len(cases), 3):
+        cols = st.columns(3)
+        
+        for j, col in enumerate(cols):
+            if i + j < len(cases):
+                case = cases[i + j]
+                
+                with col:
+                    # Create a card using Streamlit native container with border
+                    with st.container(border=True):
+                        # Clickable case name
+                        if st.button(case['name'], key=f"case_{case['id']}", use_container_width=True, type="primary"):
+                            navigate_to_events(case)
+                        
+                        # Case details (compact)
+                        st.caption(f"**Status:** {case['status']}")
+                        st.caption(f"**Documents:** {case['documents']}")
+                        st.caption(f"**Last Updated:** {case['last_updated']}")
 
 def show_events_page():
     """Display the events page for selected case"""
@@ -166,9 +121,9 @@ def show_events_page():
         if st.button("← Back to Cases"):
             st.session_state.current_page = 'home'
             st.rerun()
-        st.title(f"📊 Events - {case['name']}")
+        st.title(f"Events - {case['name']}")
     with col2:
-        if st.button("⚙️ Settings", use_container_width=True):
+        if st.button("Settings", use_container_width=True):
             st.session_state.current_page = 'settings'
             st.rerun()
     
@@ -186,7 +141,7 @@ def show_events_page():
         **Event 1999-00-00**  
         In 1999, the definition of "Allowed Deductions" under the License Agreements between Harris FRC Acquisition, L.P. and RESEARCH CORPORATION TECHNOLOGIES, INC...
         
-        🔗 1 Source
+        1 Source
         """)
         
         st.divider()
@@ -195,7 +150,7 @@ def show_events_page():
         **Event 2008-00-00**  
         From 2008 to 30 September 2015, a dispute in the ICC International Court of Arbitration (case number 27850/PDP) involves Harris FRC Acquisition...
         
-        🔗 1 Source
+        1 Source
         """)
     
     with tab2:
@@ -223,7 +178,7 @@ def show_settings_page():
         if st.button("← Back"):
             st.session_state.current_page = 'home'
             st.rerun()
-        st.title("⚙️ Settings")
+        st.title("Settings")
     
     st.divider()
     
@@ -234,7 +189,7 @@ def show_settings_page():
     
     st.divider()
     
-    if st.button("🚪 Log out", type="primary"):
+    if st.button("Log out", type="primary"):
         st.success("Logged out successfully!")
 
 # Main app logic

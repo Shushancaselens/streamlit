@@ -143,7 +143,6 @@ def show_home_page():
     st.divider()
     
     # Header
-    st.title("CaseLens")
     st.markdown("### My Cases")
     st.divider()
     
@@ -177,13 +176,9 @@ def show_events_page():
     
     case = st.session_state.selected_case
     
-    # Sidebar with user info
+    # Sidebar with user info only
     with st.sidebar:
         st.markdown("**User:** shushan@caselens.tech")
-        st.divider()
-        if st.button("Settings", key="settings_events", use_container_width=True):
-            st.session_state.current_page = 'settings'
-            st.rerun()
     
     # Navigation tabs (Profile/Events style)
     col1, col2, col_space = st.columns([1, 1, 8])
@@ -196,8 +191,8 @@ def show_events_page():
     
     st.divider()
     
-    # Header
-    st.title(f"Events - {case['name']}")
+    # Header without "CaseLens" title
+    st.markdown(f"### {case['name']}")
     st.divider()
     
     # Tabs for different views

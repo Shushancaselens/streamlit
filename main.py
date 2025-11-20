@@ -124,17 +124,6 @@ def show_home_page():
                     with col:
                         # Create a card-like container
                         with st.container():
-                            st.markdown(f"""
-                            <div style="
-                                padding: 20px;
-                                border-radius: 10px;
-                                background-color: #f0f2f6;
-                                border: 1px solid #e0e0e0;
-                                margin-bottom: 20px;
-                            ">
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
                             # Case header
                             status_colors = {
                                 "Active": "🟢",

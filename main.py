@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 from datetime import datetime
 
 # Page configuration
@@ -8,57 +8,21 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for CaseLens blue filled buttons
+# Custom CSS for CaseLens blue buttons
 st.markdown("""
     <style>
-    /* Primary buttons - filled with CaseLens blue */
-    div[data-testid="stButton"] > button[kind="primary"] {
-        background-color: #4D68F9;
-        color: white;
-        border: none;
+    /* All buttons - filled with CaseLens blue */
+    div[data-testid="stButton"] > button {
+        background-color: #4D68F9 !important;
+        color: white !important;
+        border: none !important;
     }
-    div[data-testid="stButton"] > button[kind="primary"]:hover {
-        background-color: #3D58E9;
-        color: white;
+    div[data-testid="stButton"] > button:hover {
+        background-color: #3D58E9 !important;
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
-
-# Custom CSS for CaseLens blue buttons
-st.markdown("""
-<style>
-    /* Primary buttons */
-    .stButton > button[kind="primary"] {
-        background-color: #4D68F9;
-        border-color: #4D68F9;
-    }
-    .stButton > button[kind="primary"]:hover {
-        background-color: #3D58E9;
-        border-color: #3D58E9;
-    }
-    .stButton > button[kind="primary"]:active {
-        background-color: #2D48D9;
-        border-color: #2D48D9;
-    }
-    
-    /* Secondary/Outlined buttons with CaseLens blue */
-    .stButton > button[kind="secondary"] {
-        border: 2px solid #4D68F9;
-        color: #4D68F9;
-        background-color: transparent;
-    }
-    .stButton > button[kind="secondary"]:hover {
-        border-color: #3D58E9;
-        color: #3D58E9;
-        background-color: rgba(77, 104, 249, 0.1);
-    }
-    .stButton > button[kind="secondary"]:active {
-        border-color: #2D48D9;
-        color: #2D48D9;
-        background-color: rgba(77, 104, 249, 0.2);
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # Initialize session state for navigation
 if 'current_page' not in st.session_state:

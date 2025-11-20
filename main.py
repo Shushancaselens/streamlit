@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for CaseLens blue buttons
+# Custom CSS for CaseLens blue buttons and tab-style navigation
 st.markdown("""
 <style>
     /* Primary buttons */
@@ -23,6 +23,37 @@ st.markdown("""
     .stButton > button[kind="primary"]:active {
         background-color: #2D48D9;
         border-color: #2D48D9;
+    }
+    
+    /* Navigation tabs styling */
+    .nav-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+    }
+    
+    .nav-tab {
+        padding: 10px 20px;
+        border-radius: 8px;
+        background-color: #f0f2f6;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        transition: all 0.3s;
+    }
+    
+    .nav-tab:hover {
+        background-color: #e0e2e6;
+    }
+    
+    .nav-tab.active {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -99,6 +130,18 @@ def show_home_page():
             st.session_state.current_page = 'settings'
             st.rerun()
     
+    # Navigation tabs (Profile/Events style)
+    col1, col2, col_space = st.columns([1, 1, 8])
+    with col1:
+        st.button("Profile", key="nav_profile", disabled=True, use_container_width=True)
+    with col2:
+        if st.button("Events", key="nav_events", use_container_width=True, disabled=st.session_state.selected_case is None):
+            if st.session_state.selected_case:
+                st.session_state.current_page = 'events'
+                st.rerun()
+    
+    st.divider()
+    
     # Header
     st.title("CaseLens")
     st.markdown("### My Cases")
@@ -134,18 +177,27 @@ def show_events_page():
     
     case = st.session_state.selected_case
     
-    # Header with back button
-    col1, col2 = st.columns([6, 1])
-    with col1:
-        if st.button("← Back to Cases"):
-            st.session_state.current_page = 'home'
-            st.rerun()
-        st.title(f"Events - {case['name']}")
-    with col2:
-        if st.button("Settings", use_container_width=True):
+    # Sidebar with user info
+    with st.sidebar:
+        st.markdown("**User:** shushan@caselens.tech")
+        st.divider()
+        if st.button("Settings", key="settings_events", use_container_width=True):
             st.session_state.current_page = 'settings'
             st.rerun()
     
+    # Navigation tabs (Profile/Events style)
+    col1, col2, col_space = st.columns([1, 1, 8])
+    with col1:
+        if st.button("Profile", key="nav_profile_events", use_container_width=True):
+            st.session_state.current_page = 'home'
+            st.rerun()
+    with col2:
+        st.button("Events", key="nav_events_events", disabled=True, use_container_width=True)
+    
+    st.divider()
+    
+    # Header
+    st.title(f"Events - {case['name']}")
     st.divider()
     
     # Tabs for different views

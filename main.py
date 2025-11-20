@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS for CaseLens blue buttons and tab-style navigation
+# Custom CSS for CaseLens blue buttons
 st.markdown("""
 <style>
     /* Primary buttons */
@@ -25,35 +25,21 @@ st.markdown("""
         border-color: #2D48D9;
     }
     
-    /* Navigation tabs styling */
-    .nav-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        padding-bottom: 10px;
+    /* Secondary/Outlined buttons with CaseLens blue */
+    .stButton > button[kind="secondary"] {
+        border: 2px solid #4D68F9;
+        color: #4D68F9;
+        background-color: transparent;
     }
-    
-    .nav-tab {
-        padding: 10px 20px;
-        border-radius: 8px;
-        background-color: #f0f2f6;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        transition: all 0.3s;
+    .stButton > button[kind="secondary"]:hover {
+        border-color: #3D58E9;
+        color: #3D58E9;
+        background-color: rgba(77, 104, 249, 0.1);
     }
-    
-    .nav-tab:hover {
-        background-color: #e0e2e6;
-    }
-    
-    .nav-tab.active {
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .stButton > button[kind="secondary"]:active {
+        border-color: #2D48D9;
+        color: #2D48D9;
+        background-color: rgba(77, 104, 249, 0.2);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -146,7 +132,7 @@ def show_home_page():
                     # Create a card using Streamlit native container with border
                     with st.container(border=True):
                         # Clickable case name
-                        if st.button(case['name'], key=f"case_{case['id']}", use_container_width=True, type="primary"):
+                        if st.button(case['name'], key=f"case_{case['id']}", use_container_width=True):
                             navigate_to_events(case)
                         
                         # Case details (compact)

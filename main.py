@@ -122,8 +122,8 @@ def show_home_page():
                     case = filtered_cases[i + j]
                     
                     with col:
-                        # Create a card-like container
-                        with st.container():
+                        # Create a card using Streamlit native container with border
+                        with st.container(border=True):
                             # Case header
                             status_colors = {
                                 "Active": "🟢",
@@ -149,8 +149,6 @@ def show_home_page():
                             with col_btn2:
                                 if st.button("ℹ️ Details", key=f"details_{case['id']}", use_container_width=True):
                                     st.info(f"Case ID: {case['id']}\nOpening case details...")
-                            
-                            st.markdown("---")
 
 def show_events_page():
     """Display the events page for selected case"""

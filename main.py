@@ -131,8 +131,8 @@ def show_home_page():
                 with col:
                     # Create a card using Streamlit native container with border
                     with st.container(border=True):
-                        # Clickable case name
-                        if st.button(case['name'], key=f"case_{case['id']}", use_container_width=True):
+                        # Clickable case name - using secondary (outlined) style
+                        if st.button(case['name'], key=f"case_{case['id']}", use_container_width=True, type="secondary"):
                             navigate_to_events(case)
                         
                         # Case details (compact)

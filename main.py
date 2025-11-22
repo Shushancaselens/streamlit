@@ -37,6 +37,7 @@ cases = [
         "name": "Hanessianadr Case 1",
         "description": "Harris FRC Acquisition vs RESEARCH CORPORATION TECHNOLOGIES",
         "documents": 156,
+        "num_events": 3,
         "date_range": "1999-01-01 to 2025-09-30",
         "status": "Active",
         "last_updated": "2024-11-15"
@@ -46,6 +47,7 @@ cases = [
         "name": "Patent Infringement Case 2",
         "description": "Technology patent dispute involving multiple parties",
         "documents": 243,
+        "num_events": 5,
         "date_range": "2020-03-15 to 2025-06-30",
         "status": "Active",
         "last_updated": "2024-11-18"
@@ -55,6 +57,7 @@ cases = [
         "name": "Contract Dispute Case 3",
         "description": "Commercial contract breach and damages claim",
         "documents": 89,
+        "num_events": 2,
         "date_range": "2021-07-01 to 2024-12-31",
         "status": "Pending",
         "last_updated": "2024-11-10"
@@ -64,6 +67,7 @@ cases = [
         "name": "Trademark Litigation Case 4",
         "description": "Brand trademark infringement proceedings",
         "documents": 312,
+        "num_events": 8,
         "date_range": "2019-05-20 to 2025-08-15",
         "status": "Active",
         "last_updated": "2024-11-19"
@@ -73,6 +77,7 @@ cases = [
         "name": "Arbitration Case 5",
         "description": "International arbitration dispute resolution",
         "documents": 178,
+        "num_events": 4,
         "date_range": "2022-01-10 to 2025-11-30",
         "status": "In Review",
         "last_updated": "2024-11-12"
@@ -119,8 +124,10 @@ def show_home_page():
                         
                         st.markdown("")  # Spacing
                         
-                        # Information as colorful pills/badges
-                        st.pills("Tags", [case['status'], f"{case['documents']} docs"], key=f"pills_{case['id']}", selection_mode="multi")
+                        # Information as colorful Streamlit native badges
+                        date_range_short = case['date_range'][:4] + '-' + case['date_range'][-4:]
+                        
+                        st.markdown(f":blue-background[{case['status']}] :green-background[{case['documents']} docs] :orange-background[{case['num_events']} events] :gray-background[{date_range_short}]")
                         
                         st.markdown("")  # Spacing
                         

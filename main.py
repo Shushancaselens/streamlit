@@ -118,7 +118,31 @@ def show_home_page():
         
         # Show download section if documents are ready
         if st.session_state.processed_docs is not None:
-            st.markdown("### Results")
+            # Results header with Download All button
+            col1, col2 = st.columns([5, 1])
+            with col1:
+                st.markdown("### Results")
+            with col2:
+                # Create a zip file with both documents for download all
+                import io
+                import zipfile
+                
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                    zip_file.writestr("document_1_summary.docx", st.session_state.processed_docs['doc1'])
+                    zip_file.writestr("document_2_analysis.docx", st.session_state.processed_docs['doc2'])
+                zip_buffer.seek(0)
+                
+                st.download_button(
+                    label="Download All",
+                    data=zip_buffer.getvalue(),
+                    file_name="all_documents.zip",
+                    mime="application/zip",
+                    use_container_width=True,
+                    key="download_all"
+                )
+            
+            st.divider()
             
             # Document 1
             col1, col2 = st.columns([5, 1])

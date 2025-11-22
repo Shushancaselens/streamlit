@@ -127,7 +127,11 @@ def show_home_page():
                         # Information as colorful Streamlit native badges
                         date_range_short = case['date_range'][:4] + '-' + case['date_range'][-4:]
                         
-                        st.markdown(f":blue-background[{case['status']}] :green-background[{case['documents']} docs] :orange-background[{case['num_events']} events] :gray-background[{date_range_short}]")
+                        st.markdown("**Tags**")
+                        st.markdown(f":blue-background[{case['status']}]")
+                        st.markdown(f":green-background[{case['documents']} docs]")
+                        st.markdown(f":orange-background[{case['num_events']} events]")
+                        st.markdown(f":gray-background[{date_range_short}]")
                         
                         st.markdown("")  # Spacing
                         

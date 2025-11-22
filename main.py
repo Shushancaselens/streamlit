@@ -12,28 +12,30 @@ st.set_page_config(
 # Custom CSS for CaseLens blue buttons
 st.markdown("""
     <style>
-    /* All buttons - filled with CaseLens blue */
+    /* All buttons - outlined with CaseLens blue border */
     div[data-testid="stButton"] > button {
-        background-color: #4D68F9 !important;
-        color: white !important;
-        border: none !important;
+        background-color: transparent !important;
+        color: #4D68F9 !important;
+        border: 2px solid #4D68F9 !important;
     }
     div[data-testid="stButton"] > button:hover {
-        background-color: #3D58E9 !important;
-        color: white !important;
-    }
-    /* Make download buttons smaller */
-    div[data-testid="stDownloadButton"] > button {
         background-color: #4D68F9 !important;
         color: white !important;
-        border: none !important;
+        border: 2px solid #4D68F9 !important;
+    }
+    /* Make download buttons outlined */
+    div[data-testid="stDownloadButton"] > button {
+        background-color: transparent !important;
+        color: #4D68F9 !important;
+        border: 2px solid #4D68F9 !important;
         padding: 0.25rem 0.75rem !important;
         font-size: 0.875rem !important;
         height: 2.5rem !important;
     }
     div[data-testid="stDownloadButton"] > button:hover {
-        background-color: #3D58E9 !important;
+        background-color: #4D68F9 !important;
         color: white !important;
+        border: 2px solid #4D68F9 !important;
     }
     </style>
     """, unsafe_allow_html=True)

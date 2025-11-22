@@ -179,19 +179,24 @@ def show_documents_page():
     
     # Add uploaded files to session state
     if uploaded_files:
-        for uploaded_file in uploaded_files:
-            # Check if file already exists
-            if not any(doc['name'] == uploaded_file.name for doc in st.session_state.uploaded_documents):
-                from datetime import datetime
-                doc_info = {
-                    'name': uploaded_file.name,
-                    'size': uploaded_file.size,
-                    'type': uploaded_file.type,
-                    'uploaded_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'file': uploaded_file
-                }
-                st.session_state.uploaded_documents.append(doc_info)
-        st.success(f"Uploaded {len(uploaded_files)} file(s)")
+        with st.spinner('Processing documents...'):
+            import time
+            time.sleep(1)  # Simulate processing time - replace with actual processing
+            
+            for uploaded_file in uploaded_files:
+                # Check if file already exists
+                if not any(doc['name'] == uploaded_file.name for doc in st.session_state.uploaded_documents):
+                    from datetime import datetime
+                    doc_info = {
+                        'name': uploaded_file.name,
+                        'size': uploaded_file.size,
+                        'type': uploaded_file.type,
+                        'uploaded_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        'file': uploaded_file
+                    }
+                    st.session_state.uploaded_documents.append(doc_info)
+        
+        st.success(f"Successfully processed {len(uploaded_files)} file(s)!")
         st.rerun()
     
     st.divider()

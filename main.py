@@ -279,7 +279,7 @@ def show_my_documents_page():
         # Display documents in a table format
         for idx, doc in enumerate(st.session_state.uploaded_documents):
             with st.container(border=True):
-                col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+                col1, col2, col3, col4 = st.columns([3, 2, 2, 1.5])
                 
                 with col1:
                     st.markdown(f"**{doc['name']}**")
@@ -296,46 +296,21 @@ def show_my_documents_page():
                     st.caption(f"Uploaded: {doc['uploaded_date']}")
                 
                 with col4:
-                    # View/Download button
-                    if st.button("View", key=f"view_doc_{idx}", type="secondary"):
-                        st.session_state.viewing_doc = doc
-                        st.session_state.viewing_doc_idx = idx
+                    # Download button
+                    st.download_button(
+                        label="Download",
+                        data=doc['file'].getvalue(),
+                        file_name=doc['name'],
+                        mime=doc['type'],
+                        key=f"download_doc_{idx}",
+                        type="secondary",
+                        use_container_width=True
+                    )
                     
                     # Delete button
-                    if st.button("Delete", key=f"delete_doc_{idx}", type="secondary"):
+                    if st.button("Delete", key=f"delete_doc_{idx}", type="secondary", use_container_width=True):
                         st.session_state.uploaded_documents.pop(idx)
                         st.rerun()
-        
-        # Show document viewer if a document is selected
-        if 'viewing_doc' in st.session_state and st.session_state.viewing_doc:
-            st.divider()
-            st.markdown("### Document Viewer")
-            doc = st.session_state.viewing_doc
-            
-            st.markdown(f"**Viewing:** {doc['name']}")
-            
-            # Download button
-            st.download_button(
-                label="Download",
-                data=doc['file'].getvalue(),
-                file_name=doc['name'],
-                mime=doc['type']
-            )
-            
-            # Display content based on file type
-            if doc['type'] == 'application/pdf':
-                st.info("PDF preview - Download to view the full document")
-            elif doc['type'] in ['image/png', 'image/jpeg', 'image/jpg']:
-                st.image(doc['file'])
-            elif doc['type'] in ['text/plain', 'text/csv']:
-                st.text(doc['file'].getvalue().decode('utf-8'))
-            else:
-                st.info("Preview not available for this file type. Use the download button to view.")
-            
-            if st.button("Close Viewer"):
-                del st.session_state.viewing_doc
-                del st.session_state.viewing_doc_idx
-                st.rerun()
 
 def show_events_page():
     """Display the events page for selected case"""

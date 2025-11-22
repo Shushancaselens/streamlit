@@ -30,6 +30,8 @@ if 'current_page' not in st.session_state:
     st.session_state.current_page = 'home'
 if 'processed_docs' not in st.session_state:
     st.session_state.processed_docs = None
+if 'uploaded_filename' not in st.session_state:
+    st.session_state.uploaded_filename = None
 
 def process_pdf_with_ai(uploaded_file):
     """
@@ -71,8 +73,7 @@ def show_home_page():
     
     if uploaded_file is not None:
         # Check if this is a new file or already processed
-        if (st.session_state.processed_docs is None or 
-            st.session_state.processed_docs.get('filename') != uploaded_file.name):
+        if (st.session_state.uploaded_filename != uploaded_file.name):
             
             st.success(f"✅ File uploaded: {uploaded_file.name}")
             
@@ -105,50 +106,75 @@ def show_home_page():
                 'doc2': doc2,
                 'filename': uploaded_file.name
             }
+            st.session_state.uploaded_filename = uploaded_file.name
             
             # Clear progress indicators
             progress_bar.empty()
             status_text.empty()
             
+            # Navigate to documents page
+            st.session_state.current_page = 'documents'
             st.rerun()
+
+def show_documents_page():
+    """Display the generated documents page"""
+    if st.session_state.processed_docs is None:
+        st.error("No documents available. Returning to home page...")
+        st.session_state.current_page = 'home'
+        st.rerun()
+        return
     
-    # Show download buttons if documents are ready
-    if st.session_state.processed_docs is not None:
-        st.divider()
-        st.markdown("### 📥 Generated Documents Ready")
-        st.success("Your documents have been successfully generated!")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            with st.container(border=True):
-                st.markdown("#### 📄 Document 1: Summary Report")
-                st.markdown("Contains the summary and key findings from your document.")
-                st.download_button(
-                    label="⬇️ Download Document 1",
-                    data=st.session_state.processed_docs['doc1'],
-                    file_name="document_1_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True
-                )
-        
-        with col2:
-            with st.container(border=True):
-                st.markdown("#### 📄 Document 2: Detailed Analysis")
-                st.markdown("Contains the detailed analysis and comprehensive insights.")
-                st.download_button(
-                    label="⬇️ Download Document 2",
-                    data=st.session_state.processed_docs['doc2'],
-                    file_name="document_2_analysis.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True
-                )
-        
-        # Reset button
-        st.divider()
-        if st.button("🔄 Process Another Document", type="secondary"):
-            st.session_state.processed_docs = None
-            st.rerun()
+    # Sidebar with user info only
+    with st.sidebar:
+        st.markdown("**User:** shushan@caselens.tech")
+    
+    # Back button and header
+    if st.button("← Back to Upload", type="secondary"):
+        st.session_state.current_page = 'home'
+        st.rerun()
+    
+    st.markdown(f"### Generated Documents")
+    st.markdown(f"**Source:** {st.session_state.processed_docs['filename']}")
+    st.divider()
+    
+    st.success("✅ Your documents have been successfully generated!")
+    
+    # Display download cards
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        with st.container(border=True):
+            st.markdown("#### 📄 Document 1: Summary Report")
+            st.markdown("Contains the summary and key findings from your document.")
+            st.markdown("")
+            st.download_button(
+                label="⬇️ Download Document 1",
+                data=st.session_state.processed_docs['doc1'],
+                file_name="document_1_summary.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                use_container_width=True
+            )
+    
+    with col2:
+        with st.container(border=True):
+            st.markdown("#### 📄 Document 2: Detailed Analysis")
+            st.markdown("Contains the detailed analysis and comprehensive insights.")
+            st.markdown("")
+            st.download_button(
+                label="⬇️ Download Document 2",
+                data=st.session_state.processed_docs['doc2'],
+                file_name="document_2_analysis.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                use_container_width=True
+            )
+    
+    # Reset button
+    st.divider()
+    if st.button("🔄 Process Another Document", type="secondary", use_container_width=False):
+        st.session_state.processed_docs = None
+        st.session_state.uploaded_filename = None
+        st.session_state.current_page = 'home'
+        st.rerun()
 
 def show_settings_page():
     """Display the settings page"""
@@ -176,6 +202,8 @@ def show_settings_page():
 def main():
     if st.session_state.current_page == 'home':
         show_home_page()
+    elif st.session_state.current_page == 'documents':
+        show_documents_page()
     elif st.session_state.current_page == 'settings':
         show_settings_page()
 

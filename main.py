@@ -9,6 +9,32 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom CSS for buttons
+st.markdown("""
+    <style>
+    /* All buttons - simple with borders */
+    div[data-testid="stButton"] > button {
+        background-color: transparent !important;
+        color: inherit !important;
+        border: 1px solid rgba(49, 51, 63, 0.2) !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background-color: rgba(49, 51, 63, 0.05) !important;
+        border: 1px solid rgba(49, 51, 63, 0.4) !important;
+    }
+    /* Make download buttons simple with borders */
+    div[data-testid="stDownloadButton"] > button {
+        background-color: transparent !important;
+        color: inherit !important;
+        border: 1px solid rgba(49, 51, 63, 0.2) !important;
+    }
+    div[data-testid="stDownloadButton"] > button:hover {
+        background-color: rgba(49, 51, 63, 0.05) !important;
+        border: 1px solid rgba(49, 51, 63, 0.4) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Initialize session state
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'home'

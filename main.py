@@ -100,9 +100,9 @@ def show_home_page():
     st.markdown("### My Cases")
     st.divider()
     
-    # Display cases in a grid layout (3 cards per row for smaller cards)
-    for i in range(0, len(cases), 3):
-        cols = st.columns(3)
+    # Display cases in a grid layout (2 cards per row)
+    for i in range(0, len(cases), 2):
+        cols = st.columns(2)
         
         for j, col in enumerate(cols):
             if i + j < len(cases):
@@ -111,22 +111,27 @@ def show_home_page():
                 with col:
                     # Create a card using Streamlit native container with border
                     with st.container(border=True):
-                        # Case name as heading (clickable area will be button below)
-                        st.markdown(f"**{case['name']}**")
+                        # Case name as heading
+                        st.markdown(f"### {case['name']}")
+                        st.markdown("")  # Spacing
                         
-                        # Case details as tags/badges using columns
-                        col1, col2, col3 = st.columns(3)
+                        # Case description
+                        st.markdown(f"{case['description']}")
+                        st.markdown("")  # Spacing
+                        
+                        # Case details as larger tags/metrics
+                        col1, col2 = st.columns(2)
                         with col1:
-                            st.caption(f"`{case['status']}`")
+                            st.metric(label="Status", value=case['status'])
+                            st.metric(label="Documents", value=case['documents'])
                         with col2:
-                            st.caption(f"`{case['documents']} docs`")
-                        with col3:
-                            st.caption(f"`{case['last_updated']}`")
+                            st.metric(label="Date Range", value=case['date_range'][:10])
+                            st.metric(label="Last Updated", value=case['last_updated'])
                         
-                        st.markdown("")  # Small spacing
+                        st.markdown("")  # Spacing
                         
-                        # Smaller button at bottom
-                        if st.button("Open", key=f"case_{case['id']}", use_container_width=True, type="primary"):
+                        # Button at bottom
+                        if st.button("Open Case", key=f"case_{case['id']}", use_container_width=True, type="primary"):
                             navigate_to_events(case)
 
 def show_events_page():

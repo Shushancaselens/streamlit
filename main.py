@@ -120,28 +120,30 @@ def show_home_page():
             st.markdown("### 📥 Generated Documents Ready")
             st.success("✅ Your documents have been successfully generated!")
             
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                with st.container(border=True):
+            # Document 1
+            with st.container(border=True):
+                col_title, col_download = st.columns([3, 1])
+                with col_title:
                     st.markdown("#### 📄 Document 1: Summary Report")
                     st.markdown("Contains the summary and key findings from your document.")
-                    st.markdown("")
+                with col_download:
                     st.download_button(
-                        label="⬇️ Download Document 1",
+                        label="⬇️ Download",
                         data=st.session_state.processed_docs['doc1'],
                         file_name="document_1_summary.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         use_container_width=True
                     )
             
-            with col2:
-                with st.container(border=True):
+            # Document 2
+            with st.container(border=True):
+                col_title, col_download = st.columns([3, 1])
+                with col_title:
                     st.markdown("#### 📄 Document 2: Detailed Analysis")
                     st.markdown("Contains the detailed analysis and comprehensive insights.")
-                    st.markdown("")
+                with col_download:
                     st.download_button(
-                        label="⬇️ Download Document 2",
+                        label="⬇️ Download",
                         data=st.session_state.processed_docs['doc2'],
                         file_name="document_2_analysis.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

@@ -124,8 +124,12 @@ def show_home_page():
                             if st.button("View", key=f"case_{case['id']}", type="secondary"):
                                 navigate_to_events(case)
                         
-                        # Case description
-                        st.caption(case['description'])
+                        # Case description with fixed height to keep cards uniform
+                        st.markdown(f"""
+                        <div style="height: 48px; overflow: hidden; text-overflow: ellipsis;">
+                        <span style="color: #6c757d; font-size: 0.875rem;">{case['description']}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
                         
                         st.markdown("")  # Spacing
                         

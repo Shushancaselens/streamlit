@@ -89,8 +89,6 @@ def show_home_page():
         # Check if this is a new file
         if st.session_state.uploaded_filename != uploaded_file.name:
             
-            st.info(f"File uploaded: {uploaded_file.name}")
-            
             # Automatically start AI analysis - show progress
             progress_bar = st.progress(0, text="AI is analyzing your document...")
             time.sleep(1)

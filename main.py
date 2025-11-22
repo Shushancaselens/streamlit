@@ -210,9 +210,9 @@ def show_upload_documents_page():
         
         # Show the processed documents
         st.markdown("### Processed Documents")
-        for doc in newly_added:
+        for idx, doc in enumerate(newly_added):
             with st.container(border=True):
-                col1, col2 = st.columns([3, 1])
+                col1, col2, col3 = st.columns([3, 1, 1])
                 with col1:
                     st.markdown(f"**{doc['name']}**")
                     file_size_kb = doc['size'] / 1024
@@ -222,6 +222,15 @@ def show_upload_documents_page():
                         st.caption(f"Type: {doc['type']} | Size: {file_size_kb:.2f} KB")
                 with col2:
                     st.markdown("✓ Processed")
+                with col3:
+                    st.download_button(
+                        label="Download",
+                        data=doc['file'].getvalue(),
+                        file_name=doc['name'],
+                        mime=doc['type'],
+                        key=f"download_processed_{idx}",
+                        type="secondary"
+                    )
     
     st.divider()
     

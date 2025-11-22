@@ -128,34 +128,21 @@ def show_home_page():
         if st.session_state.processed_docs is not None:
             st.markdown("### Results")
             
-            import pandas as pd
-            
-            # Create dataframe for table
-            df = pd.DataFrame({
-                'No.': [1, 2],
-                'Document': ['Summary Report', 'Detailed Analysis'],
-                'File Name': ['document_1_summary.docx', 'document_2_analysis.docx']
-            })
-            
-            # Display table
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            
-            st.markdown("")
-            
-            # Download buttons below table
             col1, col2 = st.columns(2)
+            
             with col1:
                 st.download_button(
-                    label="Download Document 1",
+                    label="Document 1: Summary Report",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
                     key="download1"
                 )
+            
             with col2:
                 st.download_button(
-                    label="Download Document 2",
+                    label="Document 2: Detailed Analysis",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

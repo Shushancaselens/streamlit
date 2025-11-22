@@ -121,9 +121,9 @@ def show_home_page():
             st.markdown("### Results")
             
             # Document 1
-            col1, col2 = st.columns([4, 1])
+            col1, col2 = st.columns([5, 1])
             with col1:
-                st.markdown("📄 **document_1_summary.docx** 150KB")
+                st.markdown("📄 document_1_summary.docx 150KB")
             with col2:
                 st.download_button(
                     label="Download",
@@ -134,12 +134,10 @@ def show_home_page():
                     key="download1"
                 )
             
-            st.markdown("")
-            
             # Document 2
-            col1, col2 = st.columns([4, 1])
+            col1, col2 = st.columns([5, 1])
             with col1:
-                st.markdown("📄 **document_2_analysis.docx** 200KB")
+                st.markdown("📄 document_2_analysis.docx 200KB")
             with col2:
                 st.download_button(
                     label="Download",

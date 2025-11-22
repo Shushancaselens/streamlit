@@ -136,21 +136,19 @@ def show_home_page():
             
             with col1:
                 st.download_button(
-                    label="Document 1: Summary Report (Word Doc)",
+                    label="Document 1: Summary Report",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
                     key="download1"
                 )
             
             with col2:
                 st.download_button(
-                    label="Document 2: Detailed Analysis (Word Doc)",
+                    label="Document 2: Detailed Analysis",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
                     key="download2"
                 )
 

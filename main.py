@@ -22,6 +22,19 @@ st.markdown("""
         background-color: #3D58E9 !important;
         color: white !important;
     }
+    /* Make download buttons smaller */
+    div[data-testid="stDownloadButton"] > button {
+        background-color: #4D68F9 !important;
+        color: white !important;
+        border: none !important;
+        padding: 0.25rem 0.75rem !important;
+        font-size: 0.875rem !important;
+        height: 2.5rem !important;
+    }
+    div[data-testid="stDownloadButton"] > button:hover {
+        background-color: #3D58E9 !important;
+        color: white !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -123,7 +136,7 @@ def show_home_page():
             
             with col1:
                 st.download_button(
-                    label="Document 1: Summary Report",
+                    label="Document 1: Summary Report (Word Doc)",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -133,7 +146,7 @@ def show_home_page():
             
             with col2:
                 st.download_button(
-                    label="Document 2: Detailed Analysis",
+                    label="Document 2: Detailed Analysis (Word Doc)",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

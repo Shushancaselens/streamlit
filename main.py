@@ -117,11 +117,11 @@ def show_home_page():
                     # Create a card using Streamlit native container with border
                     with st.container(border=True):
                         # Case name with View button - more space for name to handle longer text
-                        col_name, col_btn = st.columns([5, 1])
+                        col_name, col_btn = st.columns([4, 1])
                         with col_name:
                             st.markdown(f"**{case['name']}**")
                         with col_btn:
-                            if st.button("View", key=f"case_{case['id']}", type="secondary"):
+                            if st.button("→", key=f"case_{case['id']}", type="secondary", help="View case"):
                                 navigate_to_events(case)
                         
                         # Case description

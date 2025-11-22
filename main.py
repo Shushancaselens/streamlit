@@ -122,9 +122,8 @@ def show_home_page():
             col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown("**Document 1: Summary Report**")
                 st.download_button(
-                    label="Download",
+                    label="Document 1: Summary Report",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -133,9 +132,8 @@ def show_home_page():
                 )
             
             with col2:
-                st.markdown("**Document 2: Detailed Analysis**")
                 st.download_button(
-                    label="Download",
+                    label="Document 2: Detailed Analysis",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

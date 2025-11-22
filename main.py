@@ -116,12 +116,8 @@ def show_home_page():
                 with col:
                     # Create a card using Streamlit native container with border
                     with st.container(border=True):
-                        # Case name with View button on same line (more space for name)
-                        col_name, col_btn = st.columns([4, 1])
-                        with col_name:
-                            st.markdown(f"**{case['name']}**")
-                        with col_btn:
-                            st.button("View", key=f"case_{case['id']}", type="secondary", on_click=navigate_to_events, args=(case,))
+                        # Case name
+                        st.markdown(f"**{case['name']}**")
                         
                         # Case description
                         st.caption(case['description'])
@@ -135,10 +131,16 @@ def show_home_page():
                         col1, col2 = st.columns(2)
                         with col1:
                             st.markdown(f"**Status:** :blue-background[{case['status']}]")
-                            st.markdown(f"**Documents:** :green-background[{case['documents']} docs]")
+                            st.markdown(f"**Documents:** :green-background[{case['documents']}]")
                         with col2:
-                            st.markdown(f"**Events:** :orange-background[{case['num_events']} events]")
+                            st.markdown(f"**Events:** :orange-background[{case['num_events']}]")
                             st.markdown(f"**Period:** :gray-background[{date_range_short}]")
+                        
+                        st.markdown("")  # Spacing
+                        
+                        # View button at bottom
+                        if st.button("View", key=f"case_{case['id']}", type="secondary", use_container_width=True):
+                            navigate_to_events(case)
 
 def show_events_page():
     """Display the events page for selected case"""

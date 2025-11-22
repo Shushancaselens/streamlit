@@ -22,11 +22,15 @@ st.markdown("""
         background-color: rgba(49, 51, 63, 0.05) !important;
         border: 1px solid rgba(49, 51, 63, 0.4) !important;
     }
-    /* Make download buttons simple with borders */
+    /* Make download buttons simple with borders and compact */
     div[data-testid="stDownloadButton"] > button {
         background-color: transparent !important;
         color: inherit !important;
         border: 1px solid rgba(49, 51, 63, 0.2) !important;
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.875rem !important;
+        height: auto !important;
+        min-height: 2rem !important;
     }
     div[data-testid="stDownloadButton"] > button:hover {
         background-color: rgba(49, 51, 63, 0.05) !important;
@@ -133,8 +137,6 @@ def show_home_page():
                     use_container_width=True,
                     key="download1"
                 )
-            
-            st.divider()
             
             # Document 2
             col1, col2 = st.columns([4, 1])

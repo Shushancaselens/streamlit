@@ -2,10 +2,22 @@ import streamlit as st
 from datetime import datetime
 import time
 import io
-from docx import Document
-from docx.shared import Pt, RGBColor, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-import PyPDF2
+
+try:
+    from docx import Document
+    from docx.shared import Pt, RGBColor, Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    DOCX_AVAILABLE = True
+except ImportError:
+    DOCX_AVAILABLE = False
+    st.error("python-docx is not installed. Please install it using: pip install python-docx")
+
+try:
+    import PyPDF2
+    PYPDF2_AVAILABLE = True
+except ImportError:
+    PYPDF2_AVAILABLE = False
+    st.error("PyPDF2 is not installed. Please install it using: pip install PyPDF2")
 
 # Page configuration
 st.set_page_config(
@@ -355,6 +367,13 @@ def show_upload_page():
     # Header
     st.markdown("### Upload Documents")
     st.divider()
+    
+    # Check if required libraries are available
+    if not DOCX_AVAILABLE or not PYPDF2_AVAILABLE:
+        st.error("⚠️ Required libraries are missing. Please install them:")
+        st.code("pip install python-docx PyPDF2", language="bash")
+        st.info("After installation, restart the Streamlit app.")
+        return
     
     st.markdown("""
     Upload a PDF document to process. The AI will analyze the document and generate:

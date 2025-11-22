@@ -83,14 +83,15 @@ def show_home_page():
     # Upload section
     st.markdown("Upload typewritten or handwritten scanned PDF files")
     
-    uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
+    uploaded_file = st.file_uploader("Choose PDF files", type=['pdf'], accept_multiple_files=True)
     
-    if uploaded_file is not None:
-        # Check if this is a new file
-        if st.session_state.uploaded_filename != uploaded_file.name:
+    if uploaded_file is not None and len(uploaded_file) > 0:
+        # Check if these are new files
+        file_names = [f.name for f in uploaded_file]
+        if st.session_state.uploaded_filename != str(file_names):
             
             # Automatically start AI analysis - show progress
-            progress_bar = st.progress(0, text="AI is analyzing your document...")
+            progress_bar = st.progress(0, text="AI is analyzing your documents...")
             time.sleep(1)
             
             progress_bar.progress(33, text="Generating Document 1...")
@@ -99,7 +100,7 @@ def show_home_page():
             progress_bar.progress(66, text="Generating Document 2...")
             time.sleep(1)
             
-            # Process the document
+            # Process all uploaded files
             doc1, doc2 = process_pdf_with_ai(uploaded_file)
             
             progress_bar.progress(100, text="Processing complete!")
@@ -109,9 +110,9 @@ def show_home_page():
             st.session_state.processed_docs = {
                 'doc1': doc1,
                 'doc2': doc2,
-                'filename': uploaded_file.name
+                'filename': ', '.join(file_names)
             }
-            st.session_state.uploaded_filename = uploaded_file.name
+            st.session_state.uploaded_filename = str(file_names)
             
             # Clear progress bar
             progress_bar.empty()

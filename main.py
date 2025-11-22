@@ -5,7 +5,7 @@ import time
 # Page configuration
 st.set_page_config(
     page_title="CaseLens - Home",
-    page_icon="🔍",
+    page_icon="C",
     layout="wide"
 )
 
@@ -75,28 +75,28 @@ def show_home_page():
         # Check if this is a new file
         if st.session_state.uploaded_filename != uploaded_file.name:
             
-            st.info(f"📄 File uploaded: {uploaded_file.name}")
+            st.info(f"File uploaded: {uploaded_file.name}")
             
             # Automatically start AI analysis - show progress
             progress_bar = st.progress(0)
             status_text = st.empty()
             
-            status_text.text("🤖 AI is analyzing your document...")
+            status_text.text("AI is analyzing your document...")
             progress_bar.progress(25)
             time.sleep(1)
             
-            status_text.text("📝 Generating Document 1...")
+            status_text.text("Generating Document 1...")
             progress_bar.progress(50)
             time.sleep(1)
             
-            status_text.text("📄 Generating Document 2...")
+            status_text.text("Generating Document 2...")
             progress_bar.progress(75)
             time.sleep(1)
             
             # Process the document
             doc1, doc2 = process_pdf_with_ai(uploaded_file)
             
-            status_text.text("✅ Processing complete!")
+            status_text.text("Processing complete!")
             progress_bar.progress(100)
             time.sleep(0.5)
             
@@ -117,39 +117,45 @@ def show_home_page():
         # Show download section if documents are ready
         if st.session_state.processed_docs is not None:
             st.divider()
-            st.markdown("### 📥 Generated Documents")
+            st.markdown("### Generated Documents")
             
-            # Document 1
-            with st.container(border=True):
-                col_title, col_download = st.columns([3, 1])
-                with col_title:
-                    st.markdown("**Document 1: Summary Report**")
-                with col_download:
-                    st.download_button(
-                        label="⬇️ Download",
-                        data=st.session_state.processed_docs['doc1'],
-                        file_name="document_1_summary.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        use_container_width=True
-                    )
+            # Create table using dataframe
+            import pandas as pd
             
-            # Document 2
-            with st.container(border=True):
-                col_title, col_download = st.columns([3, 1])
-                with col_title:
-                    st.markdown("**Document 2: Detailed Analysis**")
-                with col_download:
-                    st.download_button(
-                        label="⬇️ Download",
-                        data=st.session_state.processed_docs['doc2'],
-                        file_name="document_2_analysis.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        use_container_width=True
-                    )
+            # Prepare table data
+            table_data = {
+                'Document': ['Document 1: Summary Report', 'Document 2: Detailed Analysis'],
+                'File Name': ['document_1_summary.docx', 'document_2_analysis.docx']
+            }
+            df = pd.DataFrame(table_data)
+            
+            # Display table
+            st.dataframe(df, use_container_width=True, hide_index=True)
+            
+            st.markdown("")
+            
+            # Download buttons below table
+            col1, col2 = st.columns(2)
+            with col1:
+                st.download_button(
+                    label="Download Document 1",
+                    data=st.session_state.processed_docs['doc1'],
+                    file_name="document_1_summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
+                )
+            with col2:
+                st.download_button(
+                    label="Download Document 2",
+                    data=st.session_state.processed_docs['doc2'],
+                    file_name="document_2_analysis.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
+                )
             
             # Reset button
             st.divider()
-            if st.button("🔄 Upload New Document", type="secondary"):
+            if st.button("Upload New Document", type="secondary"):
                 st.session_state.processed_docs = None
                 st.session_state.uploaded_filename = None
                 st.rerun()

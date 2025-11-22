@@ -125,7 +125,7 @@ def show_home_page():
             st.markdown("### Results")
             
             # Document 1
-            col1, col2 = st.columns([4, 1])
+            col1, col2 = st.columns([5, 1])
             with col1:
                 st.markdown("📄 **document_1_summary.docx** &nbsp;&nbsp; 15.2KB")
             with col2:
@@ -139,7 +139,7 @@ def show_home_page():
                 )
             
             # Document 2
-            col1, col2 = st.columns([4, 1])
+            col1, col2 = st.columns([5, 1])
             with col1:
                 st.markdown("📄 **document_2_analysis.docx** &nbsp;&nbsp; 18.5KB")
             with col2:

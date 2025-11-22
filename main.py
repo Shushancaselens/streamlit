@@ -117,15 +117,12 @@ def show_home_page():
         # Show download section if documents are ready
         if st.session_state.processed_docs is not None:
             st.divider()
-            st.markdown("### Generated Documents")
+            st.markdown("### Results")
             
-            # Document 1
-            col1, col2, col3 = st.columns([2, 2, 1])
+            col1, col2 = st.columns(2)
+            
             with col1:
-                st.text("Document 1: Summary Report")
-            with col2:
-                st.text("document_1_summary.docx")
-            with col3:
+                st.markdown("**Document 1: Summary Report**")
                 st.download_button(
                     label="Download",
                     data=st.session_state.processed_docs['doc1'],
@@ -135,15 +132,8 @@ def show_home_page():
                     key="download1"
                 )
             
-            st.divider()
-            
-            # Document 2
-            col1, col2, col3 = st.columns([2, 2, 1])
-            with col1:
-                st.text("Document 2: Detailed Analysis")
             with col2:
-                st.text("document_2_analysis.docx")
-            with col3:
+                st.markdown("**Document 2: Detailed Analysis**")
                 st.download_button(
                     label="Download",
                     data=st.session_state.processed_docs['doc2'],

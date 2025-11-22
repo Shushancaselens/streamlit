@@ -131,49 +131,28 @@ def show_home_page():
         if st.session_state.processed_docs is not None:
             st.markdown("### Results")
             
-            # Create table header
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col1:
-                st.markdown("**No.**")
-            with col2:
-                st.markdown("**Document**")
-            with col3:
-                st.markdown("**Action**")
+            col1, col2 = st.columns(2)
             
-            st.divider()
-            
-            # Document 1 row
-            col1, col2, col3 = st.columns([1, 2, 1])
             with col1:
-                st.text("1")
-            with col2:
-                st.text("Summary Report")
-            with col3:
                 st.download_button(
-                    label="Download",
+                    label="Document 1: Summary Report",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
-                    key="download1"
+                    key="download1",
+                    type="secondary"
                 )
             
-            st.divider()
-            
-            # Document 2 row
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col1:
-                st.text("2")
             with col2:
-                st.text("Detailed Analysis")
-            with col3:
                 st.download_button(
-                    label="Download",
+                    label="Document 2: Detailed Analysis",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
-                    key="download2"
+                    key="download2",
+                    type="secondary"
                 )
 
 def show_settings_page():

@@ -119,38 +119,38 @@ def show_home_page():
             st.divider()
             st.markdown("### Generated Documents")
             
-            # Create table using dataframe
-            import pandas as pd
-            
-            # Prepare table data
-            table_data = {
-                'Document': ['Document 1: Summary Report', 'Document 2: Detailed Analysis'],
-                'File Name': ['document_1_summary.docx', 'document_2_analysis.docx']
-            }
-            df = pd.DataFrame(table_data)
-            
-            # Display table
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            
-            st.markdown("")
-            
-            # Download buttons below table
-            col1, col2 = st.columns(2)
+            # Document 1
+            col1, col2, col3 = st.columns([2, 2, 1])
             with col1:
+                st.text("Document 1: Summary Report")
+            with col2:
+                st.text("document_1_summary.docx")
+            with col3:
                 st.download_button(
-                    label="Download Document 1",
+                    label="Download",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True
+                    use_container_width=True,
+                    key="download1"
                 )
+            
+            st.divider()
+            
+            # Document 2
+            col1, col2, col3 = st.columns([2, 2, 1])
+            with col1:
+                st.text("Document 2: Detailed Analysis")
             with col2:
+                st.text("document_2_analysis.docx")
+            with col3:
                 st.download_button(
-                    label="Download Document 2",
+                    label="Download",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True
+                    use_container_width=True,
+                    key="download2"
                 )
             
             # Reset button

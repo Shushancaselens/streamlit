@@ -124,14 +124,21 @@ def show_home_page():
                         
                         st.markdown("")  # Spacing
                         
-                        # Information as colorful Streamlit native badges
+                        # Information as colorful Streamlit native badges with labels
                         date_range_short = case['date_range'][:4] + '-' + case['date_range'][-4:]
                         
-                        st.markdown("**Tags**")
-                        st.markdown(f":blue-background[{case['status']}]")
-                        st.markdown(f":green-background[{case['documents']} docs]")
-                        st.markdown(f":orange-background[{case['num_events']} events]")
-                        st.markdown(f":gray-background[{date_range_short}]")
+                        # Display tags with labels in a grid
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.caption("Status")
+                            st.markdown(f":blue-background[{case['status']}]")
+                            st.caption("Documents")
+                            st.markdown(f":green-background[{case['documents']} docs]")
+                        with col2:
+                            st.caption("Events")
+                            st.markdown(f":orange-background[{case['num_events']} events]")
+                            st.caption("Period")
+                            st.markdown(f":gray-background[{date_range_short}]")
                         
                         st.markdown("")  # Spacing
                         

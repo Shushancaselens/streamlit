@@ -1,178 +1,182 @@
 import streamlit as st
-import anthropic
-import base64
-from docx import Document
-from docx.shared import Pt, RGBColor, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-import io
+from datetime import datetime
 import time
 
-# Page config
+# Page configuration
 st.set_page_config(
-    page_title="PDF to Word Converter",
-    page_icon="📄",
+    page_title="CaseLens - Home",
+    page_icon="🔍",
     layout="wide"
 )
 
-# Initialize Anthropic client
-@st.cache_resource
-def get_anthropic_client():
-    api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
-    if not api_key:
-        st.error("Please set ANTHROPIC_API_KEY in Streamlit secrets")
-        st.stop()
-    return anthropic.Anthropic(api_key=api_key)
+# Custom CSS for CaseLens blue buttons
+st.markdown("""
+    <style>
+    /* All buttons - filled with CaseLens blue */
+    div[data-testid="stButton"] > button {
+        background-color: #4D68F9 !important;
+        color: white !important;
+        border: none !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background-color: #3D58E9 !important;
+        color: white !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-def pdf_to_base64(pdf_file):
-    """Convert uploaded PDF to base64"""
-    return base64.standard_b64encode(pdf_file.read()).decode("utf-8")
+# Initialize session state for navigation
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'home'
+if 'processed_docs' not in st.session_state:
+    st.session_state.processed_docs = None
 
-def analyze_pdf_with_claude(pdf_base64):
-    """Send PDF to Claude for analysis"""
-    client = get_anthropic_client()
+def process_pdf_with_ai(uploaded_file):
+    """
+    Process the uploaded PDF with AI and generate two Word documents
+    Replace this function with your actual AI processing logic
+    """
+    # Here you would:
+    # 1. Extract text from PDF
+    # 2. Send to AI for processing
+    # 3. Generate two Word documents based on AI output
     
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=4000,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "document",
-                        "source": {
-                            "type": "base64",
-                            "media_type": "application/pdf",
-                            "data": pdf_base64,
-                        },
-                    },
-                    {
-                        "type": "text",
-                        "text": """Please analyze this document and provide TWO separate outputs:
-
-1. SUMMARY: A concise summary of the document (2-3 paragraphs)
-2. KEY_POINTS: A detailed list of key points, findings, and important information
-
-Format your response EXACTLY as:
-===SUMMARY===
-[Your summary here]
-
-===KEY_POINTS===
-[Your key points here]"""
-                    }
-                ],
-            }
-        ],
-    )
+    # For now, we'll create placeholder Word documents
+    # You'll need to replace this with actual docx generation using python-docx library
     
-    return message.content[0].text
+    doc1_content = f"Summary Report for {uploaded_file.name}"
+    doc2_content = f"Detailed Analysis for {uploaded_file.name}"
+    
+    return doc1_content, doc2_content
 
-def create_word_document(title, content):
-    """Create a Word document with the given content"""
-    doc = Document()
+def show_home_page():
+    """Display the home page with PDF upload"""
     
-    # Add title
-    title_paragraph = doc.add_heading(title, level=1)
-    title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # Sidebar with user info
+    with st.sidebar:
+        st.markdown("**User:** shushan@caselens.tech")
+        st.divider()
+        if st.button("Settings", use_container_width=True):
+            st.session_state.current_page = 'settings'
+            st.rerun()
     
-    # Add content
-    doc.add_paragraph(content)
+    # Header
+    st.markdown("### Upload Document")
+    st.divider()
     
-    # Save to bytes
-    doc_io = io.BytesIO()
-    doc.save(doc_io)
-    doc_io.seek(0)
+    # Upload section
+    st.markdown("Upload a PDF document to process with AI and generate two Word documents.")
     
-    return doc_io
-
-def parse_ai_response(response_text):
-    """Parse the AI response into summary and key points"""
-    parts = response_text.split("===SUMMARY===")
-    if len(parts) < 2:
-        return response_text[:len(response_text)//2], response_text[len(response_text)//2:]
+    uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
     
-    summary_and_rest = parts[1].split("===KEY_POINTS===")
-    summary = summary_and_rest[0].strip()
-    key_points = summary_and_rest[1].strip() if len(summary_and_rest) > 1 else ""
-    
-    return summary, key_points
-
-# Main app
-st.title("📄 PDF to Word Document Converter")
-st.write("Upload a PDF and get 2 Word documents generated by AI")
-
-# File uploader
-uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
-
-if uploaded_file is not None:
-    st.success(f"File uploaded: {uploaded_file.name}")
-    
-    # Process button
-    if st.button("🚀 Process Document", type="primary"):
+    if uploaded_file is not None:
+        st.success(f"✅ File uploaded: {uploaded_file.name}")
         
-        # Progress bar and status
-        progress_bar = st.progress(0)
-        status_text = st.empty()
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🚀 Process Document", type="primary", use_container_width=True):
+                # Show processing status with progress
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                status_text.text("🤖 AI is analyzing your document...")
+                progress_bar.progress(25)
+                time.sleep(1)
+                
+                status_text.text("📝 Generating Document 1...")
+                progress_bar.progress(50)
+                time.sleep(1)
+                
+                status_text.text("📄 Generating Document 2...")
+                progress_bar.progress(75)
+                time.sleep(1)
+                
+                # Process the document
+                doc1, doc2 = process_pdf_with_ai(uploaded_file)
+                
+                status_text.text("✅ Processing complete!")
+                progress_bar.progress(100)
+                time.sleep(0.5)
+                
+                # Store results in session state
+                st.session_state.processed_docs = {
+                    'doc1': doc1,
+                    'doc2': doc2,
+                    'filename': uploaded_file.name
+                }
+                
+                # Clear progress indicators
+                progress_bar.empty()
+                status_text.empty()
+                
+                st.rerun()
+    
+    # Show download buttons if documents are ready
+    if st.session_state.processed_docs is not None:
+        st.divider()
+        st.markdown("### 📥 Generated Documents Ready")
+        st.success("Your documents have been successfully generated!")
         
-        try:
-            # Step 1: Convert PDF to base64
-            status_text.text("📤 Uploading PDF...")
-            progress_bar.progress(20)
-            pdf_base64 = pdf_to_base64(uploaded_file)
-            
-            # Step 2: Analyze with Claude
-            status_text.text("🤖 AI is analyzing the document...")
-            progress_bar.progress(40)
-            ai_response = analyze_pdf_with_claude(pdf_base64)
-            
-            # Step 3: Parse response
-            status_text.text("📝 Generating Word documents...")
-            progress_bar.progress(70)
-            summary, key_points = parse_ai_response(ai_response)
-            
-            # Step 4: Create Word documents
-            doc1 = create_word_document("Document Summary", summary)
-            doc2 = create_word_document("Key Points & Findings", key_points)
-            
-            progress_bar.progress(100)
-            status_text.text("✅ Processing complete!")
-            
-            # Display results
-            st.success("Documents generated successfully!")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.subheader("📋 Document 1: Summary")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            with st.container(border=True):
+                st.markdown("#### 📄 Document 1: Summary Report")
+                st.markdown("Contains the summary and key findings from your document.")
                 st.download_button(
-                    label="⬇️ Download Summary",
-                    data=doc1,
-                    file_name=f"{uploaded_file.name.replace('.pdf', '')}_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    label="⬇️ Download Document 1",
+                    data=st.session_state.processed_docs['doc1'],
+                    file_name="document_1_summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
                 )
-                with st.expander("Preview Summary"):
-                    st.write(summary)
-            
-            with col2:
-                st.subheader("📊 Document 2: Key Points")
+        
+        with col2:
+            with st.container(border=True):
+                st.markdown("#### 📄 Document 2: Detailed Analysis")
+                st.markdown("Contains the detailed analysis and comprehensive insights.")
                 st.download_button(
-                    label="⬇️ Download Key Points",
-                    data=doc2,
-                    file_name=f"{uploaded_file.name.replace('.pdf', '')}_keypoints.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    label="⬇️ Download Document 2",
+                    data=st.session_state.processed_docs['doc2'],
+                    file_name="document_2_analysis.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
                 )
-                with st.expander("Preview Key Points"):
-                    st.write(key_points)
-            
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-            progress_bar.empty()
-            status_text.empty()
+        
+        # Reset button
+        st.divider()
+        if st.button("🔄 Process Another Document", type="secondary"):
+            st.session_state.processed_docs = None
+            st.rerun()
 
-else:
-    st.info("👆 Please upload a PDF file to get started")
+def show_settings_page():
+    """Display the settings page"""
+    
+    col1, col2 = st.columns([6, 1])
+    with col1:
+        if st.button("← Back"):
+            st.session_state.current_page = 'home'
+            st.rerun()
+        st.title("Settings")
+    
+    st.divider()
+    
+    st.markdown("### Account Settings")
+    
+    st.markdown("**Username / Email**")
+    email = st.text_input("", value="shushan@caselens.tech", disabled=True)
+    
+    st.divider()
+    
+    if st.button("Log out", type="primary"):
+        st.success("Logged out successfully!")
 
-# Footer
-st.markdown("---")
-st.markdown("*Powered by Claude AI & Streamlit*")
+# Main app logic
+def main():
+    if st.session_state.current_page == 'home':
+        show_home_page()
+    elif st.session_state.current_page == 'settings':
+        show_settings_page()
 
+if __name__ == "__main__":
+    main()

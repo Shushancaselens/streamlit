@@ -117,15 +117,13 @@ def show_home_page():
         # Show download section if documents are ready
         if st.session_state.processed_docs is not None:
             st.divider()
-            st.markdown("### 📥 Generated Documents Ready")
-            st.success("✅ Your documents have been successfully generated!")
+            st.markdown("### 📥 Generated Documents")
             
             # Document 1
             with st.container(border=True):
                 col_title, col_download = st.columns([3, 1])
                 with col_title:
-                    st.markdown("#### 📄 Document 1: Summary Report")
-                    st.markdown("Contains the summary and key findings from your document.")
+                    st.markdown("**Document 1: Summary Report**")
                 with col_download:
                     st.download_button(
                         label="⬇️ Download",
@@ -139,8 +137,7 @@ def show_home_page():
             with st.container(border=True):
                 col_title, col_download = st.columns([3, 1])
                 with col_title:
-                    st.markdown("#### 📄 Document 2: Detailed Analysis")
-                    st.markdown("Contains the detailed analysis and comprehensive insights.")
+                    st.markdown("**Document 2: Detailed Analysis**")
                 with col_download:
                     st.download_button(
                         label="⬇️ Download",
@@ -152,12 +149,10 @@ def show_home_page():
             
             # Reset button
             st.divider()
-            col1, col2, col3 = st.columns([2, 1, 2])
-            with col2:
-                if st.button("🔄 Upload New Document", type="secondary", use_container_width=True):
-                    st.session_state.processed_docs = None
-                    st.session_state.uploaded_filename = None
-                    st.rerun()
+            if st.button("🔄 Upload New Document", type="secondary"):
+                st.session_state.processed_docs = None
+                st.session_state.uploaded_filename = None
+                st.rerun()
 
 def show_settings_page():
     """Display the settings page"""

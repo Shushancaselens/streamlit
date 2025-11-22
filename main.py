@@ -70,46 +70,47 @@ def show_home_page():
     uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
     
     if uploaded_file is not None:
-        st.success(f"✅ File uploaded: {uploaded_file.name}")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🚀 Process Document", type="primary", use_container_width=True):
-                # Show processing status with progress
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                status_text.text("🤖 AI is analyzing your document...")
-                progress_bar.progress(25)
-                time.sleep(1)
-                
-                status_text.text("📝 Generating Document 1...")
-                progress_bar.progress(50)
-                time.sleep(1)
-                
-                status_text.text("📄 Generating Document 2...")
-                progress_bar.progress(75)
-                time.sleep(1)
-                
-                # Process the document
-                doc1, doc2 = process_pdf_with_ai(uploaded_file)
-                
-                status_text.text("✅ Processing complete!")
-                progress_bar.progress(100)
-                time.sleep(0.5)
-                
-                # Store results in session state
-                st.session_state.processed_docs = {
-                    'doc1': doc1,
-                    'doc2': doc2,
-                    'filename': uploaded_file.name
-                }
-                
-                # Clear progress indicators
-                progress_bar.empty()
-                status_text.empty()
-                
-                st.rerun()
+        # Check if this is a new file or already processed
+        if (st.session_state.processed_docs is None or 
+            st.session_state.processed_docs.get('filename') != uploaded_file.name):
+            
+            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            
+            # Automatically start AI analysis
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            status_text.text("🤖 AI is analyzing your document...")
+            progress_bar.progress(25)
+            time.sleep(1)
+            
+            status_text.text("📝 Generating Document 1...")
+            progress_bar.progress(50)
+            time.sleep(1)
+            
+            status_text.text("📄 Generating Document 2...")
+            progress_bar.progress(75)
+            time.sleep(1)
+            
+            # Process the document
+            doc1, doc2 = process_pdf_with_ai(uploaded_file)
+            
+            status_text.text("✅ Processing complete!")
+            progress_bar.progress(100)
+            time.sleep(0.5)
+            
+            # Store results in session state
+            st.session_state.processed_docs = {
+                'doc1': doc1,
+                'doc2': doc2,
+                'filename': uploaded_file.name
+            }
+            
+            # Clear progress indicators
+            progress_bar.empty()
+            status_text.empty()
+            
+            st.rerun()
     
     # Show download buttons if documents are ready
     if st.session_state.processed_docs is not None:

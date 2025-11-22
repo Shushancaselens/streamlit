@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import time
 
 # Page configuration
 st.set_page_config(
@@ -27,71 +28,29 @@ st.markdown("""
 # Initialize session state for navigation
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'home'
-if 'selected_case' not in st.session_state:
-    st.session_state.selected_case = None
+if 'processed_docs' not in st.session_state:
+    st.session_state.processed_docs = None
 
-# Sample case data (replace with your actual data)
-cases = [
-    {
-        "id": 1,
-        "name": "Hanessianadr Case 1",
-        "description": "Harris FRC Acquisition vs RESEARCH CORPORATION TECHNOLOGIES",
-        "documents": 156,
-        "num_events": 3,
-        "date_range": "1999-01-01 to 2025-09-30",
-        "status": "Active",
-        "last_updated": "2024-11-15"
-    },
-    {
-        "id": 2,
-        "name": "Patent Infringement Case 2",
-        "description": "Technology patent dispute involving multiple parties",
-        "documents": 243,
-        "num_events": 5,
-        "date_range": "2020-03-15 to 2025-06-30",
-        "status": "Active",
-        "last_updated": "2024-11-18"
-    },
-    {
-        "id": 3,
-        "name": "Contract Dispute Case 3",
-        "description": "Commercial contract breach and damages claim",
-        "documents": 89,
-        "num_events": 2,
-        "date_range": "2021-07-01 to 2024-12-31",
-        "status": "Pending",
-        "last_updated": "2024-11-10"
-    },
-    {
-        "id": 4,
-        "name": "Trademark Litigation Case 4",
-        "description": "Brand trademark infringement proceedings",
-        "documents": 312,
-        "num_events": 8,
-        "date_range": "2019-05-20 to 2025-08-15",
-        "status": "Active",
-        "last_updated": "2024-11-19"
-    },
-    {
-        "id": 5,
-        "name": "Arbitration Case 5",
-        "description": "International arbitration dispute resolution",
-        "documents": 178,
-        "num_events": 4,
-        "date_range": "2022-01-10 to 2025-11-30",
-        "status": "In Review",
-        "last_updated": "2024-11-12"
-    }
-]
-
-def navigate_to_events(case):
-    """Navigate to events page with selected case"""
-    st.session_state.selected_case = case
-    st.session_state.current_page = 'events'
-    st.rerun()
+def process_pdf_with_ai(uploaded_file):
+    """
+    Process the uploaded PDF with AI and generate two Word documents
+    Replace this function with your actual AI processing logic
+    """
+    # Here you would:
+    # 1. Extract text from PDF
+    # 2. Send to AI for processing
+    # 3. Generate two Word documents based on AI output
+    
+    # For now, we'll create placeholder Word documents
+    # You'll need to replace this with actual docx generation using python-docx library
+    
+    doc1_content = f"Summary Report for {uploaded_file.name}"
+    doc2_content = f"Detailed Analysis for {uploaded_file.name}"
+    
+    return doc1_content, doc2_content
 
 def show_home_page():
-    """Display the home page with case selection"""
+    """Display the home page with PDF upload"""
     
     # Sidebar with user info
     with st.sidebar:
@@ -101,110 +60,94 @@ def show_home_page():
             st.session_state.current_page = 'settings'
             st.rerun()
     
+    # Header
+    st.markdown("### Upload Document")
     st.divider()
     
-    # Display cases in a grid layout (3 cards per row)
-    for i in range(0, len(cases), 3):
-        cols = st.columns(3)
+    # Upload section
+    st.markdown("Upload a PDF document to process with AI and generate two Word documents.")
+    
+    uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
+    
+    if uploaded_file is not None:
+        st.success(f"✅ File uploaded: {uploaded_file.name}")
         
-        for j, col in enumerate(cols):
-            if i + j < len(cases):
-                case = cases[i + j]
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🚀 Process Document", type="primary", use_container_width=True):
+                # Show processing status with progress
+                progress_bar = st.progress(0)
+                status_text = st.empty()
                 
-                with col:
-                    # Create a card using Streamlit native container with border
-                    with st.container(border=True):
-                        # Case name with View button
-                        col_name, col_btn = st.columns([3, 1])
-                        with col_name:
-                            st.markdown(f"**{case['name']}**")
-                        with col_btn:
-                            if st.button("View", key=f"case_{case['id']}", type="secondary"):
-                                navigate_to_events(case)
-                        
-                        # Case description with fixed height to keep cards uniform
-                        st.markdown(f"""
-                        <div style="height: 48px; overflow: hidden; text-overflow: ellipsis;">
-                        <span style="color: #6c757d; font-size: 0.875rem;">{case['description']}</span>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        
-                        st.markdown("")  # Spacing
-                        
-                        # Information as colorful Streamlit native badges with labels
-                        date_range_short = case['date_range'][:4] + '-' + case['date_range'][-4:]
-                        
-                        # Display tags with labels inline
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.markdown(f"**Status:** :blue-background[{case['status']}]")
-                            st.markdown(f"**Documents:** :green-background[{case['documents']}]")
-                        with col2:
-                            st.markdown(f"**Events:** :orange-background[{case['num_events']}]")
-                            st.markdown(f"**Period:** :gray-background[{date_range_short}]")
-
-def show_events_page():
-    """Display the events page for selected case"""
-    if st.session_state.selected_case is None:
-        st.error("No case selected. Returning to home page...")
-        st.session_state.current_page = 'home'
-        st.rerun()
-        return
+                status_text.text("🤖 AI is analyzing your document...")
+                progress_bar.progress(25)
+                time.sleep(1)
+                
+                status_text.text("📝 Generating Document 1...")
+                progress_bar.progress(50)
+                time.sleep(1)
+                
+                status_text.text("📄 Generating Document 2...")
+                progress_bar.progress(75)
+                time.sleep(1)
+                
+                # Process the document
+                doc1, doc2 = process_pdf_with_ai(uploaded_file)
+                
+                status_text.text("✅ Processing complete!")
+                progress_bar.progress(100)
+                time.sleep(0.5)
+                
+                # Store results in session state
+                st.session_state.processed_docs = {
+                    'doc1': doc1,
+                    'doc2': doc2,
+                    'filename': uploaded_file.name
+                }
+                
+                # Clear progress indicators
+                progress_bar.empty()
+                status_text.empty()
+                
+                st.rerun()
     
-    case = st.session_state.selected_case
-    
-    # Sidebar with user info only
-    with st.sidebar:
-        st.markdown("**User:** shushan@caselens.tech")
-    
-    # Back button and header
-    if st.button("← Back to Cases", type="secondary"):
-        st.session_state.current_page = 'home'
-        st.rerun()
-    
-    st.markdown(f"### {case['name']}")
-    st.divider()
-    
-    # Tabs for different views
-    tab1, tab2 = st.tabs(["Card View", "Table View"])
-    
-    with tab1:
-        st.markdown("### Card View")
-        st.info("This is where your events will be displayed in card format (similar to your second screenshot)")
-        
-        # Sample events display
-        st.markdown("""
-        **Event 1999-00-00**  
-        In 1999, the definition of "Allowed Deductions" under the License Agreements between Harris FRC Acquisition, L.P. and RESEARCH CORPORATION TECHNOLOGIES, INC...
-        
-        1 Source
-        """)
-        
+    # Show download buttons if documents are ready
+    if st.session_state.processed_docs is not None:
         st.divider()
+        st.markdown("### 📥 Generated Documents Ready")
+        st.success("Your documents have been successfully generated!")
         
-        st.markdown("""
-        **Event 2008-00-00**  
-        From 2008 to 30 September 2015, a dispute in the ICC International Court of Arbitration (case number 27850/PDP) involves Harris FRC Acquisition...
+        col1, col2 = st.columns(2)
         
-        1 Source
-        """)
-    
-    with tab2:
-        st.markdown("### Table View")
-        st.info("This is where your events will be displayed in table format")
+        with col1:
+            with st.container(border=True):
+                st.markdown("#### 📄 Document 1: Summary Report")
+                st.markdown("Contains the summary and key findings from your document.")
+                st.download_button(
+                    label="⬇️ Download Document 1",
+                    data=st.session_state.processed_docs['doc1'],
+                    file_name="document_1_summary.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
+                )
         
-        # Sample table
-        import pandas as pd
-        sample_data = pd.DataFrame({
-            'Date': ['1999-00-00', '2008-00-00', '2008-01-01'],
-            'Description': [
-                'Definition of Allowed Deductions established',
-                'ICC Arbitration case initiated',
-                'Net sales reporting period begins'
-            ],
-            'Sources': [1, 1, 2]
-        })
-        st.dataframe(sample_data, use_container_width=True)
+        with col2:
+            with st.container(border=True):
+                st.markdown("#### 📄 Document 2: Detailed Analysis")
+                st.markdown("Contains the detailed analysis and comprehensive insights.")
+                st.download_button(
+                    label="⬇️ Download Document 2",
+                    data=st.session_state.processed_docs['doc2'],
+                    file_name="document_2_analysis.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True
+                )
+        
+        # Reset button
+        st.divider()
+        if st.button("🔄 Process Another Document", type="secondary"):
+            st.session_state.processed_docs = None
+            st.rerun()
 
 def show_settings_page():
     """Display the settings page"""
@@ -232,8 +175,6 @@ def show_settings_page():
 def main():
     if st.session_state.current_page == 'home':
         show_home_page()
-    elif st.session_state.current_page == 'events':
-        show_events_page()
     elif st.session_state.current_page == 'settings':
         show_settings_page()
 

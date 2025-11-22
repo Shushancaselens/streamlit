@@ -93,10 +93,16 @@ def navigate_to_events(case):
 def show_home_page():
     """Display the home page with case selection"""
     
-    # Sidebar with user info
+    # Sidebar with user info and navigation
     with st.sidebar:
         st.markdown("**User:** shushan@caselens.tech")
         st.divider()
+        
+        # Navigation buttons
+        if st.button("Documents", use_container_width=True):
+            st.session_state.current_page = 'documents'
+            st.rerun()
+        
         if st.button("Settings", use_container_width=True):
             st.session_state.current_page = 'settings'
             st.rerun()
@@ -142,6 +148,123 @@ def show_home_page():
                         with col2:
                             st.markdown(f"**Events:** :orange-background[{case['num_events']}]")
                             st.markdown(f"**Period:** :gray-background[{date_range_short}]")
+
+def show_documents_page():
+    """Display the documents page with upload and view functionality"""
+    
+    # Sidebar with user info
+    with st.sidebar:
+        st.markdown("**User:** shushan@caselens.tech")
+    
+    # Back button and header
+    if st.button("← Back to Cases", type="secondary"):
+        st.session_state.current_page = 'home'
+        st.rerun()
+    
+    st.title("Documents")
+    st.divider()
+    
+    # Initialize documents in session state if not exists
+    if 'uploaded_documents' not in st.session_state:
+        st.session_state.uploaded_documents = []
+    
+    # Upload section
+    st.markdown("### Upload New Documents")
+    uploaded_files = st.file_uploader(
+        "Choose files to upload",
+        accept_multiple_files=True,
+        type=['pdf', 'docx', 'doc', 'txt', 'xlsx', 'xls', 'csv', 'png', 'jpg', 'jpeg'],
+        key="doc_uploader"
+    )
+    
+    # Add uploaded files to session state
+    if uploaded_files:
+        for uploaded_file in uploaded_files:
+            # Check if file already exists
+            if not any(doc['name'] == uploaded_file.name for doc in st.session_state.uploaded_documents):
+                from datetime import datetime
+                doc_info = {
+                    'name': uploaded_file.name,
+                    'size': uploaded_file.size,
+                    'type': uploaded_file.type,
+                    'uploaded_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'file': uploaded_file
+                }
+                st.session_state.uploaded_documents.append(doc_info)
+        st.success(f"Uploaded {len(uploaded_files)} file(s)")
+        st.rerun()
+    
+    st.divider()
+    
+    # Display uploaded documents
+    st.markdown("### My Documents")
+    
+    if len(st.session_state.uploaded_documents) == 0:
+        st.info("No documents uploaded yet. Upload your first document above.")
+    else:
+        st.markdown(f"**Total Documents:** {len(st.session_state.uploaded_documents)}")
+        st.markdown("")
+        
+        # Display documents in a table format
+        for idx, doc in enumerate(st.session_state.uploaded_documents):
+            with st.container(border=True):
+                col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+                
+                with col1:
+                    st.markdown(f"**{doc['name']}**")
+                    st.caption(f"Type: {doc['type']}")
+                
+                with col2:
+                    file_size_kb = doc['size'] / 1024
+                    if file_size_kb > 1024:
+                        st.caption(f"Size: {file_size_kb/1024:.2f} MB")
+                    else:
+                        st.caption(f"Size: {file_size_kb:.2f} KB")
+                
+                with col3:
+                    st.caption(f"Uploaded: {doc['uploaded_date']}")
+                
+                with col4:
+                    # View/Download button
+                    if st.button("View", key=f"view_doc_{idx}", type="secondary"):
+                        st.session_state.viewing_doc = doc
+                        st.session_state.viewing_doc_idx = idx
+                    
+                    # Delete button
+                    if st.button("Delete", key=f"delete_doc_{idx}", type="secondary"):
+                        st.session_state.uploaded_documents.pop(idx)
+                        st.rerun()
+        
+        # Show document viewer if a document is selected
+        if 'viewing_doc' in st.session_state and st.session_state.viewing_doc:
+            st.divider()
+            st.markdown("### Document Viewer")
+            doc = st.session_state.viewing_doc
+            
+            st.markdown(f"**Viewing:** {doc['name']}")
+            
+            # Download button
+            st.download_button(
+                label="Download",
+                data=doc['file'].getvalue(),
+                file_name=doc['name'],
+                mime=doc['type']
+            )
+            
+            # Display content based on file type
+            if doc['type'] == 'application/pdf':
+                st.info("PDF preview - Download to view the full document")
+            elif doc['type'] in ['image/png', 'image/jpeg', 'image/jpg']:
+                st.image(doc['file'])
+            elif doc['type'] in ['text/plain', 'text/csv']:
+                st.text(doc['file'].getvalue().decode('utf-8'))
+            else:
+                st.info("Preview not available for this file type. Use the download button to view.")
+            
+            if st.button("Close Viewer"):
+                del st.session_state.viewing_doc
+                del st.session_state.viewing_doc_idx
+                st.rerun()
 
 def show_events_page():
     """Display the events page for selected case"""
@@ -232,6 +355,8 @@ def show_settings_page():
 def main():
     if st.session_state.current_page == 'home':
         show_home_page()
+    elif st.session_state.current_page == 'documents':
+        show_documents_page()
     elif st.session_state.current_page == 'events':
         show_events_page()
     elif st.session_state.current_page == 'settings':

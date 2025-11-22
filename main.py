@@ -138,9 +138,11 @@ def show_home_page():
                         
                         st.markdown("")  # Spacing
                         
-                        # Button at bottom
-                        if st.button("Open Case", key=f"case_{case['id']}", use_container_width=True, type="primary"):
-                            navigate_to_events(case)
+                        # Button at bottom (smaller, centered)
+                        col_btn = st.columns([1, 2, 1])
+                        with col_btn[1]:
+                            if st.button("View", key=f"case_{case['id']}", type="primary"):
+                                navigate_to_events(case)
 
 def show_events_page():
     """Display the events page for selected case"""

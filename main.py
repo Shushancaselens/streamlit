@@ -102,45 +102,34 @@ def show_home_page():
         if st.session_state.processed_docs is not None:
             st.markdown("### Results")
             
-            # Create a simple table layout
-            col1, col2, col3 = st.columns([1, 3, 2])
+            import pandas as pd
             
+            # Create dataframe for table
+            df = pd.DataFrame({
+                'No.': [1, 2],
+                'Document': ['Summary Report', 'Detailed Analysis'],
+                'File Name': ['document_1_summary.docx', 'document_2_analysis.docx']
+            })
+            
+            # Display table
+            st.dataframe(df, use_container_width=True, hide_index=True)
+            
+            st.markdown("")
+            
+            # Download buttons below table
+            col1, col2 = st.columns(2)
             with col1:
-                st.markdown("**No.**")
-            with col2:
-                st.markdown("**Document**")
-            with col3:
-                st.markdown("**Download**")
-            
-            st.markdown("---")
-            
-            # Row 1
-            col1, col2, col3 = st.columns([1, 3, 2])
-            with col1:
-                st.write("1")
-            with col2:
-                st.write("Summary Report")
-            with col3:
                 st.download_button(
-                    label="Download",
+                    label="Download Document 1",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     use_container_width=True,
                     key="download1"
                 )
-            
-            st.markdown("---")
-            
-            # Row 2
-            col1, col2, col3 = st.columns([1, 3, 2])
-            with col1:
-                st.write("2")
             with col2:
-                st.write("Detailed Analysis")
-            with col3:
                 st.download_button(
-                    label="Download",
+                    label="Download Document 2",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

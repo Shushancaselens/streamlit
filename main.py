@@ -140,13 +140,6 @@ def show_home_page():
                     use_container_width=True,
                     key="download2"
                 )
-            
-            # Reset button
-            st.divider()
-            if st.button("Upload New Document", type="secondary"):
-                st.session_state.processed_docs = None
-                st.session_state.uploaded_filename = None
-                st.rerun()
 
 def show_settings_page():
     """Display the settings page"""

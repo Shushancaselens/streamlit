@@ -129,7 +129,6 @@ def show_home_page():
         
         # Show download section if documents are ready
         if st.session_state.processed_docs is not None:
-            st.divider()
             st.markdown("### Results")
             
             col1, col2 = st.columns(2)

@@ -116,8 +116,8 @@ def show_home_page():
                         st.markdown("")  # Spacing
                         
                         # Information as colorful pills/badges
-                        st.pills("Status", [case['status']], selection_mode="single", disabled=True)
-                        st.pills("Info", [f"{case['documents']} docs", case['last_updated']], selection_mode="multi", disabled=True)
+                        st.pills("Status", [case['status']], key=f"status_{case['id']}", selection_mode="single", disabled=True)
+                        st.pills("Info", [f"{case['documents']} docs", case['last_updated']], key=f"info_{case['id']}", selection_mode="multi", disabled=True)
                         
                         st.markdown("")  # Spacing
                         

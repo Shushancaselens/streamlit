@@ -102,11 +102,27 @@ def show_home_page():
         if st.session_state.processed_docs is not None:
             st.markdown("### Results")
             
-            col1, col2 = st.columns(2)
+            # Create a simple table layout
+            col1, col2, col3 = st.columns([1, 3, 2])
             
             with col1:
+                st.markdown("**No.**")
+            with col2:
+                st.markdown("**Document**")
+            with col3:
+                st.markdown("**Download**")
+            
+            st.markdown("---")
+            
+            # Row 1
+            col1, col2, col3 = st.columns([1, 3, 2])
+            with col1:
+                st.write("1")
+            with col2:
+                st.write("Summary Report")
+            with col3:
                 st.download_button(
-                    label="Document 1: Summary Report",
+                    label="Download",
                     data=st.session_state.processed_docs['doc1'],
                     file_name="document_1_summary.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -114,9 +130,17 @@ def show_home_page():
                     key="download1"
                 )
             
+            st.markdown("---")
+            
+            # Row 2
+            col1, col2, col3 = st.columns([1, 3, 2])
+            with col1:
+                st.write("2")
             with col2:
+                st.write("Detailed Analysis")
+            with col3:
                 st.download_button(
-                    label="Document 2: Detailed Analysis",
+                    label="Download",
                     data=st.session_state.processed_docs['doc2'],
                     file_name="document_2_analysis.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

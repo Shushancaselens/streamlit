@@ -120,7 +120,7 @@ def show_home_page():
                         st.markdown("")  # Spacing
                         
                         # Information as colorful pills/badges
-                        st.pills("Tags", [case['status'], f"{case['documents']} docs"], key=f"pills_{case['id']}", selection_mode="multi", disabled=True)
+                        st.pills("Tags", [case['status'], f"{case['documents']} docs"], key=f"pills_{case['id']}", selection_mode="multi")
                         
                         st.markdown("")  # Spacing
                         

@@ -142,35 +142,9 @@ def show_home_page():
                     key="download_all"
                 )
             
-            st.divider()
-            
-            # Document 1
-            col1, col2 = st.columns([5, 1])
-            with col1:
-                st.markdown("📄 document_1_summary.docx 150KB")
-            with col2:
-                st.download_button(
-                    label="Download",
-                    data=st.session_state.processed_docs['doc1'],
-                    file_name="document_1_summary.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
-                    key="download1"
-                )
-            
-            # Document 2
-            col1, col2 = st.columns([5, 1])
-            with col1:
-                st.markdown("📄 document_2_analysis.docx 200KB")
-            with col2:
-                st.download_button(
-                    label="Download",
-                    data=st.session_state.processed_docs['doc2'],
-                    file_name="document_2_analysis.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    use_container_width=True,
-                    key="download2"
-                )
+            # Document list
+            st.markdown("📄 document_1_summary.docx 150KB")
+            st.markdown("📄 document_2_analysis.docx 200KB")
 
 def show_settings_page():
     """Display the settings page"""

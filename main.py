@@ -73,11 +73,11 @@ def show_home_page():
             st.rerun()
     
     # Header
-    st.markdown("### Upload Document")
+    st.markdown("### AI Data Extraction and Summarization")
     st.divider()
     
     # Upload section
-    st.markdown("Upload a PDF document to process with AI and generate two Word documents.")
+    st.markdown("Upload typewritten or handwritten scanned PDF files")
     
     uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
     
@@ -88,26 +88,19 @@ def show_home_page():
             st.info(f"File uploaded: {uploaded_file.name}")
             
             # Automatically start AI analysis - show progress
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            
-            status_text.text("AI is analyzing your document...")
-            progress_bar.progress(25)
+            progress_bar = st.progress(0, text="AI is analyzing your document...")
             time.sleep(1)
             
-            status_text.text("Generating Document 1...")
-            progress_bar.progress(50)
+            progress_bar.progress(33, text="Generating Document 1...")
             time.sleep(1)
             
-            status_text.text("Generating Document 2...")
-            progress_bar.progress(75)
+            progress_bar.progress(66, text="Generating Document 2...")
             time.sleep(1)
             
             # Process the document
             doc1, doc2 = process_pdf_with_ai(uploaded_file)
             
-            status_text.text("Processing complete!")
-            progress_bar.progress(100)
+            progress_bar.progress(100, text="Processing complete!")
             time.sleep(0.5)
             
             # Store results in session state
@@ -118,9 +111,8 @@ def show_home_page():
             }
             st.session_state.uploaded_filename = uploaded_file.name
             
-            # Clear progress indicators
+            # Clear progress bar
             progress_bar.empty()
-            status_text.empty()
             
             st.rerun()
         

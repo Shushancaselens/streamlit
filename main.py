@@ -1,5 +1,4 @@
 import streamlit as st
-import anthropic
 import base64
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
@@ -13,6 +12,31 @@ st.set_page_config(
     page_icon="📄",
     layout="wide"
 )
+
+# Check for anthropic package
+try:
+    import anthropic
+except ImportError:
+    st.error("❌ The 'anthropic' package is not installed. Please add it to requirements.txt")
+    st.stop()
+
+# Check for API key
+if 'ANTHROPIC_API_KEY' not in st.secrets:
+    st.error("❌ Please add your ANTHROPIC_API_KEY to Streamlit secrets")
+    st.info("""
+    ### How to add your API key:
+    
+    1. Go to your Streamlit Cloud dashboard
+    2. Click on your app settings (⚙️)
+    3. Go to "Secrets" section
+    4. Add:
+    ```
+    ANTHROPIC_API_KEY = "your-api-key-here"
+    ```
+    
+    Get your API key from: https://console.anthropic.com/
+    """)
+    st.stop()
 
 # Initialize session state
 if 'processing' not in st.session_state:
@@ -56,8 +80,8 @@ def process_pdf_with_claude(pdf_file):
     # Convert PDF to base64
     pdf_data = base64.b64encode(pdf_file.read()).decode('utf-8')
     
-    # Initialize Claude client (uses backend API key)
-    client = anthropic.Anthropic()
+    # Initialize Claude client with API key from secrets
+    client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
     
     # First API call - Generate Summary Document
     with st.spinner("🤖 AI is analyzing your PDF and creating Document 1 (Summary)..."):

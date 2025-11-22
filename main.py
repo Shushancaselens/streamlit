@@ -25,7 +25,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Initialize session state for navigation
+# Initialize session state
 if 'current_page' not in st.session_state:
     st.session_state.current_page = 'home'
 if 'processed_docs' not in st.session_state:
@@ -72,12 +72,12 @@ def show_home_page():
     uploaded_file = st.file_uploader("Choose a PDF file", type=['pdf'])
     
     if uploaded_file is not None:
-        # Check if this is a new file or already processed
-        if (st.session_state.uploaded_filename != uploaded_file.name):
+        # Check if this is a new file
+        if st.session_state.uploaded_filename != uploaded_file.name:
             
-            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            st.info(f"📄 File uploaded: {uploaded_file.name}")
             
-            # Automatically start AI analysis
+            # Automatically start AI analysis - show progress
             progress_bar = st.progress(0)
             status_text = st.empty()
             
@@ -112,69 +112,50 @@ def show_home_page():
             progress_bar.empty()
             status_text.empty()
             
-            # Navigate to documents page
-            st.session_state.current_page = 'documents'
             st.rerun()
-
-def show_documents_page():
-    """Display the generated documents page"""
-    if st.session_state.processed_docs is None:
-        st.error("No documents available. Returning to home page...")
-        st.session_state.current_page = 'home'
-        st.rerun()
-        return
-    
-    # Sidebar with user info only
-    with st.sidebar:
-        st.markdown("**User:** shushan@caselens.tech")
-    
-    # Back button and header
-    if st.button("← Back to Upload", type="secondary"):
-        st.session_state.current_page = 'home'
-        st.rerun()
-    
-    st.markdown(f"### Generated Documents")
-    st.markdown(f"**Source:** {st.session_state.processed_docs['filename']}")
-    st.divider()
-    
-    st.success("✅ Your documents have been successfully generated!")
-    
-    # Display download cards
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        with st.container(border=True):
-            st.markdown("#### 📄 Document 1: Summary Report")
-            st.markdown("Contains the summary and key findings from your document.")
-            st.markdown("")
-            st.download_button(
-                label="⬇️ Download Document 1",
-                data=st.session_state.processed_docs['doc1'],
-                file_name="document_1_summary.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                use_container_width=True
-            )
-    
-    with col2:
-        with st.container(border=True):
-            st.markdown("#### 📄 Document 2: Detailed Analysis")
-            st.markdown("Contains the detailed analysis and comprehensive insights.")
-            st.markdown("")
-            st.download_button(
-                label="⬇️ Download Document 2",
-                data=st.session_state.processed_docs['doc2'],
-                file_name="document_2_analysis.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                use_container_width=True
-            )
-    
-    # Reset button
-    st.divider()
-    if st.button("🔄 Process Another Document", type="secondary", use_container_width=False):
-        st.session_state.processed_docs = None
-        st.session_state.uploaded_filename = None
-        st.session_state.current_page = 'home'
-        st.rerun()
+        
+        # Show download section if documents are ready
+        if st.session_state.processed_docs is not None:
+            st.divider()
+            st.markdown("### 📥 Generated Documents Ready")
+            st.success("✅ Your documents have been successfully generated!")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                with st.container(border=True):
+                    st.markdown("#### 📄 Document 1: Summary Report")
+                    st.markdown("Contains the summary and key findings from your document.")
+                    st.markdown("")
+                    st.download_button(
+                        label="⬇️ Download Document 1",
+                        data=st.session_state.processed_docs['doc1'],
+                        file_name="document_1_summary.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True
+                    )
+            
+            with col2:
+                with st.container(border=True):
+                    st.markdown("#### 📄 Document 2: Detailed Analysis")
+                    st.markdown("Contains the detailed analysis and comprehensive insights.")
+                    st.markdown("")
+                    st.download_button(
+                        label="⬇️ Download Document 2",
+                        data=st.session_state.processed_docs['doc2'],
+                        file_name="document_2_analysis.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True
+                    )
+            
+            # Reset button
+            st.divider()
+            col1, col2, col3 = st.columns([2, 1, 2])
+            with col2:
+                if st.button("🔄 Upload New Document", type="secondary", use_container_width=True):
+                    st.session_state.processed_docs = None
+                    st.session_state.uploaded_filename = None
+                    st.rerun()
 
 def show_settings_page():
     """Display the settings page"""
@@ -202,8 +183,6 @@ def show_settings_page():
 def main():
     if st.session_state.current_page == 'home':
         show_home_page()
-    elif st.session_state.current_page == 'documents':
-        show_documents_page()
     elif st.session_state.current_page == 'settings':
         show_settings_page()
 
